@@ -1,0 +1,17 @@
+{
+	"name": "SupportDatabase",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "Keys",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "SupportDatabaseConnectionString"
+			}
+		}
+	}
+}
