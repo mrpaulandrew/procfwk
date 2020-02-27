@@ -1,0 +1,10 @@
+{
+	"name": "Keys",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://FrameworkKeys.vault.azure.net/"
+		}
+	}
+}
