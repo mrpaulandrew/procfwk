@@ -1,0 +1,9 @@
+{
+	"name": "Executor",
+	"properties": {
+		"folder": {
+			"name": "Framework"
+		},
+		"annotations": []
+	}
+}
