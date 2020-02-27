@@ -1,0 +1,1548 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataSchemaModel FileFormatVersion="1.2" SchemaVersion="2.4" DspName="Microsoft.Data.Tools.Schema.Sql.SqlAzureDatabaseSchemaProvider" CollationLcid="1033" CollationCaseSensitive="False" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+	<Header>
+		<CustomData Category="AnsiNulls">
+			<Metadata Name="AnsiNulls" Value="True" />
+		</CustomData>
+		<CustomData Category="QuotedIdentifier">
+			<Metadata Name="QuotedIdentifier" Value="True" />
+		</CustomData>
+		<CustomData Category="CompatibilityMode">
+			<Metadata Name="CompatibilityMode" Value="150" />
+		</CustomData>
+		<CustomData Category="Reference" Type="Assembly">
+			<Metadata Name="LogicalName" Value="MetadataDB.dll" />
+			<Metadata Name="FileName" Value="C:\USERS\PAULANDREW\SOURCE\GITHUB\ADF.PROCFWK\METADATADB\OBJ\DEBUG\METADATADB.DLL" />
+			<Metadata Name="AssemblyName" Value="MetadataDB" />
+			<Metadata Name="PermissionSet" Value="SAFE" />
+			<Metadata Name="Owner" Value="" />
+			<Metadata Name="GenerateSqlClrDdl" Value="True" />
+			<Metadata Name="IsVisible" Value="True" />
+			<Metadata Name="IsModelAware" Value="True" />
+			<Metadata Name="SkipCreationIfEmpty" Value="True" />
+			<Metadata Name="AssemblySymbolsName" Value="C:\Users\PaulAndrew\Source\GitHub\ADF.procfwk\MetadataDB\obj\Debug\MetadataDB.pdb" />
+		</CustomData>
+		<CustomData Category="SqlCmdVariables" Type="SqlCmdVariable" />
+	</Header>
+	<Model>
+		<Element Type="SqlDatabaseOptions">
+			<Property Name="Collation" Value="SQL_Latin1_General_CP1_CI_AS" />
+			<Property Name="IsAnsiNullDefaultOn" Value="True" />
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Property Name="IsAnsiWarningsOn" Value="True" />
+			<Property Name="IsArithAbortOn" Value="True" />
+			<Property Name="IsConcatNullYieldsNullOn" Value="True" />
+			<Property Name="IsTornPageProtectionOn" Value="False" />
+			<Property Name="IsFullTextEnabled" Value="True" />
+			<Property Name="CompatibilityMode" Value="150" />
+			<Property Name="PageVerifyMode" Value="3" />
+		</Element>
+		<Element Type="SqlSchema" Name="[procfwk]">
+			<Relationship Name="Authorizer">
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[dbo]" />
+				</Entry>
+			</Relationship>
+		</Element>
+		<Element Type="SqlProcedure" Name="[procfwk].[CreateNewExecution]">
+			<Property Name="BodyScript">
+				<Value><![CDATA[
+
+SET NOCOUNT ON;
+
+BEGIN
+
+	DECLARE @LocalExecutionId UNIQUEIDENTIFIER = NEWID()
+
+	TRUNCATE TABLE [procfwk].[CurrentExecution];
+
+	INSERT INTO [procfwk].[CurrentExecution]
+		(
+		[LocalExecutionId],
+		[StageId],
+		[PipelineId],
+		[PipelineName]
+		)
+	SELECT
+		@LocalExecutionId,
+		p.[StageId],
+		p.[PipelineId],
+		p.[PipelineName]
+	FROM
+		[procfwk].[PipelineProcesses] p
+		INNER JOIN [procfwk].[ProcessingStageDetails] s
+			ON p.[StageId] = s.[StageId]
+	WHERE
+		p.[Enabled] = 1
+		AND s.[Enabled] = 1
+
+	SELECT
+		@LocalExecutionId AS 'ExecutionId'
+
+END]]></Value>
+			</Property>
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="BodyDependencies">
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[uniqueidentifier]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[LocalExecutionId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[StageId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[PipelineId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[PipelineName]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[PipelineProcesses]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[ProcessingStageDetails]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[PipelineProcesses].[StageId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[ProcessingStageDetails].[StageId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[PipelineProcesses].[PipelineId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[PipelineProcesses].[PipelineName]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[PipelineProcesses].[Enabled]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[ProcessingStageDetails].[Enabled]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[procfwk]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SysCommentsObjectAnnotation">
+				<Property Name="Length" Value="632" />
+				<Property Name="StartLine" Value="1" />
+				<Property Name="StartColumn" Value="1" />
+				<Property Name="HeaderContents" Value="CREATE   PROCEDURE [procfwk].[CreateNewExecution]&#xD;&#xA;AS" />
+			</Annotation>
+		</Element>
+		<Element Type="SqlTable" Name="[procfwk].[CurrentExecution]">
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="Columns">
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[CurrentExecution].[LocalExecutionId]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[uniqueidentifier]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[CurrentExecution].[StageId]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[CurrentExecution].[PipelineId]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[CurrentExecution].[PipelineName]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Length" Value="200" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[nvarchar]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[CurrentExecution].[StartDateTime]">
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[datetime]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[CurrentExecution].[PipelineStatus]">
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Length" Value="200" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[nvarchar]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[CurrentExecution].[EndDateTime]">
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[datetime]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[procfwk]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="3" />
+		</Element>
+		<Element Type="SqlDefaultConstraint" Name="[procfwk].[DF_PipelineProcesses_Enabled]">
+			<Property Name="DefaultExpressionScript">
+				<Value><![CDATA[((1))]]></Value>
+			</Property>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[procfwk].[PipelineProcesses]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForColumn">
+				<Entry>
+					<References Name="[procfwk].[PipelineProcesses].[Enabled]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="4" />
+		</Element>
+		<Element Type="SqlDefaultConstraint" Name="[procfwk].[DF_ProcessStageDetails_Enabled]">
+			<Property Name="DefaultExpressionScript">
+				<Value><![CDATA[((1))]]></Value>
+			</Property>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[procfwk].[ProcessingStageDetails]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForColumn">
+				<Entry>
+					<References Name="[procfwk].[ProcessingStageDetails].[Enabled]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="5" />
+		</Element>
+		<Element Type="SqlTable" Name="[procfwk].[ExecutionLog]">
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="Columns">
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[ExecutionLog].[LogId]">
+						<Property Name="IsNullable" Value="False" />
+						<Property Name="IsIdentity" Value="True" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[ExecutionLog].[LocalExecutionId]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[uniqueidentifier]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[ExecutionLog].[StageId]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[ExecutionLog].[PipelineId]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[ExecutionLog].[PipelineName]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Length" Value="200" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[nvarchar]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[ExecutionLog].[StartDateTime]">
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[datetime]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[ExecutionLog].[PipelineStatus]">
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Length" Value="200" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[nvarchar]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[ExecutionLog].[EndDateTime]">
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[datetime]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[procfwk]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="6" />
+		</Element>
+		<Element Type="SqlForeignKeyConstraint" Name="[procfwk].[FK_PipelineParameters_PipelineProcesses]">
+			<Relationship Name="Columns">
+				<Entry>
+					<References Name="[procfwk].[PipelineParameters].[PipelineId]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[procfwk].[PipelineParameters]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignColumns">
+				<Entry>
+					<References Name="[procfwk].[PipelineProcesses].[PipelineId]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignTable">
+				<Entry>
+					<References Name="[procfwk].[PipelineProcesses]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="7" />
+		</Element>
+		<Element Type="SqlForeignKeyConstraint" Name="[procfwk].[FK_PipelineProcesses_ProcessingStageDetails]">
+			<Relationship Name="Columns">
+				<Entry>
+					<References Name="[procfwk].[PipelineProcesses].[StageId]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[procfwk].[PipelineProcesses]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignColumns">
+				<Entry>
+					<References Name="[procfwk].[ProcessingStageDetails].[StageId]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignTable">
+				<Entry>
+					<References Name="[procfwk].[ProcessingStageDetails]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="8" />
+		</Element>
+		<Element Type="SqlProcedure" Name="[procfwk].[GetPipelineParameters]">
+			<Property Name="BodyScript">
+				<Value><![CDATA[
+
+SET NOCOUNT ON;
+
+BEGIN
+
+	DECLARE @Json VARCHAR(MAX) = ''
+
+	IF NOT EXISTS
+		(
+		SELECT * FROM [procfwk].[PipelineParameters] WHERE [PipelineId] = @PipelineId
+		)
+		BEGIN
+			SET @Json = ''
+		END
+	ELSE
+		BEGIN
+			SELECT
+				@Json += '"' + [ParameterName] + '": "' + [ParameterValue] + '",'
+			FROM
+				[procfwk].[PipelineParameters]
+
+			SET @Json = ',"pipelineParameters": {' + LEFT(@Json,LEN(@Json)-1) + '}'
+		END
+
+	SELECT @Json AS 'Params'
+
+END]]></Value>
+			</Property>
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="BodyDependencies">
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[varchar]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[PipelineParameters]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[PipelineParameters].[PipelineId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[GetPipelineParameters].[@PipelineId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[PipelineParameters].[ParameterName]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[PipelineParameters].[ParameterValue]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="Parameters">
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[procfwk].[GetPipelineParameters].[@PipelineId]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[procfwk]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SysCommentsObjectAnnotation">
+				<Property Name="Length" Value="550" />
+				<Property Name="StartLine" Value="1" />
+				<Property Name="StartColumn" Value="1" />
+				<Property Name="HeaderContents" Value="CREATE   PROCEDURE procfwk.GetPipelineParameters&#xD;&#xA;&#x9;(&#xD;&#xA;&#x9;@PipelineId INT&#xD;&#xA;&#x9;)&#xD;&#xA;AS" />
+			</Annotation>
+		</Element>
+		<Element Type="SqlProcedure" Name="[procfwk].[GetPipelinesInStage]">
+			<Property Name="BodyScript">
+				<Value><![CDATA[
+
+SET NOCOUNT ON;
+
+BEGIN
+
+	SELECT 
+		[PipelineId], 
+		[PipelineName] 
+	FROM 
+		[procfwk].[CurrentExecution]
+	WHERE 
+		[StageId] = @StageId
+	ORDER BY
+		[PipelineId] ASC
+
+END]]></Value>
+			</Property>
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="BodyDependencies">
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[PipelineId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[PipelineName]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[StageId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[GetPipelinesInStage].[@StageId]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="Parameters">
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[procfwk].[GetPipelinesInStage].[@StageId]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[procfwk]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SysCommentsObjectAnnotation">
+				<Property Name="Length" Value="261" />
+				<Property Name="StartLine" Value="1" />
+				<Property Name="StartColumn" Value="1" />
+				<Property Name="HeaderContents" Value="CREATE   PROCEDURE procfwk.GetPipelinesInStage&#xD;&#xA;&#x9;(&#xD;&#xA;&#x9;@StageId INT&#xD;&#xA;&#x9;)&#xD;&#xA;AS" />
+			</Annotation>
+		</Element>
+		<Element Type="SqlProcedure" Name="[procfwk].[GetProcessStages]">
+			<Property Name="BodyScript">
+				<Value><![CDATA[
+
+SET NOCOUNT ON;
+
+BEGIN
+
+	SELECT DISTINCT 
+		[StageId] 
+	FROM 
+		[procfwk].[CurrentExecution]
+	WHERE
+		[LocalExecutionId] = @ExecutionId
+	ORDER BY 
+		[StageId] ASC
+
+END]]></Value>
+			</Property>
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="BodyDependencies">
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[StageId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[LocalExecutionId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[GetProcessStages].[@ExecutionId]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="Parameters">
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[procfwk].[GetProcessStages].[@ExecutionId]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[uniqueidentifier]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[procfwk]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SysCommentsObjectAnnotation">
+				<Property Name="Length" Value="275" />
+				<Property Name="StartLine" Value="1" />
+				<Property Name="StartColumn" Value="1" />
+				<Property Name="HeaderContents" Value="CREATE   PROCEDURE [procfwk].[GetProcessStages]&#xD;&#xA;&#x9;(&#xD;&#xA;&#x9;@ExecutionId UNIQUEIDENTIFIER&#xD;&#xA;&#x9;)&#xD;&#xA;AS" />
+			</Annotation>
+		</Element>
+		<Element Type="SqlTable" Name="[procfwk].[PipelineParameters]">
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="Columns">
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[PipelineParameters].[ParameterId]">
+						<Property Name="IsNullable" Value="False" />
+						<Property Name="IsIdentity" Value="True" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[PipelineParameters].[PipelineId]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[PipelineParameters].[ParameterName]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Length" Value="128" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[varchar]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[PipelineParameters].[ParameterValue]">
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Length" Value="128" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[varchar]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[procfwk]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="9" />
+			<AttachedAnnotation Disambiguator="7" />
+		</Element>
+		<Element Type="SqlTable" Name="[procfwk].[PipelineProcesses]">
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="Columns">
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[PipelineProcesses].[PipelineId]">
+						<Property Name="IsNullable" Value="False" />
+						<Property Name="IsIdentity" Value="True" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[PipelineProcesses].[StageId]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[PipelineProcesses].[PipelineName]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Length" Value="200" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[nvarchar]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[PipelineProcesses].[Enabled]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[bit]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+						<AttachedAnnotation Disambiguator="4" />
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[procfwk]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="10" />
+			<AttachedAnnotation Disambiguator="8" />
+		</Element>
+		<Element Type="SqlPrimaryKeyConstraint" Name="[procfwk].[PK_CurrentExecution]">
+			<Relationship Name="ColumnSpecifications">
+				<Entry>
+					<Element Type="SqlIndexedColumnSpecification">
+						<Relationship Name="Column">
+							<Entry>
+								<References Name="[procfwk].[CurrentExecution].[LocalExecutionId]" />
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlIndexedColumnSpecification">
+						<Relationship Name="Column">
+							<Entry>
+								<References Name="[procfwk].[CurrentExecution].[StageId]" />
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlIndexedColumnSpecification">
+						<Relationship Name="Column">
+							<Entry>
+								<References Name="[procfwk].[CurrentExecution].[PipelineId]" />
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution]" />
+				</Entry>
+			</Relationship>
+			<AttachedAnnotation Disambiguator="3" />
+		</Element>
+		<Element Type="SqlPrimaryKeyConstraint" Name="[procfwk].[PK_ExecutionLog]">
+			<Relationship Name="ColumnSpecifications">
+				<Entry>
+					<Element Type="SqlIndexedColumnSpecification">
+						<Relationship Name="Column">
+							<Entry>
+								<References Name="[procfwk].[ExecutionLog].[LogId]" />
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[procfwk].[ExecutionLog]" />
+				</Entry>
+			</Relationship>
+			<AttachedAnnotation Disambiguator="6" />
+		</Element>
+		<Element Type="SqlPrimaryKeyConstraint" Name="[procfwk].[PK_PipelineParameters]">
+			<Relationship Name="ColumnSpecifications">
+				<Entry>
+					<Element Type="SqlIndexedColumnSpecification">
+						<Relationship Name="Column">
+							<Entry>
+								<References Name="[procfwk].[PipelineParameters].[ParameterId]" />
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[procfwk].[PipelineParameters]" />
+				</Entry>
+			</Relationship>
+			<AttachedAnnotation Disambiguator="9" />
+		</Element>
+		<Element Type="SqlPrimaryKeyConstraint" Name="[procfwk].[PK_PipelineProcesses]">
+			<Relationship Name="ColumnSpecifications">
+				<Entry>
+					<Element Type="SqlIndexedColumnSpecification">
+						<Relationship Name="Column">
+							<Entry>
+								<References Name="[procfwk].[PipelineProcesses].[PipelineId]" />
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[procfwk].[PipelineProcesses]" />
+				</Entry>
+			</Relationship>
+			<AttachedAnnotation Disambiguator="10" />
+		</Element>
+		<Element Type="SqlPrimaryKeyConstraint" Name="[procfwk].[PK_ProcessStageDetails]">
+			<Relationship Name="ColumnSpecifications">
+				<Entry>
+					<Element Type="SqlIndexedColumnSpecification">
+						<Relationship Name="Column">
+							<Entry>
+								<References Name="[procfwk].[ProcessingStageDetails].[StageId]" />
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[procfwk].[ProcessingStageDetails]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="11" />
+		</Element>
+		<Element Type="SqlTable" Name="[procfwk].[ProcessingStageDetails]">
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="Columns">
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[ProcessingStageDetails].[StageId]">
+						<Property Name="IsNullable" Value="False" />
+						<Property Name="IsIdentity" Value="True" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[ProcessingStageDetails].[StageName]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Length" Value="225" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[varchar]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[ProcessingStageDetails].[StageDescription]">
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Property Name="Length" Value="4000" />
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[varchar]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSimpleColumn" Name="[procfwk].[ProcessingStageDetails].[Enabled]">
+						<Property Name="IsNullable" Value="False" />
+						<Relationship Name="TypeSpecifier">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[bit]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+						<AttachedAnnotation Disambiguator="5" />
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[procfwk]" />
+				</Entry>
+			</Relationship>
+			<AttachedAnnotation Disambiguator="11" />
+		</Element>
+		<Element Type="SqlProcedure" Name="[procfwk].[SetLogPipelineFailed]">
+			<Property Name="BodyScript">
+				<Value><![CDATA[
+
+BEGIN
+
+	UPDATE
+		[procfwk].[CurrentExecution]
+	SET
+		[PipelineStatus] = 'Failed',
+		[EndDateTime] = GETDATE()
+	WHERE
+		[LocalExecutionId] = @ExecutionId
+		AND [StageId] = @StageId
+		AND [PipelineId] = @PipelineId
+
+END]]></Value>
+			</Property>
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="BodyDependencies">
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[PipelineStatus]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[EndDateTime]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[LocalExecutionId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[SetLogPipelineFailed].[@ExecutionId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[StageId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[SetLogPipelineFailed].[@StageId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[PipelineId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[SetLogPipelineFailed].[@PipelineId]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="Parameters">
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[procfwk].[SetLogPipelineFailed].[@ExecutionId]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[uniqueidentifier]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[procfwk].[SetLogPipelineFailed].[@StageId]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[procfwk].[SetLogPipelineFailed].[@PipelineId]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[procfwk]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SysCommentsObjectAnnotation">
+				<Property Name="CreateOffset" Value="2" />
+				<Property Name="Length" Value="361" />
+				<Property Name="StartLine" Value="1" />
+				<Property Name="StartColumn" Value="1" />
+				<Property Name="HeaderContents" Value="&#xD;&#xA;CREATE   PROCEDURE procfwk.SetLogPipelineFailed&#xD;&#xA;&#x9;(&#xD;&#xA;&#x9;@ExecutionId UNIQUEIDENTIFIER,&#xD;&#xA;&#x9;@StageId INT,&#xD;&#xA;&#x9;@PipelineId INT&#xD;&#xA;&#x9;)&#xD;&#xA;AS" />
+			</Annotation>
+		</Element>
+		<Element Type="SqlProcedure" Name="[procfwk].[SetLogPipelineRunning]">
+			<Property Name="BodyScript">
+				<Value><![CDATA[
+
+BEGIN
+
+	UPDATE
+		[procfwk].[CurrentExecution]
+	SET
+		[PipelineStatus] = 'Running'
+	WHERE
+		[LocalExecutionId] = @ExecutionId
+		AND [StageId] = @StageId
+		AND [PipelineId] = @PipelineId
+
+END]]></Value>
+			</Property>
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="BodyDependencies">
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[PipelineStatus]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[LocalExecutionId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[SetLogPipelineRunning].[@ExecutionId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[StageId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[SetLogPipelineRunning].[@StageId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[PipelineId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[SetLogPipelineRunning].[@PipelineId]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="Parameters">
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[procfwk].[SetLogPipelineRunning].[@ExecutionId]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[uniqueidentifier]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[procfwk].[SetLogPipelineRunning].[@StageId]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[procfwk].[SetLogPipelineRunning].[@PipelineId]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[procfwk]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SysCommentsObjectAnnotation">
+				<Property Name="CreateOffset" Value="2" />
+				<Property Name="Length" Value="333" />
+				<Property Name="StartLine" Value="1" />
+				<Property Name="StartColumn" Value="1" />
+				<Property Name="HeaderContents" Value="&#xD;&#xA;CREATE   PROCEDURE procfwk.SetLogPipelineRunning&#xD;&#xA;&#x9;(&#xD;&#xA;&#x9;@ExecutionId UNIQUEIDENTIFIER,&#xD;&#xA;&#x9;@StageId INT,&#xD;&#xA;&#x9;@PipelineId INT&#xD;&#xA;&#x9;)&#xD;&#xA;AS" />
+			</Annotation>
+		</Element>
+		<Element Type="SqlProcedure" Name="[procfwk].[SetLogPipelineSuccess]">
+			<Property Name="BodyScript">
+				<Value><![CDATA[
+
+BEGIN
+
+	UPDATE
+		[procfwk].[CurrentExecution]
+	SET
+		[PipelineStatus] = 'Success',
+		[EndDateTime] = GETDATE()
+	WHERE
+		[LocalExecutionId] = @ExecutionId
+		AND [StageId] = @StageId
+		AND [PipelineId] = @PipelineId
+
+END]]></Value>
+			</Property>
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="BodyDependencies">
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[PipelineStatus]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[EndDateTime]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[LocalExecutionId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[SetLogPipelineSuccess].[@ExecutionId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[StageId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[SetLogPipelineSuccess].[@StageId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[PipelineId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[SetLogPipelineSuccess].[@PipelineId]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="Parameters">
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[procfwk].[SetLogPipelineSuccess].[@ExecutionId]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[uniqueidentifier]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[procfwk].[SetLogPipelineSuccess].[@StageId]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[procfwk].[SetLogPipelineSuccess].[@PipelineId]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[procfwk]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SysCommentsObjectAnnotation">
+				<Property Name="CreateOffset" Value="2" />
+				<Property Name="Length" Value="363" />
+				<Property Name="StartLine" Value="1" />
+				<Property Name="StartColumn" Value="1" />
+				<Property Name="HeaderContents" Value="&#xD;&#xA;CREATE   PROCEDURE procfwk.SetLogPipelineSuccess&#xD;&#xA;&#x9;(&#xD;&#xA;&#x9;@ExecutionId UNIQUEIDENTIFIER,&#xD;&#xA;&#x9;@StageId INT,&#xD;&#xA;&#x9;@PipelineId INT&#xD;&#xA;&#x9;)&#xD;&#xA;AS" />
+			</Annotation>
+		</Element>
+		<Element Type="SqlProcedure" Name="[procfwk].[SetLogStageStart]">
+			<Property Name="BodyScript">
+				<Value><![CDATA[
+
+BEGIN
+	
+	DECLARE @StageStart DATETIME = GETDATE()
+
+	UPDATE
+		[procfwk].[CurrentExecution]
+	SET
+		[StartDateTime] = @StageStart,
+		[PipelineStatus] = 'Started'
+	WHERE
+		[LocalExecutionId] = @ExecutionId
+		AND [StageId] = @StageId
+
+END]]></Value>
+			</Property>
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="BodyDependencies">
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[datetime]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[StartDateTime]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[PipelineStatus]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[LocalExecutionId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[SetLogStageStart].[@ExecutionId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[StageId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[SetLogStageStart].[@StageId]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="Parameters">
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[procfwk].[SetLogStageStart].[@ExecutionId]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[uniqueidentifier]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[procfwk].[SetLogStageStart].[@StageId]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[procfwk]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SysCommentsObjectAnnotation">
+				<Property Name="CreateOffset" Value="2" />
+				<Property Name="Length" Value="355" />
+				<Property Name="StartLine" Value="1" />
+				<Property Name="StartColumn" Value="1" />
+				<Property Name="HeaderContents" Value="&#xD;&#xA;CREATE   PROCEDURE procfwk.SetLogStageStart&#xD;&#xA;&#x9;(&#xD;&#xA;&#x9;@ExecutionId UNIQUEIDENTIFIER,&#xD;&#xA;&#x9;@StageId INT&#xD;&#xA;&#x9;)&#xD;&#xA;AS" />
+			</Annotation>
+		</Element>
+		<Element Type="SqlProcedure" Name="[procfwk].[UpdateExecutionLog]">
+			<Property Name="BodyScript">
+				<Value><![CDATA[
+
+SET NOCOUNT ON;
+
+BEGIN
+
+	INSERT INTO [procfwk].[ExecutionLog]
+		(
+		[LocalExecutionId],
+		[StageId],
+		[PipelineId],
+		[PipelineName],
+		[StartDateTime],
+		[PipelineStatus],
+		[EndDateTime]
+		)
+	SELECT
+		[LocalExecutionId],
+		[StageId],
+		[PipelineId],
+		[PipelineName],
+		[StartDateTime],
+		[PipelineStatus],
+		[EndDateTime]
+	FROM
+		[procfwk].[CurrentExecution]
+
+	TRUNCATE TABLE [procfwk].[CurrentExecution];
+
+END]]></Value>
+			</Property>
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="BodyDependencies">
+				<Entry>
+					<References Name="[procfwk].[ExecutionLog]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[ExecutionLog].[LocalExecutionId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[ExecutionLog].[StageId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[ExecutionLog].[PipelineId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[ExecutionLog].[PipelineName]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[ExecutionLog].[StartDateTime]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[ExecutionLog].[PipelineStatus]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[ExecutionLog].[EndDateTime]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[LocalExecutionId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[StageId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[PipelineId]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[PipelineName]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[StartDateTime]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[PipelineStatus]" />
+				</Entry>
+				<Entry>
+					<References Name="[procfwk].[CurrentExecution].[EndDateTime]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[procfwk]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SysCommentsObjectAnnotation">
+				<Property Name="CreateOffset" Value="2" />
+				<Property Name="Length" Value="494" />
+				<Property Name="StartLine" Value="1" />
+				<Property Name="StartColumn" Value="1" />
+				<Property Name="HeaderContents" Value="&#xD;&#xA;CREATE PROCEDURE procfwk.UpdateExecutionLog&#xD;&#xA;AS" />
+			</Annotation>
+		</Element>
+	</Model>
+</DataSchemaModel>

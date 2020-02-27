@@ -7,13 +7,13 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{202ebf84-a56b-4999-92a3-10f7ffe4ef25}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureDatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
     <RootNamespace>MetadataDB</RootNamespace>
     <AssemblyName>MetadataDB</AssemblyName>
-    <ModelCollation>1033, CI</ModelCollation>
+    <ModelCollation>1033,CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -22,6 +22,8 @@
     <SqlServerVerification>False</SqlServerVerification>
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
     <TargetDatabaseSet>True</TargetDatabaseSet>
+    <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -56,5 +58,37 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
+    <Folder Include="procfwk\" />
+    <Folder Include="procfwk\Tables\" />
+    <Folder Include="procfwk\Stored Procedures\" />
+    <Folder Include="Security\" />
+    <Folder Include="Scripts" />
+    <Folder Include="Scripts\Metadata" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="procfwk\Tables\PipelineProcesses.sql" />
+    <Build Include="procfwk\Tables\PipelineParameters.sql" />
+    <Build Include="procfwk\Tables\CurrentExecution.sql" />
+    <Build Include="procfwk\Tables\ExecutionLog.sql" />
+    <Build Include="procfwk\Tables\ProcessingStageDetails.sql" />
+    <Build Include="procfwk\Stored Procedures\GetProcessStages.sql" />
+    <Build Include="procfwk\Stored Procedures\GetPipelinesInStage.sql" />
+    <Build Include="procfwk\Stored Procedures\GetPipelineParameters.sql" />
+    <Build Include="procfwk\Stored Procedures\CreateNewExecution.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogStageStart.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogPipelineRunning.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogPipelineSuccess.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogPipelineFailed.sql" />
+    <Build Include="procfwk\Stored Procedures\UpdateExecutionLog.sql" />
+    <Build Include="Security\procfwk.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\Metadata\Stages.sql" />
+    <None Include="Scripts\Metadata\Pipelines.sql" />
+    <None Include="Scripts\Metadata\PipelineParams.sql" />
+    <None Include="MetadataDB.publish.xml" />
   </ItemGroup>
 </Project>

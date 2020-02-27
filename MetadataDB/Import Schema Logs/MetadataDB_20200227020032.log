@@ -1,0 +1,83 @@
+27/02/2020 14:00:32	This log contains information about the import schema operation into project 'MetadataDB' on computer 'AUK-PA394' by user 'PaulAndrew'.
+27/02/2020 14:00:32	Import of database schema has started.
+27/02/2020 14:00:40	Gathering logins
+27/02/2020 14:00:59	Gathering database credentials
+27/02/2020 14:00:59	Gathering database options
+27/02/2020 14:00:59	Gathering generic database scoped configuration option
+27/02/2020 14:00:59	Gathering users
+27/02/2020 14:00:59	Gathering roles
+27/02/2020 14:00:59	Gathering application roles
+27/02/2020 14:00:59	Gathering role memberships
+27/02/2020 14:00:59	Gathering filegroups
+27/02/2020 14:00:59	Gathering full-text catalogs
+27/02/2020 14:00:59	Gathering assemblies
+27/02/2020 14:00:59	Gathering certificates
+27/02/2020 14:00:59	Gathering symmetric keys
+27/02/2020 14:00:59	Gathering encrypted symmetric keys
+27/02/2020 14:00:59	Gathering schemas
+27/02/2020 14:00:59	Gathering XML schema collections
+27/02/2020 14:00:59	Gathering user-defined data types
+27/02/2020 14:00:59	Gathering user-defined types
+27/02/2020 14:00:59	Gathering table types
+27/02/2020 14:00:59	Gathering unique keys for table types
+27/02/2020 14:00:59	Gathering primary keys for table types
+27/02/2020 14:00:59	Gathering indexes for table types
+27/02/2020 14:00:59	Gathering check constraints for table types
+27/02/2020 14:00:59	Gathering default constraints for table types
+27/02/2020 14:00:59	Gathering partition functions
+27/02/2020 14:00:59	Gathering partition schemes
+27/02/2020 14:00:59	Gathering functions
+27/02/2020 14:00:59	Gathering encrypted functions
+27/02/2020 14:00:59	Gathering aggregates
+27/02/2020 14:00:59	Gathering procedures
+27/02/2020 14:00:59	Gathering encrypted procedures
+27/02/2020 14:00:59	Gathering tables
+27/02/2020 14:00:59	Gathering primary keys
+27/02/2020 14:00:59	Gathering unique constraints
+27/02/2020 14:00:59	Gathering foreign keys
+27/02/2020 14:00:59	Gathering default constraints
+27/02/2020 14:00:59	Gathering check constraints
+27/02/2020 14:00:59	Gathering views
+27/02/2020 14:00:59	Gathering encrypted views
+27/02/2020 14:00:59	Gathering indexes
+27/02/2020 14:00:59	Gathering statistics
+27/02/2020 14:00:59	Gathering full-text index stoplists
+27/02/2020 14:00:59	Gathering search property lists
+27/02/2020 14:00:59	Gathering search properties
+27/02/2020 14:00:59	Gathering full-text indexes
+27/02/2020 14:00:59	Gathering column store indexes
+27/02/2020 14:00:59	Gathering spatial indexes
+27/02/2020 14:00:59	Gathering XML indexes
+27/02/2020 14:00:59	Gathering Selective XML indexes
+27/02/2020 14:00:59	Gathering encrypted triggers
+27/02/2020 14:00:59	Gathering triggers
+27/02/2020 14:00:59	Gathering encrypted and clr ddl triggers
+27/02/2020 14:00:59	Gathering ddl triggers
+27/02/2020 14:00:59	Creating edge constraints
+27/02/2020 14:00:59	Gathering synonyms
+27/02/2020 14:00:59	Gathering defaults
+27/02/2020 14:00:59	Gathering data constraint uddt bindings
+27/02/2020 14:00:59	Gathering rules
+27/02/2020 14:00:59	Gathering data constraint uddt bindings
+27/02/2020 14:00:59	Gathering message types
+27/02/2020 14:00:59	Gathering queues
+27/02/2020 14:00:59	Gathering contracts
+27/02/2020 14:00:59	Gathering services
+27/02/2020 14:00:59	Gathering event notifications
+27/02/2020 14:00:59	Gathering remote service bindings
+27/02/2020 14:00:59	Gathering broker priorities
+27/02/2020 14:00:59	Gathering signatures
+27/02/2020 14:00:59	Gathering data compression options
+27/02/2020 14:00:59	Gathering sequence types
+27/02/2020 14:00:59	Gathering security policies
+27/02/2020 14:00:59	Gather column encryption keys
+27/02/2020 14:00:59	Gathering column master keys
+27/02/2020 14:00:59	Gathering external data sources
+27/02/2020 14:00:59	Gathering external tables
+27/02/2020 14:00:59	Gathering extended properties
+27/02/2020 14:01:02	Gathering logins
+27/02/2020 14:01:03	Scanning project for duplicate elements
+27/02/2020 14:01:03	Finished duplicate element processing
+27/02/2020 14:01:04	Finished importing database.
+27/02/2020 14:01:04	A summary of the import was saved to the following location: C:\Users\PaulAndrew\Source\GitHub\ADF.procfwk\MetadataDB\Import Schema Logs\MetadataDB_20200227020032.log
+27/02/2020 14:01:04	Click Finish to continue...
