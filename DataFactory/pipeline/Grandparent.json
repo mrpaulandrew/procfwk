@@ -3,96 +3,15 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Data Ingestion",
-				"type": "ExecutePipeline",
-				"dependsOn": [],
-				"userProperties": [],
-				"typeProperties": {
-					"waitOnCompletion": true
-				}
-			},
-			{
 				"name": "Framework Processing",
 				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "Data Ingestion",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Increase Compute",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"waitOnCompletion": true
-				}
-			},
-			{
-				"name": "Increase Compute",
-				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
-					"waitOnCompletion": true
-				}
-			},
-			{
-				"name": "Decrease Compute",
-				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "Process Models",
-						"dependencyConditions": [
-							"Succeeded"
-						]
+					"pipeline": {
+						"referenceName": "BootStrap",
+						"type": "PipelineReference"
 					},
-					{
-						"activity": "Third Party Feeds",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"waitOnCompletion": true
-				}
-			},
-			{
-				"name": "Process Models",
-				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "Framework Processing",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"waitOnCompletion": true
-				}
-			},
-			{
-				"name": "Third Party Feeds",
-				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "Framework Processing",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
 					"waitOnCompletion": true
 				}
 			}
