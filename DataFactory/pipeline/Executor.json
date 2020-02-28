@@ -30,7 +30,7 @@
 						"queryTimeout": "02:00:00"
 					},
 					"dataset": {
-						"referenceName": "MetadataProcCall",
+						"referenceName": "GetSetMetadata",
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
@@ -140,7 +140,7 @@
 									"queryTimeout": "02:00:00"
 								},
 								"dataset": {
-									"referenceName": "MetadataProcCall",
+									"referenceName": "GetSetMetadata",
 									"type": "DatasetReference"
 								}
 							}
@@ -184,7 +184,7 @@
 								}
 							},
 							"linkedServiceName": {
-								"referenceName": "MetadataSQLDB",
+								"referenceName": "SupportDatabase",
 								"type": "LinkedServiceReference"
 							}
 						},
@@ -234,7 +234,7 @@
 								}
 							},
 							"linkedServiceName": {
-								"referenceName": "MetadataSQLDB",
+								"referenceName": "SupportDatabase",
 								"type": "LinkedServiceReference"
 							}
 						},
@@ -284,7 +284,7 @@
 								}
 							},
 							"linkedServiceName": {
-								"referenceName": "MetadataSQLDB",
+								"referenceName": "SupportDatabase",
 								"type": "LinkedServiceReference"
 							}
 						}

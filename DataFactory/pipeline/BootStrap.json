@@ -36,6 +36,10 @@
 						},
 						"queryTimeout": "02:00:00"
 					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
+					},
 					"firstRowOnly": false
 				}
 			},
@@ -71,6 +75,10 @@
 							],
 							"userProperties": [],
 							"typeProperties": {
+								"pipeline": {
+									"referenceName": "Executor",
+									"type": "PipelineReference"
+								},
 								"waitOnCompletion": true,
 								"parameters": {
 									"StageId": {
@@ -114,6 +122,10 @@
 										"type": "Int32"
 									}
 								}
+							},
+							"linkedServiceName": {
+								"referenceName": "SupportDatabase",
+								"type": "LinkedServiceReference"
 							}
 						}
 					]
@@ -136,6 +148,10 @@
 						"type": "AzureSqlSource",
 						"sqlReaderStoredProcedureName": "[procfwk].[CreateNewExecution]",
 						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
 					}
 				}
 			},
@@ -160,6 +176,10 @@
 				"userProperties": [],
 				"typeProperties": {
 					"storedProcedureName": "[procfwk].[UpdateExecutionLog]"
+				},
+				"linkedServiceName": {
+					"referenceName": "SupportDatabase",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],

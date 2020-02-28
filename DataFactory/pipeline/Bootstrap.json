@@ -37,7 +37,7 @@
 						"queryTimeout": "02:00:00"
 					},
 					"dataset": {
-						"referenceName": "MetadataProcCall",
+						"referenceName": "GetSetMetadata",
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
@@ -76,7 +76,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
-									"referenceName": "_Stage Executor",
+									"referenceName": "Executor",
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true,
@@ -124,7 +124,7 @@
 								}
 							},
 							"linkedServiceName": {
-								"referenceName": "MetadataSQLDB",
+								"referenceName": "SupportDatabase",
 								"type": "LinkedServiceReference"
 							}
 						}
@@ -150,7 +150,7 @@
 						"queryTimeout": "02:00:00"
 					},
 					"dataset": {
-						"referenceName": "MetadataProcCall",
+						"referenceName": "GetSetMetadata",
 						"type": "DatasetReference"
 					}
 				}
@@ -178,13 +178,13 @@
 					"storedProcedureName": "[procfwk].[UpdateExecutionLog]"
 				},
 				"linkedServiceName": {
-					"referenceName": "MetadataSQLDB",
+					"referenceName": "SupportDatabase",
 					"type": "LinkedServiceReference"
 				}
 			}
 		],
 		"folder": {
-			"name": "ProcessingFramework"
+			"name": "Framework"
 		},
 		"annotations": []
 	}
