@@ -1,0 +1,171 @@
+{
+	"name": "BootStrap",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Stages",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Create New Execution",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetProcessStages]",
+						"storedProcedureParameters": {
+							"ExecutionId": {
+								"type": "Guid",
+								"value": {
+									"value": "@activity('Create New Execution').output.firstRow.ExecutionId",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Execute Stages",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Stages",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Stages').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Stage Executor",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "Log Stage Start",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"waitOnCompletion": true,
+								"parameters": {
+									"StageId": {
+										"value": "@item().StageId",
+										"type": "Expression"
+									},
+									"ExecutionId": {
+										"value": "@activity('Create New Execution').output.firstRow.ExecutionId",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Log Stage Start",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[procfwk].[SetLogStageStart]",
+								"storedProcedureParameters": {
+									"ExecutionId": {
+										"value": {
+											"value": "@activity('Create New Execution').output.firstRow.ExecutionId",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									},
+									"StageId": {
+										"value": {
+											"value": "@item().StageId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Create New Execution",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[CreateNewExecution]",
+						"queryTimeout": "02:00:00"
+					}
+				}
+			},
+			{
+				"name": "Update Execution Log",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Execute Stages",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[procfwk].[UpdateExecutionLog]"
+				}
+			}
+		],
+		"folder": {
+			"name": "Framework"
+		},
+		"annotations": []
+	}
+}
