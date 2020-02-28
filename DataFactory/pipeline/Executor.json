@@ -1,6 +1,310 @@
 {
 	"name": "Executor",
 	"properties": {
+		"activities": [
+			{
+				"name": "Get Pipelines",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetPipelinesInStage]",
+						"storedProcedureParameters": {
+							"StageId": {
+								"type": "Int32",
+								"value": {
+									"value": "@pipeline().parameters.StageId",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "MetadataProcCall",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Execute Pipelines",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Pipelines",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Pipelines').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Execute Pipeline",
+							"type": "AzureFunctionActivity",
+							"dependsOn": [
+								{
+									"activity": "Set Body",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "Log Pipeline Running",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"functionName": "ExecutePipeline",
+								"method": "POST",
+								"body": {
+									"value": "@variables('FunctionBody')",
+									"type": "Expression"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "PipelineExecutor",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Set Body",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Get Pipeline Params",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "FunctionBody",
+								"value": {
+									"value": "@concat('\n{\n\t\"tenantId\": \"929039b9-c19d-425e-993b-1e3fda155876\",\n\t\"applicationId\": \"014f610f-0800-4039-bf65-c71091be2582\",\n\t\"authenticationKey\": \"AjRcla.DWhqilqS5LZJxk3-]_fVbOz66\",\n\t\"subscriptionId\": \"77a3e40b-dd36-433c-90ca-a09f39724af3\",\n\t\"resourceGroup\": \"CommunityDemos\",\n\t\"factoryName\": \"PaulsFunFactoryV2\",\n\t\"pipelineName\": \"',item().PipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Get Pipeline Params",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderStoredProcedureName": "[procfwk].[GetPipelineParameters]",
+									"storedProcedureParameters": {
+										"PipelineId": {
+											"type": "Int32",
+											"value": {
+												"value": "@item().PipelineId",
+												"type": "Expression"
+											}
+										}
+									},
+									"queryTimeout": "02:00:00"
+								},
+								"dataset": {
+									"referenceName": "MetadataProcCall",
+									"type": "DatasetReference"
+								}
+							}
+						},
+						{
+							"name": "Log Pipeline Running",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[procfwk].[SetLogPipelineRunning]",
+								"storedProcedureParameters": {
+									"ExecutionId": {
+										"value": {
+											"value": "@pipeline().parameters.ExecutionId",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									},
+									"PipelineId": {
+										"value": {
+											"value": "@item().PipelineId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"StageId": {
+										"value": {
+											"value": "@pipeline().parameters.StageId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "MetadataSQLDB",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Log Pipeline Success",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Execute Pipeline",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[procfwk].[SetLogPipelineSuccess]",
+								"storedProcedureParameters": {
+									"ExecutionId": {
+										"value": {
+											"value": "@pipeline().parameters.ExecutionId",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									},
+									"PipelineId": {
+										"value": {
+											"value": "@item().PipelineId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"StageId": {
+										"value": {
+											"value": "@pipeline().parameters.StageId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "MetadataSQLDB",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Log Pipeline Failure",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Execute Pipeline",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[procfwk].[SetLogPipelineFailed]",
+								"storedProcedureParameters": {
+									"ExecutionId": {
+										"value": {
+											"value": "@pipeline().parameters.ExecutionId",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									},
+									"PipelineId": {
+										"value": {
+											"value": "@item().PipelineId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"StageId": {
+										"value": {
+											"value": "@pipeline().parameters.StageId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "MetadataSQLDB",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"StageId": {
+				"type": "int"
+			},
+			"ExecutionId": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"FunctionBody": {
+				"type": "String"
+			}
+		},
 		"folder": {
 			"name": "Framework"
 		},
