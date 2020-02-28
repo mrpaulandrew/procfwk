@@ -3,3 +3,7 @@
 ################################################################################
 
 *.dbmdl
+/.vs
+/MetadataDB/obj/Debug/MetadataDB.sqlprojAssemblyReference.cache
+/MetadataDB/MetadataDB.jfm
+/.vs/ProcessingFramework/v16/.suo
