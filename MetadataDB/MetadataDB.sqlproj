@@ -64,6 +64,9 @@
     <Folder Include="Security\" />
     <Folder Include="Scripts" />
     <Folder Include="Scripts\Metadata" />
+    <Folder Include="procfwk\Views" />
+    <Folder Include="dbo" />
+    <Folder Include="dbo\Tables" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="procfwk\Tables\PipelineProcesses.sql" />
@@ -81,6 +84,13 @@
     <Build Include="procfwk\Stored Procedures\SetLogPipelineFailed.sql" />
     <Build Include="procfwk\Stored Procedures\UpdateExecutionLog.sql" />
     <Build Include="Security\procfwk.sql" />
+    <Build Include="procfwk\Views\CurrentProperties.sql" />
+    <Build Include="procfwk\Tables\Properties.sql" />
+    <Build Include="procfwk\Stored Procedures\GetPropertyValue.sql" />
+    <Build Include="dbo\Tables\ServicePrincipals.sql" />
+    <Build Include="procfwk\Tables\DataFactoryDetails.sql" />
+    <Build Include="procfwk\Tables\PipelineAuthLink.sql" />
+    <Build Include="procfwk\Stored Procedures\AddProperty.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
@@ -90,5 +100,8 @@
     <None Include="Scripts\Metadata\Pipelines.sql" />
     <None Include="Scripts\Metadata\PipelineParams.sql" />
     <None Include="MetadataDB.publish.xml" />
+    <None Include="Scripts\Metadata\DataFactories.sql" />
+    <None Include="Scripts\Metadata\Properties.sql" />
+    <None Include="Scripts\Metadata\DeleteAll.sql" />
   </ItemGroup>
 </Project>

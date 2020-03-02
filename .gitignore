@@ -2,12 +2,10 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-*.dbmdl
-/.vs
-/MetadataDB/obj/Debug/MetadataDB.sqlprojAssemblyReference.cache
+/MetadataDB/Bin/
+/MetadataDB/Obj/
 /MetadataDB/MetadataDB.jfm
-/.vs/ProcessingFramework/v16/.suo
+/.vs/
+*.dbmdl
+*.jfm
 MetadataDB/MetadataDB.jfm
-.vs/ProcessingFramework/v16/Server/sqlite3/storage.ide
-.vs/ProcessingFramework/v16/.suo
-.vs/ProcessingFramework/DesignTimeBuild/.dtbcache
