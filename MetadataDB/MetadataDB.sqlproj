@@ -94,6 +94,7 @@
     <Build Include="procfwk\Stored Procedures\GetServicePrincipal.sql" />
     <Build Include="procfwk\Stored Procedures\DeleteServicePrincipal.sql" />
     <Build Include="procfwk\Stored Procedures\AddServicePrincipal.sql" />
+    <Build Include="Security\adf_procfwkuser.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
