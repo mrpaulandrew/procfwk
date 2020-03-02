@@ -9,13 +9,11 @@ Post-Deployment Script Template
                SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
---delete and reload
-:r .\Metadata\DeleteAll.sql
-
+--load metadata
+:r .\Metadata\DataFactories.sql
 :r .\Metadata\Stages.sql
 :r .\Metadata\Pipelines.sql
 :r .\Metadata\PipelineParams.sql
-:r .\Metadata\DataFactories.sql
 
 --merged
 :r .\Metadata\Properties.sql
