@@ -12,7 +12,7 @@ This repository contains all the required Azure content to create a metadata dri
 | | |
 
 ## Backlog
-[Go to backlog...](../BACKLOG.md)
+[Go to backlog...](../master/BACKLOG.md)
 
 ## Release Details
 
