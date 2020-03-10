@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [procfwk].[GetServicePrincipal]
 	(
 	@DataFactory NVARCHAR(200),
-	@PipelineName NVARCHAR(200)
+	@PipelineName NVARCHAR(200) = NULL
 	)
 AS
 
@@ -10,12 +10,24 @@ SET NOCOUNT ON;
 BEGIN
 
 	DECLARE @ErrorDetails NVARCHAR(500) = ''
+	DECLARE @Id UNIQUEIDENTIFIER
+	DECLARE @Secret NVARCHAR(MAX)
+	DECLARE @TenantId CHAR(36)
 
-	--defensive checks
-	IF NOT EXISTS
+	--get tenant Id to include in decryption
+	SELECT
+		@TenantId = ISNULL([PropertyValue],'')
+	FROM
+		[procfwk].[CurrentProperties]
+	WHERE
+		[PropertyName] = 'TenantId'
+
+	--get auth details regardless of being pipeline specific and regardless of a pipeline param being passed
+	;WITH cte AS
 		(
-		SELECT
-			*
+		SELECT DISTINCT
+			S.[PrincipalId] AS 'Id',
+			CAST(DECRYPTBYPASSPHRASE(CONCAT(@TenantId, @DataFactory, @PipelineName), S.[PrincipalSecret]) AS NVARCHAR(MAX)) AS 'Secret'
 		FROM
 			[dbo].[ServicePrincipals] S
 			INNER JOIN  [procfwk].[PipelineAuthLink] L
@@ -28,28 +40,33 @@ BEGIN
 		WHERE
 			P.[PipelineName] = @PipelineName
 			AND D.[DataFactoryName] = @DataFactory
-		)
-		BEGIN
-			SET @ErrorDetails = 'Invalid to find service principal for provided Data Factory and Pipeline name combination.'
-			RAISERROR(@ErrorDetails, 16, 1);
-			RETURN;
-		END
+			
+		UNION
 
-	--get auth details
-	SELECT
-		S.[PrincipalId],
-		CAST(DECRYPTBYPASSPHRASE(CONCAT(@DataFactory,@PipelineName), S.[PrincipalSecret]) AS NVARCHAR(MAX)) AS 'Secret'
+		SELECT DISTINCT
+			S.[PrincipalId] AS 'Id',
+			CAST(DECRYPTBYPASSPHRASE(CONCAT(@TenantId, @DataFactory), S.[PrincipalSecret]) AS NVARCHAR(MAX)) AS 'Secret'
+		FROM
+			[dbo].[ServicePrincipals] S
+			INNER JOIN  [procfwk].[PipelineAuthLink] L
+				ON S.[CredentialId] = L.[CredentialId]
+			INNER JOIN [procfwk].[DataFactoryDetails] D
+				ON L.[DataFactoryId] = D.[DataFactoryId]
+					AND L.[DataFactoryId] = D.[DataFactoryId]
+		WHERE
+			D.[DataFactoryName] = @DataFactory
+		)
+	SELECT TOP 1
+		@Id = [Id],
+		@Secret = [Secret]
 	FROM
-		[dbo].[ServicePrincipals] S
-		INNER JOIN  [procfwk].[PipelineAuthLink] L
-			ON S.[CredentialId] = L.[CredentialId]
-		INNER JOIN [procfwk].[PipelineProcesses] P
-			ON L.[PipelineId] = P.[PipelineId]
-		INNER JOIN [procfwk].[DataFactoryDetails] D
-			ON P.[DataFactoryId] = D.[DataFactoryId]
-				AND L.[DataFactoryId] = D.[DataFactoryId]
+		cte
 	WHERE
-		P.[PipelineName] = @PipelineName
-		AND D.[DataFactoryName] = @DataFactory
+		[Secret] IS NOT NULL
+	
+	--return usable values
+	SELECT
+		@Id AS 'Id',
+		@Secret AS 'Secret'
 
 END

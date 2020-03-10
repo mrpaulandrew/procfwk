@@ -17,7 +17,7 @@ BEGIN
 			RAISERROR(@ErrorDetail, 16, 1);
 			RETURN;
 		END
-	ELSE IF EXISTS
+	ELSE IF NOT EXISTS
 		(
 		SELECT * FROM [procfwk].[Properties] WHERE [PropertyName] = @PropertyName AND [ValidTo] IS NULL
 		)

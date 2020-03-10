@@ -1,4 +1,4 @@
-﻿CREATE   PROCEDURE procfwk.GetPipelinesInStage
+﻿CREATE PROCEDURE procfwk.GetPipelinesInStage
 	(
 	@StageId INT
 	)
@@ -10,7 +10,9 @@ BEGIN
 
 	SELECT 
 		[PipelineId], 
-		[PipelineName] 
+		[PipelineName],
+		[DataFactoryName],
+		[ResourceGroupName]
 	FROM 
 		[procfwk].[CurrentExecution]
 	WHERE 

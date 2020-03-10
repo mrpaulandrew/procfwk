@@ -1,9 +1,9 @@
 ﻿CREATE PROCEDURE [procfwk].[AddServicePrincipal]
 	(
 	@DataFactory NVARCHAR(200),
-	@PipelineName NVARCHAR(200),
 	@PrincipalId NVARCHAR(256),
 	@PrincipalSecret NVARCHAR(MAX),
+	@SpecificPipelineName NVARCHAR(200) = NULL,
 	@PrincipalName NVARCHAR(256) = NULL
 	)
 AS
@@ -14,24 +14,26 @@ BEGIN
 
 	DECLARE @ErrorDetails NVARCHAR(500) = ''
 	DECLARE @CredentialId INT
+	DECLARE @LocalPrincipalId UNIQUEIDENTIFIER
+	DECLARE @TenantId CHAR(36)
 
 	--defensive checks
+	BEGIN TRY
+		SELECT 
+			@LocalPrincipalId = CAST(@PrincipalId AS UNIQUEIDENTIFIER)
+	END TRY
+	BEGIN CATCH
+			SET @ErrorDetails = 'Invalid @PrincipalId provided. The format must be a UNIQUEIDENTIFIER.'
+			RAISERROR(@ErrorDetails, 16, 1);
+			RETURN;
+	END CATCH
+
 	IF NOT EXISTS
 		(
 		SELECT [DataFactoryName] FROM [procfwk].[DataFactoryDetails] WHERE [DataFactoryName] = @DataFactory
 		)
 		BEGIN
 			SET @ErrorDetails = 'Invalid Data Factory name. Please ensure the Data Factory metadata exists before trying to add authentication for it.'
-			RAISERROR(@ErrorDetails, 16, 1);
-			RETURN;
-		END
-
-	IF NOT EXISTS
-		( 
-		SELECT [PipelineName] FROM [procfwk].[PipelineProcesses] WHERE [PipelineName] = @PipelineName
-		)
-		BEGIN
-			SET @ErrorDetails = 'Invalid Pipeline name. Please ensure the Pipeline metadata exists before trying to add authentication for it.'
 			RAISERROR(@ErrorDetails, 16, 1);
 			RETURN;
 		END
@@ -45,38 +47,117 @@ BEGIN
 			RAISERROR(@ErrorDetails, 16, 1);
 			RETURN;
 		END
-
-	--add service principal
-	INSERT INTO [dbo].[ServicePrincipals]
-		( 
-		[PrincipalName],
-		[PrincipalId],
-		[PrincipalSecret]
-		)
-	SELECT
-		ISNULL(@PrincipalName, 'Unknown'),
-		@PrincipalId,
-		ENCRYPTBYPASSPHRASE(CONCAT(@DataFactory,@PipelineName), @PrincipalSecret)
-
-	SET @CredentialId = SCOPE_IDENTITY()
-
-	--add link
-	INSERT INTO [procfwk].[PipelineAuthLink]
+	
+	IF EXISTS
 		(
-		[PipelineId],
-		[DataFactoryId],
-		[CredentialId]
+		SELECT
+			*
+		FROM
+			[procfwk].[PipelineAuthLink] AL
+			INNER JOIN [procfwk].[DataFactoryDetails] DF
+				ON AL.[DataFactoryId] = DF.[DataFactoryId]
+			INNER JOIN [procfwk].[PipelineProcesses] PP
+				ON AL.[PipelineId] = PP.[PipelineId]
+		WHERE
+			DF.[DataFactoryName] = @DataFactory
+			AND PP.[PipelineName] = @SpecificPipelineName
 		)
+		BEGIN
+			SET @ErrorDetails = 'The provided Pipeline or Data Factory combination already have a Service Principal. Delete the existing record using the procedure [procfwk].[DeleteServicePrincipal].'
+			RAISERROR(@ErrorDetails, 16, 1);
+			RETURN;
+		END
+	
+	--get tenant Id to include in encryption
 	SELECT
-		P.[PipelineId],
-		D.[DataFactoryId],
-		@CredentialId
+		@TenantId = ISNULL([PropertyValue],'')
 	FROM
-		[procfwk].[PipelineProcesses] P
-		INNER JOIN [procfwk].[DataFactoryDetails] D
-			ON P.[DataFactoryId] = D.[DataFactoryId]
+		[procfwk].[CurrentProperties]
 	WHERE
-		P.[PipelineName] = @PipelineName
-		AND D.[DataFactoryName] = @DataFactory;
+		[PropertyName] = 'TenantId'
 
+	--add SPN for specific pipeline
+	IF @SpecificPipelineName IS NOT NULL
+		BEGIN
+			IF NOT EXISTS
+				( 
+				SELECT [PipelineName] FROM [procfwk].[PipelineProcesses] WHERE [PipelineName] = @SpecificPipelineName
+				)
+				BEGIN
+					SET @ErrorDetails = 'Invalid Pipeline name. Please ensure the Pipeline metadata exists before trying to add authentication for it.'
+					RAISERROR(@ErrorDetails, 16, 1);
+					RETURN;
+				END
+
+				--add service principal
+				INSERT INTO [dbo].[ServicePrincipals]
+					( 
+					[PrincipalName],
+					[PrincipalId],
+					[PrincipalSecret]
+					)
+				SELECT
+					ISNULL(@PrincipalName, 'Unknown'),
+					@PrincipalId,
+					ENCRYPTBYPASSPHRASE(CONCAT(@TenantId, @DataFactory, @SpecificPipelineName), @PrincipalSecret)
+
+				SET @CredentialId = SCOPE_IDENTITY()
+
+				--add link
+				INSERT INTO [procfwk].[PipelineAuthLink]
+					(
+					[PipelineId],
+					[DataFactoryId],
+					[CredentialId]
+					)
+				SELECT
+					P.[PipelineId],
+					D.[DataFactoryId],
+					@CredentialId
+				FROM
+					[procfwk].[PipelineProcesses] P
+					INNER JOIN [procfwk].[DataFactoryDetails] D
+						ON P.[DataFactoryId] = D.[DataFactoryId]
+				WHERE
+					P.[PipelineName] = @SpecificPipelineName
+					AND D.[DataFactoryName] = @DataFactory;
+		END
+	ELSE
+		--add SPN for all pipelines in data factory
+		BEGIN
+				--add service principal
+				INSERT INTO [dbo].[ServicePrincipals]
+					( 
+					[PrincipalName],
+					[PrincipalId],
+					[PrincipalSecret]
+					)
+				SELECT
+					ISNULL(@PrincipalName, 'Unknown'),
+					@PrincipalId,
+					ENCRYPTBYPASSPHRASE(CONCAT(@TenantId, @DataFactory), @PrincipalSecret)
+
+				SET @CredentialId = SCOPE_IDENTITY()
+
+				--add link
+				INSERT INTO [procfwk].[PipelineAuthLink]
+					(
+					[PipelineId],
+					[DataFactoryId],
+					[CredentialId]
+					)
+				SELECT
+					P.[PipelineId],
+					D.[DataFactoryId],
+					@CredentialId
+				FROM
+					[procfwk].[PipelineProcesses] P
+					INNER JOIN [procfwk].[DataFactoryDetails] D
+						ON P.[DataFactoryId] = D.[DataFactoryId]
+					LEFT OUTER JOIN [procfwk].[PipelineAuthLink] L
+						ON P.[PipelineId] = L.[PipelineId]
+				WHERE
+					D.[DataFactoryName] = @DataFactory
+					AND L.[PipelineId] IS NULL;
+		END
 END

@@ -1,8 +1,9 @@
 ﻿INSERT INTO [procfwk].[DataFactoryDetails]
 	(
 	[DataFactoryName],
-	[Description]
+	[Description],
+	[ResourceGroupName]
 	)
 VALUES
-	('FrameworkFactory','Example Data Factory used for development.')
+	('FrameworkFactory','Example Data Factory used for development.','ADF.procfwk')
 	;
