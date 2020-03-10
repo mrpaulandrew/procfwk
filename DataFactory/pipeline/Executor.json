@@ -294,14 +294,14 @@
 										"DataFactory": {
 											"type": "String",
 											"value": {
-												"value": "@pipeline().DataFactory",
+												"value": "@item().DataFactoryName",
 												"type": "Expression"
 											}
 										},
 										"PipelineName": {
 											"type": "String",
 											"value": {
-												"value": "@pipeline().Pipeline",
+												"value": "@item().PipelineName",
 												"type": "Expression"
 											}
 										}
