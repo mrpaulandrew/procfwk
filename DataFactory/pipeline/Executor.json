@@ -69,6 +69,12 @@
 									"dependencyConditions": [
 										"Succeeded"
 									]
+								},
+								{
+									"activity": "Get SPN Details",
+									"dependencyConditions": [
+										"Succeeded"
+									]
 								}
 							],
 							"policy": {
@@ -83,7 +89,7 @@
 								"functionName": "ExecutePipeline",
 								"method": "POST",
 								"body": {
-									"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"014f610f-0800-4039-bf65-c71091be2582\",\n\t\"authenticationKey\": \"AjRcla.DWhqilqS5LZJxk3-]_fVbOz66\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"',item().ResourceGroupName,'\",\n\t\"factoryName\": \"',item().DataFactoryName,'\",\n\t\"pipelineName\": \"',item().PipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
+									"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"',activity('Get SPN Details').output.firstRow.Id,'\",\n\t\"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.Secret,'\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"',item().ResourceGroupName,'\",\n\t\"factoryName\": \"',item().DataFactoryName,'\",\n\t\"pipelineName\": \"',item().PipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
 									"type": "Expression"
 								}
 							},
@@ -266,6 +272,46 @@
 							"linkedServiceName": {
 								"referenceName": "SupportDatabase",
 								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Get SPN Details",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderStoredProcedureName": "[procfwk].[GetServicePrincipal]",
+									"storedProcedureParameters": {
+										"DataFactory": {
+											"type": "String",
+											"value": {
+												"value": "@pipeline().DataFactory",
+												"type": "Expression"
+											}
+										},
+										"PipelineName": {
+											"type": "String",
+											"value": {
+												"value": "@pipeline().Pipeline",
+												"type": "Expression"
+											}
+										}
+									},
+									"queryTimeout": "02:00:00"
+								},
+								"dataset": {
+									"referenceName": "GetSetMetadata",
+									"type": "DatasetReference"
+								}
 							}
 						}
 					]
