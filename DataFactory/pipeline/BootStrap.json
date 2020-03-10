@@ -52,6 +52,18 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
+					},
+					{
+						"activity": "Get Tenant Id",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Get Subscription Id",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
 				"userProperties": [],
@@ -87,6 +99,14 @@
 									},
 									"ExecutionId": {
 										"value": "@activity('Create New Execution').output.firstRow.ExecutionId",
+										"type": "Expression"
+									},
+									"TenantId": {
+										"value": "@activity('Get Tenant Id').output.firstRow.PropertyValue",
+										"type": "Expression"
+									},
+									"SubscriptionId": {
+										"value": "@activity('Get Subscription Id').output.firstRow.PropertyValue",
 										"type": "Expression"
 									}
 								}
@@ -180,6 +200,67 @@
 				"linkedServiceName": {
 					"referenceName": "SupportDatabase",
 					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Get Tenant Id",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetPropertyValue]",
+						"storedProcedureParameters": {
+							"PropertyName": {
+								"type": "String",
+								"value": "TenantId"
+							}
+						},
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "Get Subscription Id",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": true
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetPropertyValue]",
+						"storedProcedureParameters": {
+							"PropertyName": {
+								"type": "String",
+								"value": "SubscriptionId"
+							}
+						},
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
+					}
 				}
 			}
 		],
