@@ -278,6 +278,12 @@
 			},
 			"ExecutionId": {
 				"type": "string"
+			},
+			"TenantId": {
+				"type": "string"
+			},
+			"SubscriptionId": {
+				"type": "string"
 			}
 		},
 		"variables": {
