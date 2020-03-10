@@ -83,7 +83,7 @@
 								"functionName": "ExecutePipeline",
 								"method": "POST",
 								"body": {
-									"value": "@concat('\n{\n\t\"tenantId\": \"929039b9-c19d-425e-993b-1e3fda155876\",\n\t\"applicationId\": \"014f610f-0800-4039-bf65-c71091be2582\",\n\t\"authenticationKey\": \"AjRcla.DWhqilqS5LZJxk3-]_fVbOz66\",\n\t\"subscriptionId\": \"77a3e40b-dd36-433c-90ca-a09f39724af3\",\n\t\"resourceGroup\": \"CommunityDemos\",\n\t\"factoryName\": \"PaulsFunFactoryV2\",\n\t\"pipelineName\": \"',item().PipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
+									"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"014f610f-0800-4039-bf65-c71091be2582\",\n\t\"authenticationKey\": \"AjRcla.DWhqilqS5LZJxk3-]_fVbOz66\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"CommunityDemos\",\n\t\"factoryName\": \"PaulsFunFactoryV2\",\n\t\"pipelineName\": \"',item().PipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
 									"type": "Expression"
 								}
 							},
