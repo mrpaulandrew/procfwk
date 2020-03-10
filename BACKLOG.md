@@ -11,10 +11,10 @@
 | 3 |Performance views for the long term log table. Eg. Average pipeline duration.  | New |  |
 | 4 |Add database view for the last execution run using the log table.  | New |  |
 | 5 |A better error handler path with actual error details captured.  | New |  |
-| 6 |Add a Data Factory metadata table.  | In Progress |  |
+| 6 |Add a Data Factory metadata table.  | Complete |  |
 | 7 |Add a Subscription metadata table.  | New |  |
-| 8 |Add Global properties, to include: <ul><li>Tenant Id.</li><li>Subscription Id.</li></ul> | In Progress |  |
-| 9 |Update the Function to avoid hardcoded authentication details.  | In Progress |  |
+| 8 |Add Global properties, to include: <ul><li>Tenant Id.</li><li>Subscription Id.</li></ul> | Complete |  |
+| 9 |Update the Function activity body to avoid hardcoded authentication details.  | Complete |  |
 | 10 |Pre-execution data integrity checks against all metadata.  | New |  |
 | 11 |Add email alerting options for pipelines in the event of failures.  | New |  |
 | 12 |Create a Power BI dashboard for monitoring large scale solutions.  | New |  |
