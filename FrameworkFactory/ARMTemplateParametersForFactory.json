@@ -7,6 +7,9 @@
 		},
 		"Keys_properties_typeProperties_baseUrl": {
 			"value": "https://FrameworkKeys.vault.azure.net/"
+		},
+		"SupportDatabase_properties_typeProperties_connectionString_secretName": {
+			"value": "SupportDatabaseConnectionString"
 		}
 	}
 }

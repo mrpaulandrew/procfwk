@@ -11,6 +11,10 @@
 			"type": "string",
 			"defaultValue": "https://FrameworkKeys.vault.azure.net/"
 		},
+		"SupportDatabase_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "SupportDatabaseConnectionString"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -40,6 +44,9 @@
 					},
 					"Keys_properties_typeProperties_baseUrl": {
 						"value": "[parameters('Keys_properties_typeProperties_baseUrl')]"
+					},
+					"SupportDatabase_properties_typeProperties_connectionString_secretName": {
+						"value": "[parameters('SupportDatabase_properties_typeProperties_connectionString_secretName')]"
 					}
 				}
 			},
