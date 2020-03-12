@@ -1,5 +1,5 @@
 {
-	"name": "Grandparent",
+	"name": "01 Grandparent",
 	"properties": {
 		"activities": [
 			{
@@ -16,6 +16,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "_ProcFwk"
+		},
 		"annotations": []
 	}
 }
