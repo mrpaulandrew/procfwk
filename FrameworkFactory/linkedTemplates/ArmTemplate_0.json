@@ -21,7 +21,7 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/Child 1')]",
+			"name": "[concat(parameters('factoryName'), '/Wait 1')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -32,127 +32,181 @@
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
-							"waitTimeInSeconds": 1
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
 						}
 					}
 				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
 				"folder": {
-					"name": "Child Pipelines"
+					"name": "Process Pipelines"
 				},
 				"annotations": []
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Child 2')]",
+			"name": "[concat(parameters('factoryName'), '/Wait 2')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Wait1",
+						"name": "Wait2",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
-							"waitTimeInSeconds": 1
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
 						}
 					}
 				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
 				"folder": {
-					"name": "Child Pipelines"
+					"name": "Process Pipelines"
 				},
 				"annotations": []
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Child 3')]",
+			"name": "[concat(parameters('factoryName'), '/Wait 3')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Wait1",
+						"name": "Wait3",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
-							"waitTimeInSeconds": 1
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
 						}
 					}
 				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
 				"folder": {
-					"name": "Child Pipelines"
+					"name": "Process Pipelines"
 				},
 				"annotations": []
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Child 4')]",
+			"name": "[concat(parameters('factoryName'), '/Wait 4')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Wait1",
+						"name": "Wait4",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
-							"waitTimeInSeconds": 1
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
 						}
 					}
 				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
 				"folder": {
-					"name": "Child Pipelines"
+					"name": "Process Pipelines"
 				},
 				"annotations": []
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Child 5')]",
+			"name": "[concat(parameters('factoryName'), '/Wait 5')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Wait1",
+						"name": "Wait5",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
-							"waitTimeInSeconds": 1
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
 						}
 					}
 				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
 				"folder": {
-					"name": "Child Pipelines"
+					"name": "Process Pipelines"
 				},
 				"annotations": []
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Child 6')]",
+			"name": "[concat(parameters('factoryName'), '/Wait 6')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Wait1",
+						"name": "Wait6",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
-							"waitTimeInSeconds": 1
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
 						}
 					}
 				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
 				"folder": {
-					"name": "Child Pipelines"
+					"name": "Process Pipelines"
 				},
 				"annotations": []
 			},
@@ -235,7 +289,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Executor')]",
+			"name": "[concat(parameters('factoryName'), '/03 Child')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -298,13 +352,19 @@
 									"type": "AzureFunctionActivity",
 									"dependsOn": [
 										{
-											"activity": "Set Body",
+											"activity": "Log Pipeline Running",
 											"dependencyConditions": [
 												"Succeeded"
 											]
 										},
 										{
-											"activity": "Log Pipeline Running",
+											"activity": "Get Pipeline Params",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										},
+										{
+											"activity": "Get SPN Details",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -323,33 +383,13 @@
 										"method": "POST",
 										"headers": {},
 										"body": {
-											"value": "@variables('FunctionBody')",
+											"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"',activity('Get SPN Details').output.firstRow.Id,'\",\n\t\"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.Secret,'\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"',item().ResourceGroupName,'\",\n\t\"factoryName\": \"',item().DataFactoryName,'\",\n\t\"pipelineName\": \"',item().PipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
 											"type": "Expression"
 										}
 									},
 									"linkedServiceName": {
 										"referenceName": "PipelineExecutor",
 										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "Set Body",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "Get Pipeline Params",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "FunctionBody",
-										"value": {
-											"value": "@concat('\n{\n\t\"tenantId\": \"929039b9-c19d-425e-993b-1e3fda155876\",\n\t\"applicationId\": \"014f610f-0800-4039-bf65-c71091be2582\",\n\t\"authenticationKey\": \"AjRcla.DWhqilqS5LZJxk3-]_fVbOz66\",\n\t\"subscriptionId\": \"77a3e40b-dd36-433c-90ca-a09f39724af3\",\n\t\"resourceGroup\": \"CommunityDemos\",\n\t\"factoryName\": \"PaulsFunFactoryV2\",\n\t\"pipelineName\": \"',item().PipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
-											"type": "Expression"
-										}
 									}
 								},
 								{
@@ -528,6 +568,47 @@
 										"referenceName": "SupportDatabase",
 										"type": "LinkedServiceReference"
 									}
+								},
+								{
+									"name": "Get SPN Details",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderStoredProcedureName": "[[procfwk].[GetServicePrincipal]",
+											"storedProcedureParameters": {
+												"DataFactory": {
+													"type": "String",
+													"value": {
+														"value": "@item().DataFactoryName",
+														"type": "Expression"
+													}
+												},
+												"PipelineName": {
+													"type": "String",
+													"value": {
+														"value": "@item().PipelineName",
+														"type": "Expression"
+													}
+												}
+											},
+											"queryTimeout": "02:00:00"
+										},
+										"dataset": {
+											"referenceName": "GetSetMetadata",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									}
 								}
 							]
 						}
@@ -539,6 +620,12 @@
 					},
 					"ExecutionId": {
 						"type": "string"
+					},
+					"TenantId": {
+						"type": "string"
+					},
+					"SubscriptionId": {
+						"type": "string"
 					}
 				},
 				"variables": {
@@ -547,7 +634,7 @@
 					}
 				},
 				"folder": {
-					"name": "Framework"
+					"name": "_ProcFwk"
 				},
 				"annotations": []
 			},
@@ -558,7 +645,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/BootStrap')]",
+			"name": "[concat(parameters('factoryName'), '/02 Parent')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -614,6 +701,18 @@
 								"dependencyConditions": [
 									"Succeeded"
 								]
+							},
+							{
+								"activity": "Get Tenant Id",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Get Subscription Id",
+								"dependencyConditions": [
+									"Succeeded"
+								]
 							}
 						],
 						"userProperties": [],
@@ -638,7 +737,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"pipeline": {
-											"referenceName": "Executor",
+											"referenceName": "03 Child",
 											"type": "PipelineReference"
 										},
 										"waitOnCompletion": true,
@@ -649,6 +748,14 @@
 											},
 											"ExecutionId": {
 												"value": "@activity('Create New Execution').output.firstRow.ExecutionId",
+												"type": "Expression"
+											},
+											"TenantId": {
+												"value": "@activity('Get Tenant Id').output.firstRow.PropertyValue",
+												"type": "Expression"
+											},
+											"SubscriptionId": {
+												"value": "@activity('Get Subscription Id').output.firstRow.PropertyValue",
 												"type": "Expression"
 											}
 										}
@@ -744,21 +851,84 @@
 							"referenceName": "SupportDatabase",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "Get Tenant Id",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[procfwk].[GetPropertyValue]",
+								"storedProcedureParameters": {
+									"PropertyName": {
+										"type": "String",
+										"value": "TenantId"
+									}
+								},
+								"queryTimeout": "02:00:00"
+							},
+							"dataset": {
+								"referenceName": "GetSetMetadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": true
+						}
+					},
+					{
+						"name": "Get Subscription Id",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": true
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[procfwk].[GetPropertyValue]",
+								"storedProcedureParameters": {
+									"PropertyName": {
+										"type": "String",
+										"value": "SubscriptionId"
+									}
+								},
+								"queryTimeout": "02:00:00"
+							},
+							"dataset": {
+								"referenceName": "GetSetMetadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
 					}
 				],
 				"folder": {
-					"name": "Framework"
+					"name": "_ProcFwk"
 				},
 				"annotations": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
 				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]",
-				"[concat(variables('factoryId'), '/pipelines/Executor')]"
+				"[concat(variables('factoryId'), '/pipelines/03 Child')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Grandparent')]",
+			"name": "[concat(parameters('factoryName'), '/01 Grandparent')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -770,7 +940,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "BootStrap",
+								"referenceName": "02 Parent",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -778,10 +948,13 @@
 						}
 					}
 				],
+				"folder": {
+					"name": "_ProcFwk"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/BootStrap')]"
+				"[concat(variables('factoryId'), '/pipelines/02 Parent')]"
 			]
 		}
 	]
