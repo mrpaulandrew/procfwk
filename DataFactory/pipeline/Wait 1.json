@@ -12,6 +12,12 @@
 				}
 			}
 		],
+		"parameters": {
+			"WaitTime": {
+				"type": "int",
+				"defaultValue": 5
+			}
+		},
 		"folder": {
 			"name": "Process Pipelines"
 		},
