@@ -88,7 +88,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
-									"referenceName": "Executor",
+									"referenceName": "03 Child",
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true,

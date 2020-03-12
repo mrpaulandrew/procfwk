@@ -9,7 +9,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "BootStrap",
+						"referenceName": "02 Parent",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
