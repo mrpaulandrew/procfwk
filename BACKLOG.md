@@ -22,5 +22,6 @@
 | 14 |Update the Staging and Pipeline tables to use none sequential numbers for ID’s meaning adhoc stages could later be injected. Eg. 10, 20, 30.  | New |  |
 | 15 |Refactor the stored procedures that update the current execution table in a single multi status version.  | New |  |
 | 16 |Create a script to pre-populate the stages and pipelines metadata tables.  | New |  |
-| 17 | Refactor the Function connectivity client into an Internal Class. | New |  |
+| 17 |Refactor the Function connectivity client into an Internal Class. | New |  |
+| 18 |Add data type handling to the pipeline parameters table.  | New |  |
 | x |  | New |  |

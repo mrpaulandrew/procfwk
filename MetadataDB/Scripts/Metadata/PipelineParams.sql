@@ -5,6 +5,14 @@
 	[ParameterValue]
 	) 
 VALUES 
-	(5, 'TestParam1', 'Frank'),
-	(5, N'TestParam2', N'Bob')
+	(1, 'WaitTime', '3'),
+	(2, 'WaitTime', '6'),
+	(3, 'WaitTime', '9'),
+	(4, 'WaitTime', '5'),
+	(5, 'WaitTime', '2'),
+	(6, 'WaitTime', '3'),
+	(7, 'WaitTime', '5'),
+	(8, 'WaitTime', '7'),
+	(9, 'WaitTime', '3'),
+	(10, 'WaitTime', '10')
 	;
