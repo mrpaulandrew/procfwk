@@ -1,5 +1,5 @@
 {
-	"name": "Grandparent",
+	"name": "01 Grandparent",
 	"properties": {
 		"activities": [
 			{
@@ -9,13 +9,16 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "BootStrap",
+						"referenceName": "02 Parent",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
 				}
 			}
 		],
+		"folder": {
+			"name": "_ProcFwk"
+		},
 		"annotations": []
 	}
 }

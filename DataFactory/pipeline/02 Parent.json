@@ -1,5 +1,5 @@
 {
-	"name": "BootStrap",
+	"name": "02 Parent",
 	"properties": {
 		"activities": [
 			{
@@ -88,7 +88,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
-									"referenceName": "Executor",
+									"referenceName": "03 Child",
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true,
@@ -265,7 +265,7 @@
 			}
 		],
 		"folder": {
-			"name": "Framework"
+			"name": "_ProcFwk"
 		},
 		"annotations": []
 	}

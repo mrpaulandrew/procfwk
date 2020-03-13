@@ -1,5 +1,5 @@
 {
-	"name": "Executor",
+	"name": "03 Child",
 	"properties": {
 		"activities": [
 			{
@@ -338,7 +338,7 @@
 			}
 		},
 		"folder": {
-			"name": "Framework"
+			"name": "_ProcFwk"
 		},
 		"annotations": []
 	}
