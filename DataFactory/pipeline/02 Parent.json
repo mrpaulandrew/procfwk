@@ -7,7 +7,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Create New Execution",
+						"activity": "Execution Wrapper",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -152,7 +152,7 @@
 				}
 			},
 			{
-				"name": "Create New Execution",
+				"name": "Execution Wrapper",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -166,7 +166,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[procfwk].[CreateNewExecution]",
+						"sqlReaderStoredProcedureName": "[procfwk].[ExecutionWrapper]",
 						"queryTimeout": "02:00:00"
 					},
 					"dataset": {
