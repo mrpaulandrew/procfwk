@@ -364,7 +364,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[procfwk].[CheckForBlockedPipelinesInStage]",
+					"storedProcedureName": "[procfwk].[CheckForBlockedPipelines]",
 					"storedProcedureParameters": {
 						"StageId": {
 							"value": {
