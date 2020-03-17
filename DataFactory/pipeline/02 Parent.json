@@ -29,7 +29,7 @@
 							"ExecutionId": {
 								"type": "Guid",
 								"value": {
-									"value": "@activity('Create New Execution').output.firstRow.ExecutionId",
+									"value": "@activity('Execution Wrapper').output.firstRow.ExecutionId",
 									"type": "Expression"
 								}
 							}
