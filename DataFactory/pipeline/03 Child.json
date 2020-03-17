@@ -270,6 +270,13 @@
 															},
 															"type": "Int32"
 														},
+														"RunId": {
+															"value": {
+																"value": "@activity('Execute Pipeline').output.RunIdUsed",
+																"type": "Expression"
+															},
+															"type": "Guid"
+														},
 														"StageId": {
 															"value": {
 																"value": "@pipeline().parameters.StageId",
