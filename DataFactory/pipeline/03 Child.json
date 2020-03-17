@@ -382,6 +382,7 @@
 			},
 			{
 				"name": "Stopped",
+				"description": "Placeholder. Add error handler path here.",
 				"type": "Wait",
 				"dependsOn": [
 					{
