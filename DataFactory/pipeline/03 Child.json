@@ -175,106 +175,6 @@
 							}
 						},
 						{
-							"name": "Log Pipeline Success",
-							"type": "SqlServerStoredProcedure",
-							"dependsOn": [
-								{
-									"activity": "Execute Pipeline",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"timeout": "7.00:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"storedProcedureName": "[procfwk].[SetLogPipelineSuccess]",
-								"storedProcedureParameters": {
-									"ExecutionId": {
-										"value": {
-											"value": "@pipeline().parameters.ExecutionId",
-											"type": "Expression"
-										},
-										"type": "Guid"
-									},
-									"PipelineId": {
-										"value": {
-											"value": "@item().PipelineId",
-											"type": "Expression"
-										},
-										"type": "Int32"
-									},
-									"StageId": {
-										"value": {
-											"value": "@pipeline().parameters.StageId",
-											"type": "Expression"
-										},
-										"type": "Int32"
-									}
-								}
-							},
-							"linkedServiceName": {
-								"referenceName": "SupportDatabase",
-								"type": "LinkedServiceReference"
-							}
-						},
-						{
-							"name": "Log Pipeline Failure",
-							"type": "SqlServerStoredProcedure",
-							"dependsOn": [
-								{
-									"activity": "Execute Pipeline",
-									"dependencyConditions": [
-										"Failed"
-									]
-								}
-							],
-							"policy": {
-								"timeout": "7.00:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"storedProcedureName": "[procfwk].[SetLogPipelineFailed]",
-								"storedProcedureParameters": {
-									"ExecutionId": {
-										"value": {
-											"value": "@pipeline().parameters.ExecutionId",
-											"type": "Expression"
-										},
-										"type": "Guid"
-									},
-									"PipelineId": {
-										"value": {
-											"value": "@item().PipelineId",
-											"type": "Expression"
-										},
-										"type": "Int32"
-									},
-									"StageId": {
-										"value": {
-											"value": "@pipeline().parameters.StageId",
-											"type": "Expression"
-										},
-										"type": "Int32"
-									}
-								}
-							},
-							"linkedServiceName": {
-								"referenceName": "SupportDatabase",
-								"type": "LinkedServiceReference"
-							}
-						},
-						{
 							"name": "Get SPN Details",
 							"type": "Lookup",
 							"dependsOn": [],
@@ -312,6 +212,134 @@
 									"referenceName": "GetSetMetadata",
 									"type": "DatasetReference"
 								}
+							}
+						},
+						{
+							"name": "Handle Function Output",
+							"type": "Switch",
+							"dependsOn": [
+								{
+									"activity": "Execute Pipeline",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"on": {
+									"value": "@activity('Execute Pipeline').output.Status",
+									"type": "Expression"
+								},
+								"cases": [
+									{
+										"value": "Failed",
+										"activities": [
+											{
+												"name": "Log Pipeline Failure",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[procfwk].[SetLogPipelineFailed]",
+													"storedProcedureParameters": {
+														"ExecutionId": {
+															"value": {
+																"value": "@pipeline().parameters.ExecutionId",
+																"type": "Expression"
+															},
+															"type": "Guid"
+														},
+														"PipelineId": {
+															"value": {
+																"value": "@item().PipelineId",
+																"type": "Expression"
+															},
+															"type": "Int32"
+														},
+														"StageId": {
+															"value": {
+																"value": "@pipeline().parameters.StageId",
+																"type": "Expression"
+															},
+															"type": "Int32"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "SupportDatabase",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									},
+									{
+										"value": "Succeeded",
+										"activities": [
+											{
+												"name": "Log Pipeline Success",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[procfwk].[SetLogPipelineSuccess]",
+													"storedProcedureParameters": {
+														"ExecutionId": {
+															"value": {
+																"value": "@pipeline().parameters.ExecutionId",
+																"type": "Expression"
+															},
+															"type": "Guid"
+														},
+														"PipelineId": {
+															"value": {
+																"value": "@item().PipelineId\n",
+																"type": "Expression"
+															},
+															"type": "Int32"
+														},
+														"StageId": {
+															"value": {
+																"value": "@pipeline().parameters.StageId",
+																"type": "Expression"
+															},
+															"type": "Int32"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "SupportDatabase",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									}
+								],
+								"defaultActivities": [
+									{
+										"name": "Wait1",
+										"type": "Wait",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"waitTimeInSeconds": 1
+										}
+									}
+								]
 							}
 						}
 					]
