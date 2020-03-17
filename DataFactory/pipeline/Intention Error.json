@@ -23,6 +23,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "Process Pipelines"
+		},
 		"annotations": []
 	}
 }
