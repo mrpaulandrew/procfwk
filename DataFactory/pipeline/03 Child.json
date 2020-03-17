@@ -45,6 +45,12 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
+					},
+					{
+						"activity": "Check For Blockers",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
 				"userProperties": [],
@@ -343,6 +349,51 @@
 							}
 						}
 					]
+				}
+			},
+			{
+				"name": "Check For Blockers",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[procfwk].[CheckForBlockedPipelinesInStage]",
+					"storedProcedureParameters": {
+						"StageId": {
+							"value": {
+								"value": "@pipeline().parameters.StageId",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "SupportDatabase",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Stopped",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "Check For Blockers",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
 				}
 			}
 		],
