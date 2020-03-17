@@ -6,7 +6,7 @@
 
 | Item | Detail | Status | Version |
 |:----:|--------------|--------|--------|
-| 1 |Restartability for a failed pipeline executions. | New |  |
+| 1 |Restartability for a failed pipeline executions. | In Progress |  |
 | 2 |Stored procedure defensive checking of values passed vs metadata.  | New |  |
 | 3 |Performance views for the long term log table. Eg. Average pipeline duration.  | New |  |
 | 4 |Add database view for the last execution run using the log table.  | New |  |
