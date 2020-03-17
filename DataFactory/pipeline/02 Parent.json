@@ -176,7 +176,7 @@
 				}
 			},
 			{
-				"name": "Update Execution Log",
+				"name": "Archive Execution Log",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
