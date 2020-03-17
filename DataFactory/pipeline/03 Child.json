@@ -344,12 +344,46 @@
 								],
 								"defaultActivities": [
 									{
-										"name": "Wait1",
-										"type": "Wait",
+										"name": "Log Pipeline Unknown",
+										"type": "SqlServerStoredProcedure",
 										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
 										"userProperties": [],
 										"typeProperties": {
-											"waitTimeInSeconds": 1
+											"storedProcedureName": "[procfwk].[SetLogPipelineUnknown]",
+											"storedProcedureParameters": {
+												"ExecutionId": {
+													"value": {
+														"value": "@pipeline().parameters.ExecutionId",
+														"type": "Expression"
+													},
+													"type": "Guid"
+												},
+												"PipelineId": {
+													"value": {
+														"value": "@item().PipelineId",
+														"type": "Expression"
+													},
+													"type": "Int32"
+												},
+												"StageId": {
+													"value": {
+														"value": "@pipeline().parameters.StageId",
+														"type": "Expression"
+													},
+													"type": "Int32"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "SupportDatabase",
+											"type": "LinkedServiceReference"
 										}
 									}
 								]
