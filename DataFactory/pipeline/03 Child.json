@@ -353,6 +353,7 @@
 			},
 			{
 				"name": "Check For Blockers",
+				"description": "Double check to stop execution.",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [],
 				"policy": {
@@ -378,23 +379,6 @@
 				"linkedServiceName": {
 					"referenceName": "SupportDatabase",
 					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "Stopped",
-				"description": "Placeholder. Add error handler path here.",
-				"type": "Wait",
-				"dependsOn": [
-					{
-						"activity": "Check For Blockers",
-						"dependencyConditions": [
-							"Failed"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"waitTimeInSeconds": 1
 				}
 			}
 		],
