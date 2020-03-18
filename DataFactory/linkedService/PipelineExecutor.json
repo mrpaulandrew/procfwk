@@ -1,7 +1,9 @@
 {
 	"name": "PipelineExecutor",
 	"properties": {
-		"annotations": [],
+		"annotations": [
+			"ADF.procfwk"
+		],
 		"type": "AzureFunction",
 		"typeProperties": {
 			"functionAppUrl": "https://pipelineexecutor.azurewebsites.net",
