@@ -11,4 +11,18 @@
     [IsBlocked] [bit] NOT NULL DEFAULT 0,
     CONSTRAINT [PK_CurrentExecution] PRIMARY KEY CLUSTERED ([LocalExecutionId] ASC, [StageId] ASC, [PipelineId] ASC)
 );
+GO
 
+CREATE NONCLUSTERED INDEX [IDX_GetPipelinesInStage] ON [procfwk].[CurrentExecution]
+    (
+    [StageId],
+    [PipelineStatus]
+    )
+INCLUDE
+    (
+    [PipelineId],
+    [PipelineName],
+    [DataFactoryName],
+    [ResourceGroupName]
+    )
+GO
