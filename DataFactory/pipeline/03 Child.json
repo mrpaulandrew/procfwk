@@ -5,6 +5,7 @@
 		"activities": [
 			{
 				"name": "Get Pipelines",
+				"description": "Returns all pipelines from the metadata to be executed within a given processing stage.",
 				"type": "Lookup",
 				"dependsOn": [
 					{
