@@ -274,6 +274,10 @@
 		"folder": {
 			"name": "_ProcFwk"
 		},
-		"annotations": []
+		"annotations": [
+			"ADF.procfwk",
+			"Level 1 - Stage Execution",
+			"Parent"
+		]
 	}
 }
