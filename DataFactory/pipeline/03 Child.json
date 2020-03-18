@@ -47,6 +47,7 @@
 			},
 			{
 				"name": "Execute Pipelines",
+				"description": "Second level ForEach to run in parallel all pipelines within the stage. Items for iteration passed from the Get Pipelines lookup activity.",
 				"type": "ForEach",
 				"dependsOn": [
 					{
