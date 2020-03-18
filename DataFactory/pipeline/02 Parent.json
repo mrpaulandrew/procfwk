@@ -5,6 +5,7 @@
 		"activities": [
 			{
 				"name": "Get Stages",
+				"description": "Returns a distinct list of execution stages within the framework metadata.",
 				"type": "Lookup",
 				"dependsOn": [
 					{
@@ -206,6 +207,7 @@
 			},
 			{
 				"name": "Get Tenant Id",
+				"description": "Returning the Azure Tenant Id from the metadata properties table.",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -237,6 +239,7 @@
 			},
 			{
 				"name": "Get Subscription Id",
+				"description": "Returning the Azure Subscription Id from the metadata properties table.",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
