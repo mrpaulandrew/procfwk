@@ -66,6 +66,7 @@
 					"activities": [
 						{
 							"name": "Execute Pipeline",
+							"description": "The lowest level executor with the metadata framework to call existing processing pipelines within Data Factory. The function called will block processing and wait for an outcome.",
 							"type": "AzureFunctionActivity",
 							"dependsOn": [
 								{
@@ -110,6 +111,7 @@
 						},
 						{
 							"name": "Get Pipeline Params",
+							"description": "Returns any parameters from metadata required for the processing pipeline being called. The output can be an empty string if no parameters are required.",
 							"type": "Lookup",
 							"dependsOn": [],
 							"policy": {
@@ -143,6 +145,7 @@
 						},
 						{
 							"name": "Log Pipeline Running",
+							"description": "Sets the current pipeline with a status of running within the current execution database table.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
 							"policy": {
@@ -186,6 +189,7 @@
 						},
 						{
 							"name": "Get SPN Details",
+							"description": "Return the SPN ID and Secret for the processing pipeline being executed. Called at this level as each pipeline can have a different SPN.",
 							"type": "Lookup",
 							"dependsOn": [],
 							"policy": {
@@ -226,6 +230,7 @@
 						},
 						{
 							"name": "Handle Function Output",
+							"description": "Receives the outcome from the function execution for a given processing pipeline and updates the current execution table with different pipelines status values depending on the result (case).",
 							"type": "Switch",
 							"dependsOn": [
 								{
