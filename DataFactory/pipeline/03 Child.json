@@ -447,6 +447,8 @@
 		"folder": {
 			"name": "_ProcFwk"
 		},
-		"annotations": []
+		"annotations": [
+			"ADF.procfwk"
+		]
 	}
 }
