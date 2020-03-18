@@ -154,6 +154,7 @@
 			},
 			{
 				"name": "Execution Wrapper",
+				"description": "Wrapper to reset and restart processing or create a completely new execution instance of the framework metadata.",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
