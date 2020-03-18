@@ -396,7 +396,7 @@
 			},
 			{
 				"name": "Check For Blockers",
-				"description": "Double check to stop execution.",
+				"description": "Used to double check and stop the next execution stage if failures and blockers have be incurred. Without this step processing would continue regardless of upstream failures.",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [],
 				"policy": {
