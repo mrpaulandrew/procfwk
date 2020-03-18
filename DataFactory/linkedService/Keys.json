@@ -1,7 +1,9 @@
 {
 	"name": "Keys",
 	"properties": {
-		"annotations": [],
+		"annotations": [
+			"ADF.procfwk"
+		],
 		"type": "AzureKeyVault",
 		"typeProperties": {
 			"baseUrl": "https://FrameworkKeys.vault.azure.net/"
