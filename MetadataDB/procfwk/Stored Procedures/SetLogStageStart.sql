@@ -18,5 +18,6 @@ BEGIN
 	WHERE
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId
+		AND [StartDateTime] IS NULL
 
 END

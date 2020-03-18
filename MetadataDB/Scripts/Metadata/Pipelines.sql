@@ -11,6 +11,7 @@ VALUES
 	(1,1,'Wait 3', 1),
 	(1,1,'Wait 4', 1),
 	(1,2,'Wait 5', 1),
+	(1,2,'Intention Error', 1),
 	(1,2,'Wait 6', 1),
 	(1,2,'Wait 7', 1),
 	(1,2,'Wait 8', 1),

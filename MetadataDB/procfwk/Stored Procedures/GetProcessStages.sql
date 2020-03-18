@@ -14,6 +14,7 @@ BEGIN
 		[procfwk].[CurrentExecution]
 	WHERE
 		[LocalExecutionId] = @ExecutionId
+		AND ISNULL([PipelineStatus],'') <> 'Success'
 	ORDER BY 
 		[StageId] ASC
 

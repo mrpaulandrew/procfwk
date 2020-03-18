@@ -67,6 +67,7 @@
     <Folder Include="procfwk\Views" />
     <Folder Include="dbo" />
     <Folder Include="dbo\Tables" />
+    <Folder Include="dbo\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="procfwk\Tables\PipelineProcesses.sql" />
@@ -95,6 +96,12 @@
     <Build Include="procfwk\Stored Procedures\DeleteServicePrincipal.sql" />
     <Build Include="procfwk\Stored Procedures\AddServicePrincipal.sql" />
     <Build Include="Security\adf_procfwkuser.sql" />
+    <Build Include="dbo\Stored Procedures\FailProcedure.sql" />
+    <Build Include="procfwk\Stored Procedures\ResetExecution.sql" />
+    <Build Include="procfwk\Stored Procedures\ExecutionWrapper.sql" />
+    <Build Include="procfwk\Stored Procedures\CheckForBlockedPipelines.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogPipelineUnknown.sql" />
+    <Build Include="procfwk\Views\LastExecution.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
