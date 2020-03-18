@@ -275,9 +275,7 @@
 			"name": "_ProcFwk"
 		},
 		"annotations": [
-			"ADF.procfwk",
-			"Execute Stages",
-			"Parent"
+			"ADF.procfwk"
 		]
 	}
 }
