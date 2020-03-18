@@ -79,6 +79,7 @@
 					"activities": [
 						{
 							"name": "Stage Executor",
+							"description": "Call to the framework generic child pipeline for a given execution stage.",
 							"type": "ExecutePipeline",
 							"dependsOn": [
 								{
@@ -117,6 +118,7 @@
 						},
 						{
 							"name": "Log Stage Start",
+							"description": "Update the current execution table flagging all pipelines within the stage as started.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
 							"policy": {
