@@ -1,7 +1,9 @@
 {
 	"name": "SupportDatabase",
 	"properties": {
-		"annotations": [],
+		"annotations": [
+			"ADF.procfwk"
+		],
 		"type": "AzureSqlDatabase",
 		"typeProperties": {
 			"connectionString": {
