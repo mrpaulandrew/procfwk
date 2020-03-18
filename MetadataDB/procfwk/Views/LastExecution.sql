@@ -1,4 +1,4 @@
-﻿CREATE OR ALTER VIEW [procfwk].[LastExecution]
+﻿CREATE VIEW [procfwk].[LastExecution]
 AS
 
 WITH maxLog AS
