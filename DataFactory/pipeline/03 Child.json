@@ -252,6 +252,7 @@
 										"activities": [
 											{
 												"name": "Log Pipeline Failure",
+												"description": "Updates the current execution table with a pipeline status of failed if the function outcome is failed. Also blocks pipelines in the downstream execution stage.",
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
@@ -307,6 +308,7 @@
 										"activities": [
 											{
 												"name": "Log Pipeline Success",
+												"description": "Updates the current execution table with a pipeline status of success if the function outcome is succeeded.",
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
@@ -354,6 +356,7 @@
 								"defaultActivities": [
 									{
 										"name": "Log Pipeline Unknown",
+										"description": "Updates the current execution table with a pipeline status of unknown if the function returns an unexpected outcome.",
 										"type": "SqlServerStoredProcedure",
 										"dependsOn": [],
 										"policy": {
