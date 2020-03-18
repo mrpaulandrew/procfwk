@@ -8,13 +8,10 @@ AS
 
 BEGIN
 	
-	DECLARE @StageStart DATETIME = GETDATE()
-
 	UPDATE
 		[procfwk].[CurrentExecution]
 	SET
-		[StartDateTime] = @StageStart,
-		[PipelineStatus] = 'Started'
+		[PipelineStatus] = 'Preparing'
 	WHERE
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId

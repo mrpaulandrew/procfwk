@@ -8,10 +8,11 @@ CREATE   PROCEDURE procfwk.SetLogPipelineRunning
 AS
 
 BEGIN
-
+	
 	UPDATE
 		[procfwk].[CurrentExecution]
 	SET
+		[StartDateTime] = GETDATE(),
 		[PipelineStatus] = 'Running'
 	WHERE
 		[LocalExecutionId] = @ExecutionId
