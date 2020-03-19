@@ -83,7 +83,7 @@
 							"type": "ExecutePipeline",
 							"dependsOn": [
 								{
-									"activity": "Log Stage Start",
+									"activity": "Log Stage Preparing",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -117,8 +117,8 @@
 							}
 						},
 						{
-							"name": "Log Stage Start",
-							"description": "Update the current execution table flagging all pipelines within the stage as started.",
+							"name": "Log Stage Preparing",
+							"description": "Update the current execution table flagging all pipelines within the stage as preparing.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
 							"policy": {
@@ -130,7 +130,7 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"storedProcedureName": "[procfwk].[SetLogStageStart]",
+								"storedProcedureName": "[procfwk].[SetLogStagePreparing]",
 								"storedProcedureParameters": {
 									"ExecutionId": {
 										"value": {
