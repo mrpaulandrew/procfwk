@@ -79,7 +79,7 @@
     <Build Include="procfwk\Stored Procedures\GetPipelinesInStage.sql" />
     <Build Include="procfwk\Stored Procedures\GetPipelineParameters.sql" />
     <Build Include="procfwk\Stored Procedures\CreateNewExecution.sql" />
-    <Build Include="procfwk\Stored Procedures\SetLogStageStart.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogStagePreparing.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineRunning.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineSuccess.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineFailed.sql" />

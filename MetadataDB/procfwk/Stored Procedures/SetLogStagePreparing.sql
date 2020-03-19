@@ -1,5 +1,5 @@
 ﻿
-CREATE   PROCEDURE procfwk.SetLogStageStart
+CREATE   PROCEDURE [procfwk].[SetLogStagePreparing]
 	(
 	@ExecutionId UNIQUEIDENTIFIER,
 	@StageId INT
