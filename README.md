@@ -11,8 +11,8 @@ This repository contains all the required Azure content to create a metadata dri
 |Paul Andrew |[@mrpaulandrew](https://twitter.com/mrpaulandrew)<br/>[paul@mrpaulandrew.com](mailto:paul@mrpaulandrew.com)<br/>[https://mrpaulandrew.tech](https://mrpaulandrew.tech)|
 | | |
 
-## Backlog
-[Go to backlog...](../master/BACKLOG.md)
+## Development Backlog
+[Go to GitHub Kanban board...](https://github.com/mrpaulandrew/ADF.procfwk/projects/1)
 
 ## Resources and Content
 
