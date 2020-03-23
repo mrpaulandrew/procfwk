@@ -402,7 +402,7 @@
 							}
 						},
 						{
-							"name": "Log Failure",
+							"name": "Log Activity Failure",
 							"description": "Handle true failures from calling out to the Azure Function and update the current execution table accordingly so a restart can occur.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
@@ -422,7 +422,7 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"storedProcedureName": "[procfwk].[SetLogPipelineFailed]",
+								"storedProcedureName": "[procfwk].[SetLogActivityFailed]",
 								"storedProcedureParameters": {
 									"ExecutionId": {
 										"value": {
