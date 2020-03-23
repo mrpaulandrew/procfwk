@@ -1,7 +1,37 @@
-﻿CREATE   PROCEDURE [procfwk].[ResetExecution]
+﻿CREATE PROCEDURE [procfwk].[ResetExecution]
 AS
 
 BEGIN 
+	
+	--capture any pipelines that may have been cancelled
+	INSERT INTO [procfwk].[ExecutionLog]
+		(
+		[LocalExecutionId],
+		[StageId],
+		[PipelineId],
+		[PipelineName],
+		[StartDateTime],
+		[PipelineStatus],
+		[EndDateTime]
+		)
+	SELECT
+		[LocalExecutionId],
+		[StageId],
+		[PipelineId],
+		[PipelineName],
+		[StartDateTime],
+		'Cancelled', --assumption that this is what happened
+		[EndDateTime]
+	FROM
+		[procfwk].[CurrentExecution]
+	WHERE
+		--these are predicted states so aren't considered cancellations
+		[PipelineStatus] NOT IN
+			(
+			'Success',
+			'Failed',
+			'Blocked'
+			)
 		
 	--reset status ready for next attempt
 	UPDATE
@@ -11,7 +41,7 @@ BEGIN
 		[PipelineStatus] = NULL,
 		[IsBlocked] = 0
 	WHERE
-		[PipelineStatus] = 'Failed'
+		ISNULL([PipelineStatus],'') <> 'Success'
 		OR [IsBlocked] = 1
 	
 	--return current execution id

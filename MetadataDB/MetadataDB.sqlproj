@@ -102,6 +102,7 @@
     <Build Include="procfwk\Stored Procedures\CheckForBlockedPipelines.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineUnknown.sql" />
     <Build Include="procfwk\Views\LastExecution.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogActivityFailed.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

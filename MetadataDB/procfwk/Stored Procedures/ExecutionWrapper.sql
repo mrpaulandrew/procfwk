@@ -1,4 +1,4 @@
-﻿CREATE   PROCEDURE [procfwk].[ExecutionWrapper]
+﻿CREATE PROCEDURE [procfwk].[ExecutionWrapper]
 AS
 
 SET NOCOUNT ON;
@@ -18,7 +18,7 @@ BEGIN
 	--reset and restart execution
 	IF EXISTS
 		(
-		SELECT * FROM [procfwk].[CurrentExecution] WHERE [IsBlocked] = 1
+		SELECT * FROM [procfwk].[CurrentExecution] WHERE ISNULL([PipelineStatus],'') <> 'Success'
 		) 
 		AND @RestartStatus = 0
 		BEGIN

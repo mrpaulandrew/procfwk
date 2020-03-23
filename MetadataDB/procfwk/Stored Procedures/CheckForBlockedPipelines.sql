@@ -18,16 +18,7 @@ BEGIN
 			[StageId] = @StageId
 			AND [IsBlocked] = 1
 		)
-		BEGIN
-			--reset started status for next stage
-			UPDATE
-				[procfwk].[CurrentExecution]
-			SET
-				[PipelineStatus] = 'Blocked'
-			WHERE 
-				[StageId] = @StageId
-				AND [IsBlocked] = 1
-			
+		BEGIN		
 			RAISERROR('Pipelines are blocked. Stopping processing.',16,1);
 			RETURN;
 		END
