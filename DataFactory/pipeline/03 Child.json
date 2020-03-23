@@ -236,7 +236,7 @@
 								{
 									"activity": "Execute Pipeline",
 									"dependencyConditions": [
-										"Completed"
+										"Succeeded"
 									]
 								}
 							],
@@ -399,6 +399,64 @@
 										}
 									}
 								]
+							}
+						},
+						{
+							"name": "Log Failure",
+							"description": "Handle true failures from calling out to the Azure Function and update the current execution table accordingly so a restart can occur.",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Execute Pipeline",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[procfwk].[SetLogPipelineFailed]",
+								"storedProcedureParameters": {
+									"ExecutionId": {
+										"value": {
+											"value": "@pipeline().parameters.ExecutionId",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									},
+									"PipelineId": {
+										"value": {
+											"value": "@item().PipelineId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"RunId": {
+										"value": {
+											"value": "@pipeline().RunId",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									},
+									"StageId": {
+										"value": {
+											"value": "@pipeline().parameters.StageId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "SupportDatabase",
+								"type": "LinkedServiceReference"
 							}
 						}
 					]
