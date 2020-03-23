@@ -120,7 +120,14 @@
 							"name": "Log Stage Preparing",
 							"description": "Update the current execution table flagging all pipelines within the stage as preparing.",
 							"type": "SqlServerStoredProcedure",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "Check for Blockers",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "7.00:00:00",
 								"retry": 0,
@@ -139,6 +146,36 @@
 										},
 										"type": "Guid"
 									},
+									"StageId": {
+										"value": {
+											"value": "@item().StageId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "SupportDatabase",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Check for Blockers",
+							"description": "Used to double check and stop the next execution stage if failures and blockers have be incurred. Without this step processing would continue regardless of upstream failures.",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[procfwk].[CheckForBlockedPipelines]",
+								"storedProcedureParameters": {
 									"StageId": {
 										"value": {
 											"value": "@item().StageId",
