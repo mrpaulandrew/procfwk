@@ -26,7 +26,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[procfwk].[GetProcessStages]",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetStages]",
 						"storedProcedureParameters": {
 							"ExecutionId": {
 								"type": "Guid",
