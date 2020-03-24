@@ -75,7 +75,7 @@
     <Build Include="procfwk\Tables\CurrentExecution.sql" />
     <Build Include="procfwk\Tables\ExecutionLog.sql" />
     <Build Include="procfwk\Tables\ProcessingStageDetails.sql" />
-    <Build Include="procfwk\Stored Procedures\GetProcessStages.sql" />
+    <Build Include="procfwk\Stored Procedures\GetStages.sql" />
     <Build Include="procfwk\Stored Procedures\GetPipelinesInStage.sql" />
     <Build Include="procfwk\Stored Procedures\GetPipelineParameters.sql" />
     <Build Include="procfwk\Stored Procedures\CreateNewExecution.sql" />

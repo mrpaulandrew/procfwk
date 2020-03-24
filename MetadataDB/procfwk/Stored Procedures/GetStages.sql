@@ -1,4 +1,4 @@
-﻿CREATE   PROCEDURE [procfwk].[GetProcessStages]
+﻿CREATE   PROCEDURE [procfwk].[GetStages]
 	(
 	@ExecutionId UNIQUEIDENTIFIER
 	)
