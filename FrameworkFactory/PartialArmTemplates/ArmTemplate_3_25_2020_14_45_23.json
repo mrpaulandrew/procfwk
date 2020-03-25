@@ -6,50 +6,12 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "FrameworkFactory"
-		},
-		"Keys_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://FrameworkKeys.vault.azure.net/"
-		},
-		"SupportDatabase_properties_typeProperties_connectionString_secretName": {
-			"type": "string",
-			"defaultValue": "SupportDatabaseConnectionString"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/01 Grandparent')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Framework Processing",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "02 Parent",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					}
-				],
-				"folder": {
-					"name": "_ProcFwk"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/02 Parent')]"
-			]
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/02 Parent')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -94,8 +56,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -269,8 +230,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						}
 					},
@@ -329,8 +289,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": true
 						}
@@ -362,8 +321,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						}
 					}
@@ -418,8 +376,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -478,7 +435,6 @@
 									"typeProperties": {
 										"functionName": "ExecutePipeline",
 										"method": "POST",
-										"headers": {},
 										"body": {
 											"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"',activity('Get SPN Details').output.firstRow.Id,'\",\n\t\"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.Secret,'\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"',item().ResourceGroupName,'\",\n\t\"factoryName\": \"',item().DataFactoryName,'\",\n\t\"pipelineName\": \"',item().PipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
 											"type": "Expression"
@@ -519,8 +475,7 @@
 										},
 										"dataset": {
 											"referenceName": "GetSetMetadata",
-											"type": "DatasetReference",
-											"parameters": {}
+											"type": "DatasetReference"
 										}
 									}
 								},
@@ -605,8 +560,7 @@
 										},
 										"dataset": {
 											"referenceName": "GetSetMetadata",
-											"type": "DatasetReference",
-											"parameters": {}
+											"type": "DatasetReference"
 										}
 									}
 								},
@@ -1257,8 +1211,7 @@
 					"ADF.procfwk"
 				],
 				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {}
+				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
@@ -1275,7 +1228,7 @@
 				],
 				"type": "AzureKeyVault",
 				"typeProperties": {
-					"baseUrl": "[parameters('Keys_properties_typeProperties_baseUrl')]"
+					"baseUrl": "https://FrameworkKeys.vault.azure.net/"
 				}
 			},
 			"dependsOn": []
@@ -1323,7 +1276,7 @@
 							"referenceName": "Keys",
 							"type": "LinkedServiceReference"
 						},
-						"secretName": "[parameters('SupportDatabase_properties_typeProperties_connectionString_secretName')]"
+						"secretName": "SupportDatabaseConnectionString"
 					}
 				}
 			},
