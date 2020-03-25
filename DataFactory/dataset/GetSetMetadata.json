@@ -5,7 +5,9 @@
 			"referenceName": "SupportDatabase",
 			"type": "LinkedServiceReference"
 		},
-		"annotations": [],
+		"annotations": [
+			"ADF.procfwk"
+		],
 		"type": "AzureSqlTable",
 		"schema": []
 	}

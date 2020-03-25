@@ -1,13 +1,15 @@
 {
 	"name": "02 Parent",
 	"properties": {
+		"description": "ADF.procfwk parent pipeline used to bootstrap the orchestration framework in perform the first level ForEach calls in sequence for the metadata stages.",
 		"activities": [
 			{
 				"name": "Get Stages",
+				"description": "Returns a distinct list of execution stages within the framework metadata.",
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Create New Execution",
+						"activity": "Execution Wrapper",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -24,12 +26,12 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[procfwk].[GetProcessStages]",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetStages]",
 						"storedProcedureParameters": {
 							"ExecutionId": {
 								"type": "Guid",
 								"value": {
-									"value": "@activity('Create New Execution').output.firstRow.ExecutionId",
+									"value": "@activity('Execution Wrapper').output.firstRow.ExecutionId",
 									"type": "Expression"
 								}
 							}
@@ -45,6 +47,7 @@
 			},
 			{
 				"name": "Execute Stages",
+				"description": "Top level ForEach to sequentially call all processing stages within the framework metadata. Items for iteration passed from the Get Stages lookup activity.",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -76,10 +79,11 @@
 					"activities": [
 						{
 							"name": "Stage Executor",
+							"description": "Call to the framework generic child pipeline for a given execution stage.",
 							"type": "ExecutePipeline",
 							"dependsOn": [
 								{
-									"activity": "Log Stage Start",
+									"activity": "Log Stage Preparing",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -98,7 +102,7 @@
 										"type": "Expression"
 									},
 									"ExecutionId": {
-										"value": "@activity('Create New Execution').output.firstRow.ExecutionId",
+										"value": "@activity('Execution Wrapper').output.firstRow.ExecutionId",
 										"type": "Expression"
 									},
 									"TenantId": {
@@ -113,7 +117,52 @@
 							}
 						},
 						{
-							"name": "Log Stage Start",
+							"name": "Log Stage Preparing",
+							"description": "Update the current execution table flagging all pipelines within the stage as preparing.",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Check for Blockers",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[procfwk].[SetLogStagePreparing]",
+								"storedProcedureParameters": {
+									"ExecutionId": {
+										"value": {
+											"value": "@activity('Execution Wrapper').output.firstRow.ExecutionId",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									},
+									"StageId": {
+										"value": {
+											"value": "@item().StageId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "SupportDatabase",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Check for Blockers",
+							"description": "Used to double check and stop the next execution stage if failures and blockers have be incurred. Without this step processing would continue regardless of upstream failures.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
 							"policy": {
@@ -125,15 +174,8 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"storedProcedureName": "[procfwk].[SetLogStageStart]",
+								"storedProcedureName": "[procfwk].[CheckForBlockedPipelines]",
 								"storedProcedureParameters": {
-									"ExecutionId": {
-										"value": {
-											"value": "@activity('Create New Execution').output.firstRow.ExecutionId",
-											"type": "Expression"
-										},
-										"type": "Guid"
-									},
 									"StageId": {
 										"value": {
 											"value": "@item().StageId",
@@ -152,7 +194,8 @@
 				}
 			},
 			{
-				"name": "Create New Execution",
+				"name": "Execution Wrapper",
+				"description": "Wrapper to reset and restart processing or create a completely new execution instance of the framework metadata.",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -166,7 +209,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[procfwk].[CreateNewExecution]",
+						"sqlReaderStoredProcedureName": "[procfwk].[ExecutionWrapper]",
 						"queryTimeout": "02:00:00"
 					},
 					"dataset": {
@@ -176,7 +219,8 @@
 				}
 			},
 			{
-				"name": "Update Execution Log",
+				"name": "Archive Execution Log",
+				"description": "After a successful execution run the current execution metadata is moved to the long term logging table by this stored procedure call.",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
@@ -204,6 +248,7 @@
 			},
 			{
 				"name": "Get Tenant Id",
+				"description": "Returning the Azure Tenant Id from the metadata properties table.",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -235,6 +280,7 @@
 			},
 			{
 				"name": "Get Subscription Id",
+				"description": "Returning the Azure Subscription Id from the metadata properties table.",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -267,6 +313,8 @@
 		"folder": {
 			"name": "_ProcFwk"
 		},
-		"annotations": []
+		"annotations": [
+			"ADF.procfwk"
+		]
 	}
 }

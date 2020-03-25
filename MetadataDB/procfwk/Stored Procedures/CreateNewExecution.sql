@@ -35,6 +35,9 @@ BEGIN
 		p.[Enabled] = 1
 		AND s.[Enabled] = 1
 
+	ALTER INDEX [IDX_GetPipelinesInStage] ON [procfwk].[CurrentExecution]
+	REBUILD;
+
 	SELECT
 		@LocalExecutionId AS 'ExecutionId'
 

@@ -103,7 +103,11 @@ namespace PipelineExecutor
             }
 
             //Final return detail
-            string outputString = "{ \"PipelineName\": \"" + pipelineName + "\", \"RunIdUsed\": \"" + pipelineRun.RunId + "\", \"Status\": \"" + pipelineRun.Status + "\" }";
+            string outputString = "{ \"PipelineName\": \"" + pipelineName +
+                                    "\", \"RunIdUsed\": \"" + pipelineRun.RunId +
+                                    "\", \"Status\": \"" + pipelineRun.Status +
+                                    "\" }";
+
             JObject outputJson = JObject.Parse(outputString);
             return new OkObjectResult(outputJson);
         }

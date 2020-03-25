@@ -1,7 +1,9 @@
 {
 	"name": "SupportDatabase",
 	"properties": {
-		"annotations": [],
+		"annotations": [
+			"ADF.procfwk"
+		],
 		"type": "AzureSqlDatabase",
 		"typeProperties": {
 			"connectionString": {
@@ -12,6 +14,7 @@
 				},
 				"secretName": "SupportDatabaseConnectionString"
 			}
-		}
+		},
+		"description": "Connection between ADF and processing framework metadata SQLDB."
 	}
 }
