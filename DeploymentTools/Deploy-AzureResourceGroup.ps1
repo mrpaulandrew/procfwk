@@ -1,5 +1,33 @@
 #Requires -Version 3.0
 
+## WORKING PROGRESS, TO BE ADDED IN A LATER RELEASE
+
+<#
+Manual deployment steps:
+
+--------------------------------------------------------------------------------------------
+1. Create an Azure Data Factory
+2. Create an Azure SQLDB
+3. Create an Azure Functions App
+4. Create an Azure Key Vault
+--------------------------------------------------------------------------------------------
+5. Grant Data Factory access to Key Vault
+6. Add the Function App default key to Key Vault as a secret
+7. Add a SQLDB connection string to Key Vault as a secret
+--------------------------------------------------------------------------------------------
+8. Publish the SQLDB porject from Visual Studio
+9. Publish the Function App from Visual Studio
+--------------------------------------------------------------------------------------------
+10. Copy the Data Factory pipelines from GitHub repo into your own Data Factory repo.
+11. Refresh Data Factory via the develop UI
+12. Reconnect all Linked Services to Key Vault, Functions and SQLDB
+13. Publish the Data Factory
+--------------------------------------------------------------------------------------------
+14. Run it :-)
+
+#>
+
+<#
 Param(
     [string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
     [string] $ResourceGroupName = 'ProcessingFramework',
@@ -118,3 +146,4 @@ else {
         Write-Output '', 'Template deployment returned the following errors:', @(@($ErrorMessages) | ForEach-Object { $_.Exception.Message.TrimEnd("`r`n") })
     }
 }
+#>
