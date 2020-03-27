@@ -1,5 +1,5 @@
 {
-	"name": "01 Grandparent",
+	"name": "01-Grandparent",
 	"properties": {
 		"activities": [
 			{
@@ -9,7 +9,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "02 Parent",
+						"referenceName": "02-Parent",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true

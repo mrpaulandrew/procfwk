@@ -1,5 +1,5 @@
 {
-	"name": "02 Parent",
+	"name": "02-Parent",
 	"properties": {
 		"description": "ADF.procfwk parent pipeline used to bootstrap the orchestration framework in perform the first level ForEach calls in sequence for the metadata stages.",
 		"activities": [
@@ -92,7 +92,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
-									"referenceName": "03 Child",
+									"referenceName": "03-Child",
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true,
