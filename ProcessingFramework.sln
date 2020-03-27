@@ -32,9 +32,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipeline", "pipeline", "{9C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ProcFwk", "_ProcFwk", "{17586826-8BE9-4622-B12E-1683F2A20352}"
 	ProjectSection(SolutionItems) = preProject
-		DataFactory\pipeline\01 Grandparent.json = DataFactory\pipeline\01 Grandparent.json
-		DataFactory\pipeline\02 Parent.json = DataFactory\pipeline\02 Parent.json
-		DataFactory\pipeline\03 Child.json = DataFactory\pipeline\03 Child.json
+		DataFactory\pipeline\01-Grandparent.json = DataFactory\pipeline\01-Grandparent.json
+		DataFactory\pipeline\02-Parent.json = DataFactory\pipeline\02-Parent.json
+		DataFactory\pipeline\03-Child.json = DataFactory\pipeline\03-Child.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Process", "Process", "{04142829-7936-4C27-9891-FB086BEAE1AD}"
