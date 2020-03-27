@@ -1,6 +1,7 @@
 {
 	"name": "Intention Error",
 	"properties": {
+		"description": "Used just so the ADF.procfwk has something to call during development.",
 		"activities": [
 			{
 				"name": "Call Fail Procedure",
@@ -23,6 +24,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "Process Pipelines"
+		},
 		"annotations": []
 	}
 }

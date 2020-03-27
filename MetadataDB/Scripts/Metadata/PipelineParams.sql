@@ -10,9 +10,9 @@ VALUES
 	(3, 'WaitTime', '9'),
 	(4, 'WaitTime', '5'),
 	(5, 'WaitTime', '2'),
-	(6, 'WaitTime', '3'),
-	(7, 'WaitTime', '5'),
-	(8, 'WaitTime', '7'),
-	(9, 'WaitTime', '3'),
-	(10, 'WaitTime', '10')
+	(7, 'WaitTime', '3'),
+	(8, 'WaitTime', '5'),
+	(9, 'WaitTime', '7'),
+	(10, 'WaitTime', '3'),
+	(11, 'WaitTime', '10')
 	;

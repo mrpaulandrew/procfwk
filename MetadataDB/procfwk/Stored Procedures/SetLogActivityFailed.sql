@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [procfwk].[SetLogPipelineFailed]
+﻿CREATE PROCEDURE [procfwk].[SetLogActivityFailed]
 	(
 	@ExecutionId UNIQUEIDENTIFIER,
 	@StageId INT,
@@ -56,13 +56,5 @@ BEGIN
 		[PipelineStatus] = 'Failed'
 		AND [StageId] = @StageId
 		AND [PipelineId] = @PipelineId
-
-	IF @RunId IS NOT NULL
-		SET @ErrorDetail = 'Pipeline execution failed. Check Run ID: ' + CAST(@RunId AS CHAR(36)) + ' in ADF monitoring for details.'
-	ELSE
-		SET @ErrorDetail = 'Pipeline execution failed. See ADF monitoring for details.'
-
-	RAISERROR(@ErrorDetail,16,1);
-	RETURN;
 
 END

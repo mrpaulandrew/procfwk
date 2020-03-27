@@ -67,6 +67,7 @@
     <Folder Include="procfwk\Views" />
     <Folder Include="dbo" />
     <Folder Include="dbo\Tables" />
+    <Folder Include="dbo\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="procfwk\Tables\PipelineProcesses.sql" />
@@ -74,11 +75,11 @@
     <Build Include="procfwk\Tables\CurrentExecution.sql" />
     <Build Include="procfwk\Tables\ExecutionLog.sql" />
     <Build Include="procfwk\Tables\ProcessingStageDetails.sql" />
-    <Build Include="procfwk\Stored Procedures\GetProcessStages.sql" />
+    <Build Include="procfwk\Stored Procedures\GetStages.sql" />
     <Build Include="procfwk\Stored Procedures\GetPipelinesInStage.sql" />
     <Build Include="procfwk\Stored Procedures\GetPipelineParameters.sql" />
     <Build Include="procfwk\Stored Procedures\CreateNewExecution.sql" />
-    <Build Include="procfwk\Stored Procedures\SetLogStageStart.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogStagePreparing.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineRunning.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineSuccess.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineFailed.sql" />
@@ -95,6 +96,13 @@
     <Build Include="procfwk\Stored Procedures\DeleteServicePrincipal.sql" />
     <Build Include="procfwk\Stored Procedures\AddServicePrincipal.sql" />
     <Build Include="Security\adf_procfwkuser.sql" />
+    <Build Include="dbo\Stored Procedures\FailProcedure.sql" />
+    <Build Include="procfwk\Stored Procedures\ResetExecution.sql" />
+    <Build Include="procfwk\Stored Procedures\ExecutionWrapper.sql" />
+    <Build Include="procfwk\Stored Procedures\CheckForBlockedPipelines.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogPipelineUnknown.sql" />
+    <Build Include="procfwk\Views\LastExecution.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogActivityFailed.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

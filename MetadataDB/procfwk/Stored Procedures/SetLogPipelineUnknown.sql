@@ -1,5 +1,4 @@
-﻿
-CREATE   PROCEDURE procfwk.SetLogPipelineRunning
+﻿CREATE PROCEDURE [procfwk].[SetLogPipelineUnknown]
 	(
 	@ExecutionId UNIQUEIDENTIFIER,
 	@StageId INT,
@@ -8,12 +7,11 @@ CREATE   PROCEDURE procfwk.SetLogPipelineRunning
 AS
 
 BEGIN
-	
+
 	UPDATE
 		[procfwk].[CurrentExecution]
 	SET
-		[StartDateTime] = GETDATE(),
-		[PipelineStatus] = 'Running'
+		[PipelineStatus] = 'Unknown'
 	WHERE
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId

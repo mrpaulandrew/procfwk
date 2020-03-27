@@ -1,4 +1,4 @@
-﻿CREATE   PROCEDURE [procfwk].[GetProcessStages]
+﻿CREATE   PROCEDURE [procfwk].[GetStages]
 	(
 	@ExecutionId UNIQUEIDENTIFIER
 	)
@@ -14,6 +14,7 @@ BEGIN
 		[procfwk].[CurrentExecution]
 	WHERE
 		[LocalExecutionId] = @ExecutionId
+		AND ISNULL([PipelineStatus],'') <> 'Success'
 	ORDER BY 
 		[StageId] ASC
 
