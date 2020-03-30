@@ -1,4 +1,4 @@
-﻿INSERT [procfwk].[PipelineProcesses]
+﻿INSERT [procfwk].[Pipelines]
 	(
 	[DataFactoryId],
 	[StageId],

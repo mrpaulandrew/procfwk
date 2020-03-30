@@ -4,6 +4,6 @@
     [ParameterName]  VARCHAR (128) NOT NULL,
     [ParameterValue] VARCHAR (128) NULL,
     CONSTRAINT [PK_PipelineParameters] PRIMARY KEY CLUSTERED ([ParameterId] ASC),
-    CONSTRAINT [FK_PipelineParameters_PipelineProcesses] FOREIGN KEY ([PipelineId]) REFERENCES [procfwk].[PipelineProcesses] ([PipelineId])
+    CONSTRAINT [FK_PipelineParameters_Pipelines] FOREIGN KEY ([PipelineId]) REFERENCES [procfwk].[Pipelines] ([PipelineId])
 );
 

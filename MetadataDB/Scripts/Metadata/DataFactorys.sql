@@ -1,4 +1,4 @@
-﻿INSERT INTO [procfwk].[DataFactoryDetails]
+﻿INSERT INTO [procfwk].[DataFactorys]
 	(
 	[DataFactoryName],
 	[Description],

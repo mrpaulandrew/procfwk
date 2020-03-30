@@ -30,7 +30,7 @@ BEGIN
 
 	IF NOT EXISTS
 		(
-		SELECT [DataFactoryName] FROM [procfwk].[DataFactoryDetails] WHERE [DataFactoryName] = @DataFactory
+		SELECT [DataFactoryName] FROM [procfwk].[DataFactorys] WHERE [DataFactoryName] = @DataFactory
 		)
 		BEGIN
 			SET @ErrorDetails = 'Invalid Data Factory name. Please ensure the Data Factory metadata exists before trying to add authentication for it.'
@@ -54,9 +54,9 @@ BEGIN
 			*
 		FROM
 			[procfwk].[PipelineAuthLink] AL
-			INNER JOIN [procfwk].[DataFactoryDetails] DF
+			INNER JOIN [procfwk].[DataFactorys] DF
 				ON AL.[DataFactoryId] = DF.[DataFactoryId]
-			INNER JOIN [procfwk].[PipelineProcesses] PP
+			INNER JOIN [procfwk].[Pipelines] PP
 				ON AL.[PipelineId] = PP.[PipelineId]
 		WHERE
 			DF.[DataFactoryName] = @DataFactory
@@ -81,7 +81,7 @@ BEGIN
 		BEGIN
 			IF NOT EXISTS
 				( 
-				SELECT [PipelineName] FROM [procfwk].[PipelineProcesses] WHERE [PipelineName] = @SpecificPipelineName
+				SELECT [PipelineName] FROM [procfwk].[Pipelines] WHERE [PipelineName] = @SpecificPipelineName
 				)
 				BEGIN
 					SET @ErrorDetails = 'Invalid Pipeline name. Please ensure the Pipeline metadata exists before trying to add authentication for it.'
@@ -115,8 +115,8 @@ BEGIN
 					D.[DataFactoryId],
 					@CredentialId
 				FROM
-					[procfwk].[PipelineProcesses] P
-					INNER JOIN [procfwk].[DataFactoryDetails] D
+					[procfwk].[Pipelines] P
+					INNER JOIN [procfwk].[DataFactorys] D
 						ON P.[DataFactoryId] = D.[DataFactoryId]
 				WHERE
 					P.[PipelineName] = @SpecificPipelineName
@@ -151,8 +151,8 @@ BEGIN
 					D.[DataFactoryId],
 					@CredentialId
 				FROM
-					[procfwk].[PipelineProcesses] P
-					INNER JOIN [procfwk].[DataFactoryDetails] D
+					[procfwk].[Pipelines] P
+					INNER JOIN [procfwk].[DataFactorys] D
 						ON P.[DataFactoryId] = D.[DataFactoryId]
 					LEFT OUTER JOIN [procfwk].[PipelineAuthLink] L
 						ON P.[PipelineId] = L.[PipelineId]

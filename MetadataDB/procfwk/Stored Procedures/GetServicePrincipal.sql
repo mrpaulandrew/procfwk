@@ -32,9 +32,9 @@ BEGIN
 			[dbo].[ServicePrincipals] S
 			INNER JOIN  [procfwk].[PipelineAuthLink] L
 				ON S.[CredentialId] = L.[CredentialId]
-			INNER JOIN [procfwk].[PipelineProcesses] P
+			INNER JOIN [procfwk].[Pipelines] P
 				ON L.[PipelineId] = P.[PipelineId]
-			INNER JOIN [procfwk].[DataFactoryDetails] D
+			INNER JOIN [procfwk].[DataFactorys] D
 				ON P.[DataFactoryId] = D.[DataFactoryId]
 					AND L.[DataFactoryId] = D.[DataFactoryId]
 		WHERE
@@ -50,7 +50,7 @@ BEGIN
 			[dbo].[ServicePrincipals] S
 			INNER JOIN  [procfwk].[PipelineAuthLink] L
 				ON S.[CredentialId] = L.[CredentialId]
-			INNER JOIN [procfwk].[DataFactoryDetails] D
+			INNER JOIN [procfwk].[DataFactorys] D
 				ON L.[DataFactoryId] = D.[DataFactoryId]
 					AND L.[DataFactoryId] = D.[DataFactoryId]
 		WHERE
