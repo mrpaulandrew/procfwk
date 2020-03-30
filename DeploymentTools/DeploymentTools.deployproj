@@ -24,6 +24,7 @@
   <!-- vertag<:>end -->
   <ItemGroup>
     <None Include="DataFactory\DeployProcFwkComponents.ps1" />
+    <None Include="DataFactory\Get Pipelines.ps1" />
     <None Include="DataFactory\ProcFwkComponents.json" />
     <None Include="Deployment README.md" />
     <None Include="Deployment.targets">
