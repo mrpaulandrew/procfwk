@@ -108,6 +108,7 @@
     <Build Include="procfwk\Synonyms\ProcessingStageDetails.sql" />
     <Build Include="procfwk\Synonyms\DataFactoryDetails.sql" />
     <Build Include="procfwk\Stored Procedures\CheckStageAndPiplineIntegrity.sql" />
+    <Build Include="procfwk\Stored Procedures\CheckMetadataIntegrity.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
