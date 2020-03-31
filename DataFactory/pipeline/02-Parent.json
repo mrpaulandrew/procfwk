@@ -332,6 +332,7 @@
 			},
 			{
 				"name": "Metadata Integrity Checks",
+				"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [],
 				"policy": {
