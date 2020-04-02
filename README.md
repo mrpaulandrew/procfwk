@@ -12,35 +12,19 @@ This framework can also be used in any Azure Tenant and allow the creation of co
 
  ## Authors
 
- | Who | Details |
+| Who | Details |
 |------------|-------------|
 |Paul Andrew |[@mrpaulandrew](https://twitter.com/mrpaulandrew)<br/>[paul@mrpaulandrew.com](mailto:paul@mrpaulandrew.com)<br/>[https://mrpaulandrew.tech](https://mrpaulandrew.tech)|
-| | |
 
 ## Development Backlog
 [Go to GitHub Kanban board...](https://github.com/mrpaulandrew/ADF.procfwk/projects/1)
 
 ## Resources and Content
 
-<table>
-<tbody>
-<tr>
-<td><img class="aligncenter wp-image-1972" src="https://mrpaulandrew.files.wordpress.com/2020/03/azure-square-logo.png?w=150" alt="" width="61" height="61" /></td>
-<td><strong>Blogs</strong></td>
-<td><a href="https://mrpaulandrew.com/category/azure/data-factory/adf-procfwk/" target="_blank" rel="noopener">mrpaulandrew.com/ADF.procfwk</a></td>
-</tr>
-<tr>
-<td><img class="aligncenter wp-image-819" src="https://mrpaulandrew.files.wordpress.com/2018/11/github-icon.png?w=150" alt="" width="61" height="61" /></td>
-<td><strong>GitHub</strong></td>
-<td><a href="https://github.com/mrpaulandrew/ADF.procfwk" target="_blank" rel="noopener">github.com/mrpaulandrew/ADF.procfwk</a></td>
-</tr>
-<tr>
-<td><img class="aligncenter wp-image-1971" src="https://mrpaulandrew.files.wordpress.com/2020/03/twitterlogo.png?w=150" alt="" width="61" height="61" /></td>
-<td><strong>Twitter</strong></td>
-<td><a href="https://twitter.com/search?q=%23ADFprocfwk&amp;src=hashtag_click" target="_blank" rel="noopener">#ADFprocfwk</a></td>
-</tr>
-</tbody>
-</table>
+| ![alt text](https://mrpaulandrew.files.wordpress.com/2020/03/azure-square-logo.png?w=75 "Blog Icon") | Blogs |[mrpaulandrew.com/ADF.procfwk](https://mrpaulandrew.com/category/azure/data-factory/adf-procfwk/)|
+|:----:|:----:|:----:|
+| ![alt text](https://mrpaulandrew.files.wordpress.com/2018/11/github-icon.png?w=75 "GitHub Icon") | **GitHub** |**[github.com/mrpaulandrew/ADF.procfwk](https://github.com/mrpaulandrew/ADF.procfwk)**  |
+| ![alt text](https://mrpaulandrew.files.wordpress.com/2020/03/twitterlogo.png?w=75 "Twitter Icon") | **Twitter** |**[#ADFprocfwk](https://twitter.com/search?q=%23ADFprocfwk&amp;src=hashtag_click)** |
 
 ## Release Details
 
