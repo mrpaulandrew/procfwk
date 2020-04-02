@@ -115,19 +115,19 @@ BEGIN
 		SELECT 
 			* 
 		FROM 
-			[procfwk].[PipelineAuthLink] al 
-			LEFT OUTER JOIN [procfwk].[Pipelines] p 
-				ON al.[PipelineId] = p.[PipelineId]
-					AND p.[Enabled] = 1
+			[procfwk].[Pipelines] p 
+			LEFT OUTER JOIN [procfwk].[PipelineAuthLink] al 
+				ON p.[PipelineId] = al.[PipelineId]
 		WHERE
-			p.[PipelineId] IS NULL
+			p.[Enabled] = 1
+			AND al.[PipelineId] IS NULL
 		)
 		BEGIN
 			INSERT INTO @MetadataIntegrityIssues
 			VALUES
 				( 
 				7,
-				'A current OverideRestart value is missing from the properties table.'
+				'Enabled pipelines are missing a valid Service Principal link.'
 				)		
 		END;
 
