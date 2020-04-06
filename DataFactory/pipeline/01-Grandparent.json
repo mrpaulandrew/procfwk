@@ -1,6 +1,7 @@
 {
 	"name": "01-Grandparent",
 	"properties": {
+		"description": "Optional pipeline to bootstrap any wider processes in your Data Factory.",
 		"activities": [
 			{
 				"name": "Framework Processing",
@@ -19,6 +20,8 @@
 		"folder": {
 			"name": "_ProcFwk"
 		},
-		"annotations": []
+		"annotations": [
+			"ADF.procfwk"
+		]
 	}
 }
