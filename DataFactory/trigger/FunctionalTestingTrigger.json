@@ -2,7 +2,9 @@
 	"name": "FunctionalTestingTrigger",
 	"properties": {
 		"description": "Used internally to run the processing framework hourly.",
-		"annotations": [],
+		"annotations": [
+			"ADF.procfwk"
+		],
 		"runtimeState": "Stopped",
 		"pipelines": [],
 		"type": "ScheduleTrigger",
