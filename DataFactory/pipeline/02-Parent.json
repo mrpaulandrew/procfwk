@@ -217,6 +217,15 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderStoredProcedureName": "[procfwk].[ExecutionWrapper]",
+						"storedProcedureParameters": {
+							"CallingDataFactory": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().DataFactory",
+									"type": "Expression"
+								}
+							}
+						},
 						"queryTimeout": "02:00:00"
 					},
 					"dataset": {
