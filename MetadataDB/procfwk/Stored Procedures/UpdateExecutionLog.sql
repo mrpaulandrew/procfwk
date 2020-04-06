@@ -1,5 +1,4 @@
-﻿
-CREATE PROCEDURE procfwk.UpdateExecutionLog
+﻿CREATE PROCEDURE [procfwk].[UpdateExecutionLog]
 AS
 
 SET NOCOUNT ON;
@@ -11,6 +10,9 @@ BEGIN
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
+		[CallingDataFactoryName],
+		[ResourceGroupName],
+		[DataFactoryName],
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
@@ -20,6 +22,9 @@ BEGIN
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
+		[CallingDataFactoryName],
+		[ResourceGroupName],
+		[DataFactoryName],
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],

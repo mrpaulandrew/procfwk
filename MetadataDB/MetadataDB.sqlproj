@@ -109,6 +109,7 @@
     <Build Include="procfwk\Synonyms\DataFactoryDetails.sql" />
     <Build Include="procfwk\Stored Procedures\CheckStageAndPiplineIntegrity.sql" />
     <Build Include="procfwk\Stored Procedures\CheckMetadataIntegrity.sql" />
+    <Build Include="dbo\Stored Procedures\SetRandomWaitValues.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

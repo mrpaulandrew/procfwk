@@ -10,15 +10,13 @@ $region = ""
 $spId = ""
 $spKey = ""
 
-
-
 # Login as a Service Principal
 $passwd = ConvertTo-SecureString $spKey -AsPlainText -Force
 $pscredential = New-Object System.Management.Automation.PSCredential($spId, $passwd)
 Connect-AzAccount -ServicePrincipal -Credential $pscredential -TenantId $tenantId | Out-Null
 
 # Get Deployment Objects and Params files
-$scriptPath = (Get-Item -Path ".\").FullName #+ "\DeploymentTools\DataFactory\"
+$scriptPath = (Get-Item -Path ".\").FullName + "\DeploymentTools\DataFactory\"
 $deploymentFilePath = $scriptPath + "\ProcFwkComponents.json"
 
 Write-Host $scriptPath
@@ -163,6 +161,57 @@ ForEach ($pipeline in $deploymentObject.pipelines)
     catch
         {
         Write-Host "Failed to deploy pipeline:" $pipelineName -ForegroundColor Red
+        Write-Host $_.Exception.Message
+        Write-Host $_.Exception.ItemName
+        Exit
+        }
+    }
+
+
+<#
+Deploy Triggers
+#>
+Write-Host ""
+Write-Host "-------------------------Triggers---------------------------"
+
+ForEach ($trigger in $deploymentObject.triggers)
+    {
+    $componentPath = $scriptPath.Replace("DeploymentTools\","") + $trigger
+
+    $triggerFile = (Get-Content $componentPath) | ConvertFrom-Json
+    $triggerName = $triggerFile.name
+    Write-Host "Deploying Trigger:" $triggerName
+    
+    $currentTrigger = Get-AzDataFactoryV2Trigger `
+        -ResourceGroupName $resourceGroupName `
+        -DataFactoryName $dataFactoryName `
+        -Name $triggerName `
+        -ErrorAction SilentlyContinue
+    
+    try
+        {
+        if($currentTrigger -ne $null)
+            {
+            #Stop trigger if already deployed as can't deploy over running trigger.                
+            Stop-AzDataFactoryV2Trigger `
+                -ResourceGroupName $resourceGroupName `
+                -DataFactoryName $dataFactoryName `
+                -Name $triggerName -Force | Out-Null
+            }
+            
+        Set-AzDataFactoryV2Trigger `
+            -ResourceGroupName $resourceGroupName `
+            -DataFactoryName $dataFactoryName `
+            -Name $triggerName `
+            -DefinitionFile $componentPath `
+            -Force | Format-List | Out-Null
+
+        Write-Host "...done" -ForegroundColor Green
+        Write-Host ""
+        }
+    catch
+        {
+        Write-Host "Failed to deploy trigger:" $triggerName -ForegroundColor Red
         Write-Host $_.Exception.Message
         Write-Host $_.Exception.ItemName
         Exit

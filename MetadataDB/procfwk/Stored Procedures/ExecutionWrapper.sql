@@ -1,4 +1,7 @@
 ﻿CREATE PROCEDURE [procfwk].[ExecutionWrapper]
+	(
+	@CallingDataFactory NVARCHAR(200)
+	)
 AS
 
 SET NOCOUNT ON;
@@ -6,6 +9,9 @@ SET NOCOUNT ON;
 BEGIN
 	
 	DECLARE @RestartStatus BIT
+
+	IF @CallingDataFactory IS NULL
+		SET @CallingDataFactory = 'Unknown';
 
 	--get restart overide property
 	SELECT
@@ -32,12 +38,14 @@ BEGIN
 		AND @RestartStatus = 1
 		BEGIN
 			EXEC [procfwk].[UpdateExecutionLog]
-			EXEC [procfwk].[CreateNewExecution]
+			EXEC [procfwk].[CreateNewExecution] 
+				@CallingDataFactoryName = @CallingDataFactory
 		END
 	--no restart considerations, just create new execution
 	ELSE
 		BEGIN
-			EXEC [procfwk].[CreateNewExecution]
+			EXEC [procfwk].[CreateNewExecution] 
+				@CallingDataFactoryName = @CallingDataFactory
 		END
 
 END

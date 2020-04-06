@@ -1,4 +1,7 @@
-﻿CREATE   PROCEDURE [procfwk].[CreateNewExecution]
+﻿CREATE PROCEDURE [procfwk].[CreateNewExecution]
+	(
+	@CallingDataFactoryName NVARCHAR(200)
+	)
 AS
 
 SET NOCOUNT ON;
@@ -14,6 +17,7 @@ BEGIN
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
+		[CallingDataFactoryName],
 		[ResourceGroupName],
 		[DataFactoryName],
 		[PipelineName]
@@ -22,6 +26,7 @@ BEGIN
 		@LocalExecutionId,
 		p.[StageId],
 		p.[PipelineId],
+		@CallingDataFactoryName,
 		d.[ResourceGroupName],
 		d.[DataFactoryName],
 		p.[PipelineName]
