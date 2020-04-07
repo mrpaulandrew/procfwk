@@ -278,6 +278,9 @@
 				"type": "int"
 			}
 		},
+		"folder": {
+			"name": "_ProcFwk"
+		},
 		"annotations": [
 			"ADF.procfwk"
 		]
