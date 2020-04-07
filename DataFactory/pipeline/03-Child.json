@@ -56,6 +56,7 @@
 						"value": "@activity('Get Pipelines').output.value",
 						"type": "Expression"
 					},
+					"isSequential": false,
 					"activities": [
 						{
 							"name": "Execute Pipeline",
@@ -90,7 +91,7 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"functionName": "ExecutePipeline",
+								"functionName": "ExecutePipelineV2",
 								"method": "POST",
 								"body": {
 									"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"',activity('Get SPN Details').output.firstRow.Id,'\",\n\t\"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.Secret,'\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"',item().ResourceGroupName,'\",\n\t\"factoryName\": \"',item().DataFactoryName,'\",\n\t\"pipelineName\": \"',item().PipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
@@ -222,179 +223,6 @@
 							}
 						},
 						{
-							"name": "Handle Function Output",
-							"description": "Receives the outcome from the function execution for a given processing pipeline and updates the current execution table with different pipelines status values depending on the result (case).",
-							"type": "Switch",
-							"dependsOn": [
-								{
-									"activity": "Execute Pipeline",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"userProperties": [],
-							"typeProperties": {
-								"on": {
-									"value": "@activity('Execute Pipeline').output.Status",
-									"type": "Expression"
-								},
-								"cases": [
-									{
-										"value": "Failed",
-										"activities": [
-											{
-												"name": "Log Pipeline Failure",
-												"description": "Updates the current execution table with a pipeline status of failed if the function outcome is failed. Also blocks pipelines in the downstream execution stage.",
-												"type": "SqlServerStoredProcedure",
-												"dependsOn": [],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"storedProcedureName": "[procfwk].[SetLogPipelineFailed]",
-													"storedProcedureParameters": {
-														"ExecutionId": {
-															"value": {
-																"value": "@pipeline().parameters.ExecutionId",
-																"type": "Expression"
-															},
-															"type": "Guid"
-														},
-														"PipelineId": {
-															"value": {
-																"value": "@item().PipelineId",
-																"type": "Expression"
-															},
-															"type": "Int32"
-														},
-														"RunId": {
-															"value": {
-																"value": "@activity('Execute Pipeline').output.RunIdUsed",
-																"type": "Expression"
-															},
-															"type": "Guid"
-														},
-														"StageId": {
-															"value": {
-																"value": "@pipeline().parameters.StageId",
-																"type": "Expression"
-															},
-															"type": "Int32"
-														}
-													}
-												},
-												"linkedServiceName": {
-													"referenceName": "SupportDatabase",
-													"type": "LinkedServiceReference"
-												}
-											}
-										]
-									},
-									{
-										"value": "Succeeded",
-										"activities": [
-											{
-												"name": "Log Pipeline Success",
-												"description": "Updates the current execution table with a pipeline status of success if the function outcome is succeeded.",
-												"type": "SqlServerStoredProcedure",
-												"dependsOn": [],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"storedProcedureName": "[procfwk].[SetLogPipelineSuccess]",
-													"storedProcedureParameters": {
-														"ExecutionId": {
-															"value": {
-																"value": "@pipeline().parameters.ExecutionId",
-																"type": "Expression"
-															},
-															"type": "Guid"
-														},
-														"PipelineId": {
-															"value": {
-																"value": "@item().PipelineId\n",
-																"type": "Expression"
-															},
-															"type": "Int32"
-														},
-														"StageId": {
-															"value": {
-																"value": "@pipeline().parameters.StageId",
-																"type": "Expression"
-															},
-															"type": "Int32"
-														}
-													}
-												},
-												"linkedServiceName": {
-													"referenceName": "SupportDatabase",
-													"type": "LinkedServiceReference"
-												}
-											}
-										]
-									}
-								],
-								"defaultActivities": [
-									{
-										"name": "Log Pipeline Unknown",
-										"description": "Updates the current execution table with a pipeline status of unknown if the function returns an unexpected outcome.",
-										"type": "SqlServerStoredProcedure",
-										"dependsOn": [],
-										"policy": {
-											"timeout": "7.00:00:00",
-											"retry": 0,
-											"retryIntervalInSeconds": 30,
-											"secureOutput": false,
-											"secureInput": false
-										},
-										"userProperties": [],
-										"typeProperties": {
-											"storedProcedureName": "[procfwk].[SetLogPipelineUnknown]",
-											"storedProcedureParameters": {
-												"ExecutionId": {
-													"value": {
-														"value": "@pipeline().parameters.ExecutionId",
-														"type": "Expression"
-													},
-													"type": "Guid"
-												},
-												"PipelineId": {
-													"value": {
-														"value": "@item().PipelineId",
-														"type": "Expression"
-													},
-													"type": "Int32"
-												},
-												"StageId": {
-													"value": {
-														"value": "@pipeline().parameters.StageId",
-														"type": "Expression"
-													},
-													"type": "Int32"
-												}
-											}
-										},
-										"linkedServiceName": {
-											"referenceName": "SupportDatabase",
-											"type": "LinkedServiceReference"
-										}
-									}
-								]
-							}
-						},
-						{
 							"name": "Log Activity Failure",
 							"description": "Handle true failures from calling out to the Azure Function and update the current execution table accordingly so a restart can occur.",
 							"type": "SqlServerStoredProcedure",
@@ -450,6 +278,72 @@
 							"linkedServiceName": {
 								"referenceName": "SupportDatabase",
 								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Running Pipeline Handler",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "Execute Pipeline",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "04-Infant",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"tenantId": {
+										"value": "@pipeline().parameters.TenantId",
+										"type": "Expression"
+									},
+									"applicationId": {
+										"value": "@activity('Get SPN Details').output.firstRow.Id",
+										"type": "Expression"
+									},
+									"authenticationKey": {
+										"value": "@activity('Get SPN Details').output.firstRow.Secret",
+										"type": "Expression"
+									},
+									"subscriptionId": {
+										"value": "@pipeline().parameters.SubscriptionId",
+										"type": "Expression"
+									},
+									"resourceGroup": {
+										"value": "@item().ResourceGroupName",
+										"type": "Expression"
+									},
+									"factoryName": {
+										"value": "@item().DataFactoryName",
+										"type": "Expression"
+									},
+									"pipelineName": {
+										"value": "@item().PipelineName",
+										"type": "Expression"
+									},
+									"runId": {
+										"value": "@activity('Execute Pipeline').output.RunId",
+										"type": "Expression"
+									},
+									"executionId": {
+										"value": "@pipeline().parameters.ExecutionId",
+										"type": "Expression"
+									},
+									"stageId": {
+										"value": "@pipeline().parameters.StageId",
+										"type": "Expression"
+									},
+									"pipelineId": {
+										"value": "@item().PipelineId",
+										"type": "Expression"
+									}
+								}
 							}
 						}
 					]
