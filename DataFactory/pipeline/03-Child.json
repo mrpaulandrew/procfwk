@@ -334,6 +334,14 @@
 									"executionId": {
 										"value": "@pipeline().parameters.ExecutionId",
 										"type": "Expression"
+									},
+									"stageId": {
+										"value": "@pipeline().parameters.StageId",
+										"type": "Expression"
+									},
+									"pipelineId": {
+										"value": "@item().PipelineId",
+										"type": "Expression"
 									}
 								}
 							}
