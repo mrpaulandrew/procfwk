@@ -9,9 +9,76 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "MetadataDB", "MetadataDB\Me
 EndProject
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "DeploymentTools", "DeploymentTools\DeploymentTools.deployproj", "{3AEAD846-DBE4-45AD-97DD-37E94BE009FD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Non Project Bits", "Non Project Bits", "{C7297C57-3403-473B-AA2A-31012A4A9ADF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Markdown", "Markdown", "{C7297C57-3403-473B-AA2A-31012A4A9ADF}"
 	ProjectSection(SolutionItems) = preProject
+		DeploymentTools\Deployment Steps.md = DeploymentTools\Deployment Steps.md
 		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataFactory", "DataFactory", "{E081CE7B-3DE2-4AB7-8C3A-E58A075BD6F5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dataset", "dataset", "{997E1D61-E47F-48B0-8F67-09ED4AE92E0E}"
+	ProjectSection(SolutionItems) = preProject
+		DataFactory\dataset\GetSetMetadata.json = DataFactory\dataset\GetSetMetadata.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "linkedService", "linkedService", "{6B27406C-2C36-4BA1-AFC8-CEFC960D8EE6}"
+	ProjectSection(SolutionItems) = preProject
+		DataFactory\linkedService\Keys.json = DataFactory\linkedService\Keys.json
+		DataFactory\linkedService\PipelineExecutor.json = DataFactory\linkedService\PipelineExecutor.json
+		DataFactory\linkedService\SupportDatabase.json = DataFactory\linkedService\SupportDatabase.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipeline", "pipeline", "{9CEBE9B6-F1E4-43A8-B84D-FF7D43D5CB20}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ProcFwk", "_ProcFwk", "{17586826-8BE9-4622-B12E-1683F2A20352}"
+	ProjectSection(SolutionItems) = preProject
+		DataFactory\pipeline\01-Grandparent.json = DataFactory\pipeline\01-Grandparent.json
+		DataFactory\pipeline\02-Parent.json = DataFactory\pipeline\02-Parent.json
+		DataFactory\pipeline\03-Child.json = DataFactory\pipeline\03-Child.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Processes", "Processes", "{04142829-7936-4C27-9891-FB086BEAE1AD}"
+	ProjectSection(SolutionItems) = preProject
+		DataFactory\pipeline\Intention Error.json = DataFactory\pipeline\Intention Error.json
+		DataFactory\pipeline\Wait 1.json = DataFactory\pipeline\Wait 1.json
+		DataFactory\pipeline\Wait 10.json = DataFactory\pipeline\Wait 10.json
+		DataFactory\pipeline\Wait 2.json = DataFactory\pipeline\Wait 2.json
+		DataFactory\pipeline\Wait 3.json = DataFactory\pipeline\Wait 3.json
+		DataFactory\pipeline\Wait 4.json = DataFactory\pipeline\Wait 4.json
+		DataFactory\pipeline\Wait 5.json = DataFactory\pipeline\Wait 5.json
+		DataFactory\pipeline\Wait 6.json = DataFactory\pipeline\Wait 6.json
+		DataFactory\pipeline\Wait 7.json = DataFactory\pipeline\Wait 7.json
+		DataFactory\pipeline\Wait 8.json = DataFactory\pipeline\Wait 8.json
+		DataFactory\pipeline\Wait 9.json = DataFactory\pipeline\Wait 9.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{16E32CF7-361C-4A58-B0E1-5C8C46181ADE}"
+	ProjectSection(SolutionItems) = preProject
+		Images\ADFprocfwk Designs.vsdx = Images\ADFprocfwk Designs.vsdx
+		Images\ADFprocfwk Icon.png = Images\ADFprocfwk Icon.png
+		Images\All ADF Activities.pptx = Images\All ADF Activities.pptx
+		Images\Authentication Flow.png = Images\Authentication Flow.png
+		Images\v1.1 Database Diagram.png = Images\v1.1 Database Diagram.png
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notebooks", "Notebooks", "{19F99FD2-9170-42DA-B4FE-A52A358B5473}"
+	ProjectSection(SolutionItems) = preProject
+		Notebooks\Metadata Guide and Handy Code Snippets.ipynb = Notebooks\Metadata Guide and Handy Code Snippets.ipynb
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ARM Templates", "ARM Templates", "{CC7B607B-8C84-4E07-A6C8-326923752F92}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataFactory", "DataFactory", "{C8F387D0-13CC-4AA5-892C-91D2F3403B55}"
+	ProjectSection(SolutionItems) = preProject
+		ARM Templates\Data Factory\v1.0 Export.json = ARM Templates\Data Factory\v1.0 Export.json
+		ARM Templates\Data Factory\v1.1 Export.json = ARM Templates\Data Factory\v1.1 Export.json
+		ARM Templates\Data Factory\v1.2 Export.json = ARM Templates\Data Factory\v1.2 Export.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "trigger", "trigger", "{FC7877EF-110F-4AD7-B203-EEECE6F08A86}"
+	ProjectSection(SolutionItems) = preProject
+		DataFactory\trigger\FunctionalTestingTrigger.json = DataFactory\trigger\FunctionalTestingTrigger.json
 	EndProjectSection
 EndProject
 Global
@@ -37,6 +104,15 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{997E1D61-E47F-48B0-8F67-09ED4AE92E0E} = {E081CE7B-3DE2-4AB7-8C3A-E58A075BD6F5}
+		{6B27406C-2C36-4BA1-AFC8-CEFC960D8EE6} = {E081CE7B-3DE2-4AB7-8C3A-E58A075BD6F5}
+		{9CEBE9B6-F1E4-43A8-B84D-FF7D43D5CB20} = {E081CE7B-3DE2-4AB7-8C3A-E58A075BD6F5}
+		{17586826-8BE9-4622-B12E-1683F2A20352} = {9CEBE9B6-F1E4-43A8-B84D-FF7D43D5CB20}
+		{04142829-7936-4C27-9891-FB086BEAE1AD} = {9CEBE9B6-F1E4-43A8-B84D-FF7D43D5CB20}
+		{C8F387D0-13CC-4AA5-892C-91D2F3403B55} = {CC7B607B-8C84-4E07-A6C8-326923752F92}
+		{FC7877EF-110F-4AD7-B203-EEECE6F08A86} = {E081CE7B-3DE2-4AB7-8C3A-E58A075BD6F5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {170F5302-BB9C-4569-8F43-D859C7678EF0}

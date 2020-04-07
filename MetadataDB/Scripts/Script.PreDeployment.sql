@@ -10,4 +10,5 @@
 --------------------------------------------------------------------------------------
 */
 --delete all
+:r .\Metadata\DropLegacyTables.sql
 :r .\Metadata\DeleteAll.sql

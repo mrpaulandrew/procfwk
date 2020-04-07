@@ -1,5 +1,5 @@
 {
-	"name": "02 Parent",
+	"name": "02-Parent",
 	"properties": {
 		"description": "ADF.procfwk parent pipeline used to bootstrap the orchestration framework in perform the first level ForEach calls in sequence for the metadata stages.",
 		"activities": [
@@ -92,7 +92,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
-									"referenceName": "03 Child",
+									"referenceName": "03-Child",
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true,
@@ -197,7 +197,14 @@
 				"name": "Execution Wrapper",
 				"description": "Wrapper to reset and restart processing or create a completely new execution instance of the framework metadata.",
 				"type": "Lookup",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Metadata Integrity Checks",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -210,6 +217,15 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderStoredProcedureName": "[procfwk].[ExecutionWrapper]",
+						"storedProcedureParameters": {
+							"CallingDataFactory": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().DataFactory",
+									"type": "Expression"
+								}
+							}
+						},
 						"queryTimeout": "02:00:00"
 					},
 					"dataset": {
@@ -250,7 +266,14 @@
 				"name": "Get Tenant Id",
 				"description": "Returning the Azure Tenant Id from the metadata properties table.",
 				"type": "Lookup",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Metadata Integrity Checks",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -282,7 +305,14 @@
 				"name": "Get Subscription Id",
 				"description": "Returning the Azure Subscription Id from the metadata properties table.",
 				"type": "Lookup",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Metadata Integrity Checks",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -307,6 +337,33 @@
 						"referenceName": "GetSetMetadata",
 						"type": "DatasetReference"
 					}
+				}
+			},
+			{
+				"name": "Metadata Integrity Checks",
+				"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[procfwk].[CheckMetadataIntegrity]",
+					"storedProcedureParameters": {
+						"DebugMode": {
+							"value": "false",
+							"type": "Boolean"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "SupportDatabase",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],

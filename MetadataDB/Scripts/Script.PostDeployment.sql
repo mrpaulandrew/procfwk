@@ -10,7 +10,7 @@ Post-Deployment Script Template
 --------------------------------------------------------------------------------------
 */
 --load metadata
-:r .\Metadata\DataFactories.sql
+:r .\Metadata\DataFactorys.sql
 :r .\Metadata\Stages.sql
 :r .\Metadata\Pipelines.sql
 :r .\Metadata\PipelineParams.sql

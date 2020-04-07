@@ -1,0 +1,18 @@
+﻿{
+  "linkedServices": [
+    "/linkedService/Keys.json",
+    "/linkedService/PipelineExecutor.json",
+    "/linkedService/SupportDatabase.json"
+  ],
+  "datasets": [
+    "/dataset/GetSetMetadata.json"
+  ],
+  "pipelines": [
+    "/pipeline/03-Child.json",
+    "/pipeline/02-Parent.json",
+    "/pipeline/01-Grandparent.json"
+  ],
+  "triggers": [
+    "/trigger/FunctionalTestingTrigger.json"
+  ]
+}

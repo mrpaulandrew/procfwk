@@ -1,5 +1,5 @@
 {
-	"name": "03 Child",
+	"name": "03-Child",
 	"properties": {
 		"description": "ADF.procfwk child pipeline used to execute processing pipelines within a given execution stage. This pipeline will be called multi times in parallel.",
 		"activities": [

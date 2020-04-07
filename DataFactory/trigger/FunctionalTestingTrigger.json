@@ -1,0 +1,27 @@
+{
+	"name": "FunctionalTestingTrigger",
+	"properties": {
+		"description": "Used internally to run the processing framework hourly.",
+		"annotations": [
+			"ADF.procfwk"
+		],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "01-Grandparent",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 1,
+				"startTime": "2020-04-06T15:00:00.000Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

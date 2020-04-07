@@ -1,0 +1,55 @@
+{
+	"name": "01-Grandparent",
+	"properties": {
+		"description": "ADF.procfwk grandparent pipeline used optionally to bootstrap any wider processes in your Data Factory that then calls the processing framework.",
+		"activities": [
+			{
+				"name": "Framework Processing",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Set Random Waits",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "02-Parent",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Set Random Waits",
+				"description": "For functional testing only.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SetRandomWaitValues]"
+				},
+				"linkedServiceName": {
+					"referenceName": "SupportDatabase",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "_ProcFwk"
+		},
+		"annotations": [
+			"ADF.procfwk"
+		]
+	}
+}

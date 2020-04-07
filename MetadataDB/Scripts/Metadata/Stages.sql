@@ -1,4 +1,4 @@
-﻿INSERT [procfwk].[ProcessingStageDetails]
+﻿INSERT [procfwk].[Stages]
 	(
 	[StageName], 
 	[StageDescription], 

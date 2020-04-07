@@ -1,4 +1,7 @@
-﻿CREATE   PROCEDURE [procfwk].[CreateNewExecution]
+﻿CREATE PROCEDURE [procfwk].[CreateNewExecution]
+	(
+	@CallingDataFactoryName NVARCHAR(200)
+	)
 AS
 
 SET NOCOUNT ON;
@@ -14,6 +17,7 @@ BEGIN
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
+		[CallingDataFactoryName],
 		[ResourceGroupName],
 		[DataFactoryName],
 		[PipelineName]
@@ -22,14 +26,15 @@ BEGIN
 		@LocalExecutionId,
 		p.[StageId],
 		p.[PipelineId],
+		@CallingDataFactoryName,
 		d.[ResourceGroupName],
 		d.[DataFactoryName],
 		p.[PipelineName]
 	FROM
-		[procfwk].[PipelineProcesses] p
-		INNER JOIN [procfwk].[ProcessingStageDetails] s
+		[procfwk].[Pipelines] p
+		INNER JOIN [procfwk].[Stages] s
 			ON p.[StageId] = s.[StageId]
-		INNER JOIN [procfwk].[DataFactoryDetails] d
+		INNER JOIN [procfwk].[DataFactorys] d
 			ON p.[DataFactoryId] = d.[DataFactoryId]
 	WHERE
 		p.[Enabled] = 1

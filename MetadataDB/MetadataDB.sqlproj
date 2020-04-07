@@ -68,13 +68,14 @@
     <Folder Include="dbo" />
     <Folder Include="dbo\Tables" />
     <Folder Include="dbo\Stored Procedures" />
+    <Folder Include="procfwk\Synonyms" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="procfwk\Tables\PipelineProcesses.sql" />
+    <Build Include="procfwk\Tables\Pipelines.sql" />
     <Build Include="procfwk\Tables\PipelineParameters.sql" />
     <Build Include="procfwk\Tables\CurrentExecution.sql" />
     <Build Include="procfwk\Tables\ExecutionLog.sql" />
-    <Build Include="procfwk\Tables\ProcessingStageDetails.sql" />
+    <Build Include="procfwk\Tables\Stages.sql" />
     <Build Include="procfwk\Stored Procedures\GetStages.sql" />
     <Build Include="procfwk\Stored Procedures\GetPipelinesInStage.sql" />
     <Build Include="procfwk\Stored Procedures\GetPipelineParameters.sql" />
@@ -89,7 +90,7 @@
     <Build Include="procfwk\Tables\Properties.sql" />
     <Build Include="procfwk\Stored Procedures\GetPropertyValue.sql" />
     <Build Include="dbo\Tables\ServicePrincipals.sql" />
-    <Build Include="procfwk\Tables\DataFactoryDetails.sql" />
+    <Build Include="procfwk\Tables\DataFactorys.sql" />
     <Build Include="procfwk\Tables\PipelineAuthLink.sql" />
     <Build Include="procfwk\Stored Procedures\AddProperty.sql" />
     <Build Include="procfwk\Stored Procedures\GetServicePrincipal.sql" />
@@ -103,6 +104,12 @@
     <Build Include="procfwk\Stored Procedures\SetLogPipelineUnknown.sql" />
     <Build Include="procfwk\Views\LastExecution.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogActivityFailed.sql" />
+    <Build Include="procfwk\Synonyms\PipelineProcesses.sql" />
+    <Build Include="procfwk\Synonyms\ProcessingStageDetails.sql" />
+    <Build Include="procfwk\Synonyms\DataFactoryDetails.sql" />
+    <Build Include="procfwk\Stored Procedures\CheckStageAndPiplineIntegrity.sql" />
+    <Build Include="procfwk\Stored Procedures\CheckMetadataIntegrity.sql" />
+    <Build Include="dbo\Stored Procedures\SetRandomWaitValues.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
@@ -112,9 +119,10 @@
     <None Include="Scripts\Metadata\Pipelines.sql" />
     <None Include="Scripts\Metadata\PipelineParams.sql" />
     <None Include="MetadataDB.publish.xml" />
-    <None Include="Scripts\Metadata\DataFactories.sql" />
+    <None Include="Scripts\Metadata\DataFactorys.sql" />
     <None Include="Scripts\Metadata\Properties.sql" />
     <None Include="Scripts\Metadata\DeleteAll.sql" />
+    <None Include="Scripts\Metadata\DropLegacyTables.sql" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="Scripts\Script.PreDeployment.sql" />

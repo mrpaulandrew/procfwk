@@ -2,6 +2,7 @@
     [LocalExecutionId] UNIQUEIDENTIFIER NOT NULL,
     [StageId]          INT              NOT NULL,
     [PipelineId]       INT              NOT NULL,
+    [CallingDataFactoryName] NVARCHAR(200) NOT NULL,
     [ResourceGroupName]NVARCHAR (200)   NOT NULL,
     [DataFactoryName]  NVARCHAR (200)   NOT NULL,
     [PipelineName]     NVARCHAR (200)   NOT NULL,

@@ -9,7 +9,42 @@ AS
 SET NOCOUNT ON;
 
 BEGIN
+	
+	--defensive check
+	IF EXISTS
+		(
+		SELECT * FROM [procfwk].[Properties] WHERE [PropertyName] = @PropertyName AND [ValidTo] IS NOT NULL
+		)
+		AND NOT EXISTS
+		(
+		SELECT * FROM [procfwk].[Properties] WHERE [PropertyName] = @PropertyName AND [ValidTo] IS NULL
+		)
+		BEGIN
+			WITH lastValue AS
+				(
+				SELECT
+					[PropertyId],
+					ROW_NUMBER() OVER (PARTITION BY [PropertyName] ORDER BY [ValidTo] ASC) AS 'Rn'
+				FROM
+					[procfwk].[Properties]
+				WHERE
+					[PropertyName] = @PropertyName
+				)
+			--reset property if valid to date has been incorrectly set
+			UPDATE
+				prop
+			SET
+				[ValidTo] = NULL
+			FROM
+				[procfwk].[Properties] prop
+				INNER JOIN lastValue
+					ON prop.[PropertyId] = lastValue.[PropertyId]
+			WHERE
+				lastValue.[Rn] = 1
+		END
+	
 
+	--upsert property
 	;WITH sourceTable AS
 		(
 		SELECT
