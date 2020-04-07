@@ -236,7 +236,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"on": {
-									"value": "@activity('Execute Pipeline').output.Status",
+									"value": "@activity('Running Pipeline Handler').output",
 									"type": "Expression"
 								},
 								"cases": [
@@ -501,6 +501,10 @@
 									},
 									"runId": {
 										"value": "@activity('Execute Pipeline').output.RunId",
+										"type": "Expression"
+									},
+									"executionId": {
+										"value": "@pipeline().parameters.ExecutionId",
 										"type": "Expression"
 									}
 								}
