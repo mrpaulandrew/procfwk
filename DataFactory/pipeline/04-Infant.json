@@ -278,6 +278,8 @@
 				"type": "int"
 			}
 		},
-		"annotations": []
+		"annotations": [
+			"ADF.procfwk"
+		]
 	}
 }
