@@ -92,7 +92,7 @@
 					},
 					"cases": [
 						{
-							"value": "Suceeded",
+							"value": "Succeeded",
 							"activities": [
 								{
 									"name": "Pipeline Status Succeeded",
