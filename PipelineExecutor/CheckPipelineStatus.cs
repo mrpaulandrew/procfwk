@@ -55,9 +55,22 @@ namespace PipelineExecutor
             PipelineRun pipelineRun;
             pipelineRun = client.PipelineRuns.Get(resourceGroup, factoryName, runId);
 
+            string simpleStatus = string.Empty;
+
+            //Create simple status for Until comparison checks
+            if (pipelineRun.Status == "InProgress")
+            {
+                simpleStatus = "Running";
+            }
+            else
+            {
+                simpleStatus = "Done";
+            }
+
             //Final return detail
             string outputString = "{ \"PipelineName\": \"" + pipelineName +
                                     "\", \"RunId\": \"" + pipelineRun.RunId +
+                                    "\", \"SimpleStatus\": \"" + simpleStatus +
                                     "\", \"Status\": \"" + pipelineRun.Status +
                                     "\" }";
 
