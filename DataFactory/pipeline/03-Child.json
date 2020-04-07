@@ -227,7 +227,7 @@
 							"type": "Switch",
 							"dependsOn": [
 								{
-									"activity": "Check Pipeline Status",
+									"activity": "Running Pipeline Handler",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -453,7 +453,7 @@
 							}
 						},
 						{
-							"name": "Check Pipeline Status",
+							"name": "Running Pipeline Handler",
 							"type": "ExecutePipeline",
 							"dependsOn": [
 								{
