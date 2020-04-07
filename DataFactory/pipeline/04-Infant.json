@@ -1,0 +1,17 @@
+{
+	"name": "04-Infant",
+	"properties": {
+		"activities": [
+			{
+				"name": "Until1",
+				"type": "Until",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"timeout": "7.00:00:00"
+				}
+			}
+		],
+		"annotations": []
+	}
+}

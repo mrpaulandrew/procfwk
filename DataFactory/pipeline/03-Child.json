@@ -227,7 +227,7 @@
 							"type": "Switch",
 							"dependsOn": [
 								{
-									"activity": "Execute Pipeline",
+									"activity": "Check Pipeline Status",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -450,6 +450,26 @@
 							"linkedServiceName": {
 								"referenceName": "SupportDatabase",
 								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Check Pipeline Status",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "Execute Pipeline",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "04-Infant",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true
 							}
 						}
 					]
