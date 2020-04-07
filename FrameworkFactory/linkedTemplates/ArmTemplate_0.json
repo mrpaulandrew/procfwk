@@ -47,7 +47,7 @@
 					}
 				},
 				"folder": {
-					"name": "Process Pipelines"
+					"name": "Processes"
 				},
 				"annotations": []
 			},
@@ -80,7 +80,7 @@
 					}
 				},
 				"folder": {
-					"name": "Process Pipelines"
+					"name": "Processes"
 				},
 				"annotations": []
 			},
@@ -113,7 +113,7 @@
 					}
 				},
 				"folder": {
-					"name": "Process Pipelines"
+					"name": "Processes"
 				},
 				"annotations": []
 			},
@@ -146,7 +146,7 @@
 					}
 				},
 				"folder": {
-					"name": "Process Pipelines"
+					"name": "Processes"
 				},
 				"annotations": []
 			},
@@ -179,7 +179,7 @@
 					}
 				},
 				"folder": {
-					"name": "Process Pipelines"
+					"name": "Processes"
 				},
 				"annotations": []
 			},
@@ -212,7 +212,7 @@
 					}
 				},
 				"folder": {
-					"name": "Process Pipelines"
+					"name": "Processes"
 				},
 				"annotations": []
 			},
@@ -245,7 +245,7 @@
 					}
 				},
 				"folder": {
-					"name": "Process Pipelines"
+					"name": "Processes"
 				},
 				"annotations": []
 			},
@@ -278,7 +278,7 @@
 					}
 				},
 				"folder": {
-					"name": "Process Pipelines"
+					"name": "Processes"
 				},
 				"annotations": []
 			},
@@ -311,7 +311,7 @@
 					}
 				},
 				"folder": {
-					"name": "Process Pipelines"
+					"name": "Processes"
 				},
 				"annotations": []
 			},
@@ -344,7 +344,7 @@
 					}
 				},
 				"folder": {
-					"name": "Process Pipelines"
+					"name": "Processes"
 				},
 				"annotations": []
 			},
@@ -446,7 +446,7 @@
 					}
 				],
 				"folder": {
-					"name": "Process Pipelines"
+					"name": "Processes"
 				},
 				"annotations": []
 			},
@@ -475,7 +475,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/03 Child')]",
+			"name": "[concat(parameters('factoryName'), '/03-Child')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -971,7 +971,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/02 Parent')]",
+			"name": "[concat(parameters('factoryName'), '/02-Parent')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1067,7 +1067,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"pipeline": {
-											"referenceName": "03 Child",
+											"referenceName": "03-Child",
 											"type": "PipelineReference"
 										},
 										"waitOnCompletion": true,
@@ -1172,7 +1172,14 @@
 						"name": "Execution Wrapper",
 						"description": "Wrapper to reset and restart processing or create a completely new execution instance of the framework metadata.",
 						"type": "Lookup",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Metadata Integrity Checks",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -1185,6 +1192,15 @@
 							"source": {
 								"type": "AzureSqlSource",
 								"sqlReaderStoredProcedureName": "[[procfwk].[ExecutionWrapper]",
+								"storedProcedureParameters": {
+									"CallingDataFactory": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().DataFactory",
+											"type": "Expression"
+										}
+									}
+								},
 								"queryTimeout": "02:00:00"
 							},
 							"dataset": {
@@ -1226,7 +1242,14 @@
 						"name": "Get Tenant Id",
 						"description": "Returning the Azure Tenant Id from the metadata properties table.",
 						"type": "Lookup",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Metadata Integrity Checks",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -1259,7 +1282,14 @@
 						"name": "Get Subscription Id",
 						"description": "Returning the Azure Subscription Id from the metadata properties table.",
 						"type": "Lookup",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Metadata Integrity Checks",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -1286,6 +1316,33 @@
 								"parameters": {}
 							}
 						}
+					},
+					{
+						"name": "Metadata Integrity Checks",
+						"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[procfwk].[CheckMetadataIntegrity]",
+							"storedProcedureParameters": {
+								"DebugMode": {
+									"value": "false",
+									"type": "Boolean"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SupportDatabase",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"folder": {
@@ -1298,37 +1355,102 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
 				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]",
-				"[concat(variables('factoryId'), '/pipelines/03 Child')]"
+				"[concat(variables('factoryId'), '/pipelines/03-Child')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/01 Grandparent')]",
+			"name": "[concat(parameters('factoryName'), '/01-Grandparent')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"description": "ADF.procfwk grandparent pipeline used optionally to bootstrap any wider processes in your Data Factory that then calls the processing framework.",
 				"activities": [
 					{
 						"name": "Framework Processing",
 						"type": "ExecutePipeline",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Set Random Waits",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "02 Parent",
+								"referenceName": "02-Parent",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
 							"parameters": {}
+						}
+					},
+					{
+						"name": "Set Random Waits",
+						"description": "For functional testing only.",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[SetRandomWaitValues]"
+						},
+						"linkedServiceName": {
+							"referenceName": "SupportDatabase",
+							"type": "LinkedServiceReference"
 						}
 					}
 				],
 				"folder": {
 					"name": "_ProcFwk"
 				},
-				"annotations": []
+				"annotations": [
+					"ADF.procfwk"
+				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/02 Parent')]"
+				"[concat(variables('factoryId'), '/pipelines/02-Parent')]",
+				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FunctionalTestingTrigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Used internally to run the processing framework hourly.",
+				"annotations": [
+					"ADF.procfwk"
+				],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "01-Grandparent",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 1,
+						"startTime": "2020-04-06T15:00:00.000Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/01-Grandparent')]"
 			]
 		}
 	]
