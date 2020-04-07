@@ -9,12 +9,12 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@equals('Done',activity('Get Status').output.SimpleStatus)",
+						"value": "@equals('Done',activity('Get Pipeline Status').output.SimpleStatus)",
 						"type": "Expression"
 					},
 					"activities": [
 						{
-							"name": "Get Status",
+							"name": "Get Pipeline Status",
 							"type": "AzureFunctionActivity",
 							"dependsOn": [],
 							"policy": {
@@ -44,7 +44,7 @@
 							"type": "IfCondition",
 							"dependsOn": [
 								{
-									"activity": "Get Status",
+									"activity": "Get Pipeline Status",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -53,7 +53,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@equals('Done',activity('Get Status').output.SimpleStatus)",
+									"value": "@equals('Done',activity('Get Pipeline Status').output.SimpleStatus)",
 									"type": "Expression"
 								},
 								"ifFalseActivities": [
@@ -97,6 +97,9 @@
 				"type": "string"
 			},
 			"runId": {
+				"type": "string"
+			},
+			"executionId": {
 				"type": "string"
 			}
 		},
