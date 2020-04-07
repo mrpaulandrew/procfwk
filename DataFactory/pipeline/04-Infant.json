@@ -39,8 +39,9 @@
 							}
 						},
 						{
-							"name": "Wait1",
-							"type": "Wait",
+							"name": "Wait If Running",
+							"description": "True = Do nothing.\nFalse = Wait.",
+							"type": "IfCondition",
 							"dependsOn": [
 								{
 									"activity": "Get Status",
@@ -51,7 +52,21 @@
 							],
 							"userProperties": [],
 							"typeProperties": {
-								"waitTimeInSeconds": 30
+								"expression": {
+									"value": "@equals('Done',activity('Get Status').output.SimpleStatus)",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Wait for Pipeline",
+										"type": "Wait",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"waitTimeInSeconds": 60
+										}
+									}
+								]
 							}
 						}
 					],
