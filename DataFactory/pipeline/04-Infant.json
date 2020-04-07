@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Until1",
+				"name": "Wait Until Pipeline Complete",
 				"type": "Until",
 				"dependsOn": [],
 				"userProperties": [],
@@ -12,6 +12,32 @@
 				}
 			}
 		],
+		"parameters": {
+			"tenantId": {
+				"type": "string"
+			},
+			"applicationId": {
+				"type": "string"
+			},
+			"authenticationKey": {
+				"type": "string"
+			},
+			"subscriptionId": {
+				"type": "string"
+			},
+			"resourceGroup": {
+				"type": "string"
+			},
+			"factoryName": {
+				"type": "string"
+			},
+			"pipelineName": {
+				"type": "string"
+			},
+			"runId": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }

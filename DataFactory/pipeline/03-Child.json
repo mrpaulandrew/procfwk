@@ -469,7 +469,41 @@
 									"referenceName": "04-Infant",
 									"type": "PipelineReference"
 								},
-								"waitOnCompletion": true
+								"waitOnCompletion": true,
+								"parameters": {
+									"tenantId": {
+										"value": "@pipeline().parameters.TenantId",
+										"type": "Expression"
+									},
+									"applicationId": {
+										"value": "@activity('Get SPN Details').output.firstRow.Id",
+										"type": "Expression"
+									},
+									"authenticationKey": {
+										"value": "@activity('Get SPN Details').output.firstRow.Secret",
+										"type": "Expression"
+									},
+									"subscriptionId": {
+										"value": "@pipeline().parameters.SubscriptionId",
+										"type": "Expression"
+									},
+									"resourceGroup": {
+										"value": "@item().ResourceGroupName",
+										"type": "Expression"
+									},
+									"factoryName": {
+										"value": "@item().DataFactoryName",
+										"type": "Expression"
+									},
+									"pipelineName": {
+										"value": "@item().PipelineName",
+										"type": "Expression"
+									},
+									"runId": {
+										"value": "@activity('Execute Pipeline').output.RunId",
+										"type": "Expression"
+									}
+								}
 							}
 						}
 					]
