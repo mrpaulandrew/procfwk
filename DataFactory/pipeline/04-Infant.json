@@ -8,6 +8,53 @@
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
+					"expression": {
+						"value": "@equals('Done',activity('Get Status').output.SimpleStatus)",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Get Status",
+							"type": "AzureFunctionActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"functionName": "CheckPipelineStatus",
+								"method": "POST",
+								"body": {
+									"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',pipeline().parameters.applicationId,'\",\n    \"authenticationKey\": \"',pipeline().parameters.authenticationKey,'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',pipeline().parameters.runId,'\"\n}')",
+									"type": "Expression"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "PipelineExecutor",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Wait1",
+							"type": "Wait",
+							"dependsOn": [
+								{
+									"activity": "Get Status",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 30
+							}
+						}
+					],
 					"timeout": "7.00:00:00"
 				}
 			}
