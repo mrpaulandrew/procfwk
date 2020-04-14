@@ -262,8 +262,7 @@
 			},
 			{
 				"name": "Get Wait Duration",
-				"description": "Gets the property value from the database used to establish the Wait activity duration between each false Until iteration.",
-				"type": "SqlServerStoredProcedure",
+				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -274,17 +273,21 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[procfwk].[GetPropertyValue]",
-					"storedProcedureParameters": {
-						"PropertyName": {
-							"value": "PipelineStatusCheckDuration",
-							"type": "String"
-						}
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetPropertyValue]",
+						"storedProcedureParameters": {
+							"PropertyName": {
+								"type": "String",
+								"value": "PipelineStatusCheckDuration"
+							}
+						},
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
 					}
-				},
-				"linkedServiceName": {
-					"referenceName": "SupportDatabase",
-					"type": "LinkedServiceReference"
 				}
 			}
 		],
