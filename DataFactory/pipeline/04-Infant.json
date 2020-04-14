@@ -1,6 +1,7 @@
 {
 	"name": "04-Infant",
 	"properties": {
+		"description": "ADF.procfwk infant pipeline used to check when the processing pipeline called by the framework completes and pass the resulting status back to the metadata database.",
 		"activities": [
 			{
 				"name": "Wait Until Pipeline Complete",
