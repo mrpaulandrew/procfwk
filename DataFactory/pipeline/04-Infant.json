@@ -203,6 +203,7 @@
 					"defaultActivities": [
 						{
 							"name": "Pipeline Status Unknown",
+							"description": "Updates the current execution table with a pipeline status of unknown if the function returns an unexpected outcome.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
 							"policy": {
