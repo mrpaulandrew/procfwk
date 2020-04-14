@@ -95,7 +95,7 @@
 					{
 						"activity": "Wait Until Pipeline Complete",
 						"dependencyConditions": [
-							"Succeeded"
+							"Completed"
 						]
 					}
 				],
