@@ -99,6 +99,7 @@
 							"activities": [
 								{
 									"name": "Pipeline Status Succeeded",
+									"description": "Updates the current execution table with a pipeline status of success if the function outcome is succeeded.",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
