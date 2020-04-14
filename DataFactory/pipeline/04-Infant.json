@@ -74,7 +74,10 @@
 										"dependsOn": [],
 										"userProperties": [],
 										"typeProperties": {
-											"waitTimeInSeconds": 60
+											"waitTimeInSeconds": {
+												"value": "@activity('Get Wait Duration').output.firstRow.PropertyValue",
+												"type": "Expression"
+											}
 										}
 									}
 								]
