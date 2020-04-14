@@ -262,7 +262,7 @@
 			},
 			{
 				"name": "Get Wait Duration",
-				"description": "Gets the property to establish the wait duration between each false Until iteration.",
+				"description": "Gets the property value from the database used to establish the Wait activity duration between each false Until iteration.",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [],
 				"policy": {
