@@ -20,6 +20,14 @@ namespace PipelineExecutor
 { 
     public static class ExecutePipeline
     {
+        #if DEBUG
+        #warning Function to be deprecated in a later release.
+                /*
+                 * Use v2 of the function in conjunction with v1.4 of the processing framework.
+                 * See release notes here: https://mrpaulandrew.com/category/azure/data-factory/adf-procfwk/
+                 */
+        #endif
+
         [FunctionName("ExecutePipeline")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,

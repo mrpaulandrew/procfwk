@@ -18,6 +18,7 @@ BEGIN
 	Check 7 - Are there any enabled pipelines configured without a service principal?
 	Check 8 - Does the TenantId property still have its default value?
 	Check 9 - Does the SubscriptionId property still have its default value?
+	Check 10 - Is there a current PipelineStatusCheckDuration property available?
 	*/
 
 	DECLARE @ErrorDetails VARCHAR(500)
@@ -154,6 +155,20 @@ BEGIN
 				( 
 				9,
 				'Subscription Id property is still set to its default value of 1234-1234-1234-1234-1234.'
+				)		
+		END;
+
+	--Check 10:
+	IF NOT EXISTS
+		(
+		SELECT * FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'PipelineStatusCheckDuration'
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				10,
+				'A current PipelineStatusCheckDuration value is missing from the properties table.'
 				)		
 		END;
 

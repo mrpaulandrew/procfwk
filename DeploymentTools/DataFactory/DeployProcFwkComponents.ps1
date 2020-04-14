@@ -10,13 +10,17 @@ $region = ""
 $spId = ""
 $spKey = ""
 
+#Modules
+Import-Module -Name "Az"
+Import-Module -Name "Az.DataFactory"
+
 # Login as a Service Principal
 $passwd = ConvertTo-SecureString $spKey -AsPlainText -Force
 $pscredential = New-Object System.Management.Automation.PSCredential($spId, $passwd)
 Connect-AzAccount -ServicePrincipal -Credential $pscredential -TenantId $tenantId | Out-Null
 
 # Get Deployment Objects and Params files
-$scriptPath = (Get-Item -Path ".\").FullName + "\DeploymentTools\DataFactory\"
+$scriptPath = (Get-Item -Path ".\").FullName #+ "\DeploymentTools\DataFactory\"
 $deploymentFilePath = $scriptPath + "\ProcFwkComponents.json"
 
 Write-Host $scriptPath

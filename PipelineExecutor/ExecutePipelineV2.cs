@@ -21,7 +21,8 @@ namespace PipelineExecutor
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("ExecutePipelineV2 Function triggered by HTTP request.");
+            log.LogInformation("Parsing body from request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
@@ -44,10 +45,12 @@ namespace PipelineExecutor
                 pipelineName == null
                 )
             {
+                log.LogInformation("Invalid body.");
                 return new BadRequestObjectResult("Invalid request body, value missing.");
             }
 
             //Create a data factory management client
+            log.LogInformation("Creating ADF connectivity client.");
             var client = Helpers.DataFactoryClient.createDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId);
 
             //Run pipeline
@@ -75,15 +78,15 @@ namespace PipelineExecutor
             }
 
             log.LogInformation("Pipeline run ID: " + runResponse.RunId);
-            
+
             //Wait and check for pipeline to start...
-            log.LogInformation("Checking pipeline run status...");
+            log.LogInformation("Checking ADF pipeline status.");
             while (true)
             {
                 pipelineRun = client.PipelineRuns.Get(
                     resourceGroup, factoryName, runResponse.RunId);
 
-                log.LogInformation("Status: " + pipelineRun.Status);
+                log.LogInformation("ADF pipeline status: " + pipelineRun.Status);
 
                 if (pipelineRun.Status == "Queued")
                     System.Threading.Thread.Sleep(15000);
@@ -98,6 +101,8 @@ namespace PipelineExecutor
                                     "\" }";
 
             JObject outputJson = JObject.Parse(outputString);
+
+            log.LogInformation("ExecutePipelineV2 Function complete.");
             return new OkObjectResult(outputJson);
         }
     }

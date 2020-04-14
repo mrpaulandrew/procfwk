@@ -1,5 +1,4 @@
-﻿
-CREATE   PROCEDURE procfwk.SetLogPipelineSuccess
+﻿CREATE PROCEDURE [procfwk].[SetLogPipelineLastStatusCheck]
 	(
 	@ExecutionId UNIQUEIDENTIFIER,
 	@StageId INT,
@@ -8,12 +7,11 @@ CREATE   PROCEDURE procfwk.SetLogPipelineSuccess
 AS
 
 BEGIN
-
+	
 	UPDATE
 		[procfwk].[CurrentExecution]
 	SET
-		[PipelineStatus] = 'Success',
-		[EndDateTime] = GETUTCDATE()
+		[LastStatusCheckDateTime] = GETUTCDATE()
 	WHERE
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId

@@ -20,7 +20,8 @@ namespace PipelineExecutor
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("CheckPipelineStatus Function triggered by HTTP request.");
+            log.LogInformation("Parsing body from request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
@@ -45,19 +46,22 @@ namespace PipelineExecutor
                 runId == null
                 )
             {
-                return new BadRequestObjectResult("Invalid request body, value missing.");
+                log.LogInformation("Invalid body.");
+                return new BadRequestObjectResult("Invalid request body, value(s) missing.");
             }
 
             //Create a data factory management client
+            log.LogInformation("Creating ADF connectivity client.");
             var client = Helpers.DataFactoryClient.createDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId);
 
             //Get pipeline status with provided run id
             PipelineRun pipelineRun;
             pipelineRun = client.PipelineRuns.Get(resourceGroup, factoryName, runId);
+            log.LogInformation("Checking ADF pipeline status.");
 
-            string simpleStatus = string.Empty;
+            string simpleStatus;
 
-            //Create simple status for Until comparison checks
+            //Create simple status for Data Factory Until comparison checks
             if (pipelineRun.Status == "InProgress")
             {
                 simpleStatus = "Running";
@@ -67,6 +71,8 @@ namespace PipelineExecutor
                 simpleStatus = "Done";
             }
 
+            log.LogInformation("ADF pipeline status: " + pipelineRun.Status);
+
             //Final return detail
             string outputString = "{ \"PipelineName\": \"" + pipelineName +
                                     "\", \"RunId\": \"" + pipelineRun.RunId +
@@ -75,6 +81,8 @@ namespace PipelineExecutor
                                     "\" }";
 
             JObject outputJson = JObject.Parse(outputString);
+
+            log.LogInformation("CheckPipelineStatus Function complete.");
             return new OkObjectResult(outputJson);
         }
     }
