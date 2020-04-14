@@ -5,6 +5,7 @@
 		"activities": [
 			{
 				"name": "Wait Until Pipeline Complete",
+				"description": "Loops until the pipeline called completes.\n\nSimple status:\n- Running = new iteration.\n- Done = break.",
 				"type": "Until",
 				"dependsOn": [],
 				"userProperties": [],
