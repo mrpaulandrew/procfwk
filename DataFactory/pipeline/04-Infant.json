@@ -147,6 +147,7 @@
 							"activities": [
 								{
 									"name": "Pipeline Status Failed",
+									"description": "Updates the current execution table with a pipeline status of failed if the function outcome is failed. Also blocks pipelines in the downstream execution stage.",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
