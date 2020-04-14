@@ -17,6 +17,7 @@
 					"activities": [
 						{
 							"name": "Get Pipeline Status",
+							"description": "Checks the status of a given processing pipeline and provides the value for the downstream framework activities to act upon.",
 							"type": "AzureFunctionActivity",
 							"dependsOn": [],
 							"policy": {
@@ -61,6 +62,7 @@
 								"ifFalseActivities": [
 									{
 										"name": "Wait for Pipeline",
+										"description": "The processing pipeline is still running so Wait before checking its status again.",
 										"type": "Wait",
 										"dependsOn": [],
 										"userProperties": [],
