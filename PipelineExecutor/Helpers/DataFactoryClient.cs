@@ -5,7 +5,7 @@ using Microsoft.Azure.Management.DataFactory;
 
 namespace PipelineExecutor.Helpers
 {
-    internal static class DataFactoryClient
+    internal class DataFactoryClient
     {
         public static DataFactoryManagementClient createDataFactoryClient(string tenantId, string applicationId, string authenticationKey, string subscriptionId)
         {

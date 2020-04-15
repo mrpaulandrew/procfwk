@@ -19,6 +19,10 @@ This framework can also be used in any Azure Tenant and allow the creation of co
 ## Development Backlog
 [Go to GitHub Kanban board...](https://github.com/mrpaulandrew/ADF.procfwk/projects/1)
 
+## Glossary
+
+[Go to Glossary...](https://github.com/mrpaulandrew/ADF.procfwk/blob/master/Glossary.md)
+
 ## Resources and Content
 
 | ![alt text](https://mrpaulandrew.files.wordpress.com/2020/03/azure-square-logo.png?w=75 "Blog Icon") | Blogs |[mrpaulandrew.com/ADF.procfwk](https://mrpaulandrew.com/category/azure/data-factory/adf-procfwk/)|
@@ -30,7 +34,7 @@ This framework can also be used in any Azure Tenant and allow the creation of co
 
 | Version | Overview | Related Blog(s) |
 |:----:|--------------|--------|
-| 1.4 |<u>Function Update for Long Running Pipelines</u>, plus:<ul><li>Pipeline check status function added.</li><li>Function Data Factory client moved to internal class.</li><li>SQL GETDATE() changed to GETUTCDATE().</li></li>  |[ADF.procfwk v1.4 - Function Update for Long Running Pipelines](https://mrpaulandrew.com) |
+| 1.4 |<u>Function Update for Long Running Pipelines</u>, plus:<ul><li>Pipeline check status function added.</li><li>Function Data Factory client moved to internal class.</li><li>SQL GETDATE() changed to GETUTCDATE().</li><li>Glossary created, [here](https://github.com/mrpaulandrew/ADF.procfwk/blob/master/Glossary.md).</li></ul>  |[ADF.procfwk v1.4 - Function Update for Long Running Pipelines](https://mrpaulandrew.com) |
 | 1.3 |<u>Metadata Integrity Checks</u>, plus: <ul><li>Logical pipeline predecessors.</li><li>Data Factory Powershell deployment script.</li><li>Helper Notebook.</li><li>Database objects renames and solution tidy up.</li></ul> |[ADF.procfwk v1.3 - Metadata Integrity Checks](https://mrpaulandrew.com/2020/04/07/adf-procfwk-v1-3-metadata-integrity-checks/)  |
 | 1.2 |<u>Execution Restartability</u>, plus: <ul><li>Data Factory annotations and descriptions.</li><li>Database covering indexes.</li><li>Pipeline log status changed from 'Started' to 'Preparing'.</li><li>Pipeline log start date/time now set in child pipeline.</li></ul> |[ADF.procfwk v1.2 - Execution Restartability](https://mrpaulandrew.com/2020/03/24/adf-procfwk-v1-2-execution-restartability/)  |
 | 1.1 |<u>Service Principal Handling</u> via Metadata, plus: <ul><li>Data Factory table.</li><li>Properties table and view.</li><li>Function body bug fix.</li><li>New sample data.</li></ul> |[ADF.procfwk v1.1 - Service Principal Handling via Metadata](https://mrpaulandrew.com/2020/03/17/adf-procfwk-v1-1-service-principal-handling-via-metadata/) |
