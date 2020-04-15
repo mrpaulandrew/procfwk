@@ -111,6 +111,7 @@
     <Build Include="procfwk\Stored Procedures\CheckMetadataIntegrity.sql" />
     <Build Include="dbo\Stored Procedures\SetRandomWaitValues.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineLastStatusCheck.sql" />
+    <Build Include="procfwk\Views\AverageStageDuration.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
