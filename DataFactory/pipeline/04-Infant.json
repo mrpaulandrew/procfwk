@@ -4,7 +4,7 @@
 		"description": "ADF.procfwk infant pipeline used to check when the processing pipeline called by the Child completes and passes the resulting status back to the metadata database.",
 		"activities": [
 			{
-				"name": "Wait Until Pipeline Complete",
+				"name": "Wait Until Pipeline Completes",
 				"description": "Loops until the pipeline called completes.\n\nSimple status:\n- Running = new iteration.\n- Done = break.",
 				"type": "Until",
 				"dependsOn": [
@@ -162,7 +162,7 @@
 				"type": "Switch",
 				"dependsOn": [
 					{
-						"activity": "Wait Until Pipeline Complete",
+						"activity": "Wait Until Pipeline Completes",
 						"dependencyConditions": [
 							"Completed"
 						]
