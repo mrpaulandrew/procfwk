@@ -59,9 +59,9 @@ namespace PipelineExecutor
             pipelineRun = client.PipelineRuns.Get(resourceGroup, factoryName, runId);
             log.LogInformation("Checking ADF pipeline status.");
 
+            //Create simple status for Data Factory Until comparison checks
             string simpleStatus;
 
-            //Create simple status for Data Factory Until comparison checks
             if (pipelineRun.Status == "InProgress")
             {
                 simpleStatus = "Running";
