@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Markdown", "Markdown", "{C7297C57-3403-473B-AA2A-31012A4A9ADF}"
 	ProjectSection(SolutionItems) = preProject
 		DeploymentTools\Deployment Steps.md = DeploymentTools\Deployment Steps.md
+		Glossary.md = Glossary.md
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -36,6 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ProcFwk", "_ProcFwk", "{17
 		DataFactory\pipeline\01-Grandparent.json = DataFactory\pipeline\01-Grandparent.json
 		DataFactory\pipeline\02-Parent.json = DataFactory\pipeline\02-Parent.json
 		DataFactory\pipeline\03-Child.json = DataFactory\pipeline\03-Child.json
+		DataFactory\pipeline\04-Infant.json = DataFactory\pipeline\04-Infant.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Processes", "Processes", "{04142829-7936-4C27-9891-FB086BEAE1AD}"
@@ -59,7 +61,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{16E32C
 		Images\ADFprocfwk Icon.png = Images\ADFprocfwk Icon.png
 		Images\All ADF Activities.pptx = Images\All ADF Activities.pptx
 		Images\Authentication Flow.png = Images\Authentication Flow.png
-		Images\v1.1 Database Diagram.png = Images\v1.1 Database Diagram.png
+		Images\Database Diagram.png = Images\Database Diagram.png
+		Images\Pipeline Type Key.png = Images\Pipeline Type Key.png
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notebooks", "Notebooks", "{19F99FD2-9170-42DA-B4FE-A52A358B5473}"

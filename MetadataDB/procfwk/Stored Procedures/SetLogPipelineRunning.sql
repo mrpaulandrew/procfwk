@@ -12,7 +12,7 @@ BEGIN
 	UPDATE
 		[procfwk].[CurrentExecution]
 	SET
-		[StartDateTime] = GETDATE(),
+		[StartDateTime] = GETUTCDATE(),
 		[PipelineStatus] = 'Running'
 	WHERE
 		[LocalExecutionId] = @ExecutionId

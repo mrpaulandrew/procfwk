@@ -1,7 +1,7 @@
 {
 	"name": "FunctionalTestingTrigger",
 	"properties": {
-		"description": "Used internally to run the processing framework hourly.",
+		"description": "Used for functional testing of the framework in a dedicated environment.",
 		"annotations": [
 			"ADF.procfwk"
 		],

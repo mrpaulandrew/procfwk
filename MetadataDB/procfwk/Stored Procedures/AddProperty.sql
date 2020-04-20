@@ -51,7 +51,7 @@ BEGIN
 			@PropertyName AS 'PropertyName',
 			@PropertyValue AS 'PropertyValue',
 			@Description AS 'Description',
-			GETDATE() AS 'StartEndDate'
+			GETUTCDATE() AS 'StartEndDate'
 		)
 	--insert new version of existing property from MERGE OUTPUT
 	INSERT INTO [procfwk].[Properties]
@@ -65,7 +65,7 @@ BEGIN
 		[PropertyName],
 		[PropertyValue],
 		[Description],
-		GETDATE()
+		GETUTCDATE()
 	FROM
 		(
 		MERGE INTO
