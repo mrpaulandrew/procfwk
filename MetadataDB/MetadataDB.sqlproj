@@ -114,6 +114,7 @@
     <Build Include="procfwk\Views\AverageStageDuration.sql" />
     <Build Include="procfwk\Views\CompleteExecutionLog.sql" />
     <Build Include="procfwk\Views\CurrentExecutionSummary.sql" />
+    <Build Include="procfwk\Views\LastExecutionSummary.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
