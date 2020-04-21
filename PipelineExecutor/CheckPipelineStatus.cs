@@ -52,33 +52,36 @@ namespace PipelineExecutor
 
             //Create a data factory management client
             log.LogInformation("Creating ADF connectivity client.");
-            var client = Helpers.DataFactoryClient.createDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId);
+            string outputString = string.Empty;
 
-            //Get pipeline status with provided run id
-            PipelineRun pipelineRun;
-            pipelineRun = client.PipelineRuns.Get(resourceGroup, factoryName, runId);
-            log.LogInformation("Checking ADF pipeline status.");
-
-            //Create simple status for Data Factory Until comparison checks
-            string simpleStatus;
-
-            if (pipelineRun.Status == "InProgress")
+            using (var client = Helpers.DataFactoryClient.createDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
             {
-                simpleStatus = "Running";
-            }
-            else
-            {
-                simpleStatus = "Done";
-            }
+                //Get pipeline status with provided run id
+                PipelineRun pipelineRun;
+                pipelineRun = client.PipelineRuns.Get(resourceGroup, factoryName, runId);
+                log.LogInformation("Checking ADF pipeline status.");
 
-            log.LogInformation("ADF pipeline status: " + pipelineRun.Status);
+                //Create simple status for Data Factory Until comparison checks
+                string simpleStatus;
 
-            //Final return detail
-            string outputString = "{ \"PipelineName\": \"" + pipelineName +
-                                    "\", \"RunId\": \"" + pipelineRun.RunId +
-                                    "\", \"SimpleStatus\": \"" + simpleStatus +
-                                    "\", \"Status\": \"" + pipelineRun.Status +
-                                    "\" }";
+                if (pipelineRun.Status == "InProgress")
+                {
+                    simpleStatus = "Running";
+                }
+                else
+                {
+                    simpleStatus = "Done";
+                }
+
+                log.LogInformation("ADF pipeline status: " + pipelineRun.Status);
+
+                //Final return detail
+                outputString = "{ \"PipelineName\": \"" + pipelineName +
+                                        "\", \"RunId\": \"" + pipelineRun.RunId +
+                                        "\", \"SimpleStatus\": \"" + simpleStatus +
+                                        "\", \"Status\": \"" + pipelineRun.Status +
+                                        "\" }";
+            }
 
             JObject outputJson = JObject.Parse(outputString);
 

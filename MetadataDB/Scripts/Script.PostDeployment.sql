@@ -15,5 +15,8 @@ Post-Deployment Script Template
 :r .\Metadata\Pipelines.sql
 :r .\Metadata\PipelineParams.sql
 
+--restore log data
+:r .\LogData\ExecutionLogRestore.sql
+
 --merged
 :r .\Metadata\Properties.sql

@@ -51,54 +51,59 @@ namespace PipelineExecutor
 
             //Create a data factory management client
             log.LogInformation("Creating ADF connectivity client.");
-            var client = Helpers.DataFactoryClient.createDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId);
+            string outputString = string.Empty;
 
-            //Run pipeline
-            CreateRunResponse runResponse;
-            PipelineRun pipelineRun;
-
-            if (data?.pipelineParameters == null)
+            using (var client = Helpers.DataFactoryClient.createDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
             {
-                log.LogInformation("Called pipeline without parameters.");
+                //Run pipeline
+                CreateRunResponse runResponse;
+                PipelineRun pipelineRun;
 
-                runResponse = client.Pipelines.CreateRunWithHttpMessagesAsync(
-                    resourceGroup, factoryName, pipelineName).Result.Body;
-            }
-            else
-            {
-                log.LogInformation("Called pipeline with parameters.");
+                if (data?.pipelineParameters == null)
+                {
+                    log.LogInformation("Called pipeline without parameters.");
 
-                JObject jObj = JObject.Parse(requestBody);
-                Dictionary<string, object> parameters = jObj["pipelineParameters"].ToObject<Dictionary<string, object>>();
-
-                log.LogInformation("Number of parameters provided: " + jObj.Count.ToString());
-
-                runResponse = client.Pipelines.CreateRunWithHttpMessagesAsync(
-                    resourceGroup, factoryName, pipelineName, parameters: parameters).Result.Body;
-            }
-
-            log.LogInformation("Pipeline run ID: " + runResponse.RunId);
-
-            //Wait and check for pipeline to start...
-            log.LogInformation("Checking ADF pipeline status.");
-            while (true)
-            {
-                pipelineRun = client.PipelineRuns.Get(
-                    resourceGroup, factoryName, runResponse.RunId);
-
-                log.LogInformation("ADF pipeline status: " + pipelineRun.Status);
-
-                if (pipelineRun.Status == "Queued")
-                    System.Threading.Thread.Sleep(15000);
+                    runResponse = client.Pipelines.CreateRunWithHttpMessagesAsync(
+                        resourceGroup, factoryName, pipelineName).Result.Body;
+                }
                 else
-                    break;
-            }
+                {
+                    log.LogInformation("Called pipeline with parameters.");
 
-            //Final return detail
-            string outputString = "{ \"PipelineName\": \"" + pipelineName +
-                                    "\", \"RunId\": \"" + pipelineRun.RunId +
-                                    "\", \"Status\": \"" + pipelineRun.Status +
-                                    "\" }";
+                    JObject jObj = JObject.Parse(requestBody);
+                    Dictionary<string, object> parameters = jObj["pipelineParameters"].ToObject<Dictionary<string, object>>();
+
+                    log.LogInformation("Number of parameters provided: " + jObj.Count.ToString());
+
+                    runResponse = client.Pipelines.CreateRunWithHttpMessagesAsync(
+                        resourceGroup, factoryName, pipelineName, parameters: parameters).Result.Body;
+                }
+
+                log.LogInformation("Pipeline run ID: " + runResponse.RunId);
+
+                //Wait and check for pipeline to start...
+                log.LogInformation("Checking ADF pipeline status.");
+                while (true)
+                {
+                    pipelineRun = client.PipelineRuns.Get(
+                        resourceGroup, factoryName, runResponse.RunId);
+
+                    log.LogInformation("ADF pipeline status: " + pipelineRun.Status);
+
+                    if (pipelineRun.Status == "Queued")
+                        System.Threading.Thread.Sleep(15000);
+                    else
+                        break;
+                }
+
+                //Final return detail
+                outputString = "{ \"PipelineName\": \"" + pipelineName +
+                                        "\", \"RunId\": \"" + pipelineRun.RunId +
+                                        "\", \"Status\": \"" + pipelineRun.Status +
+                                        "\" }";
+
+                
+            }
 
             JObject outputJson = JObject.Parse(outputString);
 

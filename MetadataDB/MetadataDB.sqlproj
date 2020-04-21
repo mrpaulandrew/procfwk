@@ -69,6 +69,7 @@
     <Folder Include="dbo\Tables" />
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="procfwk\Synonyms" />
+    <Folder Include="Scripts\LogData" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="procfwk\Tables\Pipelines.sql" />
@@ -115,6 +116,7 @@
     <Build Include="procfwk\Views\CompleteExecutionLog.sql" />
     <Build Include="procfwk\Views\CurrentExecutionSummary.sql" />
     <Build Include="procfwk\Views\LastExecutionSummary.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogPipelineRunId.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
@@ -128,6 +130,8 @@
     <None Include="Scripts\Metadata\Properties.sql" />
     <None Include="Scripts\Metadata\DeleteAll.sql" />
     <None Include="Scripts\Metadata\DropLegacyTables.sql" />
+    <None Include="Scripts\LogData\ExecutionLogBackup.sql" />
+    <None Include="Scripts\LogData\ExecutionLogRestore.sql" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="Scripts\Script.PreDeployment.sql" />
