@@ -348,6 +348,7 @@
 						},
 						{
 							"name": "Set Run Id",
+							"description": "Provide the actual ADF run ID back to the current execution table for long term logging and alignment between the metadata other Azure monitoring tools.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
