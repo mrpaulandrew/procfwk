@@ -52,6 +52,7 @@ namespace PipelineExecutor
                 applicationId == null ||
                 authenticationKey == null ||
                 subscriptionId == null ||
+                resourceGroup == null ||
                 factoryName == null ||
                 pipelineName == null
                 )
