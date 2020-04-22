@@ -1,0 +1,445 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "FrameworkFactory"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Intentional Error')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"activities": [
+					{
+						"name": "Call Fail Procedure",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Wait1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[FailProcedure]",
+							"storedProcedureParameters": {
+								"RaiseError": {
+									"value": {
+										"value": "@pipeline().parameters.RaiseErrors",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SupportDatabase",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 10
+						}
+					},
+					{
+						"name": "Call Fail Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Wait1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Playground/Throw Exception",
+							"baseParameters": {
+								"RaiseError": {
+									"value": "@pipeline().parameters.RaiseErrors",
+									"type": "Expression"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "BricksOfData",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"parameters": {
+					"RaiseErrors": {
+						"type": "string",
+						"defaultValue": "false"
+					}
+				},
+				"folder": {
+					"name": "_Workers"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Wait 1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"activities": [
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
+				"folder": {
+					"name": "_Workers"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Wait 10')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"activities": [
+					{
+						"name": "Wait10",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
+				"folder": {
+					"name": "_Workers"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Wait 2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"activities": [
+					{
+						"name": "Wait2",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
+				"folder": {
+					"name": "_Workers"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Wait 3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"activities": [
+					{
+						"name": "Wait3",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
+				"folder": {
+					"name": "_Workers"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Wait 4')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"activities": [
+					{
+						"name": "Wait4",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
+				"folder": {
+					"name": "_Workers"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Wait 5')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"activities": [
+					{
+						"name": "Wait5",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
+				"folder": {
+					"name": "_Workers"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Wait 6')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"activities": [
+					{
+						"name": "Wait6",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
+				"folder": {
+					"name": "_Workers"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Wait 7')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"activities": [
+					{
+						"name": "Wait7",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
+				"folder": {
+					"name": "_Workers"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Wait 8')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"activities": [
+					{
+						"name": "Wait8",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
+				"folder": {
+					"name": "_Workers"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Wait 9')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"activities": [
+					{
+						"name": "Wait9",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.WaitTime",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"WaitTime": {
+						"type": "int",
+						"defaultValue": 5
+					}
+				},
+				"folder": {
+					"name": "_Workers"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}
