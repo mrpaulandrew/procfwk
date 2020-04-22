@@ -1,5 +1,5 @@
 {
-	"name": "Intention Error",
+	"name": "Intentional Error",
 	"properties": {
 		"description": "Used just so the ADF.procfwk has something to call during development.",
 		"activities": [
@@ -89,7 +89,7 @@
 			}
 		},
 		"folder": {
-			"name": "Processes"
+			"name": "_Workers"
 		},
 		"annotations": []
 	}
