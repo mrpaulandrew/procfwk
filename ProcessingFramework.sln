@@ -68,6 +68,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{16E32C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notebooks", "Notebooks", "{19F99FD2-9170-42DA-B4FE-A52A358B5473}"
 	ProjectSection(SolutionItems) = preProject
+		Notebooks\Databricks - Throw Exception.scala = Notebooks\Databricks - Throw Exception.scala
 		Notebooks\Metadata Guide and Handy Code Snippets.ipynb = Notebooks\Metadata Guide and Handy Code Snippets.ipynb
 	EndProjectSection
 EndProject
