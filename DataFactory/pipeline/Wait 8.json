@@ -23,7 +23,7 @@
 			}
 		},
 		"folder": {
-			"name": "Processes"
+			"name": "_Workers"
 		},
 		"annotations": []
 	}
