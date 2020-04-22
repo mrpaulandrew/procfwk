@@ -40,8 +40,8 @@
 				}
 			},
 			{
-				"name": "Wait2",
-				"type": "Wait",
+				"name": "Call Fail Procedure 2",
+				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
 						"activity": "Wait1",
@@ -50,25 +50,20 @@
 						]
 					}
 				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
 				"userProperties": [],
 				"typeProperties": {
-					"waitTimeInSeconds": 1
-				}
-			},
-			{
-				"name": "Wait3",
-				"type": "Wait",
-				"dependsOn": [
-					{
-						"activity": "Call Fail Procedure",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"waitTimeInSeconds": 1
+					"storedProcedureName": "[dbo].[FailProcedure]"
+				},
+				"linkedServiceName": {
+					"referenceName": "SupportDatabase",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
