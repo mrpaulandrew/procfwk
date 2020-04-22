@@ -85,7 +85,7 @@
 		"parameters": {
 			"RaiseErrors": {
 				"type": "string",
-				"defaultValue": "true"
+				"defaultValue": "false"
 			}
 		},
 		"folder": {
