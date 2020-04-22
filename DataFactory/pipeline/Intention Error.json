@@ -67,6 +67,12 @@
 				}
 			}
 		],
+		"parameters": {
+			"RaiseErrors": {
+				"type": "string",
+				"defaultValue": "false"
+			}
+		},
 		"folder": {
 			"name": "Processes"
 		},
