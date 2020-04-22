@@ -1319,8 +1319,8 @@
 						}
 					},
 					{
-						"name": "Call Fail Procedure 2",
-						"type": "SqlServerStoredProcedure",
+						"name": "Call Fail Notebook",
+						"type": "DatabricksNotebook",
 						"dependsOn": [
 							{
 								"activity": "Wait1",
@@ -1338,10 +1338,10 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"storedProcedureName": "[[dbo].[FailProcedure]"
+							"notebookPath": "/Playground/Throw Exception"
 						},
 						"linkedServiceName": {
-							"referenceName": "SupportDatabase",
+							"referenceName": "BricksOfData",
 							"type": "LinkedServiceReference"
 						}
 					}
@@ -1352,7 +1352,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
+				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]",
+				"[concat(variables('factoryId'), '/linkedServices/BricksOfData')]"
 			]
 		},
 		{
@@ -1803,6 +1804,31 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/01-Grandparent')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BricksOfData')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://northeurope.azuredatabricks.net",
+					"accessToken": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "Keys",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "BricksOfDataToken",
+						"secretVersion": ""
+					},
+					"existingClusterId": "0422-090117-slots899"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Keys')]"
 			]
 		}
 	]

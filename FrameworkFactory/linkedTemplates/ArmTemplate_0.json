@@ -418,6 +418,31 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/BricksOfData')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://northeurope.azuredatabricks.net",
+					"accessToken": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "Keys",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "BricksOfDataToken",
+						"secretVersion": ""
+					},
+					"existingClusterId": "0422-090117-slots899"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Keys')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Intention Error')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -461,8 +486,8 @@
 						}
 					},
 					{
-						"name": "Call Fail Procedure 2",
-						"type": "SqlServerStoredProcedure",
+						"name": "Call Fail Notebook",
+						"type": "DatabricksNotebook",
 						"dependsOn": [
 							{
 								"activity": "Wait1",
@@ -480,10 +505,10 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"storedProcedureName": "[[dbo].[FailProcedure]"
+							"notebookPath": "/Playground/Throw Exception"
 						},
 						"linkedServiceName": {
-							"referenceName": "SupportDatabase",
+							"referenceName": "BricksOfData",
 							"type": "LinkedServiceReference"
 						}
 					}
@@ -494,7 +519,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
+				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]",
+				"[concat(variables('factoryId'), '/linkedServices/BricksOfData')]"
 			]
 		},
 		{
@@ -1770,39 +1796,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/02-Parent')]",
 				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FunctionalTestingTrigger')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Used for functional testing of the framework in a dedicated environment.",
-				"annotations": [
-					"ADF.procfwk"
-				],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "01-Grandparent",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Hour",
-						"interval": 2,
-						"startTime": "2020-04-06T15:00:00.000Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/01-Grandparent')]"
 			]
 		}
 	]
