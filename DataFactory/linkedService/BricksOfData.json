@@ -1,0 +1,20 @@
+{
+	"name": "BricksOfData",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDatabricks",
+		"typeProperties": {
+			"domain": "https://northeurope.azuredatabricks.net",
+			"accessToken": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "Keys",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "BricksOfDataToken",
+				"secretVersion": ""
+			},
+			"existingClusterId": "0422-090117-slots899"
+		}
+	}
+}
