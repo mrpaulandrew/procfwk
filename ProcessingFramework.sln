@@ -40,9 +40,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ProcFwk", "_ProcFwk", "{17
 		DataFactory\pipeline\04-Infant.json = DataFactory\pipeline\04-Infant.json
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Processes", "Processes", "{04142829-7936-4C27-9891-FB086BEAE1AD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workers", "Workers", "{04142829-7936-4C27-9891-FB086BEAE1AD}"
 	ProjectSection(SolutionItems) = preProject
-		DataFactory\pipeline\Intention Error.json = DataFactory\pipeline\Intention Error.json
+		DataFactory\pipeline\Intentional Error.json = DataFactory\pipeline\Intentional Error.json
 		DataFactory\pipeline\Wait 1.json = DataFactory\pipeline\Wait 1.json
 		DataFactory\pipeline\Wait 10.json = DataFactory\pipeline\Wait 10.json
 		DataFactory\pipeline\Wait 2.json = DataFactory\pipeline\Wait 2.json
