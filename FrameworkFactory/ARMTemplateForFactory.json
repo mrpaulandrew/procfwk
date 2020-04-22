@@ -1302,7 +1302,16 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"storedProcedureName": "[[dbo].[FailProcedure]"
+							"storedProcedureName": "[[dbo].[FailProcedure]",
+							"storedProcedureParameters": {
+								"RaiseError": {
+									"value": {
+										"value": "@pipeline().parameters.RaiseErrors",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
 						},
 						"linkedServiceName": {
 							"referenceName": "SupportDatabase",
@@ -1338,7 +1347,13 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"notebookPath": "/Playground/Throw Exception"
+							"notebookPath": "/Playground/Throw Exception",
+							"baseParameters": {
+								"RaiseError": {
+									"value": "@pipeline().parameters.RaiseErrors",
+									"type": "Expression"
+								}
+							}
 						},
 						"linkedServiceName": {
 							"referenceName": "BricksOfData",
@@ -1346,6 +1361,12 @@
 						}
 					}
 				],
+				"parameters": {
+					"RaiseErrors": {
+						"type": "string",
+						"defaultValue": "false"
+					}
+				},
 				"folder": {
 					"name": "Processes"
 				},
