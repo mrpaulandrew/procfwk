@@ -40,8 +40,8 @@
 				}
 			},
 			{
-				"name": "Call Fail Procedure 2",
-				"type": "SqlServerStoredProcedure",
+				"name": "Call Fail Notebook",
+				"type": "DatabricksNotebook",
 				"dependsOn": [
 					{
 						"activity": "Wait1",
@@ -59,10 +59,10 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[FailProcedure]"
+					"notebookPath": "/Playground/Throw Exception"
 				},
 				"linkedServiceName": {
-					"referenceName": "SupportDatabase",
+					"referenceName": "BricksOfData",
 					"type": "LinkedServiceReference"
 				}
 			}
