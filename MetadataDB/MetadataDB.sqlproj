@@ -117,6 +117,7 @@
     <Build Include="procfwk\Views\CurrentExecutionSummary.sql" />
     <Build Include="procfwk\Views\LastExecutionSummary.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineRunId.sql" />
+    <Build Include="procfwk\Views\WorkerParallelismOverTime.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
