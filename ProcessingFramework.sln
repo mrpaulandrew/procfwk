@@ -92,6 +92,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reporting", "Reporting", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerBI", "PowerBI", "{EBC230DF-D45D-43E4-A74E-32ADA3DDAE7A}"
 	ProjectSection(SolutionItems) = preProject
+		Reporting\PowerBI\Executions Overview.pbit = Reporting\PowerBI\Executions Overview.pbit
 		Reporting\PowerBI\Executions Overview.pbix = Reporting\PowerBI\Executions Overview.pbix
 	EndProjectSection
 EndProject
