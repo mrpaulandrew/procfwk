@@ -10,8 +10,9 @@ using Newtonsoft.Json;
 using Microsoft.Azure.Management.DataFactory;
 using Microsoft.Azure.Management.DataFactory.Models;
 using Newtonsoft.Json.Linq;
+using ADFprocfwk.Helpers;
 
-namespace PipelineExecutor
+namespace ADFprocfwk
 {
     public static class CheckPipelineStatus
     {
@@ -25,6 +26,7 @@ namespace PipelineExecutor
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
+            string outputString = string.Empty;
 
             string tenantId = data?.tenantId;
             string applicationId = data?.applicationId;
@@ -53,9 +55,8 @@ namespace PipelineExecutor
 
             //Create a data factory management client
             log.LogInformation("Creating ADF connectivity client.");
-            string outputString = string.Empty;
-
-            using (var client = Helpers.DataFactoryClient.createDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
+            
+            using (var client = DataFactoryClient.createDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
             {
                 //Get pipeline status with provided run id
                 PipelineRun pipelineRun;

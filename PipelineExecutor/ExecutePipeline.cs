@@ -7,33 +7,23 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.Rest;
 using Microsoft.Azure.Management.DataFactory;
 using Microsoft.Azure.Management.DataFactory.Models;
-using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-using System.Net.Http;
+using ADFprocfwk.Helpers;
 
-namespace PipelineExecutor
-{ 
+namespace ADFprocfwk
+{
     public static class ExecutePipeline
     {
-        #if DEBUG
-        #warning Function to be deprecated in a later release.
-                /*
-                 * Use v2 of the function in conjunction with v1.4 of the processing framework.
-                 * See release notes here: https://mrpaulandrew.com/category/azure/data-factory/adf-procfwk/
-                 */
-        #endif
-
         [FunctionName("ExecutePipeline")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("ExecutePipeline Function triggered by HTTP request.");
+            log.LogInformation("Parsing body from request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
@@ -57,67 +47,69 @@ namespace PipelineExecutor
                 pipelineName == null
                 )
             {
+                log.LogInformation("Invalid body.");
                 return new BadRequestObjectResult("Invalid request body, value missing.");
             }
 
             //Create a data factory management client
-            var context = new AuthenticationContext("https://login.windows.net/" + tenantId);
-            ClientCredential cc = new ClientCredential(applicationId, authenticationKey);
-            AuthenticationResult result = context.AcquireTokenAsync("https://management.azure.com/", cc).Result;
-            ServiceClientCredentials cred = new TokenCredentials(result.AccessToken);
-            var client = new DataFactoryManagementClient(cred)
+            log.LogInformation("Creating ADF connectivity client.");
+            string outputString = string.Empty;
+
+            using (var client = DataFactoryClient.createDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
             {
-                SubscriptionId = subscriptionId
-            };
+                //Run pipeline
+                CreateRunResponse runResponse;
+                PipelineRun pipelineRun;
 
-            //Run pipeline
-            CreateRunResponse runResponse;
-            PipelineRun pipelineRun;
+                if (data?.pipelineParameters == null)
+                {
+                    log.LogInformation("Called pipeline without parameters.");
 
-            if (data?.pipelineParameters == null)
-            {
-                log.LogInformation("Called pipeline without parameters.");
-
-                runResponse = client.Pipelines.CreateRunWithHttpMessagesAsync(
-                    resourceGroup, factoryName, pipelineName).Result.Body;
-            }
-            else
-            {
-                log.LogInformation("Called pipeline with parameters.");
-
-                JObject jObj = JObject.Parse(requestBody);
-                Dictionary<string, object> parameters = jObj["pipelineParameters"].ToObject<Dictionary<string, object>>();
-
-                log.LogInformation("Number of parameters provided: " + jObj.Count.ToString());
-
-                runResponse = client.Pipelines.CreateRunWithHttpMessagesAsync(
-                    resourceGroup, factoryName, pipelineName, parameters: parameters).Result.Body;
-            }
-
-            log.LogInformation("Pipeline run ID: " + runResponse.RunId);
-            
-            //Wait and check for pipeline result
-            log.LogInformation("Checking pipeline run status...");
-            while (true)
-            {
-                pipelineRun = client.PipelineRuns.Get(
-                    resourceGroup, factoryName, runResponse.RunId);
-
-                log.LogInformation("Status: " + pipelineRun.Status);
-
-                if (pipelineRun.Status == "InProgress" || pipelineRun.Status == "Queued")
-                    System.Threading.Thread.Sleep(15000);
+                    runResponse = client.Pipelines.CreateRunWithHttpMessagesAsync(
+                        resourceGroup, factoryName, pipelineName).Result.Body;
+                }
                 else
-                    break;
-            }
+                {
+                    log.LogInformation("Called pipeline with parameters.");
 
-            //Final return detail
-            string outputString = "{ \"PipelineName\": \"" + pipelineName +
-                                    "\", \"RunIdUsed\": \"" + pipelineRun.RunId +
-                                    "\", \"Status\": \"" + pipelineRun.Status +
-                                    "\" }";
+                    JObject jObj = JObject.Parse(requestBody);
+                    Dictionary<string, object> parameters = jObj["pipelineParameters"].ToObject<Dictionary<string, object>>();
+
+                    log.LogInformation("Number of parameters provided: " + jObj.Count.ToString());
+
+                    runResponse = client.Pipelines.CreateRunWithHttpMessagesAsync(
+                        resourceGroup, factoryName, pipelineName, parameters: parameters).Result.Body;
+                }
+
+                log.LogInformation("Pipeline run ID: " + runResponse.RunId);
+
+                //Wait and check for pipeline to start...
+                log.LogInformation("Checking ADF pipeline status.");
+                while (true)
+                {
+                    pipelineRun = client.PipelineRuns.Get(
+                        resourceGroup, factoryName, runResponse.RunId);
+
+                    log.LogInformation("ADF pipeline status: " + pipelineRun.Status);
+
+                    if (pipelineRun.Status == "Queued")
+                        System.Threading.Thread.Sleep(15000);
+                    else
+                        break;
+                }
+
+                //Final return detail
+                outputString = "{ \"PipelineName\": \"" + pipelineName +
+                                        "\", \"RunId\": \"" + pipelineRun.RunId +
+                                        "\", \"Status\": \"" + pipelineRun.Status +
+                                        "\" }";
+
+
+            }
 
             JObject outputJson = JObject.Parse(outputString);
+
+            log.LogInformation("ExecutePipeline Function complete.");
             return new OkObjectResult(outputJson);
         }
     }

@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
 using Microsoft.Azure.Management.DataFactory;
 
-namespace PipelineExecutor.Helpers
+namespace ADFprocfwk.Helpers
 {
     internal class DataFactoryClient
     {
