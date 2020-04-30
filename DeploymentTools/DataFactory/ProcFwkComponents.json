@@ -1,7 +1,7 @@
 ﻿{
   "linkedServices": [
     "/linkedService/Keys.json",
-    "/linkedService/PipelineExecutor.json",
+    "/linkedService/FrameworkFunctions.json",
     "/linkedService/SupportDatabase.json"
   ],
   "datasets": [
