@@ -10,7 +10,7 @@ namespace ADFprocfwk.Helpers
     {
         public static string fromEmail { get; set; }
 
-        public static SmtpClient createSMTPClient()
+        public static SmtpClient CreateSMTPClient()
         {
             string smtpHost = Environment.GetEnvironmentVariable("AppSettingSmtpHost");
             int smtpPort = int.Parse(Environment.GetEnvironmentVariable("AppSettingSmtpPort"));
@@ -19,14 +19,15 @@ namespace ADFprocfwk.Helpers
             
             fromEmail = Environment.GetEnvironmentVariable("AppSettingFromEmail");
 
-            SmtpClient emailClient = new SmtpClient();
-
-            emailClient.EnableSsl = true;
-            emailClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-            emailClient.UseDefaultCredentials = false;
-            emailClient.Host = smtpHost;
-            emailClient.Port = smtpPort;
-            emailClient.Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass);
+            SmtpClient emailClient = new SmtpClient
+            {
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Host = smtpHost,
+                Port = smtpPort,
+                Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass)
+            };
 
             return emailClient;
         }

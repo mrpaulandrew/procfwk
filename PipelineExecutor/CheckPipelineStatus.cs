@@ -56,7 +56,7 @@ namespace ADFprocfwk
             //Create a data factory management client
             log.LogInformation("Creating ADF connectivity client.");
             
-            using (var client = DataFactoryClient.createDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
+            using (var client = DataFactoryClient.CreateDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
             {
                 //Get pipeline status with provided run id
                 PipelineRun pipelineRun;

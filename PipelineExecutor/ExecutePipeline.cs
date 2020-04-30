@@ -55,7 +55,7 @@ namespace ADFprocfwk
             log.LogInformation("Creating ADF connectivity client.");
             string outputString = string.Empty;
 
-            using (var client = DataFactoryClient.createDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
+            using (var client = DataFactoryClient.CreateDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
             {
                 //Run pipeline
                 CreateRunResponse runResponse;

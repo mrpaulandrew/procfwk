@@ -47,7 +47,7 @@ namespace ADFprocfwk
             //Create email client
             log.LogInformation("Creating smtp client.");
 
-            using (var client = SMTPClient.createSMTPClient())
+            using (var client = SMTPClient.CreateSMTPClient())
             {
                 //Create mail
                 MailAddress from = new MailAddress(SMTPClient.fromEmail);
