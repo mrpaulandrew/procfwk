@@ -327,7 +327,7 @@
 										"storedProcedureParameters": {
 											"RawErrorDetails": {
 												"value": {
-													"value": "@activity('Get Error Details').output",
+													"value": "@string(activity('Get Error Details').output)",
 													"type": "Expression"
 												},
 												"type": "String"
