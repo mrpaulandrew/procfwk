@@ -323,14 +323,21 @@
 									},
 									"userProperties": [],
 									"typeProperties": {
-										"storedProcedureName": "[procfwk].[SetRawErrorLog]",
+										"storedProcedureName": "[procfwk].[SetErrorLogDetails]",
 										"storedProcedureParameters": {
-											"RawErrorDetails": {
+											"JsonErrorDetails": {
 												"value": {
 													"value": "@string(activity('Get Error Details').output)",
 													"type": "Expression"
 												},
 												"type": "String"
+											},
+											"LocalExecutionId": {
+												"value": {
+													"value": "@pipeline().parameters.executionId",
+													"type": "Expression"
+												},
+												"type": "Guid"
 											}
 										}
 									},
