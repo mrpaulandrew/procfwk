@@ -8,18 +8,15 @@ namespace ADFprocfwk.Helpers
 {
     internal class SMTPClient
     {
-        private static string smtpHost { get; set; }
-        private static string smtpUser { get; set; }
-        private static string smtpPass { get; set; }
-        private static int smtpPort { get; set; }
         public static string fromEmail { get; set; }
 
         public static SmtpClient createSMTPClient()
         {
-            smtpHost = Environment.GetEnvironmentVariable("AppSettingSmtpHost");
-            smtpPort = int.Parse(Environment.GetEnvironmentVariable("AppSettingSmtpPort"));
-            smtpUser = Environment.GetEnvironmentVariable("AppSettingSmtpUser");
-            smtpPass = Environment.GetEnvironmentVariable("AppSettingSmtpPass");
+            string smtpHost = Environment.GetEnvironmentVariable("AppSettingSmtpHost");
+            int smtpPort = int.Parse(Environment.GetEnvironmentVariable("AppSettingSmtpPort"));
+            string smtpUser = Environment.GetEnvironmentVariable("AppSettingSmtpUser");
+            string smtpPass = Environment.GetEnvironmentVariable("AppSettingSmtpPass");
+            
             fromEmail = Environment.GetEnvironmentVariable("AppSettingFromEmail");
 
             SmtpClient emailClient = new SmtpClient();
@@ -30,8 +27,6 @@ namespace ADFprocfwk.Helpers
             emailClient.Host = smtpHost;
             emailClient.Port = smtpPort;
             emailClient.Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass);
-
-            Console.WriteLine(smtpHost);
 
             return emailClient;
         }
