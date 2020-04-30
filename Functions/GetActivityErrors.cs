@@ -103,6 +103,7 @@ namespace ADFprocfwk
                     //Get output details
                     if (!string.IsNullOrEmpty(errorCode))
                     {
+                        log.LogInformation("Activity run id: " + activity.ActivityRunId);
                         log.LogInformation("Activity name: " + activity.ActivityName);
                         log.LogInformation("Activity type: " + activity.ActivityType);
                         log.LogInformation("Error message: " + errorMessage);
@@ -110,7 +111,8 @@ namespace ADFprocfwk
                         outputBlock.ResponseErrorCount += 1;
 
                         //Construct custom error information block
-                        errorDetails = JObject.Parse("{ \"ActivityName\": \"" + activity.ActivityName +
+                        errorDetails = JObject.Parse("{ \"ActivityRunId\": \"" + activity.ActivityRunId +
+                                        "\", \"ActivityName\": \"" + activity.ActivityName +
                                         "\", \"ActivityType\": \"" + activity.ActivityType +
                                         "\", \"ErrorCode\": \"" + errorCode +
                                         "\", \"ErrorType\": \"" + errorType +
