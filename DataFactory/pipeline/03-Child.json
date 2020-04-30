@@ -99,7 +99,7 @@
 								}
 							},
 							"linkedServiceName": {
-								"referenceName": "PipelineExecutor",
+								"referenceName": "FrameworkFunctions",
 								"type": "LinkedServiceReference"
 							}
 						},
