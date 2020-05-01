@@ -823,6 +823,64 @@
                                             }
                                         }
                                     }
+                                },
+                                {
+                                    "name": "Set Run Id",
+                                    "description": "Provide the actual ADF run ID back to the current execution table for long term logging and alignment between the metadata other Azure monitoring tools.",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "Execute Pipeline",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[[procfwk].[SetLogPipelineRunId]",
+                                        "storedProcedureParameters": {
+                                            "ExecutionId": {
+                                                "value": {
+                                                    "value": "@pipeline().parameters.ExecutionId",
+                                                    "type": "Expression"
+                                                },
+                                                "type": "Guid"
+                                            },
+                                            "PipelineId": {
+                                                "value": {
+                                                    "value": "@item().PipelineId",
+                                                    "type": "Expression"
+                                                },
+                                                "type": "Int32"
+                                            },
+                                            "RunId": {
+                                                "value": {
+                                                    "value": "@activity('Execute Pipeline').output.RunId",
+                                                    "type": "Expression"
+                                                },
+                                                "type": "Guid"
+                                            },
+                                            "StageId": {
+                                                "value": {
+                                                    "value": "@pipeline().parameters.StageId",
+                                                    "type": "Expression"
+                                                },
+                                                "type": "Int32"
+                                            }
+                                        }
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "SupportDatabase",
+                                        "type": "LinkedServiceReference"
+                                    }
                                 }
                             ]
                         }
@@ -1276,7 +1334,7 @@
             ]
         },
         {
-            "name": "[concat(parameters('factoryName'), '/Intention Error')]",
+            "name": "[concat(parameters('factoryName'), '/Intentional Error')]",
             "type": "Microsoft.DataFactory/factories/pipelines",
             "apiVersion": "2018-06-01",
             "properties": {
@@ -1285,7 +1343,14 @@
                     {
                         "name": "Call Fail Procedure",
                         "type": "SqlServerStoredProcedure",
-                        "dependsOn": [],
+                        "dependsOn": [
+                            {
+                                "activity": "Wait1",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
                         "policy": {
                             "timeout": "7.00:00:00",
                             "retry": 0,
@@ -1295,21 +1360,81 @@
                         },
                         "userProperties": [],
                         "typeProperties": {
-                            "storedProcedureName": "[[dbo].[FailProcedure]"
+                            "storedProcedureName": "[[dbo].[FailProcedure]",
+                            "storedProcedureParameters": {
+                                "RaiseError": {
+                                    "value": {
+                                        "value": "@pipeline().parameters.RaiseErrors",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                }
+                            }
                         },
                         "linkedServiceName": {
                             "referenceName": "SupportDatabase",
                             "type": "LinkedServiceReference"
                         }
+                    },
+                    {
+                        "name": "Wait1",
+                        "type": "Wait",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "waitTimeInSeconds": 10
+                        }
+                    },
+                    {
+                        "name": "Call Fail Notebook",
+                        "type": "DatabricksNotebook",
+                        "dependsOn": [
+                            {
+                                "activity": "Wait1",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "notebookPath": "/Playground/Throw Exception",
+                            "baseParameters": {
+                                "RaiseError": {
+                                    "value": "@pipeline().parameters.RaiseErrors",
+                                    "type": "Expression"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "BricksOfData",
+                            "type": "LinkedServiceReference"
+                        }
                     }
                 ],
-                "folder": {
-                    "name": "Processes"
+                "parameters": {
+                    "RaiseErrors": {
+                        "type": "string",
+                        "defaultValue": "false"
+                    }
                 },
-                "annotations": []
+                "folder": {
+                    "name": "_Workers"
+                },
+                "annotations": [
+                    "Worker"
+                ]
             },
             "dependsOn": [
-                "[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
+                "[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]",
+                "[concat(variables('factoryId'), '/linkedServices/BricksOfData')]"
             ]
         },
         {
@@ -1339,9 +1464,11 @@
                     }
                 },
                 "folder": {
-                    "name": "Processes"
+                    "name": "_Workers"
                 },
-                "annotations": []
+                "annotations": [
+                    "Worker"
+                ]
             },
             "dependsOn": []
         },
@@ -1372,9 +1499,11 @@
                     }
                 },
                 "folder": {
-                    "name": "Processes"
+                    "name": "_Workers"
                 },
-                "annotations": []
+                "annotations": [
+                    "Worker"
+                ]
             },
             "dependsOn": []
         },
@@ -1405,9 +1534,11 @@
                     }
                 },
                 "folder": {
-                    "name": "Processes"
+                    "name": "_Workers"
                 },
-                "annotations": []
+                "annotations": [
+                    "Worker"
+                ]
             },
             "dependsOn": []
         },
@@ -1438,9 +1569,11 @@
                     }
                 },
                 "folder": {
-                    "name": "Processes"
+                    "name": "_Workers"
                 },
-                "annotations": []
+                "annotations": [
+                    "Worker"
+                ]
             },
             "dependsOn": []
         },
@@ -1471,9 +1604,11 @@
                     }
                 },
                 "folder": {
-                    "name": "Processes"
+                    "name": "_Workers"
                 },
-                "annotations": []
+                "annotations": [
+                    "Worker"
+                ]
             },
             "dependsOn": []
         },
@@ -1504,9 +1639,11 @@
                     }
                 },
                 "folder": {
-                    "name": "Processes"
+                    "name": "_Workers"
                 },
-                "annotations": []
+                "annotations": [
+                    "Worker"
+                ]
             },
             "dependsOn": []
         },
@@ -1537,9 +1674,11 @@
                     }
                 },
                 "folder": {
-                    "name": "Processes"
+                    "name": "_Workers"
                 },
-                "annotations": []
+                "annotations": [
+                    "Worker"
+                ]
             },
             "dependsOn": []
         },
@@ -1570,9 +1709,11 @@
                     }
                 },
                 "folder": {
-                    "name": "Processes"
+                    "name": "_Workers"
                 },
-                "annotations": []
+                "annotations": [
+                    "Worker"
+                ]
             },
             "dependsOn": []
         },
@@ -1603,9 +1744,11 @@
                     }
                 },
                 "folder": {
-                    "name": "Processes"
+                    "name": "_Workers"
                 },
-                "annotations": []
+                "annotations": [
+                    "Worker"
+                ]
             },
             "dependsOn": []
         },
@@ -1636,9 +1779,11 @@
                     }
                 },
                 "folder": {
-                    "name": "Processes"
+                    "name": "_Workers"
                 },
-                "annotations": []
+                "annotations": [
+                    "Worker"
+                ]
             },
             "dependsOn": []
         },
@@ -1660,6 +1805,31 @@
             },
             "dependsOn": [
                 "[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/BricksOfData')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureDatabricks",
+                "typeProperties": {
+                    "domain": "https://northeurope.azuredatabricks.net",
+                    "accessToken": {
+                        "type": "AzureKeyVaultSecret",
+                        "store": {
+                            "referenceName": "Keys",
+                            "type": "LinkedServiceReference"
+                        },
+                        "secretName": "BricksOfDataToken",
+                        "secretVersion": ""
+                    },
+                    "existingClusterId": "0422-090117-slots899"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/Keys')]"
             ]
         },
         {
@@ -1752,7 +1922,7 @@
                 "typeProperties": {
                     "recurrence": {
                         "frequency": "Hour",
-                        "interval": 1,
+                        "interval": 2,
                         "startTime": "2020-04-06T15:00:00.000Z",
                         "timeZone": "UTC"
                     }
