@@ -11,6 +11,7 @@
     [LastStatusCheckDateTime] DATETIME  NULL,
     [EndDateTime]      DATETIME         NULL,
     [IsBlocked] [bit] NOT NULL DEFAULT 0,
+    [AdfPipelineRunId] UNIQUEIDENTIFIER NULL,
     CONSTRAINT [PK_CurrentExecution] PRIMARY KEY CLUSTERED ([LocalExecutionId] ASC, [StageId] ASC, [PipelineId] ASC)
 );
 GO

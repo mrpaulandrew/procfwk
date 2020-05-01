@@ -345,6 +345,64 @@
 									}
 								}
 							}
+						},
+						{
+							"name": "Set Run Id",
+							"description": "Provide the actual ADF run ID back to the current execution table for long term logging and alignment between the metadata other Azure monitoring tools.",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Execute Pipeline",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[procfwk].[SetLogPipelineRunId]",
+								"storedProcedureParameters": {
+									"ExecutionId": {
+										"value": {
+											"value": "@pipeline().parameters.ExecutionId",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									},
+									"PipelineId": {
+										"value": {
+											"value": "@item().PipelineId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"RunId": {
+										"value": {
+											"value": "@activity('Execute Pipeline').output.RunId",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									},
+									"StageId": {
+										"value": {
+											"value": "@pipeline().parameters.StageId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "SupportDatabase",
+								"type": "LinkedServiceReference"
+							}
 						}
 					]
 				}

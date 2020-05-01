@@ -10,6 +10,7 @@ VALUES
 	(3, 'WaitTime', '9'),
 	(4, 'WaitTime', '5'),
 	(5, 'WaitTime', '2'),
+	(6, 'RaiseErrors', 'false'),
 	(7, 'WaitTime', '3'),
 	(8, 'WaitTime', '5'),
 	(9, 'WaitTime', '7'),

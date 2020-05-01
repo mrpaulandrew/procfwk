@@ -1,15 +1,15 @@
 ﻿CREATE PROCEDURE [dbo].[FailProcedure]
+	(
+	@RaiseError VARCHAR(50)
+	)
 AS
 
 BEGIN
-
-	--default behviour changed to always succeed following the release of v1.2
-
-	SELECT	
-		--throw intention error:
-		--1 + 'Force error.' AS 'Output'
-		
-		--fix using:
-		1 + '1' AS 'Output'
-
+	
+	IF(@RaiseError = 'true')
+	BEGIN
+		RAISERROR('The Stored Procedure intentionally failed.',16,1);
+		RETURN;
+	END
+	
 END

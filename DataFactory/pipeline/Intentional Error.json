@@ -91,6 +91,8 @@
 		"folder": {
 			"name": "_Workers"
 		},
-		"annotations": []
+		"annotations": [
+			"Worker"
+		]
 	}
 }
