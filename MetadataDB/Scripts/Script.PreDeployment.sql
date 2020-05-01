@@ -9,6 +9,11 @@
                SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
+
+--data
+:r .\LogData\ExecutionLogBackup.sql
+
 --delete all
 :r .\Metadata\DropLegacyTables.sql
 :r .\Metadata\DeleteAll.sql
+

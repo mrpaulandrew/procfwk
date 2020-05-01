@@ -37,19 +37,27 @@ BEGIN
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
+		[CallingDataFactoryName],
+		[ResourceGroupName],
+		[DataFactoryName],
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
-		[EndDateTime]
+		[EndDateTime],
+		[AdfPipelineRunId]
 		)
 	SELECT
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
+		[CallingDataFactoryName],
+		[ResourceGroupName],
+		[DataFactoryName],
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
-		[EndDateTime]
+		[EndDateTime],
+		[AdfPipelineRunId]
 	FROM
 		[procfwk].[CurrentExecution]
 	WHERE
