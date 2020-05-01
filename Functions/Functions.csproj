@@ -6,9 +6,6 @@
     <AssemblyName>ADFprocfwk</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="local.settings.json" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Management.DataFactory" Version="4.8.0" />
     <PackageReference Include="Microsoft.Azure.Management.ResourceManager" Version="3.3.0-preview" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.7" />
