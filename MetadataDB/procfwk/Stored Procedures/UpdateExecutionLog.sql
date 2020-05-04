@@ -16,7 +16,9 @@ BEGIN
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
-		[EndDateTime]
+		[EndDateTime],
+		[AdfPipelineRunId],
+		[PipelineParamsUsed]
 		)
 	SELECT
 		[LocalExecutionId],
@@ -28,7 +30,9 @@ BEGIN
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
-		[EndDateTime]
+		[EndDateTime],
+		[AdfPipelineRunId],
+		[PipelineParamsUsed]
 	FROM
 		[procfwk].[CurrentExecution]
 
