@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Net.Mail;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace ADFprocfwk.Helpers
 {
@@ -22,11 +19,11 @@ namespace ADFprocfwk.Helpers
             SmtpClient emailClient = new SmtpClient
             {
                 EnableSsl = true,
+                UseDefaultCredentials = false, //order properties are set is important
+                Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass),
                 DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
                 Host = smtpHost,
-                Port = smtpPort,
-                Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass)
+                Port = smtpPort
             };
 
             return emailClient;

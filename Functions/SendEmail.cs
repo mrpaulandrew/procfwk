@@ -95,13 +95,23 @@ namespace ADFprocfwk
 
                     client.Send(mail);
                     outputString = "{ \"EmailSent\": true }";
+
+                    log.LogInformation("Sent email.");
                 }
-                catch
+                catch (SmtpException smtpEx)
                 {
                     outputString = "{ \"EmailSent\": false }";
+                    
+                    log.LogError(smtpEx.Message);
                     log.LogInformation("Message has not been sent. Check Azure Function Logs for more information.");
                 }
-                
+                catch (Exception ex)
+                {
+                    outputString = "{ \"EmailSent\": false }";
+                    
+                    log.LogError(ex.Message);
+                    log.LogInformation("Message has not been sent. Check Azure Function Logs for more information.");
+                }
             }
 
             JObject outputJson = JObject.Parse(outputString);
