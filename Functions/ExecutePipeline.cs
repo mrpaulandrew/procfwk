@@ -11,17 +11,18 @@ using Microsoft.Azure.Management.DataFactory;
 using Microsoft.Azure.Management.DataFactory.Models;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using ADFprocfwk.Helpers;
 
-namespace PipelineExecutor
-{ 
-    public static class ExecutePipelineV2
+namespace ADFprocfwk
+{
+    public static class ExecutePipeline
     {
-        [FunctionName("ExecutePipelineV2")]
+        [FunctionName("ExecutePipeline")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("ExecutePipelineV2 Function triggered by HTTP request.");
+            log.LogInformation("ExecutePipeline Function triggered by HTTP request.");
             log.LogInformation("Parsing body from request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -54,7 +55,7 @@ namespace PipelineExecutor
             log.LogInformation("Creating ADF connectivity client.");
             string outputString = string.Empty;
 
-            using (var client = Helpers.DataFactoryClient.createDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
+            using (var client = DataFactoryClient.CreateDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
             {
                 //Run pipeline
                 CreateRunResponse runResponse;
@@ -103,12 +104,12 @@ namespace PipelineExecutor
                                         "\", \"Status\": \"" + pipelineRun.Status +
                                         "\" }";
 
-                
+
             }
 
             JObject outputJson = JObject.Parse(outputString);
 
-            log.LogInformation("ExecutePipelineV2 Function complete.");
+            log.LogInformation("ExecutePipeline Function complete.");
             return new OkObjectResult(outputJson);
         }
     }

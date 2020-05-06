@@ -250,4 +250,5 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+/PipelineExecutor/local.settings.json
 /Functions/local.settings.json

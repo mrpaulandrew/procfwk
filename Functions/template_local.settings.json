@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "AppSettingSmtpHost": "my.smtpservice.com",
+    "AppSettingSmtpPort": 1234,
+    "AppSettingSmtpUser": "AlertMailboxUser",
+    "AppSettingSmtpPass": "Passw0rd123!",
+    "AppSettingFromEmail": "noreply@adfprocfwk.com"
+  }
+}
