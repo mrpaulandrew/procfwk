@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "AppSettingSmtpHost": "smtp.office365.com",
+    "AppSettingSmtpPort": 587,
+    "AppSettingSmtpUser": "alerts@mrpaulandrew.com",
+    "AppSettingSmtpPass": "rbozlq5cAs92WB",
+    "AppSettingFromEmail": "alerts@mrpaulandrew.com"
+  }
+}
