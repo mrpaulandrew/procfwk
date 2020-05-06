@@ -17,15 +17,6 @@ BEGIN
 		)
 		BEGIN
 			SET @Json = '' --Can't return NULL. Would break ADF expression.
-
-			--update current execution log if this is a runtime request
-			UPDATE
-				[procfwk].[CurrentExecution]
-			SET
-				--add extra braces to make JSON string valid in logs
-				[PipelineParamsUsed] = 'None'
-			WHERE
-				[PipelineId] = @PipelineId;
 		END
 	ELSE
 		BEGIN
