@@ -4,6 +4,7 @@ AS
 SELECT
 	exeLog.[LogId] AS 'ExecutionLogId',
 	errLog.[LogId] AS 'ErrorLogId',
+	exeLog.[LocalExecutionId],
 	exeLog.[StartDateTime] AS 'ProcessingDateTime',
 	exeLog.[CallingDataFactoryName],
 	exeLog.[DataFactoryName] AS 'WorkerDataFactory',
