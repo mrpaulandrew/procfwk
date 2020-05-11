@@ -45,7 +45,10 @@
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
-					"waitTimeInSeconds": 10
+					"waitTimeInSeconds": {
+						"value": "@pipeline().parameters.WaitTime",
+						"type": "Expression"
+					}
 				}
 			},
 			{
@@ -86,6 +89,10 @@
 			"RaiseErrors": {
 				"type": "string",
 				"defaultValue": "false"
+			},
+			"WaitTime": {
+				"type": "int",
+				"defaultValue": 5
 			}
 		},
 		"folder": {
