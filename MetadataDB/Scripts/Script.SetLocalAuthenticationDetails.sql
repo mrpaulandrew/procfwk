@@ -1,5 +1,7 @@
 ﻿--Run in SQLCMD mode to use environment variables.
 
+--Optional script used to setup function testing for processing framework parts post deployment.
+
 PRINT 'TenantId: ' + '$(AZURE_TENANT_ID)'
 PRINT 'SubscriptionId: ' + '$(AZURE_SUBSCRIPTION_ID)'
 
