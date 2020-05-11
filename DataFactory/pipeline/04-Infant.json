@@ -280,6 +280,7 @@
 								},
 								{
 									"name": "Get Error Details",
+									"description": "Get the activity error details for the run ID of the worker pipeline called. Returns an array of all errors.",
 									"type": "AzureFunctionActivity",
 									"dependsOn": [],
 									"policy": {
@@ -305,6 +306,7 @@
 								},
 								{
 									"name": "Log Error Details",
+									"description": "Parses pipeline error details and persists them to the metadata database error log table.",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [
 										{
