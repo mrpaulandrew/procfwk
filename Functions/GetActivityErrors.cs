@@ -22,6 +22,8 @@ namespace ADFprocfwk
             ILogger log)
         {
             log.LogInformation("GetActivityErrors Function triggered by HTTP request.");
+
+            #region ParseRequestBody
             log.LogInformation("Parsing body from request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -52,6 +54,8 @@ namespace ADFprocfwk
                 return new BadRequestObjectResult("Invalid request body, value(s) missing.");
             }
 
+            #endregion
+
             //Query and output support variables
             int daysOfRuns = 7; //max duration for mandatory RunFilterParameters
             DateTime today = DateTime.Now;
@@ -64,6 +68,8 @@ namespace ADFprocfwk
 
             using (var client = DataFactoryClient.CreateDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
             {
+                #region SetPipelineRunDetails
+
                 //Get pipeline details
                 PipelineRun pipelineRun;
                 pipelineRun = client.PipelineRuns.Get(resourceGroup, factoryName, runId);
@@ -82,8 +88,12 @@ namespace ADFprocfwk
                 outputBlock.Errors = new JArray();
                 JObject errorDetails;
 
+                #endregion
+
                 log.LogInformation("Pipeline status: " + pipelineRun.Status);
                 log.LogInformation("Activities found in pipeline response: " + queryResponse.Value.Count.ToString());
+
+                #region GetActivityDetails
 
                 //Loop over activities in pipeline run
                 foreach (var activity in queryResponse.Value)
@@ -122,6 +132,7 @@ namespace ADFprocfwk
                         outputBlock.Errors.Add(errorDetails);
                     }
                 }
+                #endregion
             }
             log.LogInformation("GetActivityErrors Function complete.");
 

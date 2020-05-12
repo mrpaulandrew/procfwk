@@ -21,6 +21,8 @@ namespace ADFprocfwk
             ILogger log)
         {
             log.LogInformation("SendEmail Function triggered by HTTP request.");
+
+            #region ParseRequestBody
             log.LogInformation("Parsing body from request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -44,12 +46,15 @@ namespace ADFprocfwk
                 return new BadRequestObjectResult("Invalid request body, value(s) missing.");
             }
 
+            #endregion
+
             //Create email client
             log.LogInformation("Creating smtp client.");
 
             using (var client = SMTPClient.CreateSMTPClient())
             {
-                //Create mail
+
+                #region CreateMail                
                 MailAddress from = new MailAddress(SMTPClient.fromEmail);
                 MailMessage mail = new MailMessage
                 {
@@ -72,14 +77,16 @@ namespace ADFprocfwk
                 {
                     mail.Priority = MailPriority.Normal;
                 }
+                #endregion
 
-                //Parse recipients
+                #region SetRecipients
+                //recipients
                 foreach (var address in recipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     mail.To.Add(address);
                 }
 
-                //Parse cc recipients
+                //cc recipients
                 if (!string.IsNullOrEmpty(ccRecipients))
                 {
                     foreach (var ccAddress in ccRecipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries))
@@ -87,8 +94,9 @@ namespace ADFprocfwk
                         mail.CC.Add(ccAddress);
                     }
                 }
+                #endregion
 
-                //Send email
+                #region SendEmail
                 try
                 {
                     log.LogInformation("Sending email.");
@@ -112,6 +120,7 @@ namespace ADFprocfwk
                     log.LogError(ex.Message);
                     log.LogInformation("Message has not been sent. Check Azure Function Logs for more information.");
                 }
+                #endregion
             }
 
             JObject outputJson = JObject.Parse(outputString);

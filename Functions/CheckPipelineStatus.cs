@@ -22,7 +22,9 @@ namespace ADFprocfwk
             ILogger log)
         {
             log.LogInformation("CheckPipelineStatus Function triggered by HTTP request.");
-            log.LogInformation("Parsing body from request.");
+            
+            #region ParseRequestBody
+            log.LogInformation("Parsing body from request.");        
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
@@ -52,7 +54,9 @@ namespace ADFprocfwk
                 log.LogInformation("Invalid body.");
                 return new BadRequestObjectResult("Invalid request body, value(s) missing.");
             }
+            #endregion
 
+            #region GetPipelineStatus
             //Create a data factory management client
             log.LogInformation("Creating ADF connectivity client.");
             
@@ -84,6 +88,8 @@ namespace ADFprocfwk
                                         "\", \"Status\": \"" + pipelineRun.Status +
                                         "\" }";
             }
+
+            #endregion
 
             JObject outputJson = JObject.Parse(outputString);
 
