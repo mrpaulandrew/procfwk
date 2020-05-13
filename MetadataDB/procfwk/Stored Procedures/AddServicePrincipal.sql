@@ -14,11 +14,12 @@ BEGIN
 	DECLARE @ErrorDetails NVARCHAR(500) = ''
 	DECLARE @CredentialId INT
 	DECLARE @TenantId CHAR(36)
+	DECLARE @LocalPrincipalId UNIQUEIDENTIFIER
 
 	--defensive checks
 	BEGIN TRY
-		SELECT 
-			CAST(@PrincipalId AS UNIQUEIDENTIFIER)
+		SELECT --assigned to variable just to supress output of SELECT
+			@LocalPrincipalId = CAST(@PrincipalId AS UNIQUEIDENTIFIER)
 	END TRY
 	BEGIN CATCH
 			SET @ErrorDetails = 'Invalid @PrincipalId provided. The format must be a UNIQUEIDENTIFIER.'
