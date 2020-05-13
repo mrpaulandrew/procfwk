@@ -140,6 +140,8 @@
     <None Include="Scripts\LogData\ExecutionLogBackup.sql" />
     <None Include="Scripts\LogData\ExecutionLogRestore.sql" />
     <None Include="Scripts\Script.SetLocalAuthenticationDetails.sql" />
+    <None Include="Scripts\LogData\ErrorLogBackup.sql" />
+    <None Include="Scripts\LogData\ErrorLogRestore.sql" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="Scripts\Script.PreDeployment.sql" />

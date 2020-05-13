@@ -5,7 +5,7 @@ DECLARE @SQL VARCHAR(MAX) = '';
 ;WITH oldTableColumns AS
 	(
 	SELECT
-		c.[name] AS 'ColName'
+		c.[name] AS ColName
 	FROM
 		sys.objects o
 		INNER JOIN sys.schemas s
@@ -15,13 +15,13 @@ DECLARE @SQL VARCHAR(MAX) = '';
 	WHERE
 		s.[name] = 'dbo'
 		AND o.[name] = 'ExecutionLogBackup'
-		AND c.[name] != 'LogId'
+		AND c.[name] <> 'LogId'
 	),
 	newTableColumns AS
 	(
 	SELECT
-		c.[column_id] AS 'ColId',
-		c.[name] AS 'ColName'
+		c.[column_id] AS ColId,
+		c.[name] AS ColName
 	FROM
 		sys.objects o
 		INNER JOIN sys.schemas s
@@ -31,7 +31,7 @@ DECLARE @SQL VARCHAR(MAX) = '';
 	WHERE
 		s.[name] = 'procfwk'
 		AND o.[name] = 'ExecutionLog'
-		AND c.[name] != 'LogId'
+		AND c.[name] <> 'LogId'
 	)
 SELECT  
 	@Columns += QUOTENAME(newTableColumns.[ColName]) + ',' + CHAR(13),

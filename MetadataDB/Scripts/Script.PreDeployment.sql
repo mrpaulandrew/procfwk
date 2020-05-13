@@ -12,6 +12,7 @@
 
 --data
 :r .\LogData\ExecutionLogBackup.sql
+:r .\LogData\ErrorLogBackup.sql
 
 --delete all
 :r .\Metadata\DropLegacyTables.sql
