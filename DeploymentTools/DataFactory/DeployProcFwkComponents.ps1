@@ -1,6 +1,6 @@
 ﻿# Set global variables as required:
 $resourceGroupName = "ADF.procfwk"
-$dataFactoryName = "FrameworkFactory"
+$dataFactoryName = "FrameworkFactoryTest"
 $region = "uksouth"
 
 #SPN for deploying ADF:
