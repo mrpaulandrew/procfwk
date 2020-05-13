@@ -3,10 +3,8 @@
 	@CallingDataFactoryName NVARCHAR(200)
 	)
 AS
-
-SET NOCOUNT ON;
-
 BEGIN
+	SET NOCOUNT ON;
 
 	DECLARE @LocalExecutionId UNIQUEIDENTIFIER = NEWID()
 
@@ -44,6 +42,5 @@ BEGIN
 	REBUILD;
 
 	SELECT
-		@LocalExecutionId AS 'ExecutionId'
-
-END
+		@LocalExecutionId AS ExecutionId
+END;

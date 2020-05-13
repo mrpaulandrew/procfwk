@@ -37,10 +37,10 @@ BEGIN
 		base.[PipelineId],
 		base.[PipelineName],
 		base.[Enabled],
-		preds.[StageId] 'SuccessorStageId',
-		predsStage.[StageName] AS 'SuccessorStage',
-		preds.[PipelineId] AS 'SuccessorId',
-		preds.[PipelineName] AS 'SuccessorName',
+		preds.[StageId] AS SuccessorStageId,
+		predsStage.[StageName] AS SuccessorStage,
+		preds.[PipelineId] AS SuccessorId,
+		preds.[PipelineName] AS SuccessorName,
 		CASE
 			WHEN preds.[StageId] > base.[StageId] +1 THEN 'Successor pipeline could be moved to an earlier stage.'
 			WHEN preds.[StageId] = base.[StageId] THEN 'Dependency issue, predeccessor pipeline is currently running in the same stage as successor.'
@@ -48,7 +48,7 @@ BEGIN
 			WHEN preds.[PipelineId] IS NOT NULL AND baseStage.[Enabled] = 0 THEN 'Disabled stage has downstream successors.'
 			WHEN base.[LogicalPredecessorId] IS NULL AND base.[StageId] <> firstStage.[firstStageId] THEN 'Pipeline could be moved to an earlier stage.'
 			ELSE NULL
-		END AS 'Information'
+		END AS Information
 	FROM 
 		--get base pipeline details
 		[procfwk].[Pipelines] base
@@ -76,6 +76,5 @@ BEGIN
 		BEGIN
 			PRINT 'No pipeline integrity issues to report. Nice work! :-)'
 		END
-
-END
+END;
 

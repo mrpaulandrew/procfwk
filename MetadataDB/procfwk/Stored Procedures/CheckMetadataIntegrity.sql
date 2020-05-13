@@ -3,10 +3,8 @@
 	@DebugMode BIT = 0
 	)
 AS
-
-SET NOCOUNT ON;
-
 BEGIN
+	SET NOCOUNT ON;
 	
 	/*
 	Check 1 - Are there execution stages enabled in the metadata?
@@ -29,9 +27,10 @@ BEGIN
 		)
 
 	--Check 1:
-	IF (
-		SELECT COUNT(0) FROM [procfwk].[Stages] WHERE [Enabled] = 1
-		) = 0
+	IF NOT EXISTS
+		(
+		SELECT 1 FROM [procfwk].[Stages] WHERE [Enabled] = 1
+		)
 		BEGIN
 			INSERT INTO @MetadataIntegrityIssues
 			VALUES
@@ -42,9 +41,10 @@ BEGIN
 		END;
 
 	--Check 2:
-	IF (
-		SELECT COUNT(0) FROM [procfwk].[Pipelines] WHERE [Enabled] = 1
-		) = 0
+	IF NOT EXISTS
+		(
+		SELECT 1 FROM [procfwk].[Pipelines] WHERE [Enabled] = 1
+		)
 		BEGIN
 			INSERT INTO @MetadataIntegrityIssues
 			VALUES
@@ -55,10 +55,10 @@ BEGIN
 		END;
 
 	--Check 3:
-	IF
+	IF NOT EXISTS 
 		(
-		SELECT COUNT(0) FROM [dbo].[ServicePrincipals]
-		) = 0
+		SELECT 1 FROM [dbo].[ServicePrincipals]
+		)
 		BEGIN
 			INSERT INTO @MetadataIntegrityIssues
 			VALUES
@@ -182,7 +182,7 @@ BEGIN
 			SET @ErrorDetails = 'Metadata integrity check failed. Run EXEC [procfwk].[CheckMetadataIntegrity] @DebugMode = 1 in debug mode for details.'
 
 			RAISERROR(@ErrorDetails, 16, 1);
-			RETURN;
+			RETURN 0;
 		END
 
 	--report issues when in debug mode

@@ -3,7 +3,6 @@
 	@LocalExecutionId UNIQUEIDENTIFIER = NULL
 	)
 AS
-
 BEGIN
 
 	--Get last execution ID
@@ -72,5 +71,4 @@ BEGIN
 	ORDER BY
 		el3.[PipelineId],
 		el3.[StartDateTime];
-
 END;

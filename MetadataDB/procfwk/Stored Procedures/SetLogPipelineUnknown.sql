@@ -5,9 +5,9 @@
 	@PipelineId INT
 	)
 AS
-
 BEGIN
-	
+	SET NOCOUNT ON;
+
 	DECLARE @ErrorDetail VARCHAR(500);
 
 	--mark specific failure pipeline
@@ -81,4 +81,4 @@ BEGIN
 		RAISERROR(@ErrorDetail,16,1);
 		RETURN;
 	END
-END
+END;

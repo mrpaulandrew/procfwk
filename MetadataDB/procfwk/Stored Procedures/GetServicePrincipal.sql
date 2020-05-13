@@ -4,12 +4,9 @@
 	@PipelineName NVARCHAR(200) = NULL
 	)
 AS
-
-SET NOCOUNT ON;
-
 BEGIN
+	SET NOCOUNT ON;
 
-	DECLARE @ErrorDetails NVARCHAR(500) = ''
 	DECLARE @Id UNIQUEIDENTIFIER
 	DECLARE @Secret NVARCHAR(MAX)
 	DECLARE @TenantId CHAR(36)
@@ -26,8 +23,8 @@ BEGIN
 	;WITH cte AS
 		(
 		SELECT DISTINCT
-			S.[PrincipalId] AS 'Id',
-			CAST(DECRYPTBYPASSPHRASE(CONCAT(@TenantId, @DataFactory, @PipelineName), S.[PrincipalSecret]) AS NVARCHAR(MAX)) AS 'Secret'
+			S.[PrincipalId] AS Id,
+			CAST(DECRYPTBYPASSPHRASE(CONCAT(@TenantId, @DataFactory, @PipelineName), S.[PrincipalSecret]) AS NVARCHAR(MAX)) AS [Secret]
 		FROM
 			[dbo].[ServicePrincipals] S
 			INNER JOIN  [procfwk].[PipelineAuthLink] L
@@ -44,8 +41,8 @@ BEGIN
 		UNION
 
 		SELECT DISTINCT
-			S.[PrincipalId] AS 'Id',
-			CAST(DECRYPTBYPASSPHRASE(CONCAT(@TenantId, @DataFactory), S.[PrincipalSecret]) AS NVARCHAR(MAX)) AS 'Secret'
+			S.[PrincipalId] AS Id,
+			CAST(DECRYPTBYPASSPHRASE(CONCAT(@TenantId, @DataFactory), S.[PrincipalSecret]) AS NVARCHAR(MAX)) AS [Secret]
 		FROM
 			[dbo].[ServicePrincipals] S
 			INNER JOIN  [procfwk].[PipelineAuthLink] L
@@ -66,7 +63,6 @@ BEGIN
 	
 	--return usable values
 	SELECT
-		@Id AS 'Id',
-		@Secret AS 'Secret'
-
-END
+		@Id AS Id,
+		@Secret AS [Secret]
+END;

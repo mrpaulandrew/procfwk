@@ -1,13 +1,12 @@
-﻿
-CREATE   PROCEDURE procfwk.SetLogPipelineSuccess
+﻿CREATE PROCEDURE procfwk.SetLogPipelineSuccess
 	(
 	@ExecutionId UNIQUEIDENTIFIER,
 	@StageId INT,
 	@PipelineId INT
 	)
 AS
-
 BEGIN
+	SET NOCOUNT ON;
 
 	UPDATE
 		[procfwk].[CurrentExecution]
@@ -18,5 +17,4 @@ BEGIN
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId
 		AND [PipelineId] = @PipelineId
-
-END
+END;

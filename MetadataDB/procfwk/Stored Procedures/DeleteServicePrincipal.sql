@@ -5,18 +5,15 @@
 	@SpecificPipelineName NVARCHAR(200) = NULL
 	)
 AS
-
-SET NOCOUNT ON;
-
 BEGIN
+	SET NOCOUNT ON;
 
 	DECLARE @ErrorDetails NVARCHAR(500) = ''
-	DECLARE @LocalPrincipalId UNIQUEIDENTIFIER
 
 	--defensive checks
 	BEGIN TRY
 		SELECT 
-			@LocalPrincipalId = CAST(@PrincipalId AS UNIQUEIDENTIFIER)
+			CAST(@PrincipalId AS UNIQUEIDENTIFIER)
 	END TRY
 	BEGIN CATCH
 			SET @ErrorDetails = 'Invalid @PrincipalId provided. The format must be a UNIQUEIDENTIFIER.'
@@ -26,7 +23,7 @@ BEGIN
 	
 	IF NOT EXISTS
 		(
-		SELECT [DataFactoryName] FROM [procfwk].[DataFactoryDetails] WHERE [DataFactoryName] = @DataFactory
+		SELECT [DataFactoryName] FROM [procfwk].[DataFactorys] WHERE [DataFactoryName] = @DataFactory
 		)
 		BEGIN
 			SET @ErrorDetails = 'Invalid Data Factory name. Please ensure the Data Factory metadata exists.'
@@ -50,7 +47,7 @@ BEGIN
 		BEGIN
 			IF NOT EXISTS
 				( 
-				SELECT [PipelineName] FROM [procfwk].[PipelineProcesses] WHERE [PipelineName] = @SpecificPipelineName
+				SELECT [PipelineName] FROM [procfwk].[Pipelines] WHERE [PipelineName] = @SpecificPipelineName
 				)
 				BEGIN
 					SET @ErrorDetails = 'Invalid Pipeline name. Please ensure the Pipeline metadata exists.'
@@ -63,9 +60,9 @@ BEGIN
 				L
 			FROM
 				[procfwk].[PipelineAuthLink] L
-				INNER JOIN [procfwk].[PipelineProcesses] P
+				INNER JOIN [procfwk].[Pipelines] P
 					ON L.[PipelineId] = P.[PipelineId]
-				INNER JOIN [procfwk].[DataFactoryDetails] D
+				INNER JOIN [procfwk].[DataFactorys] D
 					ON P.[DataFactoryId] = D.[DataFactoryId]
 						AND L.[DataFactoryId] = D.[DataFactoryId]
 				INNER JOIN [dbo].[ServicePrincipals] S
@@ -81,7 +78,7 @@ BEGIN
 				L
 			FROM
 				[procfwk].[PipelineAuthLink] L
-				INNER JOIN [procfwk].[DataFactoryDetails] D
+				INNER JOIN [procfwk].[DataFactorys] D
 					ON L.[DataFactoryId] = D.[DataFactoryId]
 						AND L.[DataFactoryId] = D.[DataFactoryId]
 				INNER JOIN [dbo].[ServicePrincipals] S
@@ -101,5 +98,4 @@ BEGIN
 	WHERE 
 		SP.[PrincipalId] = @PrincipalId
 		AND AL.[CredentialId] IS NULL;
-
-END
+END;

@@ -8,7 +8,7 @@
 	[ActivityType] [varchar](100) NOT NULL,
 	[ErrorCode] [int] NOT NULL,
 	[ErrorType] [varchar](100) NOT NULL,
-	[ErrorMessage] [nvarchar](max) NULL,
+	[ErrorMessage] [nvarchar](MAX) NULL,
 	 CONSTRAINT [PK_ErrorLog] PRIMARY KEY CLUSTERED 
 		(
 		[LogId] ASC

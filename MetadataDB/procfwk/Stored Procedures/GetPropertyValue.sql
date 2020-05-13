@@ -3,8 +3,7 @@
 	@PropertyName VARCHAR(128)
 	)
 AS
-BEGIN
-	
+BEGIN	
 	DECLARE @ErrorDetail NVARCHAR(4000) = ''
 
 	--defensive checks
@@ -36,5 +35,4 @@ BEGIN
 			WHERE
 				[PropertyName] = @PropertyName
 		END
-
-END
+END;

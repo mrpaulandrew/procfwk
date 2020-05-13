@@ -5,7 +5,8 @@
 	)
 AS
 BEGIN
-	
+	SET NOCOUNT ON;
+
 	INSERT INTO [procfwk].[ErrorLog]
 		(
 		[LocalExecutionId],
@@ -20,12 +21,12 @@ BEGIN
 	SELECT
 		@LocalExecutionId,
 		Base.[RunId],
-		Errors.[ActivityRunId],
-		Errors.[ActivityName],
-		Errors.[ActivityType],
-		Errors.[ErrorCode],
-		Errors.[ErrorType],
-		Errors.[ErrorMessage]
+		ErrorDetail.[ActivityRunId],
+		ErrorDetail.[ActivityName],
+		ErrorDetail.[ActivityType],
+		ErrorDetail.[ErrorCode],
+		ErrorDetail.[ErrorType],
+		ErrorDetail.[ErrorMessage]
 	FROM 
 		OPENJSON(@JsonErrorDetails) WITH
 			( 
@@ -40,5 +41,5 @@ BEGIN
 			[ErrorCode] INT,
 			[ErrorType] VARCHAR(100),
 			[ErrorMessage] VARCHAR(MAX)
-			) AS Errors
-END
+			) AS ErrorDetail
+END;

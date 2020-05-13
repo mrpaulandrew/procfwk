@@ -3,10 +3,8 @@
 	@PipelineId INT
 	)
 AS
-
-SET NOCOUNT ON;
-
 BEGIN
+	SET NOCOUNT ON;
 
 	DECLARE @Json VARCHAR(MAX) = ''
 
@@ -42,6 +40,5 @@ BEGIN
 		END
 
 	--return JSON snippet
-	SELECT @Json AS 'Params'
-
-END
+	SELECT @Json AS Params
+END;

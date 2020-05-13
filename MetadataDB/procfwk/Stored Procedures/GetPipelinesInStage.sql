@@ -3,10 +3,8 @@
 	@StageId INT
 	)
 AS
-
-SET NOCOUNT ON;
-
 BEGIN
+	SET NOCOUNT ON;
 
 	SELECT 
 		[PipelineId], 
@@ -20,5 +18,4 @@ BEGIN
 		AND ISNULL([PipelineStatus],'') <> 'Success'
 	ORDER BY
 		[PipelineId] ASC
-
-END
+END;
