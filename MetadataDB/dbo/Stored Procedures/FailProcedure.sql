@@ -7,6 +7,6 @@ BEGIN
 	IF(@RaiseError = 'true')
 	BEGIN
 		RAISERROR('The Stored Procedure intentionally failed.',16,1);
-		RETURN;
+		RETURN 0;
 	END
 END;

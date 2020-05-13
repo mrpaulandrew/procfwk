@@ -73,5 +73,5 @@ BEGIN
 		SET @ErrorDetail = 'Pipeline execution failed. See ADF monitoring for details.'
 
 	RAISERROR(@ErrorDetail,16,1);
-	RETURN;
+	RETURN 0;
 END;

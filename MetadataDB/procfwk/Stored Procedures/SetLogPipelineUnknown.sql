@@ -79,6 +79,6 @@ BEGIN
 		SET @ErrorDetail = 'Pipeline execution has an unknown status. Blocking downstream stages as a precaution.'
 
 		RAISERROR(@ErrorDetail,16,1);
-		RETURN;
+		RETURN 0;
 	END
 END;

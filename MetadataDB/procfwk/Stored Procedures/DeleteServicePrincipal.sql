@@ -18,7 +18,7 @@ BEGIN
 	BEGIN CATCH
 			SET @ErrorDetails = 'Invalid @PrincipalId provided. The format must be a UNIQUEIDENTIFIER.'
 			RAISERROR(@ErrorDetails, 16, 1);
-			RETURN;
+			RETURN 0;
 	END CATCH	
 	
 	IF NOT EXISTS
@@ -28,7 +28,7 @@ BEGIN
 		BEGIN
 			SET @ErrorDetails = 'Invalid Data Factory name. Please ensure the Data Factory metadata exists.'
 			RAISERROR(@ErrorDetails, 16, 1);
-			RETURN;
+			RETURN 0;
 		END
 
 	IF NOT EXISTS
@@ -38,7 +38,7 @@ BEGIN
 		BEGIN
 			SET @ErrorDetails = 'Invalid Service Principal Id. Please ensure the Service Principal exists.'
 			RAISERROR(@ErrorDetails, 16, 1);
-			RETURN;
+			RETURN 0;
 		END
 
 
@@ -52,7 +52,7 @@ BEGIN
 				BEGIN
 					SET @ErrorDetails = 'Invalid Pipeline name. Please ensure the Pipeline metadata exists.'
 					RAISERROR(@ErrorDetails, 16, 1);
-					RETURN;
+					RETURN 0;
 				END
 			
 			--delete link
