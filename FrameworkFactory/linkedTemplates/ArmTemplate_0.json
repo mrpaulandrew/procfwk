@@ -358,7 +358,7 @@
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
-						"defaultValue": 5
+						"defaultValue": 90
 					}
 				},
 				"folder": {
