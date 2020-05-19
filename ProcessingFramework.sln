@@ -103,6 +103,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerBI", "PowerBI", "{EBC2
 		Reporting\PowerBI\Executions Overview.pbix = Reporting\PowerBI\Executions Overview.pbix
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL Database", "SQL Database", "{20313ECA-118E-408D-BB42-8094A7A9CD20}"
+	ProjectSection(SolutionItems) = preProject
+		ARM Templates\SQL Database\v1.6 Export.json = ARM Templates\SQL Database\v1.6 Export.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions App", "Functions App", "{463330CD-189F-42B4-984A-8D3C1385645B}"
+	ProjectSection(SolutionItems) = preProject
+		ARM Templates\Functions App\v1.6 Export.json = ARM Templates\Functions App\v1.6 Export.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -136,6 +146,8 @@ Global
 		{C8F387D0-13CC-4AA5-892C-91D2F3403B55} = {CC7B607B-8C84-4E07-A6C8-326923752F92}
 		{FC7877EF-110F-4AD7-B203-EEECE6F08A86} = {E081CE7B-3DE2-4AB7-8C3A-E58A075BD6F5}
 		{EBC230DF-D45D-43E4-A74E-32ADA3DDAE7A} = {5A56A63A-351D-467D-A2DA-FDB3C9CBD252}
+		{20313ECA-118E-408D-BB42-8094A7A9CD20} = {CC7B607B-8C84-4E07-A6C8-326923752F92}
+		{463330CD-189F-42B4-984A-8D3C1385645B} = {CC7B607B-8C84-4E07-A6C8-326923752F92}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {170F5302-BB9C-4569-8F43-D859C7678EF0}
