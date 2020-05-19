@@ -1,0 +1,265 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "FunctionAppName": {
+      "defaultValue": "",
+      "type": "String"
+    },
+    "SubscriptionAndRegionServerFarmLocation": {
+      "defaultValue": "/subscriptions/{YourSubscriptionId}/resourceGroups/{YourResourceGroupName}/providers/Microsoft.Web/serverfarms/UKSouthPlan",
+      "type": "String"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2018-11-01",
+      "name": "[parameters('FunctionAppName')]",
+      "location": "UK South",
+      "kind": "functionapp",
+      "properties": {
+        "enabled": true,
+        "hostNameSslStates": [
+          {
+            "name": "[parameters('FunctionAppName')].azurewebsites.net",
+            "sslState": "Disabled",
+            "hostType": "Standard"
+          },
+          {
+            "name": "[parameters('FunctionAppName')].scm.azurewebsites.net",
+            "sslState": "Disabled",
+            "hostType": "Repository"
+          }
+        ],
+        "serverFarmId": "[parameters('SubscriptionAndRegionServerFarmLocation')]",
+        "reserved": false,
+        "isXenon": false,
+        "hyperV": false,
+        "siteConfig": {},
+        "scmSiteAlsoStopped": false,
+        "clientAffinityEnabled": false,
+        "clientCertEnabled": false,
+        "hostNamesDisabled": false,
+        "containerSize": 1536,
+        "dailyMemoryTimeQuota": 0,
+        "httpsOnly": true,
+        "redundancyMode": "None"
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2018-11-01",
+      "name": "[concat(parameters('FunctionAppName'), '/web')]",
+      "location": "UK South",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('FunctionAppName'))]"
+      ],
+      "properties": {
+        "numberOfWorkers": -1,
+        "defaultDocuments": [
+          "Default.htm",
+          "Default.html",
+          "Default.asp",
+          "index.htm",
+          "index.html",
+          "iisstart.htm",
+          "default.aspx",
+          "index.php"
+        ],
+        "netFrameworkVersion": "v4.0",
+        "phpVersion": "5.6",
+        "requestTracingEnabled": false,
+        "remoteDebuggingEnabled": false,
+        "httpLoggingEnabled": false,
+        "logsDirectorySizeLimit": 35,
+        "detailedErrorLoggingEnabled": false,
+        "publishingUsername": "$[parameters('FunctionAppName')]",
+        "scmType": "None",
+        "use32BitWorkerProcess": true,
+        "webSocketsEnabled": false,
+        "alwaysOn": false,
+        "managedPipelineMode": "Integrated",
+        "virtualApplications": [
+          {
+            "virtualPath": "/",
+            "physicalPath": "site\\wwwroot",
+            "preloadEnabled": false
+          }
+        ],
+        "loadBalancing": "LeastRequests",
+        "experiments": {
+          "rampUpRules": []
+        },
+        "autoHealEnabled": false,
+        "cors": {
+          "allowedOrigins": [
+            "https://functions.azure.com",
+            "https://functions-staging.azure.com",
+            "https://functions-next.azure.com"
+          ],
+          "supportCredentials": false
+        },
+        "localMySqlEnabled": false,
+        "ipSecurityRestrictions": [
+          {
+            "ipAddress": "Any",
+            "action": "Allow",
+            "priority": 1,
+            "name": "Allow all",
+            "description": "Allow all access"
+          }
+        ],
+        "scmIpSecurityRestrictions": [
+          {
+            "ipAddress": "Any",
+            "action": "Allow",
+            "priority": 1,
+            "name": "Allow all",
+            "description": "Allow all access"
+          }
+        ],
+        "scmIpSecurityRestrictionsUseMain": false,
+        "http20Enabled": false,
+        "minTlsVersion": "1.2",
+        "ftpsState": "AllAllowed",
+        "reservedInstanceCount": 0
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/deployments",
+      "apiVersion": "2018-11-01",
+      "name": "[concat(parameters('FunctionAppName'), '/5aee31e75b934c5f80fca0b26fe47dbb')]",
+      "location": "UK South",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('FunctionAppName'))]"
+      ],
+      "properties": {
+        "status": 4,
+        "author_email": "N/A",
+        "author": "N/A",
+        "deployer": "Push-Deployer",
+        "message": "Created via a push deployment",
+        "start_time": "2020-04-30T13:29:11.8890295Z",
+        "end_time": "2020-04-30T13:29:16.4504076Z",
+        "active": false
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/deployments",
+      "apiVersion": "2018-11-01",
+      "name": "[concat(parameters('FunctionAppName'), '/6b0808e64188414e88d75565027efc59')]",
+      "location": "UK South",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('FunctionAppName'))]"
+      ],
+      "properties": {
+        "status": 4,
+        "author_email": "N/A",
+        "author": "N/A",
+        "deployer": "Push-Deployer",
+        "message": "Created via a push deployment",
+        "start_time": "2020-04-30T16:17:52.965083Z",
+        "end_time": "2020-04-30T16:17:58.0803657Z",
+        "active": false
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/deployments",
+      "apiVersion": "2018-11-01",
+      "name": "[concat(parameters('FunctionAppName'), '/9ca87860d72f47049af7ab9bce50ccc1')]",
+      "location": "UK South",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('FunctionAppName'))]"
+      ],
+      "properties": {
+        "status": 4,
+        "author_email": "N/A",
+        "author": "N/A",
+        "deployer": "Push-Deployer",
+        "message": "Created via a push deployment",
+        "start_time": "2020-05-06T13:21:39.9815784Z",
+        "end_time": "2020-05-06T13:21:45.8257955Z",
+        "active": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/functions",
+      "apiVersion": "2018-11-01",
+      "name": "[concat(parameters('FunctionAppName'), '/CheckPipelineStatus')]",
+      "location": "UK South",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('FunctionAppName'))]"
+      ],
+      "properties": {
+        "script_root_path_href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/vfs/site/wwwroot/CheckPipelineStatus/",
+        "script_href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/vfs/site/wwwroot/bin/ADFprocfwk.dll",
+        "config_href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/vfs/site/wwwroot/CheckPipelineStatus/function.json",
+        "href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/functions/CheckPipelineStatus",
+        "config": {}
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/functions",
+      "apiVersion": "2018-11-01",
+      "name": "[concat(parameters('FunctionAppName'), '/ExecutePipeline')]",
+      "location": "UK South",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('FunctionAppName'))]"
+      ],
+      "properties": {
+        "script_root_path_href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/vfs/site/wwwroot/ExecutePipeline/",
+        "script_href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/vfs/site/wwwroot/bin/ADFprocfwk.dll",
+        "config_href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/vfs/site/wwwroot/ExecutePipeline/function.json",
+        "href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/functions/ExecutePipeline",
+        "config": {}
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/functions",
+      "apiVersion": "2018-11-01",
+      "name": "[concat(parameters('FunctionAppName'), '/GetActivityErrors')]",
+      "location": "UK South",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('FunctionAppName'))]"
+      ],
+      "properties": {
+        "script_root_path_href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/vfs/site/wwwroot/GetActivityErrors/",
+        "script_href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/vfs/site/wwwroot/bin/ADFprocfwk.dll",
+        "config_href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/vfs/site/wwwroot/GetActivityErrors/function.json",
+        "href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/functions/GetActivityErrors",
+        "config": {}
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/functions",
+      "apiVersion": "2018-11-01",
+      "name": "[concat(parameters('FunctionAppName'), '/SendEmail')]",
+      "location": "UK South",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('FunctionAppName'))]"
+      ],
+      "properties": {
+        "script_root_path_href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/vfs/site/wwwroot/SendEmail/",
+        "script_href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/vfs/site/wwwroot/bin/ADFprocfwk.dll",
+        "config_href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/vfs/site/wwwroot/SendEmail/function.json",
+        "href": "https://[parameters('FunctionAppName')].azurewebsites.net/admin/functions/SendEmail",
+        "config": {}
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/hostNameBindings",
+      "apiVersion": "2018-11-01",
+      "name": "[concat(parameters('FunctionAppName'), '/', parameters('FunctionAppName'), '.azurewebsites.net')]",
+      "location": "UK South",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('FunctionAppName'))]"
+      ],
+      "properties": {
+        "siteName": "[parameters('FunctionAppName')]",
+        "hostNameType": "Verified"
+      }
+    }
+  ]
+}
