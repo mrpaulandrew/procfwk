@@ -1,7 +1,9 @@
 {
 	"name": "FrameworkFunctions",
 	"properties": {
-		"annotations": [],
+		"annotations": [
+			"ADF.procfwk"
+		],
 		"type": "AzureFunction",
 		"typeProperties": {
 			"functionAppUrl": "https://frameworksupportfunctions.azurewebsites.net",
