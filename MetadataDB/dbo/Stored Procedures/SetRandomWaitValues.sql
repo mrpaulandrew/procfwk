@@ -6,7 +6,7 @@ BEGIN
 		(
 		SELECT 
 			[PipelineId],
-			LEFT(ABS(CAST(CAST(NEWID() AS VARBINARY) AS INT)),3) AS 'NewValue'
+			LEFT(ABS(CAST(CAST(NEWID() AS VARBINARY) AS INT)),2) AS 'NewValue'
 		FROM 
 			[procfwk].[PipelineParameters]
 		)

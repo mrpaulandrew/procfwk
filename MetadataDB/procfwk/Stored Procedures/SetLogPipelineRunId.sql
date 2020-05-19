@@ -6,8 +6,8 @@
 	@RunId UNIQUEIDENTIFIER = NULL
 	)
 AS
-
 BEGIN
+	SET NOCOUNT ON;
 
 	UPDATE
 		[procfwk].[CurrentExecution]
@@ -17,5 +17,4 @@ BEGIN
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId
 		AND [PipelineId] = @PipelineId
-
-END
+END;

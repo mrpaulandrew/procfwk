@@ -17,6 +17,7 @@ Post-Deployment Script Template
 
 --restore log data
 :r .\LogData\ExecutionLogRestore.sql
+:r .\LogData\ErrorLogRestore.sql
 
 --merged
 :r .\Metadata\Properties.sql

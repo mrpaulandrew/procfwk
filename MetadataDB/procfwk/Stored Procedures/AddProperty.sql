@@ -5,11 +5,10 @@
 	@Description NVARCHAR(MAX) = NULL
 	)
 AS
-
-SET NOCOUNT ON;
-
 BEGIN
 	
+	SET NOCOUNT ON;
+
 	--defensive check
 	IF EXISTS
 		(
@@ -24,7 +23,7 @@ BEGIN
 				(
 				SELECT
 					[PropertyId],
-					ROW_NUMBER() OVER (PARTITION BY [PropertyName] ORDER BY [ValidTo] ASC) AS 'Rn'
+					ROW_NUMBER() OVER (PARTITION BY [PropertyName] ORDER BY [ValidTo] ASC) AS Rn
 				FROM
 					[procfwk].[Properties]
 				WHERE
@@ -48,10 +47,10 @@ BEGIN
 	;WITH sourceTable AS
 		(
 		SELECT
-			@PropertyName AS 'PropertyName',
-			@PropertyValue AS 'PropertyValue',
-			@Description AS 'Description',
-			GETUTCDATE() AS 'StartEndDate'
+			@PropertyName AS PropertyName,
+			@PropertyValue AS PropertyValue,
+			@Description AS [Description],
+			GETUTCDATE() AS StartEndDate
 		)
 	--insert new version of existing property from MERGE OUTPUT
 	INSERT INTO [procfwk].[Properties]
@@ -96,10 +95,9 @@ BEGIN
 				)
 			--for new entry of existing record
 			OUTPUT
-				$action AS 'Action',
+				$action AS [Action],
 				sourceTable.*
 			) AS MergeOutput
 		WHERE
-			MergeOutput.[Action] = 'UPDATE'
-
-END
+			MergeOutput.[Action] = 'UPDATE';
+END;

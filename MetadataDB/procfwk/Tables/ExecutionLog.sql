@@ -11,6 +11,7 @@
     [PipelineStatus]   NVARCHAR (200)   NULL,
     [EndDateTime]      DATETIME         NULL,
     [AdfPipelineRunId] UNIQUEIDENTIFIER NULL,
+    [PipelineParamsUsed] NVARCHAR(MAX) NULL DEFAULT ('None'), 
     CONSTRAINT [PK_ExecutionLog] PRIMARY KEY CLUSTERED ([LogId] ASC)
 );
 

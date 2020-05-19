@@ -91,7 +91,7 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"functionName": "ExecutePipelineV2",
+								"functionName": "ExecutePipeline",
 								"method": "POST",
 								"body": {
 									"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"',activity('Get SPN Details').output.firstRow.Id,'\",\n\t\"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.Secret,'\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"',item().ResourceGroupName,'\",\n\t\"factoryName\": \"',item().DataFactoryName,'\",\n\t\"pipelineName\": \"',item().PipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
@@ -99,7 +99,7 @@
 								}
 							},
 							"linkedServiceName": {
-								"referenceName": "PipelineExecutor",
+								"referenceName": "FrameworkFunctions",
 								"type": "LinkedServiceReference"
 							}
 						},
@@ -258,13 +258,6 @@
 											"type": "Expression"
 										},
 										"type": "Int32"
-									},
-									"RunId": {
-										"value": {
-											"value": "@pipeline().RunId",
-											"type": "Expression"
-										},
-										"type": "Guid"
 									},
 									"StageId": {
 										"value": {

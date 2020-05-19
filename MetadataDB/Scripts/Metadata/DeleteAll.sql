@@ -10,6 +10,12 @@ IF OBJECT_ID(N'[procfwk].[ExecutionLog]') IS NOT NULL
 		TRUNCATE TABLE [procfwk].[ExecutionLog];
 	END
 
+--ErrorLog
+IF OBJECT_ID(N'[procfwk].[ExecutionLog]') IS NOT NULL 
+	BEGIN
+		TRUNCATE TABLE [procfwk].[ErrorLog];
+	END
+
 --PipelineAuthLink
 IF OBJECT_ID(N'[procfwk].[PipelineAuthLink]') IS NOT NULL 
 	BEGIN

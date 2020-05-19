@@ -10,8 +10,9 @@ using Newtonsoft.Json;
 using Microsoft.Azure.Management.DataFactory;
 using Microsoft.Azure.Management.DataFactory.Models;
 using Newtonsoft.Json.Linq;
+using ADFprocfwk.Helpers;
 
-namespace PipelineExecutor
+namespace ADFprocfwk
 {
     public static class CheckPipelineStatus
     {
@@ -21,10 +22,13 @@ namespace PipelineExecutor
             ILogger log)
         {
             log.LogInformation("CheckPipelineStatus Function triggered by HTTP request.");
-            log.LogInformation("Parsing body from request.");
+            
+            #region ParseRequestBody
+            log.LogInformation("Parsing body from request.");        
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
+            string outputString = string.Empty;
 
             string tenantId = data?.tenantId;
             string applicationId = data?.applicationId;
@@ -50,12 +54,13 @@ namespace PipelineExecutor
                 log.LogInformation("Invalid body.");
                 return new BadRequestObjectResult("Invalid request body, value(s) missing.");
             }
+            #endregion
 
+            #region GetPipelineStatus
             //Create a data factory management client
             log.LogInformation("Creating ADF connectivity client.");
-            string outputString = string.Empty;
-
-            using (var client = Helpers.DataFactoryClient.createDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
+            
+            using (var client = DataFactoryClient.CreateDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
             {
                 //Get pipeline status with provided run id
                 PipelineRun pipelineRun;
@@ -83,6 +88,8 @@ namespace PipelineExecutor
                                         "\", \"Status\": \"" + pipelineRun.Status +
                                         "\" }";
             }
+
+            #endregion
 
             JObject outputJson = JObject.Parse(outputString);
 

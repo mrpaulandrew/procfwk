@@ -1,18 +1,17 @@
-﻿Install-Module -Name "Az.DataFactory"
-Update-Module -Name "Az.DataFactory"
-Import-Module -Name "Az.DataFactory"
-
-# Set global variable as required:
-$tenantId = ""
-$subscriptionId = ""
-
+﻿# Set global variables as required:
 $resourceGroupName = "ADF.procfwk"
-$dataFactoryName = ""
-$region = ""
+$dataFactoryName = "FrameworkFactory"
+$region = "uksouth"
 
 #SPN for deploying ADF:
-$spId = ""
-$spKey = ""
+$tenantId = [System.Environment]::GetEnvironmentVariable('AZURE_TENANT_ID')
+$subscriptionId = [System.Environment]::GetEnvironmentVariable('AZURE_SUBSCRIPTION_ID')
+$spId = [System.Environment]::GetEnvironmentVariable('AZURE_CLIENT_ID')
+$spKey = [System.Environment]::GetEnvironmentVariable('AZURE_CLIENT_SECRET')
+
+#Modules
+Import-Module -Name "Az"
+Import-Module -Name "Az.DataFactory"
 
 # Login as a Service Principal
 $passwd = ConvertTo-SecureString $spKey -AsPlainText -Force

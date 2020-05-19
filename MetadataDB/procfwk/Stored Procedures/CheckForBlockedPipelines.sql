@@ -3,10 +3,9 @@
 	@StageId INT
 	)
 AS
-
-SET NOCOUNT ON;
-
 BEGIN
+
+	SET NOCOUNT ON;
 
 	IF EXISTS
 		(
@@ -20,7 +19,6 @@ BEGIN
 		)
 		BEGIN		
 			RAISERROR('Pipelines are blocked. Stopping processing.',16,1);
-			RETURN;
+			RETURN 0;
 		END
-
-END
+END;

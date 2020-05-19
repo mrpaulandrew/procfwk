@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{202ebf84-a56b-4999-92a3-10f7ffe4ef25}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureDatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
@@ -16,7 +16,7 @@
     <ModelCollation>1033,CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetLanguage>CS</TargetLanguage>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SqlServerVerification>False</SqlServerVerification>
@@ -24,6 +24,8 @@
     <TargetDatabaseSet>True</TargetDatabaseSet>
     <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
     <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+    <DefaultSchema>procfwk</DefaultSchema>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -118,6 +120,10 @@
     <Build Include="procfwk\Views\LastExecutionSummary.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineRunId.sql" />
     <Build Include="procfwk\Views\WorkerParallelismOverTime.sql" />
+    <Build Include="procfwk\Tables\ErrorLog.sql" />
+    <Build Include="procfwk\Stored Procedures\SetErrorLogDetails.sql" />
+    <Build Include="procfwk\Views\CompleteExecutionErrorLog.sql" />
+    <Build Include="procfwk\Stored Procedures\GetExecutionDetails.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
@@ -133,6 +139,9 @@
     <None Include="Scripts\Metadata\DropLegacyTables.sql" />
     <None Include="Scripts\LogData\ExecutionLogBackup.sql" />
     <None Include="Scripts\LogData\ExecutionLogRestore.sql" />
+    <None Include="Scripts\Script.SetLocalAuthenticationDetails.sql" />
+    <None Include="Scripts\LogData\ErrorLogBackup.sql" />
+    <None Include="Scripts\LogData\ErrorLogRestore.sql" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="Scripts\Script.PreDeployment.sql" />

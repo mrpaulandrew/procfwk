@@ -3,11 +3,11 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
 using Microsoft.Azure.Management.DataFactory;
 
-namespace PipelineExecutor.Helpers
+namespace ADFprocfwk.Helpers
 {
     internal class DataFactoryClient
     {
-        public static DataFactoryManagementClient createDataFactoryClient(string tenantId, string applicationId, string authenticationKey, string subscriptionId)
+        public static DataFactoryManagementClient CreateDataFactoryClient(string tenantId, string applicationId, string authenticationKey, string subscriptionId)
         {
             var context = new AuthenticationContext("https://login.windows.net/" + tenantId);
 

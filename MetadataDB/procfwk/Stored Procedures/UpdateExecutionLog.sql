@@ -1,9 +1,7 @@
 ﻿CREATE PROCEDURE [procfwk].[UpdateExecutionLog]
 AS
-
-SET NOCOUNT ON;
-
 BEGIN
+	SET NOCOUNT ON;
 
 	INSERT INTO [procfwk].[ExecutionLog]
 		(
@@ -16,7 +14,9 @@ BEGIN
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
-		[EndDateTime]
+		[EndDateTime],
+		[AdfPipelineRunId],
+		[PipelineParamsUsed]
 		)
 	SELECT
 		[LocalExecutionId],
@@ -28,10 +28,11 @@ BEGIN
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
-		[EndDateTime]
+		[EndDateTime],
+		[AdfPipelineRunId],
+		[PipelineParamsUsed]
 	FROM
-		[procfwk].[CurrentExecution]
+		[procfwk].[CurrentExecution];
 
 	TRUNCATE TABLE [procfwk].[CurrentExecution];
-
-END
+END;

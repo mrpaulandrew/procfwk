@@ -3,10 +3,8 @@
 	@ExecutionId UNIQUEIDENTIFIER
 	)
 AS
-
-SET NOCOUNT ON;
-
 BEGIN
+	SET NOCOUNT ON;
 
 	SELECT DISTINCT 
 		[StageId] 
@@ -17,5 +15,4 @@ BEGIN
 		AND ISNULL([PipelineStatus],'') <> 'Success'
 	ORDER BY 
 		[StageId] ASC
-
-END
+END;

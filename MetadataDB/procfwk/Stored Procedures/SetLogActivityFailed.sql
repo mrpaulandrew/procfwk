@@ -2,15 +2,13 @@
 	(
 	@ExecutionId UNIQUEIDENTIFIER,
 	@StageId INT,
-	@PipelineId INT,
-	@RunId UNIQUEIDENTIFIER = NULL
+	@PipelineId INT
 	)
 AS
 
 BEGIN
+	SET NOCOUNT ON;
 	
-	DECLARE @ErrorDetail VARCHAR(500)
-
 	--mark specific failure pipeline
 	UPDATE
 		[procfwk].[CurrentExecution]
@@ -44,7 +42,8 @@ BEGIN
 		[StartDateTime],
 		[PipelineStatus],
 		[EndDateTime],
-		[AdfPipelineRunId]
+		[AdfPipelineRunId],
+		[PipelineParamsUsed]
 		)
 	SELECT
 		[LocalExecutionId],
@@ -57,12 +56,12 @@ BEGIN
 		[StartDateTime],
 		[PipelineStatus],
 		[EndDateTime],
-		[AdfPipelineRunId]
+		[AdfPipelineRunId],
+		[PipelineParamsUsed]
 	FROM
 		[procfwk].[CurrentExecution]
 	WHERE
 		[PipelineStatus] = 'Failed'
 		AND [StageId] = @StageId
 		AND [PipelineId] = @PipelineId
-
-END
+END;

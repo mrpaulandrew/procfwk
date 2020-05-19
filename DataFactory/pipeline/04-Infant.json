@@ -44,7 +44,7 @@
 								}
 							},
 							"linkedServiceName": {
-								"referenceName": "PipelineExecutor",
+								"referenceName": "FrameworkFunctions",
 								"type": "LinkedServiceReference"
 							}
 						},
@@ -270,6 +270,76 @@
 													"type": "Expression"
 												},
 												"type": "Int32"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "SupportDatabase",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Get Error Details",
+									"description": "Get the activity error details for the run ID of the worker pipeline called. Returns an array of all errors.",
+									"type": "AzureFunctionActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"functionName": "GetActivityErrors",
+										"method": "POST",
+										"body": {
+											"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',pipeline().parameters.applicationId,'\",\n    \"authenticationKey\": \"',pipeline().parameters.authenticationKey,'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',pipeline().parameters.runId,'\"\n}')",
+											"type": "Expression"
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "FrameworkFunctions",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Log Error Details",
+									"description": "Parses pipeline error details and persists them to the metadata database error log table.",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Get Error Details",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[procfwk].[SetErrorLogDetails]",
+										"storedProcedureParameters": {
+											"JsonErrorDetails": {
+												"value": {
+													"value": "@string(activity('Get Error Details').output)",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"LocalExecutionId": {
+												"value": {
+													"value": "@pipeline().parameters.executionId",
+													"type": "Expression"
+												},
+												"type": "Guid"
 											}
 										}
 									},

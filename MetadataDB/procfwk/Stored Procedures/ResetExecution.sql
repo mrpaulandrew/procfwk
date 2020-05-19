@@ -1,6 +1,5 @@
 ﻿CREATE PROCEDURE [procfwk].[ResetExecution]
 AS
-
 BEGIN 
 	
 	--capture any pipelines that may have been cancelled
@@ -39,6 +38,9 @@ BEGIN
 	SET
 		[StartDateTime] = NULL,
 		[PipelineStatus] = NULL,
+		[LastStatusCheckDateTime] = NULL,
+		[AdfPipelineRunId] = NULL,
+		[PipelineParamsUsed] = NULL,
 		[IsBlocked] = 0
 	WHERE
 		ISNULL([PipelineStatus],'') <> 'Success'
@@ -46,7 +48,7 @@ BEGIN
 	
 	--return current execution id
 	SELECT DISTINCT
-		[LocalExecutionId] AS 'ExecutionId'
+		[LocalExecutionId] AS ExecutionId
 	FROM
 		[procfwk].[CurrentExecution]
 

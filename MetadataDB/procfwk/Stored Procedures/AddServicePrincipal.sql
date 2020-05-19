@@ -7,25 +7,24 @@
 	@PrincipalName NVARCHAR(256) = NULL
 	)
 AS
-
-SET NOCOUNT ON;
-
 BEGIN
+
+	SET NOCOUNT ON;
 
 	DECLARE @ErrorDetails NVARCHAR(500) = ''
 	DECLARE @CredentialId INT
-	DECLARE @LocalPrincipalId UNIQUEIDENTIFIER
 	DECLARE @TenantId CHAR(36)
+	DECLARE @LocalPrincipalId UNIQUEIDENTIFIER
 
 	--defensive checks
 	BEGIN TRY
-		SELECT 
+		SELECT --assigned to variable just to supress output of SELECT
 			@LocalPrincipalId = CAST(@PrincipalId AS UNIQUEIDENTIFIER)
 	END TRY
 	BEGIN CATCH
 			SET @ErrorDetails = 'Invalid @PrincipalId provided. The format must be a UNIQUEIDENTIFIER.'
 			RAISERROR(@ErrorDetails, 16, 1);
-			RETURN;
+			RETURN 0;
 	END CATCH
 
 	IF NOT EXISTS
@@ -35,21 +34,9 @@ BEGIN
 		BEGIN
 			SET @ErrorDetails = 'Invalid Data Factory name. Please ensure the Data Factory metadata exists before trying to add authentication for it.'
 			RAISERROR(@ErrorDetails, 16, 1);
-			RETURN;
+			RETURN 0;
 		END
 	
-	/*
-	IF EXISTS
-		(
-		SELECT [PrincipalId] FROM [dbo].[ServicePrincipals] WHERE [PrincipalId] = @PrincipalId
-		)
-		BEGIN
-			SET @ErrorDetails = 'Service principal Id already exists. If an update is required please delete the existing record using the procedure [procfwk].[DeleteServicePrincipal].'
-			RAISERROR(@ErrorDetails, 16, 1);
-			RETURN;
-		END
-	*/
-
 	IF EXISTS
 		(
 		SELECT
@@ -67,7 +54,7 @@ BEGIN
 		BEGIN
 			SET @ErrorDetails = 'The provided Pipeline or Data Factory combination already have a Service Principal. Delete the existing record using the procedure [procfwk].[DeleteServicePrincipal].'
 			RAISERROR(@ErrorDetails, 16, 1);
-			RETURN;
+			RETURN 0;
 		END
 	
 	--get tenant Id to include in encryption
@@ -89,7 +76,7 @@ BEGIN
 				BEGIN
 					SET @ErrorDetails = 'Invalid Pipeline name. Please ensure the Pipeline metadata exists before trying to add authentication for it.'
 					RAISERROR(@ErrorDetails, 16, 1);
-					RETURN;
+					RETURN 0;
 				END
 			
 			--spn may already exist for other pipelines
@@ -174,4 +161,4 @@ BEGIN
 				D.[DataFactoryName] = @DataFactory
 				AND L.[PipelineId] IS NULL;
 		END
-END
+END;

@@ -3,8 +3,7 @@
 	@PropertyName VARCHAR(128)
 	)
 AS
-BEGIN
-	
+BEGIN	
 	DECLARE @ErrorDetail NVARCHAR(4000) = ''
 
 	--defensive checks
@@ -15,7 +14,7 @@ BEGIN
 		BEGIN
 			SET @ErrorDetail = 'Invalid property name provided. Property does not exist.'
 			RAISERROR(@ErrorDetail, 16, 1);
-			RETURN;
+			RETURN 0;
 		END
 	ELSE IF NOT EXISTS
 		(
@@ -24,7 +23,7 @@ BEGIN
 		BEGIN
 			SET @ErrorDetail = 'Property name provided does not have a current valid version of the required value.'
 			RAISERROR(@ErrorDetail, 16, 1);
-			RETURN;
+			RETURN 0;
 		END
 	--get valid property value
 	ELSE
@@ -36,5 +35,4 @@ BEGIN
 			WHERE
 				[PropertyName] = @PropertyName
 		END
-
-END
+END;

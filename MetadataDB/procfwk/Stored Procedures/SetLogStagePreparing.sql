@@ -1,12 +1,11 @@
-﻿
-CREATE   PROCEDURE [procfwk].[SetLogStagePreparing]
+﻿CREATE PROCEDURE [procfwk].[SetLogStagePreparing]
 	(
 	@ExecutionId UNIQUEIDENTIFIER,
 	@StageId INT
 	)
 AS
-
 BEGIN
+	SET NOCOUNT ON;
 	
 	UPDATE
 		[procfwk].[CurrentExecution]
@@ -16,5 +15,4 @@ BEGIN
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId
 		AND [StartDateTime] IS NULL
-
-END
+END;

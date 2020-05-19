@@ -3,11 +3,9 @@
 	@CallingDataFactory NVARCHAR(200)
 	)
 AS
-
-SET NOCOUNT ON;
-
 BEGIN
-	
+	SET NOCOUNT ON;
+
 	DECLARE @RestartStatus BIT
 
 	IF @CallingDataFactory IS NULL
@@ -47,5 +45,4 @@ BEGIN
 			EXEC [procfwk].[CreateNewExecution] 
 				@CallingDataFactoryName = @CallingDataFactory
 		END
-
-END
+END;

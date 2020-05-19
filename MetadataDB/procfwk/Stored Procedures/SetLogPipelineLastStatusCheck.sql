@@ -5,9 +5,9 @@
 	@PipelineId INT
 	)
 AS
-
 BEGIN
-	
+	SET NOCOUNT ON;
+
 	UPDATE
 		[procfwk].[CurrentExecution]
 	SET
@@ -16,5 +16,4 @@ BEGIN
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId
 		AND [PipelineId] = @PipelineId
-
-END
+END;

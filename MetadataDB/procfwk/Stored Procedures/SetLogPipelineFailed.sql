@@ -6,9 +6,9 @@
 	@RunId UNIQUEIDENTIFIER = NULL
 	)
 AS
-
 BEGIN
-	
+	SET NOCOUNT ON;
+
 	DECLARE @ErrorDetail VARCHAR(500)
 
 	--mark specific failure pipeline
@@ -44,7 +44,8 @@ BEGIN
 		[StartDateTime],
 		[PipelineStatus],
 		[EndDateTime],
-		[AdfPipelineRunId]
+		[AdfPipelineRunId],
+		[PipelineParamsUsed]
 		)
 	SELECT
 		[LocalExecutionId],
@@ -57,7 +58,8 @@ BEGIN
 		[StartDateTime],
 		[PipelineStatus],
 		[EndDateTime],
-		[AdfPipelineRunId]
+		[AdfPipelineRunId],
+		[PipelineParamsUsed]
 	FROM
 		[procfwk].[CurrentExecution]
 	WHERE
@@ -71,6 +73,5 @@ BEGIN
 		SET @ErrorDetail = 'Pipeline execution failed. See ADF monitoring for details.'
 
 	RAISERROR(@ErrorDetail,16,1);
-	RETURN;
-
-END
+	RETURN 0;
+END;

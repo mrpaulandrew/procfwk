@@ -5,33 +5,31 @@
 	@SpecificPipelineName NVARCHAR(200) = NULL
 	)
 AS
-
-SET NOCOUNT ON;
-
 BEGIN
+	SET NOCOUNT ON;
 
 	DECLARE @ErrorDetails NVARCHAR(500) = ''
 	DECLARE @LocalPrincipalId UNIQUEIDENTIFIER
 
 	--defensive checks
 	BEGIN TRY
-		SELECT 
+		SELECT --assigned to variable just to supress output of SELECT
 			@LocalPrincipalId = CAST(@PrincipalId AS UNIQUEIDENTIFIER)
 	END TRY
 	BEGIN CATCH
 			SET @ErrorDetails = 'Invalid @PrincipalId provided. The format must be a UNIQUEIDENTIFIER.'
 			RAISERROR(@ErrorDetails, 16, 1);
-			RETURN;
+			RETURN 0;
 	END CATCH	
 	
 	IF NOT EXISTS
 		(
-		SELECT [DataFactoryName] FROM [procfwk].[DataFactoryDetails] WHERE [DataFactoryName] = @DataFactory
+		SELECT [DataFactoryName] FROM [procfwk].[DataFactorys] WHERE [DataFactoryName] = @DataFactory
 		)
 		BEGIN
 			SET @ErrorDetails = 'Invalid Data Factory name. Please ensure the Data Factory metadata exists.'
 			RAISERROR(@ErrorDetails, 16, 1);
-			RETURN;
+			RETURN 0;
 		END
 
 	IF NOT EXISTS
@@ -41,7 +39,7 @@ BEGIN
 		BEGIN
 			SET @ErrorDetails = 'Invalid Service Principal Id. Please ensure the Service Principal exists.'
 			RAISERROR(@ErrorDetails, 16, 1);
-			RETURN;
+			RETURN 0;
 		END
 
 
@@ -50,12 +48,12 @@ BEGIN
 		BEGIN
 			IF NOT EXISTS
 				( 
-				SELECT [PipelineName] FROM [procfwk].[PipelineProcesses] WHERE [PipelineName] = @SpecificPipelineName
+				SELECT [PipelineName] FROM [procfwk].[Pipelines] WHERE [PipelineName] = @SpecificPipelineName
 				)
 				BEGIN
 					SET @ErrorDetails = 'Invalid Pipeline name. Please ensure the Pipeline metadata exists.'
 					RAISERROR(@ErrorDetails, 16, 1);
-					RETURN;
+					RETURN 0;
 				END
 			
 			--delete link
@@ -63,9 +61,9 @@ BEGIN
 				L
 			FROM
 				[procfwk].[PipelineAuthLink] L
-				INNER JOIN [procfwk].[PipelineProcesses] P
+				INNER JOIN [procfwk].[Pipelines] P
 					ON L.[PipelineId] = P.[PipelineId]
-				INNER JOIN [procfwk].[DataFactoryDetails] D
+				INNER JOIN [procfwk].[DataFactorys] D
 					ON P.[DataFactoryId] = D.[DataFactoryId]
 						AND L.[DataFactoryId] = D.[DataFactoryId]
 				INNER JOIN [dbo].[ServicePrincipals] S
@@ -81,7 +79,7 @@ BEGIN
 				L
 			FROM
 				[procfwk].[PipelineAuthLink] L
-				INNER JOIN [procfwk].[DataFactoryDetails] D
+				INNER JOIN [procfwk].[DataFactorys] D
 					ON L.[DataFactoryId] = D.[DataFactoryId]
 						AND L.[DataFactoryId] = D.[DataFactoryId]
 				INNER JOIN [dbo].[ServicePrincipals] S
@@ -101,5 +99,4 @@ BEGIN
 	WHERE 
 		SP.[PrincipalId] = @PrincipalId
 		AND AL.[CredentialId] IS NULL;
-
-END
+END;
