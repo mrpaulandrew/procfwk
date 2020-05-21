@@ -469,42 +469,6 @@
 				"description": "Used just so the ADF.procfwk has something to call during development.",
 				"activities": [
 					{
-						"name": "Call Fail Procedure",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "Wait1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[FailProcedure]",
-							"storedProcedureParameters": {
-								"RaiseError": {
-									"value": {
-										"value": "@pipeline().parameters.RaiseErrors",
-										"type": "Expression"
-									},
-									"type": "String"
-								}
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "SupportDatabase",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
 						"name": "Wait1",
 						"type": "Wait",
 						"dependsOn": [],
@@ -517,8 +481,8 @@
 						}
 					},
 					{
-						"name": "Call Fail Notebook",
-						"type": "DatabricksNotebook",
+						"name": "Raise Errors or Not",
+						"type": "IfCondition",
 						"dependsOn": [
 							{
 								"activity": "Wait1",
@@ -527,26 +491,69 @@
 								]
 							}
 						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
 						"userProperties": [],
 						"typeProperties": {
-							"notebookPath": "/Playground/Throw Exception",
-							"baseParameters": {
-								"RaiseError": {
-									"value": "@pipeline().parameters.RaiseErrors",
-									"type": "Expression"
+							"expression": {
+								"value": "@equals(pipeline().parameters.RaiseErrors,'true')",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Call Fail Procedure",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[FailProcedure]",
+										"storedProcedureParameters": {
+											"RaiseError": {
+												"value": {
+													"value": "@pipeline().parameters.RaiseErrors",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "SupportDatabase",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Call Fail Notebook",
+									"type": "DatabricksNotebook",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Playground/Throw Exception",
+										"baseParameters": {
+											"RaiseError": {
+												"value": "@pipeline().parameters.RaiseErrors",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "BricksOfData",
+										"type": "LinkedServiceReference"
+									}
 								}
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "BricksOfData",
-							"type": "LinkedServiceReference"
+							]
 						}
 					}
 				],
