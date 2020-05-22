@@ -38,7 +38,7 @@ BEGIN
 			[ActivityRunId] UNIQUEIDENTIFIER,
 			[ActivityName] VARCHAR(100),
 			[ActivityType] VARCHAR(100),
-			[ErrorCode] INT,
+			[ErrorCode] VARCHAR(100),
 			[ErrorType] VARCHAR(100),
 			[ErrorMessage] VARCHAR(MAX)
 			) AS ErrorDetail
