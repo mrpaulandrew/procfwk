@@ -437,16 +437,20 @@
 		],
 		"parameters": {
 			"StageId": {
-				"type": "int"
+				"type": "int",
+				"defaultValue": 1
 			},
 			"ExecutionId": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "96B9101B-9107-41E1-AB71-8FD6DA4FACCA"
 			},
 			"TenantId": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "929039b9-c19d-425e-993b-1e3fda155876"
 			},
 			"SubscriptionId": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "450eaf4d-1124-4b6d-b490-95dedc991c1e"
 			}
 		},
 		"variables": {
