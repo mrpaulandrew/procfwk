@@ -42,10 +42,7 @@ namespace ADFprocfwk
 
             #region ValidateRequestBody
             //Check for minimum mailing values in request body
-            if (
-                subject == null ||
-                message == null
-                )
+            if (subject == null || message == null)
             {
                 log.LogInformation("Invalid body - Subject/Body.");
                 
@@ -56,9 +53,8 @@ namespace ADFprocfwk
             }
 
             if (
-                recipients == null &&
-                ccRecipients == null &&
-                bccRecipients == null
+                (recipients == null && ccRecipients == null && bccRecipients == null) ||
+                (string.IsNullOrEmpty(recipients) && string.IsNullOrEmpty(ccRecipients) && string.IsNullOrEmpty(bccRecipients))
                 )
             {
                 log.LogInformation("Invalid body - To/CC/BCC.");
@@ -104,11 +100,13 @@ namespace ADFprocfwk
                 //to recipients
                 if (!string.IsNullOrEmpty(ccRecipients))
                 {
-                    foreach (var address in recipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries))
+                    var allRecipients = recipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    
+                    foreach (var address in allRecipients)
                     {
                         mail.To.Add(address);
                     }
-                    log.LogInformation("To Recipients Added: " + recipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Count().ToString());
+                    log.LogInformation("To Recipients Added: " + allRecipients.Count().ToString());
                 }
                 else
                 {
@@ -118,11 +116,13 @@ namespace ADFprocfwk
                 //cc recipients
                 if (!string.IsNullOrEmpty(ccRecipients))
                 {
-                    foreach (var ccAddress in ccRecipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries))
+                    var allCcRecipients = ccRecipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (var ccAddress in allCcRecipients)
                     {
                         mail.CC.Add(ccAddress);
                     }
-                    log.LogInformation("CC Recipients Added: " + ccRecipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Count().ToString());
+                    log.LogInformation("CC Recipients Added: " + allCcRecipients.Count().ToString());
                 }
                 else
                 {
@@ -132,11 +132,13 @@ namespace ADFprocfwk
                 //bcc recipients
                 if (!string.IsNullOrEmpty(bccRecipients))
                 {
-                    foreach (var bccAddress in bccRecipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries))
+                    var allBccRecipients = bccRecipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (var bccAddress in allBccRecipients)
                     {
                         mail.Bcc.Add(bccAddress);
                     }
-                    log.LogInformation("BCC Recipients Added: " + bccRecipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Count().ToString());
+                    log.LogInformation("BCC Recipients Added: " + allBccRecipients.Count().ToString());
                 }
                 else
                 {
