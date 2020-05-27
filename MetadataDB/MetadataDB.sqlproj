@@ -124,6 +124,10 @@
     <Build Include="procfwk\Stored Procedures\SetErrorLogDetails.sql" />
     <Build Include="procfwk\Views\CompleteExecutionErrorLog.sql" />
     <Build Include="procfwk\Stored Procedures\GetExecutionDetails.sql" />
+    <Build Include="procfwk\Stored Procedures\CheckForEmailAlert.sql" />
+    <Build Include="procfwk\Stored Procedures\GetEmailAlertParts.sql" />
+    <Build Include="procfwk\Tables\Recipients.sql" />
+    <Build Include="procfwk\Tables\PipelineAlertLink.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

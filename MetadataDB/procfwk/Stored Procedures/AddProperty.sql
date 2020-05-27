@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [procfwk].[AddProperty]
 	(
 	@PropertyName VARCHAR(128),
-	@PropertyValue NVARCHAR(500),
+	@PropertyValue NVARCHAR(MAX),
 	@Description NVARCHAR(MAX) = NULL
 	)
 AS
