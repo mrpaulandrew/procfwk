@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ADFprocfwk.Helpers;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using System.Linq;
 
 namespace ADFprocfwk
 {
@@ -28,24 +30,44 @@ namespace ADFprocfwk
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             string outputString = string.Empty;
+            JObject outputJson;
 
             string recipients = data?.emailRecipients;
             string ccRecipients = data?.emailCcRecipients;
+            string bccRecipients = data?.emailBccRecipients;
             string subject = data?.emailSubject;
             string message = data?.emailBody;
-            string passedImportance = data?.emailImportance ?? ""; //Assume normal importance if not provided.
+            string passedImportance = data?.emailImportance ?? ""; //Set normal importance if not provided.
+            #endregion
 
-            //Check for minimum values in body
+            #region ValidateRequestBody
+            //Check for minimum mailing values in request body
             if (
-                recipients == null ||
                 subject == null ||
                 message == null
                 )
             {
-                log.LogInformation("Invalid body.");
-                return new BadRequestObjectResult("Invalid request body, value(s) missing.");
+                log.LogInformation("Invalid body - Subject/Body.");
+                
+                outputString = "{ \"EmailSent\": false, \"Details\": \"Email subject or body values missing.\"}";
+                outputJson = JObject.Parse(outputString);
+                
+                return new BadRequestObjectResult(outputJson);
             }
 
+            if (
+                recipients == null &&
+                ccRecipients == null &&
+                bccRecipients == null
+                )
+            {
+                log.LogInformation("Invalid body - To/CC/BCC.");
+                
+                outputString = "{ \"EmailSent\": false, \"Details\": \"No email recipients provided as To/CC/BCC.\"}";
+                outputJson = JObject.Parse(outputString);
+                
+                return new BadRequestObjectResult(outputJson);
+            }
             #endregion
 
             //Create email client
@@ -53,7 +75,6 @@ namespace ADFprocfwk
 
             using (var client = SMTPClient.CreateSMTPClient())
             {
-
                 #region CreateMail                
                 MailAddress from = new MailAddress(SMTPClient.fromEmail);
                 MailMessage mail = new MailMessage
@@ -80,10 +101,18 @@ namespace ADFprocfwk
                 #endregion
 
                 #region SetRecipients
-                //recipients
-                foreach (var address in recipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries))
+                //to recipients
+                if (!string.IsNullOrEmpty(ccRecipients))
                 {
-                    mail.To.Add(address);
+                    foreach (var address in recipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        mail.To.Add(address);
+                    }
+                    log.LogInformation("To Recipients Added: " + recipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Count().ToString());
+                }
+                else
+                {
+                    log.LogInformation("To Recipients Added: 0");
                 }
 
                 //cc recipients
@@ -93,6 +122,25 @@ namespace ADFprocfwk
                     {
                         mail.CC.Add(ccAddress);
                     }
+                    log.LogInformation("CC Recipients Added: " + ccRecipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Count().ToString());
+                }
+                else
+                {
+                    log.LogInformation("CC Recipients Added: 0");
+                }
+
+                //bcc recipients
+                if (!string.IsNullOrEmpty(bccRecipients))
+                {
+                    foreach (var bccAddress in bccRecipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        mail.Bcc.Add(bccAddress);
+                    }
+                    log.LogInformation("BCC Recipients Added: " + bccRecipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Count().ToString());
+                }
+                else
+                {
+                    log.LogInformation("BCC Recipients Added: 0");
                 }
                 #endregion
 
@@ -108,22 +156,22 @@ namespace ADFprocfwk
                 }
                 catch (SmtpException smtpEx)
                 {
-                    outputString = "{ \"EmailSent\": false }";
-                    
+                    outputString = "{ \"EmailSent\": false, \"Details\": \"SMTP exception caught and logged to error output.\"}";
+
                     log.LogError(smtpEx.Message);
                     log.LogInformation("Message has not been sent. Check Azure Function Logs for more information.");
                 }
                 catch (Exception ex)
                 {
-                    outputString = "{ \"EmailSent\": false }";
-                    
+                    outputString = "{ \"EmailSent\": false, \"Details\": \"Other exception caught and logged to error output.\"}";
+
                     log.LogError(ex.Message);
                     log.LogInformation("Message has not been sent. Check Azure Function Logs for more information.");
                 }
                 #endregion
             }
 
-            JObject outputJson = JObject.Parse(outputString);
+            outputJson = JObject.Parse(outputString);
 
             log.LogInformation("SendEmail Function complete.");
             return new OkObjectResult(outputJson);
