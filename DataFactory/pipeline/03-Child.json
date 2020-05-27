@@ -428,7 +428,7 @@
 									"referenceName": "GetSetMetadata",
 									"type": "DatasetReference"
 								},
-								"firstRowOnly": false
+								"firstRowOnly": true
 							}
 						}
 					]
