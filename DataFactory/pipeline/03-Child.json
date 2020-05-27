@@ -430,6 +430,73 @@
 								},
 								"firstRowOnly": true
 							}
+						},
+						{
+							"name": "Send Alerts",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "Running Pipeline Handler",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "Set Run Id",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "Check Send Alerts",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@activity('Check Send Alerts').output.firstRow.SendAlerts",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Get Email Parts",
+										"type": "Lookup",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "AzureSqlSource",
+												"sqlReaderStoredProcedureName": "[procfwk].[GetEmailAlertParts]",
+												"storedProcedureParameters": {
+													"PipelineId": {
+														"type": "Int32",
+														"value": {
+															"value": "@item().PipelineId",
+															"type": "Expression"
+														}
+													}
+												},
+												"queryTimeout": "02:00:00"
+											},
+											"dataset": {
+												"referenceName": "GetSetMetadata",
+												"type": "DatasetReference"
+											},
+											"firstRowOnly": false
+										}
+									}
+								]
+							}
 						}
 					]
 				}
