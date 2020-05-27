@@ -420,10 +420,6 @@
 												"value": "@item().PipelineId",
 												"type": "Expression"
 											}
-										},
-										"SendAlerts": {
-											"type": "Boolean",
-											"value": null
 										}
 									},
 									"queryTimeout": "02:00:00"
