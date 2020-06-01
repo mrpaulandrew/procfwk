@@ -398,7 +398,8 @@
 							}
 						},
 						{
-							"name": "Check Send Alerts",
+							"name": "Check For Alerts",
+							"description": "Checks the properties tables and if any recipients in the database require alerts sending for the current pipeline ID.",
 							"type": "Lookup",
 							"dependsOn": [],
 							"policy": {
@@ -448,7 +449,7 @@
 									]
 								},
 								{
-									"activity": "Check Send Alerts",
+									"activity": "Check For Alerts",
 									"dependencyConditions": [
 										"Succeeded"
 									]
