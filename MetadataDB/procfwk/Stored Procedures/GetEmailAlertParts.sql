@@ -22,7 +22,7 @@ BEGIN
 		INNER JOIN [procfwk].[AlertOutcomes] ao
 			ON ce.[PipelineStatus] = ao.[PipelineOutcomeStatus]
 	WHERE
-		ce.[PipelineId] = @PipelineId
+		ce.[PipelineId] = @PipelineId;
 
 	--get to recipients
 	SELECT
@@ -87,7 +87,7 @@ BEGIN
 	FROM
 		[procfwk].[CurrentProperties]
 	WHERE
-		[PropertyName] = 'EmailAlertBodyTemplate'
+		[PropertyName] = 'EmailAlertBodyTemplate';
 
 	--set subject, body and importance
 	SELECT TOP (1)
@@ -100,8 +100,14 @@ BEGIN
 		@EmailBody = REPLACE(@EmailBody,'##ExecId###',CAST([LocalExecutionId] AS VARCHAR(36))),
 		@EmailBody = REPLACE(@EmailBody,'##RunId###',CAST([AdfPipelineRunId] AS VARCHAR(36))),
 		@EmailBody = REPLACE(@EmailBody,'##StartDateTime###',CONVERT(VARCHAR(30), [StartDateTime], 120)),
-		@EmailBody = REPLACE(@EmailBody,'##EndDateTime###',CONVERT(VARCHAR(30), [EndDateTime], 120)),
-		@EmailBody = REPLACE(@EmailBody,'##Duration###',CAST(DATEDIFF(MINUTE, [StartDateTime], [EndDateTime]) AS VARCHAR(30))),
+		@EmailBody = CASE
+						WHEN [EndDateTime] IS NULL THEN REPLACE(@EmailBody,'##EndDateTime###','N/A')
+						ELSE REPLACE(@EmailBody,'##EndDateTime###',CONVERT(VARCHAR(30), [EndDateTime], 120))
+					END,
+		@EmailBody = CASE
+						WHEN [EndDateTime] IS NULL THEN REPLACE(@EmailBody,'##Duration###','N/A')
+						ELSE REPLACE(@EmailBody,'##Duration###',CAST(DATEDIFF(MINUTE, [StartDateTime], [EndDateTime]) AS VARCHAR(30)))
+					END,
 		@EmailBody = REPLACE(@EmailBody,'##CalledByADF###',[CallingDataFactoryName]),
 		@EmailBody = REPLACE(@EmailBody,'##ExecutedByADF###',[DataFactoryName]),
 
@@ -118,6 +124,10 @@ BEGIN
 		[PipelineId] = @PipelineId
 	ORDER BY
 		[StartDateTime] DESC;
+	
+	--precaution
+	IF @EmailBody IS NULL
+		SET @EmailBody = 'Internal error. Failed to create profwk email alert body. Execute procedure [procfwk].[GetEmailAlertParts] with pipeline Id: ' + CAST(@PipelineId AS VARCHAR(30)) + ' to debug.';
 
 	--return email parts
 	SELECT
