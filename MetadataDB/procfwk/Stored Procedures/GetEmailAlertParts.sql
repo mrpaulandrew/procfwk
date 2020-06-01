@@ -12,6 +12,17 @@ BEGIN
 	DECLARE @EmailSubject NVARCHAR(500)
 	DECLARE	@EmailBody NVARCHAR(MAX)
 	DECLARE @EmailImportance VARCHAR(5)
+	DECLARE @OutcomeBitValue INT
+
+	--map pipeline status to alert outcome bit value
+	SELECT
+		@OutcomeBitValue = ao.[BitValue]
+	FROM
+		[procfwk].[CurrentExecution] ce
+		INNER JOIN [procfwk].[AlertOutcomes] ao
+			ON ce.[PipelineStatus] = ao.[PipelineOutcomeStatus]
+	WHERE
+		ce.[PipelineId] = @PipelineId
 
 	--get to recipients
 	SELECT
@@ -24,9 +35,13 @@ BEGIN
 		al.[PipelineId] = @PipelineId
 		AND al.[Enabled] = 1
 		AND r.[Enabled] = 1
-		AND UPPER(r.[MessagePreference]) = 'TO';
+		AND UPPER(r.[MessagePreference]) = 'TO'
+		AND (
+			al.[OutcomesBitValue] & @OutcomeBitValue <> 0
+			OR al.[OutcomesBitValue] & 1 <> 0 --all
+			);
 
-	SET @ToRecipients = LEFT(@ToRecipients,LEN(@ToRecipients)-1);
+	IF (@ToRecipients <> '') SET @ToRecipients = LEFT(@ToRecipients,LEN(@ToRecipients)-1);
 
 	--get cc recipients
 	SELECT
@@ -39,9 +54,13 @@ BEGIN
 		al.[PipelineId] = @PipelineId
 		AND al.[Enabled] = 1
 		AND r.[Enabled] = 1
-		AND UPPER(r.[MessagePreference]) = 'CC';
-
-	SET @CcRecipients = LEFT(@CcRecipients,LEN(@CcRecipients)-1);
+		AND UPPER(r.[MessagePreference]) = 'CC'
+		AND (
+			al.[OutcomesBitValue] & @OutcomeBitValue <> 0
+			OR al.[OutcomesBitValue] & 1 <> 0 --all
+			);
+	
+	IF (@CcRecipients <> '') SET @CcRecipients = LEFT(@CcRecipients,LEN(@CcRecipients)-1);
 
 	--get bcc recipients
 	SELECT
@@ -54,9 +73,13 @@ BEGIN
 		al.[PipelineId] = @PipelineId
 		AND al.[Enabled] = 1
 		AND r.[Enabled] = 1
-		AND UPPER(r.[MessagePreference]) = 'BCC';
+		AND UPPER(r.[MessagePreference]) = 'BCC'
+		AND (
+			al.[OutcomesBitValue] & @OutcomeBitValue <> 0
+			OR al.[OutcomesBitValue] & 1 <> 0 --all
+			);
 
-	SET @BccRecipients = LEFT(@BccRecipients,LEN(@BccRecipients)-1);
+	IF (@BccRecipients <> '') SET @BccRecipients = LEFT(@BccRecipients,LEN(@BccRecipients)-1);
 	
 	--get email template
 	SELECT

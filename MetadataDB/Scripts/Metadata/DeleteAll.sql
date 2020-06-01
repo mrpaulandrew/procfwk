@@ -34,6 +34,12 @@ IF OBJECT_ID(N'[procfwk].[Recipients]') IS NOT NULL
 		DBCC CHECKIDENT ('[procfwk].[Recipients]', RESEED, 0);
 	END;
 
+--AlertOutcomes
+IF OBJECT_ID(N'[procfwk].[AlertOutcomes]') IS NOT NULL 
+	BEGIN
+		TRUNCATE TABLE [procfwk].[AlertOutcomes];
+	END;
+
 --PipelineAuthLink
 IF OBJECT_ID(N'[procfwk].[PipelineAuthLink]') IS NOT NULL 
 	BEGIN

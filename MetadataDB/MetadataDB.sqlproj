@@ -124,11 +124,13 @@
     <Build Include="procfwk\Stored Procedures\SetErrorLogDetails.sql" />
     <Build Include="procfwk\Views\CompleteExecutionErrorLog.sql" />
     <Build Include="procfwk\Stored Procedures\GetExecutionDetails.sql" />
-    <Build Include="procfwk\Stored Procedures\CheckForEmailAlert.sql" />
+    <Build Include="procfwk\Stored Procedures\CheckForEmailAlerts.sql" />
     <Build Include="procfwk\Stored Procedures\GetEmailAlertParts.sql" />
     <Build Include="procfwk\Tables\Recipients.sql" />
     <Build Include="procfwk\Tables\PipelineAlertLink.sql" />
     <None Include="Scripts\Metadata\Recipients.sql" />
+    <Build Include="procfwk\Stored Procedures\AddRecipientPipelineAlerts.sql" />
+    <Build Include="procfwk\Tables\AlertOutcomes.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
@@ -148,6 +150,7 @@
     <None Include="Scripts\LogData\ErrorLogBackup.sql" />
     <None Include="Scripts\LogData\ErrorLogRestore.sql" />
     <None Include="Scripts\Metadata\RecipientAlertsLink.sql" />
+    <None Include="Scripts\Metadata\AlertOutcomes.sql" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="Scripts\Script.PreDeployment.sql" />
