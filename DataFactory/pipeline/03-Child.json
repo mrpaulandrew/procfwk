@@ -438,12 +438,6 @@
 							"type": "IfCondition",
 							"dependsOn": [
 								{
-									"activity": "Running Pipeline Handler",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								},
-								{
 									"activity": "Set Run Id",
 									"dependencyConditions": [
 										"Succeeded"
@@ -453,6 +447,12 @@
 									"activity": "Check For Alerts",
 									"dependencyConditions": [
 										"Succeeded"
+									]
+								},
+								{
+									"activity": "Running Pipeline Handler",
+									"dependencyConditions": [
+										"Completed"
 									]
 								}
 							],
