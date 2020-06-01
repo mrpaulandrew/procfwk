@@ -398,7 +398,8 @@
 							}
 						},
 						{
-							"name": "Check Send Alerts",
+							"name": "Check For Alerts",
+							"description": "Checks the properties tables and if any recipients in the database require alerts sending for the current pipeline ID.",
 							"type": "Lookup",
 							"dependsOn": [],
 							"policy": {
@@ -433,14 +434,9 @@
 						},
 						{
 							"name": "Send Alerts",
+							"description": "True = alerts need sending.\nFalse = do nothing.",
 							"type": "IfCondition",
 							"dependsOn": [
-								{
-									"activity": "Running Pipeline Handler",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								},
 								{
 									"activity": "Set Run Id",
 									"dependencyConditions": [
@@ -448,16 +444,22 @@
 									]
 								},
 								{
-									"activity": "Check Send Alerts",
+									"activity": "Check For Alerts",
 									"dependencyConditions": [
 										"Succeeded"
+									]
+								},
+								{
+									"activity": "Running Pipeline Handler",
+									"dependencyConditions": [
+										"Completed"
 									]
 								}
 							],
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@activity('Check Send Alerts').output.firstRow.SendAlerts",
+									"value": "@activity('Check For Alerts').output.firstRow.SendAlerts",
 									"type": "Expression"
 								},
 								"ifTrueActivities": [
