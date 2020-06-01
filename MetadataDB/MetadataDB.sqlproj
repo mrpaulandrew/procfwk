@@ -128,6 +128,7 @@
     <Build Include="procfwk\Stored Procedures\GetEmailAlertParts.sql" />
     <Build Include="procfwk\Tables\Recipients.sql" />
     <Build Include="procfwk\Tables\PipelineAlertLink.sql" />
+    <None Include="Scripts\Metadata\Recipients.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
@@ -146,6 +147,7 @@
     <None Include="Scripts\Script.SetLocalAuthenticationDetails.sql" />
     <None Include="Scripts\LogData\ErrorLogBackup.sql" />
     <None Include="Scripts\LogData\ErrorLogRestore.sql" />
+    <None Include="Scripts\Metadata\RecipientAlertsLink.sql" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="Scripts\Script.PreDeployment.sql" />
