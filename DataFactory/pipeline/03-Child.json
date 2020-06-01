@@ -434,6 +434,7 @@
 						},
 						{
 							"name": "Send Alerts",
+							"description": "True = alerts need sending.\nFalse = do nothing.",
 							"type": "IfCondition",
 							"dependsOn": [
 								{
@@ -458,7 +459,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@activity('Check Send Alerts').output.firstRow.SendAlerts",
+									"value": "@activity('Check For Alerts').output.firstRow.SendAlerts",
 									"type": "Expression"
 								},
 								"ifTrueActivities": [
