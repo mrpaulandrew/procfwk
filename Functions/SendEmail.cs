@@ -32,12 +32,12 @@ namespace ADFprocfwk
             string outputString = string.Empty;
             JObject outputJson;
 
-            string recipients = data?.emailRecipients;
+            string toRecipients = data?.emailRecipients;
             string ccRecipients = data?.emailCcRecipients;
             string bccRecipients = data?.emailBccRecipients;
             string subject = data?.emailSubject;
             string message = data?.emailBody;
-            string passedImportance = data?.emailImportance ?? ""; //Set normal importance if not provided.
+            string passedImportance = data?.emailImportance ?? ""; //Set normal importance if not provided.            
             #endregion
 
             #region ValidateRequestBody
@@ -53,8 +53,8 @@ namespace ADFprocfwk
             }
 
             if (
-                (recipients == null && ccRecipients == null && bccRecipients == null) ||
-                (string.IsNullOrEmpty(recipients) && string.IsNullOrEmpty(ccRecipients) && string.IsNullOrEmpty(bccRecipients))
+                (toRecipients == null && ccRecipients == null && bccRecipients == null) ||
+                (string.IsNullOrEmpty(toRecipients) && string.IsNullOrEmpty(ccRecipients) && string.IsNullOrEmpty(bccRecipients))
                 )
             {
                 log.LogInformation("Invalid body - To/CC/BCC.");
@@ -98,13 +98,13 @@ namespace ADFprocfwk
 
                 #region SetRecipients
                 //to recipients
-                if (!string.IsNullOrEmpty(ccRecipients))
+                if (!string.IsNullOrEmpty(toRecipients))
                 {
-                    var allRecipients = recipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    var allRecipients = toRecipients.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                     
-                    foreach (var address in allRecipients)
+                    foreach (var toAddress in allRecipients)
                     {
-                        mail.To.Add(address);
+                        mail.To.Add(toAddress);
                     }
                     log.LogInformation("To Recipients Added: " + allRecipients.Count().ToString());
                 }
