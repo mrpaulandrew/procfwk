@@ -23,7 +23,16 @@ BEGIN
 	--based on piplines to recipients link
 	ELSE IF EXISTS
 		(
-		SELECT [PipelineId] FROM [procfwk].[PipelineAlertLink] WHERE [PipelineId] = @PipelineId
+		SELECT 
+			al.[AlertId] 
+		FROM 
+			[procfwk].[PipelineAlertLink] al
+			INNER JOIN [procfwk].[Recipients] r
+				ON al.[RecipientId] = r.[RecipientId]
+		WHERE 
+			al.[PipelineId] = @PipelineId
+			AND al.[Enabled] = 1
+			AND r.[Enabled] = 1
 		)
 		BEGIN
 			SET @SendAlerts = 1;
