@@ -6,5 +6,6 @@
 	[MessagePreference] CHAR(3) NOT NULL DEFAULT ('TO'),
 	CONSTRAINT [MessagePreferenceValue] CHECK ([MessagePreference] IN ('TO','CC','BCC')),
 	[Enabled] BIT NOT NULL DEFAULT 1,
-	CONSTRAINT [PK_Recipients] PRIMARY KEY CLUSTERED ([RecipientId] ASC)
+	CONSTRAINT [PK_Recipients] PRIMARY KEY CLUSTERED ([RecipientId] ASC),
+	CONSTRAINT [UK_EmailAddressMessagePreference] UNIQUE ([EmailAddress],[MessagePreference])
 	);

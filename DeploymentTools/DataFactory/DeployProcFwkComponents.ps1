@@ -11,7 +11,10 @@ $spKey = [System.Environment]::GetEnvironmentVariable('AZURE_CLIENT_SECRET')
 
 #Modules
 Import-Module -Name "Az"
+Update-Module -Name "Az"
+
 Import-Module -Name "Az.DataFactory"
+Update-Module -Name "Az.DataFactory"
 
 # Login as a Service Principal
 $passwd = ConvertTo-SecureString $spKey -AsPlainText -Force
