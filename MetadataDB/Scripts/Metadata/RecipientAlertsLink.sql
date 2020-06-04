@@ -9,4 +9,5 @@ EXEC [procfwk].[AddRecipientPipelineAlerts]
 
 EXEC [procfwk].[AddRecipientPipelineAlerts]
 	@RecipientName = N'Test User 3',
+	@PipelineName = 'Wait 1',
 	@AlertForStatus = 'Success, Failed, Cancelled';

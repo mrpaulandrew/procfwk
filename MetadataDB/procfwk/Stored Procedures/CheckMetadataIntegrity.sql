@@ -17,6 +17,8 @@ BEGIN
 	Check 8 - Does the TenantId property still have its default value?
 	Check 9 - Does the SubscriptionId property still have its default value?
 	Check 10 - Is there a current PipelineStatusCheckDuration property available?
+	Check 11 - Is there a current UseFrameworkEmailAlerting property available?
+	Check 12 - Is there a current EmailAlertBodyTemplate property available?
 	*/
 
 	DECLARE @ErrorDetails VARCHAR(500)
