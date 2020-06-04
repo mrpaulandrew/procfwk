@@ -154,12 +154,25 @@ ForEach ($pipeline in $deploymentObject.pipelines)
     
     try
         {
+        ##Bug in SDK means this native cmdlet can't be used if pipeline contains a Wait activity expression.
+        <#
         Set-AzDataFactoryV2Pipeline `
             -ResourceGroupName $resourceGroupName `
             -DataFactoryName $dataFactoryName `
             -Name $pipelineName `
             -DefinitionFile $componentPath `
             -Force | Format-List | Out-Null
+        #>
+        $body = (Get-Content -Path $componentPath | Out-String)        
+        $json = $body | ConvertFrom-Json
+
+        New-AzResource `
+            -ResourceType 'Microsoft.DataFactory/factories/pipelines' `
+            -ResourceGroupName $resourceGroupName `
+            -Name "$dataFactoryName/$pipelineName" `
+            -ApiVersion "2018-06-01" `
+            -Properties $json `
+            -IsFullObject #-Force | Out-Null
 
         Write-Host "...done" -ForegroundColor Green
         Write-Host ""
