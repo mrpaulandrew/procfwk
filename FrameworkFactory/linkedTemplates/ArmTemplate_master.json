@@ -13,7 +13,7 @@
 		},
 		"SupportDatabase_properties_typeProperties_connectionString_secretName": {
 			"type": "string",
-			"defaultValue": "SupportDatabaseConnectionString"
+			"defaultValue": "FrameworkMetadataDev"
 		},
 		"containerUri": {
 			"type": "string",

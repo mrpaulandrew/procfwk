@@ -9,7 +9,7 @@
 			"value": "https://FrameworkKeys.vault.azure.net/"
 		},
 		"SupportDatabase_properties_typeProperties_connectionString_secretName": {
-			"value": "SupportDatabaseConnectionString"
+			"value": "FrameworkMetadataDev"
 		},
 		"containerUri": {
 			"value": ""
