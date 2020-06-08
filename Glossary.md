@@ -30,6 +30,8 @@
 | Parent |The pipeline used to bootstrap the orchestration framework in perform the first level ForEach calls in sequence for the metadata stages. |
 | Child |The pipeline used to execute Worker pipelines within a given execution stage. This pipeline will be called once for each stage, then execute all Workers in parallel. |
 | Infant |The pipeline used to check when the Worker pipeline called by the Child completes and passes the resulting status back to the metadata database. |
+| Recipient |A named person or generic account added with an email address to recieve alerts from the processing framework. |
+| Alert Subscription |A metadata relationship between Worker pipelines and recipients to support email alerting. |
 
  
 ## Resources and Content

@@ -69,6 +69,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{16E32C
 		Images\Authentication Flow.png = Images\Authentication Flow.png
 		Images\Database Diagram.png = Images\Database Diagram.png
 		Images\Pipeline Type Key.png = Images\Pipeline Type Key.png
+		Images\Repo Image.png = Images\Repo Image.png
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notebooks", "Notebooks", "{19F99FD2-9170-42DA-B4FE-A52A358B5473}"

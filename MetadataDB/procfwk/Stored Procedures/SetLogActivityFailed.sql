@@ -2,7 +2,8 @@
 	(
 	@ExecutionId UNIQUEIDENTIFIER,
 	@StageId INT,
-	@PipelineId INT
+	@PipelineId INT,
+	@CallingActivity VARCHAR(255)
 	)
 AS
 
@@ -13,7 +14,7 @@ BEGIN
 	UPDATE
 		[procfwk].[CurrentExecution]
 	SET
-		[PipelineStatus] = 'Failed'
+		[PipelineStatus] = @CallingActivity + 'Error'
 	WHERE
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId
@@ -61,7 +62,7 @@ BEGIN
 	FROM
 		[procfwk].[CurrentExecution]
 	WHERE
-		[PipelineStatus] = 'Failed'
+		[PipelineStatus] = @CallingActivity + 'Error'
 		AND [StageId] = @StageId
 		AND [PipelineId] = @PipelineId
 END;

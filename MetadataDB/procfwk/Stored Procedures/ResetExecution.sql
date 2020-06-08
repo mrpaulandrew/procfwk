@@ -37,6 +37,7 @@ BEGIN
 		[procfwk].[CurrentExecution]
 	SET
 		[StartDateTime] = NULL,
+		[EndDateTime] = NULL,
 		[PipelineStatus] = NULL,
 		[LastStatusCheckDateTime] = NULL,
 		[AdfPipelineRunId] = NULL,

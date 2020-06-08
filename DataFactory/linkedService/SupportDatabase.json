@@ -1,6 +1,7 @@
 {
 	"name": "SupportDatabase",
 	"properties": {
+		"description": "Connection between ADF and processing framework metadata SQLDB.",
 		"annotations": [
 			"ADF.procfwk"
 		],
@@ -12,9 +13,8 @@
 					"referenceName": "Keys",
 					"type": "LinkedServiceReference"
 				},
-				"secretName": "SupportDatabaseConnectionString"
+				"secretName": "FrameworkMetadataDev"
 			}
-		},
-		"description": "Connection between ADF and processing framework metadata SQLDB."
+		}
 	}
 }

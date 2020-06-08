@@ -6,7 +6,7 @@
 	[ActivityRunId] [uniqueidentifier] NOT NULL,
 	[ActivityName] [varchar](100) NOT NULL,
 	[ActivityType] [varchar](100) NOT NULL,
-	[ErrorCode] [int] NOT NULL,
+	[ErrorCode] VARCHAR(100) NOT NULL,
 	[ErrorType] [varchar](100) NOT NULL,
 	[ErrorMessage] [nvarchar](MAX) NULL,
 	 CONSTRAINT [PK_ErrorLog] PRIMARY KEY CLUSTERED 
