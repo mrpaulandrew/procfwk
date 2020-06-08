@@ -84,25 +84,6 @@
 							}
 						},
 						{
-							"name": "Wait to Retry Function",
-							"type": "Wait",
-							"dependsOn": [
-								{
-									"activity": "Get Pipeline Status",
-									"dependencyConditions": [
-										"Failed"
-									]
-								}
-							],
-							"userProperties": [],
-							"typeProperties": {
-								"waitTimeInSeconds": {
-									"value": "@activity('Get Wait Duration').output.firstRow.PropertyValue",
-									"type": "Expression"
-								}
-							}
-						},
-						{
 							"name": "Set Last Update",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
@@ -155,7 +136,14 @@
 						{
 							"name": "Log Activity Failure",
 							"type": "SqlServerStoredProcedure",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "Get Pipeline Status",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "7.00:00:00",
 								"retry": 0,
