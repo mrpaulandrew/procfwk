@@ -11,12 +11,12 @@ Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "DeploymentTools", "Deployme
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Markdown", "Markdown", "{C7297C57-3403-473B-AA2A-31012A4A9ADF}"
 	ProjectSection(SolutionItems) = preProject
+		.github\ISSUE_TEMPLATE\bug-found.md = .github\ISSUE_TEMPLATE\bug-found.md
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
 		CONTRIBUTING.md = CONTRIBUTING.md
 		DeploymentTools\Deployment Steps.md = DeploymentTools\Deployment Steps.md
-		.github\ISSUE_TEMPLATE\feature_request.md = .github\ISSUE_TEMPLATE\feature_request.md
+		.github\ISSUE_TEMPLATE\feature-request.md = .github\ISSUE_TEMPLATE\feature-request.md
 		Glossary.md = Glossary.md
-		.github\ISSUE_TEMPLATE\i-ve-found-a-bug.md = .github\ISSUE_TEMPLATE\i-ve-found-a-bug.md
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
