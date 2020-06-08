@@ -1,6 +1,6 @@
 # ADF.procfwk
 
-![alt text](https://mrpaulandrew.files.wordpress.com/2020/03/adfprocfwk-icon.png "ADF.procfwk Icon")
+![alt text](https://github.com/mrpaulandrew/ADF.procfwk/blob/master/Images/Repo%20Image.png "ADF.procfwk Icon")
 
 ## Code Project Overview
 
