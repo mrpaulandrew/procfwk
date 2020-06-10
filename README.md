@@ -1,6 +1,6 @@
 # ADF.procfwk
 
-![alt text](https://github.com/mrpaulandrew/ADF.procfwk/blob/master/Images/Repo%20Image.png "ADF.procfwk Icon")
+![alt text](https://mrpaulandrew.files.wordpress.com/2020/06/repo-image.png "ADF.procfwk Icon")
 
 ## Code Project Overview
 
@@ -57,6 +57,7 @@ Go to... [Glossary](https://github.com/mrpaulandrew/ADF.procfwk/blob/master/Glos
 |:----:|:----:|:----:|
 | ![alt text](https://mrpaulandrew.files.wordpress.com/2018/11/github-icon.png?w=75 "GitHub Icon") | **GitHub** |**[github.com/mrpaulandrew/ADF.procfwk](https://github.com/mrpaulandrew/ADF.procfwk)**  |
 | ![alt text](https://mrpaulandrew.files.wordpress.com/2020/03/twitterlogo.png?w=75 "Twitter Icon") | **Twitter** |**[#ADFprocfwk](https://twitter.com/search?q=%23ADFprocfwk&amp;src=hashtag_click)** |
+| ![alt text](https://mrpaulandrew.files.wordpress.com/2020/06/youtube-icon.png?w=75 "YouTube Icon") | **Vlogs** |**[youtube.com/mrpaulandrew](https://www.youtube.com/channel/UCjs6VxzhgoQPLiZDNvaMkmw)** |
 
 ## Release Details
 
