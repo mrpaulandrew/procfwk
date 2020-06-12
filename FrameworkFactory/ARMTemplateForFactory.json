@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "FrameworkFactory"
 		},
+		"FrameworkFunctions_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://frameworksupportfunctions.azurewebsites.net"
+		},
 		"Keys_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://FrameworkKeys.vault.azure.net/"
@@ -1576,6 +1580,53 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/BigParamTest')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Call Big Value Proc",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[InsertBigValue]",
+							"storedProcedureParameters": {
+								"BigValue": {
+									"value": {
+										"value": "@pipeline().parameters.BigValue",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SupportDatabase",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"parameters": {
+					"BigValue": {
+						"type": "string"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Intentional Error')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -2098,7 +2149,7 @@
 				],
 				"type": "AzureFunction",
 				"typeProperties": {
-					"functionAppUrl": "https://frameworksupportfunctions.azurewebsites.net",
+					"functionAppUrl": "[parameters('FrameworkFunctions_properties_typeProperties_functionAppUrl')]",
 					"functionKey": {
 						"type": "AzureKeyVaultSecret",
 						"store": {

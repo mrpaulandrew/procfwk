@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "FrameworkFactory"
 		},
+		"FrameworkFunctions_properties_typeProperties_functionAppUrl": {
+			"value": "https://frameworksupportfunctions.azurewebsites.net"
+		},
 		"Keys_properties_typeProperties_baseUrl": {
 			"value": "https://FrameworkKeys.vault.azure.net/"
 		},

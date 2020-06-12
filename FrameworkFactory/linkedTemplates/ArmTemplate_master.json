@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "FrameworkFactory"
 		},
+		"FrameworkFunctions_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://frameworksupportfunctions.azurewebsites.net"
+		},
 		"Keys_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://FrameworkKeys.vault.azure.net/"
@@ -44,6 +48,9 @@
 					},
 					"Keys_properties_typeProperties_baseUrl": {
 						"value": "[parameters('Keys_properties_typeProperties_baseUrl')]"
+					},
+					"FrameworkFunctions_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('FrameworkFunctions_properties_typeProperties_functionAppUrl')]"
 					},
 					"SupportDatabase_properties_typeProperties_connectionString_secretName": {
 						"value": "[parameters('SupportDatabase_properties_typeProperties_connectionString_secretName')]"
