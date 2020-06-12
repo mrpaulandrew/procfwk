@@ -19,7 +19,7 @@ BEGIN
 	ELSE
 		BEGIN
 			SELECT
-				@Json += '"' + [ParameterName] + '": "' + [ParameterValue] + '",'
+				@Json += '"' + [ParameterName] + '": "' + STRING_ESCAPE([ParameterValue],'json') + '",'
 			FROM
 				[procfwk].[PipelineParameters]
 			WHERE
