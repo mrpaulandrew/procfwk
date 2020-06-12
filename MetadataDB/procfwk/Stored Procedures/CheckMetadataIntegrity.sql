@@ -240,7 +240,7 @@ BEGIN
 		)
 		AND @DebugMode = 0
 		BEGIN
-			SET @ErrorDetails = 'Metadata integrity check failed. Run EXEC [procfwk].[CheckMetadataIntegrity] @DebugMode = 1 in debug mode for details.'
+			SET @ErrorDetails = 'Metadata integrity checks failed. Run EXEC [procfwk].[CheckMetadataIntegrity] @DebugMode = 1; for details.'
 
 			RAISERROR(@ErrorDetails, 16, 1);
 			RETURN 0;
