@@ -13,65 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/01-Grandparent')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "ADF.procfwk grandparent pipeline used optionally to bootstrap any wider processes in your Data Factory that then calls the processing framework.",
-				"activities": [
-					{
-						"name": "Framework Processing",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set Random Waits",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "02-Parent",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Set Random Waits",
-						"description": "For functional testing only.",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[SetRandomWaitValues]"
-						},
-						"linkedServiceName": {
-							"referenceName": "SupportDatabase",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"folder": {
-					"name": "_ProcFwk"
-				},
-				"annotations": [
-					"ADF.procfwk"
-				]
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/FunctionalTestingTrigger')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -100,9 +41,7 @@
 					}
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/01-Grandparent')]"
-			]
+			"dependsOn": []
 		}
 	]
 }
