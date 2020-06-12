@@ -37,6 +37,10 @@ BEGIN
 				BEGIN
 					SET @SendAlerts = 1;
 				END;
+			ELSE
+				BEGIN
+					SET @SendAlerts = 0;
+				END;
 		END
 	ELSE
 		BEGIN
