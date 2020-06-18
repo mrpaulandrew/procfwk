@@ -1,6 +1,6 @@
 # ADF.procfwk
 
-![alt text](https://mrpaulandrew.files.wordpress.com/2020/03/adfprocfwk-icon.png "ADF.procfwk Icon")
+![alt text](https://mrpaulandrew.files.wordpress.com/2020/06/repo-image.png "ADF.procfwk Icon")
 
 ## Code Project Overview
 
@@ -36,12 +36,20 @@ This framework can also be used in any Azure Tenant and allow the creation of co
 |------------|-------------|
 |Paul Andrew |[@mrpaulandrew](https://twitter.com/mrpaulandrew)<br/>[paul@mrpaulandrew.com](mailto:paul@mrpaulandrew.com)<br/>[https://mrpaulandrew.tech](https://mrpaulandrew.tech)|
 
-## Development Backlog
-[Go to GitHub Kanban board...](https://github.com/mrpaulandrew/ADF.procfwk/projects/1)
+## Issues
+
+If you've found a bug or have a new feature request please log the details using the repository issues.
+
+Go to... [Issues](https://github.com/mrpaulandrew/ADF.procfwk/issues)
+
+## Projects
+Go to... [External Requests](https://github.com/mrpaulandrew/ADF.procfwk/projects/2)
+
+Go to... [Internal Backlog](https://github.com/mrpaulandrew/ADF.procfwk/projects/1)
 
 ## Glossary
 
-[Go to Glossary...](https://github.com/mrpaulandrew/ADF.procfwk/blob/master/Glossary.md)
+Go to... [Glossary](https://github.com/mrpaulandrew/ADF.procfwk/blob/master/Glossary.md)
 
 ## Resources and Content
 
@@ -49,11 +57,14 @@ This framework can also be used in any Azure Tenant and allow the creation of co
 |:----:|:----:|:----:|
 | ![alt text](https://mrpaulandrew.files.wordpress.com/2018/11/github-icon.png?w=75 "GitHub Icon") | **GitHub** |**[github.com/mrpaulandrew/ADF.procfwk](https://github.com/mrpaulandrew/ADF.procfwk)**  |
 | ![alt text](https://mrpaulandrew.files.wordpress.com/2020/03/twitterlogo.png?w=75 "Twitter Icon") | **Twitter** |**[#ADFprocfwk](https://twitter.com/search?q=%23ADFprocfwk&amp;src=hashtag_click)** |
+| ![alt text](https://mrpaulandrew.files.wordpress.com/2020/06/youtube-icon.png?w=75 "YouTube Icon") | **Vlogs** |**[youtube.com/mrpaulandrew](https://www.youtube.com/channel/UCjs6VxzhgoQPLiZDNvaMkmw)** |
 
 ## Release Details
 
 | Version | Overview | Related Blog(s) & Release Notes |
 |:----:|--------------|--------|
+| 1.7.1 |<u>Alerting Check Bug Fix</u> added, plus:<ul><li>Pipeline parameter value size limit removed.</li></ul> |[ADF.procfwk v1.7.1 - Alerting Bug Fix And Pipeline Parameter Size Limit Removed](https://mrpaulandrew.com/2020/06/12/adf-procfwk-v1-7-1-alerting-bug-fix-and-pipeline-parameter-size-limit-removed/) |
+| 1.7 |<u>Pipleline EMail Alerting</u> added, plus:<ul><li>Send email Function implemented and hardened.</li><li>Handy Notebook updates.</li><li>Activity failure paths improved.</li><li>MIT license and code of conduct added.</li><li>Error table bug fix. Error code attribute; INT to VARCHAR</li></ul> |[ADF.procfwk v1.7 - Pipeline Email Alerting](https://mrpaulandrew.com/2020/06/08/adf-procfwk-v1-7-pipeline-email-alerting/) |
 | 1.6 |<u>Error Details for Failed Activities Captured</u>, plus:<ul><li>Pipeline parameters used at runtime captured in execution logs.</li><li>Emailing Function added, not yet implemented.</li><li>Unknown Worker outcomes optionally blocks downstream stages.</li><li>Solution housekeeping.</li></ul> |[ADF.procfwk v1.6 - Error Details for Failed Activities Captured](https://mrpaulandrew.com/2020/05/19/adf-procfwk-v1-6-error-details-for-failed-activities-captured/) |
 | 1.5 |<u>Power BI Dashboard for Framework Executions</u>, plus:<ul><li>Worker Parallelism View.</li><li>Pipeline Run ID now logged.</li><li>Logging Attributes Bug Fix.</li></ul> |[ADF.procfwk v1.5 - Power BI Dashboard for Framework Executions](https://mrpaulandrew.com/2020/05/01/adf-procfwk-v1-5-power-bi-dashboard-for-framework-executions/) |
 | 1.4 |<u>Enhancements for Long Running Pipelines</u>, plus:<ul><li>Pipeline check status function added.</li><li>Function Data Factory client moved to internal class.</li><li>SQL GETDATE() changed to GETUTCDATE().</li><li>Glossary created, [here](https://github.com/mrpaulandrew/ADF.procfwk/blob/master/Glossary.md).</li><li>Updated database views.</li></ul>  |[ADF.procfwk v1.4 - Enhancements for Long Running Pipelines](https://mrpaulandrew.com/2020/04/20/adf-procfwk-v1-4-enhancements-for-long-running-pipelines/) |

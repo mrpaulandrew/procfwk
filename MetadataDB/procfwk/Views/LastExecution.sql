@@ -25,8 +25,10 @@ SELECT
 	el2.[StartDateTime],
 	el2.[PipelineStatus],
 	el2.[EndDateTime],
-	DATEDIFF(MINUTE, el2.[StartDateTime], el2.[EndDateTime]) 'RunDurationMinutes'
+	DATEDIFF(MINUTE, el2.[StartDateTime], el2.[EndDateTime]) AS RunDurationMinutes
 FROM 
 	[procfwk].[ExecutionLog] el2
 	INNER JOIN lastExecutionId
 		ON el2.[LocalExecutionId] = lastExecutionId.[LocalExecutionId]
+WHERE
+	el2.[EndDateTime] IS NOT NULL;

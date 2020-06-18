@@ -1,7 +1,7 @@
 ---
-name: I've found a bug
+name: Bug Found
 about: Tell me about the bug please
-title: "[Bug]"
+title: ''
 labels: bug
 assignees: mrpaulandrew
 

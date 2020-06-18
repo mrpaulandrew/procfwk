@@ -57,6 +57,7 @@
 						"type": "Expression"
 					},
 					"isSequential": false,
+					"batchCount": 40,
 					"activities": [
 						{
 							"name": "Execute Pipeline",
@@ -265,6 +266,10 @@
 											"type": "Expression"
 										},
 										"type": "Int32"
+									},
+									"CallingActivity": {
+										"value": "ExecutePipeline",
+										"type": "String"
 									}
 								}
 							},
@@ -395,6 +400,141 @@
 							"linkedServiceName": {
 								"referenceName": "SupportDatabase",
 								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Check For Alerts",
+							"description": "Checks the properties tables and if any recipients in the database require alerts sending for the current pipeline ID.",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderStoredProcedureName": "[procfwk].[CheckForEmailAlerts]",
+									"storedProcedureParameters": {
+										"PipelineId": {
+											"type": "Int32",
+											"value": {
+												"value": "@item().PipelineId",
+												"type": "Expression"
+											}
+										}
+									},
+									"queryTimeout": "02:00:00"
+								},
+								"dataset": {
+									"referenceName": "GetSetMetadata",
+									"type": "DatasetReference"
+								},
+								"firstRowOnly": true
+							}
+						},
+						{
+							"name": "Send Alerts",
+							"description": "True = alerts need sending.\nFalse = do nothing.",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "Set Run Id",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "Check For Alerts",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "Running Pipeline Handler",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@activity('Check For Alerts').output.firstRow.SendAlerts",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Get Email Parts",
+										"type": "Lookup",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "AzureSqlSource",
+												"sqlReaderStoredProcedureName": "[procfwk].[GetEmailAlertParts]",
+												"storedProcedureParameters": {
+													"PipelineId": {
+														"type": "Int32",
+														"value": {
+															"value": "@item().PipelineId",
+															"type": "Expression"
+														}
+													}
+												},
+												"queryTimeout": "02:00:00"
+											},
+											"dataset": {
+												"referenceName": "GetSetMetadata",
+												"type": "DatasetReference"
+											},
+											"firstRowOnly": true
+										}
+									},
+									{
+										"name": "Send Email",
+										"type": "AzureFunctionActivity",
+										"dependsOn": [
+											{
+												"activity": "Get Email Parts",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"functionName": "SendEmail",
+											"method": "POST",
+											"body": {
+												"value": "@activity('Get Email Parts').output.firstRow",
+												"type": "Expression"
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "FrameworkFunctions",
+											"type": "LinkedServiceReference"
+										}
+									}
+								]
 							}
 						}
 					]

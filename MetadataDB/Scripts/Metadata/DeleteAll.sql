@@ -1,4 +1,8 @@
-﻿--CurrentExecution
+﻿/*
+DELETE ORDER IMPORTANT FOR REFERENTIAL INTEGRITY
+*/
+
+--CurrentExecution
 IF OBJECT_ID(N'[procfwk].[CurrentExecution]') IS NOT NULL 
 	BEGIN
 		TRUNCATE TABLE [procfwk].[CurrentExecution];
@@ -15,6 +19,26 @@ IF OBJECT_ID(N'[procfwk].[ExecutionLog]') IS NOT NULL
 	BEGIN
 		TRUNCATE TABLE [procfwk].[ErrorLog];
 	END
+
+--PipelineAlertLink
+IF OBJECT_ID(N'[procfwk].[PipelineAlertLink]') IS NOT NULL 
+	BEGIN
+		DELETE FROM [procfwk].[PipelineAlertLink];
+		DBCC CHECKIDENT ('[procfwk].[PipelineAlertLink]', RESEED, 0);
+	END;
+
+--Recipients
+IF OBJECT_ID(N'[procfwk].[Recipients]') IS NOT NULL 
+	BEGIN
+		DELETE FROM [procfwk].[Recipients];
+		DBCC CHECKIDENT ('[procfwk].[Recipients]', RESEED, 0);
+	END;
+
+--AlertOutcomes
+IF OBJECT_ID(N'[procfwk].[AlertOutcomes]') IS NOT NULL 
+	BEGIN
+		TRUNCATE TABLE [procfwk].[AlertOutcomes];
+	END;
 
 --PipelineAuthLink
 IF OBJECT_ID(N'[procfwk].[PipelineAuthLink]') IS NOT NULL 

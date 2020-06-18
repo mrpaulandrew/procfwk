@@ -17,6 +17,10 @@ BEGIN
 	Check 8 - Does the TenantId property still have its default value?
 	Check 9 - Does the SubscriptionId property still have its default value?
 	Check 10 - Is there a current PipelineStatusCheckDuration property available?
+	Check 11 - Is there a current UseFrameworkEmailAlerting property available?
+	Check 12 - Is there a current EmailAlertBodyTemplate property available?
+	Check 13 - Does the total size of the request body for the pipeline parameters 
+				added exceed the Azure Functions size limit when the Worker execute pipeline body is created?
 	*/
 
 	DECLARE @ErrorDetails VARCHAR(500)
@@ -172,6 +176,63 @@ BEGIN
 				)		
 		END;
 
+	--Check 11:
+	IF NOT EXISTS
+		(
+		SELECT * FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'UseFrameworkEmailAlerting'
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				11,
+				'A current UseFrameworkEmailAlerting value is missing from the properties table.'
+				)		
+		END;
+
+	--Check 12:
+	IF (
+		SELECT
+			[PropertyValue]
+		FROM
+			[procfwk].[CurrentProperties]
+		WHERE
+			[PropertyName] = 'UseFrameworkEmailAlerting'
+		) = 1
+		BEGIN
+			IF NOT EXISTS
+				(
+				SELECT * FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'EmailAlertBodyTemplate'
+				)
+				BEGIN
+					INSERT INTO @MetadataIntegrityIssues
+					VALUES
+						( 
+						12,
+						'A current EmailAlertBodyTemplate value is missing from the properties table.'
+						)		
+				END;
+		END;
+
+	--Check 13:
+	IF EXISTS
+		(
+		SELECT * FROM [procfwk].[PipelineParameterDataSizes] WHERE [Size] > 9
+		/*
+		Azure Function request limit is 10MB.
+		https://docs.microsoft.com/en-us/azure/azure-functions/functions-scale
+		9MB to allow for other content in execute pipeline body request.
+		*/
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				13,
+				'The pipeline parameters entered exceed the Azure Function request body maximum of 10MB. Query view [procfwk].[PipelineParameterDataSizes] for details.'
+				)	
+		END;
+
 	--throw runtime error if checks fail
 	IF EXISTS
 		(
@@ -179,7 +240,7 @@ BEGIN
 		)
 		AND @DebugMode = 0
 		BEGIN
-			SET @ErrorDetails = 'Metadata integrity check failed. Run EXEC [procfwk].[CheckMetadataIntegrity] @DebugMode = 1 in debug mode for details.'
+			SET @ErrorDetails = 'Metadata integrity checks failed. Run EXEC [procfwk].[CheckMetadataIntegrity] @DebugMode = 1; for details.'
 
 			RAISERROR(@ErrorDetails, 16, 1);
 			RETURN 0;

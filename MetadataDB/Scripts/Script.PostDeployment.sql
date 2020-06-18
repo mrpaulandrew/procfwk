@@ -14,6 +14,8 @@ Post-Deployment Script Template
 :r .\Metadata\Stages.sql
 :r .\Metadata\Pipelines.sql
 :r .\Metadata\PipelineParams.sql
+:r .\Metadata\Recipients.sql
+:r .\Metadata\AlertOutcomes.sql
 
 --restore log data
 :r .\LogData\ExecutionLogRestore.sql
@@ -21,3 +23,4 @@ Post-Deployment Script Template
 
 --merged
 :r .\Metadata\Properties.sql
+:r .\Metadata\RecipientAlertsLink.sql

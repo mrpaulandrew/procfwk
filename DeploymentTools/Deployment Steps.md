@@ -7,10 +7,10 @@ Furthermore, in the case of most deployment steps, things can be tailored to you
 --------------------------------------------------------------------------------------------
 1. Create an Azure Data Factory and connect it to source control - recommended, but not essential.
 2. Create an Azure SQLDB and Logical SQL Instance.
-3. Create an Azure Functions App with an App Service Plan if required.
+3. Create an Azure Functions App with an App Service Plan if required. A Consumption Plan is also fine.
 4. Create an Azure Key Vault.
 --------------------------------------------------------------------------------------------
-5. Grant Data Factory access to Key Vault.
+5. Grant Data Factory access to Key Vault with its MSI and set the Key Vault Access Policy.
 6. Add the Function App default key to Key Vault as a secret.
 7. Add a SQLDB connection string to Key Vault as a secret using your preferred authentication method.
    - SQL Authentication.
@@ -19,10 +19,19 @@ Furthermore, in the case of most deployment steps, things can be tailored to you
 8. Publish the SQLDB project from Visual Studio creating a new publish profile if you don't have one already.
 9. Publish the Function App from Visual Studio.
 10. Create a Service Principal for the Data Factory deployment if you don't have one already.
-11. Deploy Data Factory using the PowerShell script **DeployProcFwkComponents.ps1** and providing authentication details.
+11. Create a Service Principal for the Data Factory pipeline executions if you don't have one already.
+12. Deploy Data Factory using the PowerShell script **DeployProcFwkComponents.ps1** and providing authentication details.
 --------------------------------------------------------------------------------------------
-12. Refresh Data Factory via the develop UI to review the components deployed.
-13. Test all Linked Services connections (Key Vault, Functions and SQLDB) and update secrets as required.
-14. Publish the Data Factory.
+13. Refresh Data Factory via the develop UI to review the components deployed.
+14. Test all Linked Services connections (Key Vault, Functions and SQLDB) and update secrets as required.
+15. Publish the Data Factory.
 --------------------------------------------------------------------------------------------
-15. Run it :-)
+16. Set your Subscription ID in the properties table.
+17. Set your Tenant ID in the properties table. Its important that you do this first to later support the SPN details added.
+18. Add a target Data Factory where you Worker pipelines exist.
+19. Add your Worker Pipeline and Stages metadata as required.
+20. Add your SPN from step 11 to your metadata for your Worker pipelines. Use the stored procedure **[procfwk].[AddServicePrincipal].**
+21. Add pipeline parameters as required.
+22. Add recipients for email alerting, optional.
+--------------------------------------------------------------------------------------------
+23. Run it :-)

@@ -11,12 +11,12 @@ Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "DeploymentTools", "Deployme
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Markdown", "Markdown", "{C7297C57-3403-473B-AA2A-31012A4A9ADF}"
 	ProjectSection(SolutionItems) = preProject
+		.github\ISSUE_TEMPLATE\bug-found.md = .github\ISSUE_TEMPLATE\bug-found.md
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
 		CONTRIBUTING.md = CONTRIBUTING.md
 		DeploymentTools\Deployment Steps.md = DeploymentTools\Deployment Steps.md
-		.github\ISSUE_TEMPLATE\feature_request.md = .github\ISSUE_TEMPLATE\feature_request.md
+		.github\ISSUE_TEMPLATE\feature-request.md = .github\ISSUE_TEMPLATE\feature-request.md
 		Glossary.md = Glossary.md
-		.github\ISSUE_TEMPLATE\i-ve-found-a-bug.md = .github\ISSUE_TEMPLATE\i-ve-found-a-bug.md
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
@@ -69,6 +69,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{16E32C
 		Images\Authentication Flow.png = Images\Authentication Flow.png
 		Images\Database Diagram.png = Images\Database Diagram.png
 		Images\Pipeline Type Key.png = Images\Pipeline Type Key.png
+		Images\Repo Image.png = Images\Repo Image.png
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notebooks", "Notebooks", "{19F99FD2-9170-42DA-B4FE-A52A358B5473}"
@@ -88,6 +89,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataFactory", "DataFactory"
 		ARM Templates\Data Factory\v1.4 Export.json = ARM Templates\Data Factory\v1.4 Export.json
 		ARM Templates\Data Factory\v1.5 Export.json = ARM Templates\Data Factory\v1.5 Export.json
 		ARM Templates\Data Factory\v1.6 Export.json = ARM Templates\Data Factory\v1.6 Export.json
+		ARM Templates\Data Factory\v1.7 Export.json = ARM Templates\Data Factory\v1.7 Export.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "trigger", "trigger", "{FC7877EF-110F-4AD7-B203-EEECE6F08A86}"
