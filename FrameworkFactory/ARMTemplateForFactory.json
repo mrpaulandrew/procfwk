@@ -1999,8 +1999,7 @@
 				],
 				"parameters": {
 					"WaitTime": {
-						"type": "int",
-						"defaultValue": 5
+						"type": "int"
 					}
 				},
 				"folder": {
