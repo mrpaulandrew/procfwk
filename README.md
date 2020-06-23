@@ -35,7 +35,7 @@ This framework can also be used in any Azure Tenant and allow the creation of co
 | Who | Details |
 |------------|-------------|
 |Paul Andrew |[@mrpaulandrew](https://twitter.com/mrpaulandrew)<br/>[https://mrpaulandrew.tech](https://mrpaulandrew.tech)|
-|Kamil Nowinski |[@NowinskiK](https://twitter.com/NowinskiK)<br/>[https://sqlplayer.net/](https://sqlplayer.net/)|
+|Kamil Nowinski |[@NowinskiK](https://twitter.com/NowinskiK)<br/>[https://sqlplayer.net](https://sqlplayer.net)|
 
 ## Issues
 
