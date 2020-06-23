@@ -1,3 +1,4 @@
+--update test db metadata
 IF DB_NAME() = 'FrameworkMetadataTest'
 BEGIN
 
@@ -28,7 +29,7 @@ BEGIN
 	FROM 
 		[procfwk].[DataFactorys] 
 	WHERE 
-		[DataFactoryName] = 'WorkersFactory'
+		[DataFactoryName] = 'WorkersFactory';
 
 	--insert 300 pipelines
 	;WITH cte AS
@@ -82,6 +83,6 @@ BEGIN
 		@DataFactory = N'WorkersFactory',
 		@PrincipalId = '$(AZURE_CLIENT_ID)',
 		@PrincipalSecret = '$(AZURE_CLIENT_SECRET)',
-		@PrincipalName = '$(AZURE_CLIENT_NAME)'
+		@PrincipalName = '$(AZURE_CLIENT_NAME)';
 
-END
+END;
