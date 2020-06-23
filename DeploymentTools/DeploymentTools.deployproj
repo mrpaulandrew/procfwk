@@ -23,6 +23,7 @@
   <Import Condition=" Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Deployment\1.1\DeploymentProject.targets') " Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Deployment\1.1\DeploymentProject.targets" />
   <!-- vertag<:>end -->
   <ItemGroup>
+    <None Include="DataFactory\config-all.csv" />
     <None Include="DataFactory\DeployProcFwkComponents.ps1" />
     <None Include="DataFactory\Get Pipelines.ps1" />
     <None Include="DataFactory\ProcFwkComponents.json" />
