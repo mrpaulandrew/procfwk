@@ -50,5 +50,7 @@ Publish-AdfV2FromJson -RootFolder $AdfPath `
     -ResourceGroupName $resourceGroupName `
     -DataFactoryName $dataFactoryName `
     -Location $region `
-    -Option $opt
+    -Option $opt `
+    -Stage "all"
+
 
