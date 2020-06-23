@@ -72,6 +72,7 @@
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="procfwk\Synonyms" />
     <Folder Include="Scripts\LogData" />
+    <Folder Include="Scripts\Testing" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="procfwk\Tables\Pipelines.sql" />
@@ -133,6 +134,7 @@
     <Build Include="procfwk\Tables\AlertOutcomes.sql" />
     <Build Include="procfwk\Stored Procedures\DeleteRecipientAlerts.sql" />
     <Build Include="procfwk\Views\PipelineParameterDataSizes.sql" />
+    <None Include="Scripts\Testing\01. 300 Worker Pipelines.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

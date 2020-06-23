@@ -34,7 +34,8 @@ This framework can also be used in any Azure Tenant and allow the creation of co
 
 | Who | Details |
 |------------|-------------|
-|Paul Andrew |[@mrpaulandrew](https://twitter.com/mrpaulandrew)<br/>[paul@mrpaulandrew.com](mailto:paul@mrpaulandrew.com)<br/>[https://mrpaulandrew.tech](https://mrpaulandrew.tech)|
+|Paul Andrew |[@mrpaulandrew](https://twitter.com/mrpaulandrew)<br/>[https://mrpaulandrew.tech](https://mrpaulandrew.tech)|
+|Kamil Nowinski |[@NowinskiK](https://twitter.com/NowinskiK)<br/>[https://sqlplayer.net](https://sqlplayer.net)|
 
 ## Issues
 
@@ -63,6 +64,7 @@ Go to... [Glossary](https://github.com/mrpaulandrew/ADF.procfwk/blob/master/Glos
 
 | Version | Overview | Related Blog(s) & Release Notes |
 |:----:|--------------|--------|
+| 1.7.3 |Data Factory Deployment Updated To Use azure.datafactory.tools  PowerShell Module |[SQLPlayer/azure.datafactory.tools](https://github.com/SQLPlayer/azure.datafactory.tools) |
 | 1.7.2 |<u>Pipeline Parameter NULL Handling</u> added, plus:<ul><li>Worker pipelines with a status of 'Running' protected from a new execution start/restart.</li></ul> |[ADF.procfwk v1.7.2 - NULL Pipeline Parameters Handled](https://mrpaulandrew.com/2020/06/22/adf-procfwk-v1-7-2-null-pipeline-parameters-handled/) |
 | 1.7.1 |<u>Alerting Check Bug Fix</u> added, plus:<ul><li>Pipeline parameter value size limit removed.</li></ul> |[ADF.procfwk v1.7.1 - Alerting Bug Fix And Pipeline Parameter Size Limit Removed](https://mrpaulandrew.com/2020/06/12/adf-procfwk-v1-7-1-alerting-bug-fix-and-pipeline-parameter-size-limit-removed/) |
 | 1.7 |<u>Pipleline EMail Alerting</u> added, plus:<ul><li>Send email Function implemented and hardened.</li><li>Handy Notebook updates.</li><li>Activity failure paths improved.</li><li>MIT license and code of conduct added.</li><li>Error table bug fix. Error code attribute; INT to VARCHAR</li></ul> |[ADF.procfwk v1.7 - Pipeline Email Alerting](https://mrpaulandrew.com/2020/06/08/adf-procfwk-v1-7-pipeline-email-alerting/) |
