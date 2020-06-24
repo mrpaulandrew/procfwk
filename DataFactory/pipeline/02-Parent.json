@@ -436,7 +436,7 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
-									"sqlReaderQuery": "SELECT * FROM [procfwk].[CurrentExecution] WHERE ISNULL([PipelineStatus],'') = 'Running'",
+									"sqlReaderQuery": "SELECT * FROM [procfwk].[CurrentExecution] WHERE ISNULL([PipelineStatus],'') = 'hgf'",
 									"queryTimeout": "02:00:00"
 								},
 								"dataset": {
