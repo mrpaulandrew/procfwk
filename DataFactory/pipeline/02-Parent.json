@@ -400,12 +400,13 @@
 					"dataset": {
 						"referenceName": "GetSetMetadata",
 						"type": "DatasetReference"
-					}
+					},
+					"firstRowOnly": false
 				}
 			},
 			{
-				"name": "Clean Up",
-				"type": "IfCondition",
+				"name": "ForEach1",
+				"type": "ForEach",
 				"dependsOn": [
 					{
 						"activity": "Metadata Integrity Checks 2",
@@ -416,54 +417,8 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"expression": {
-						"value": "@bool(activity('Metadata Integrity Checks 2').output.firstRow.CleanUpRequired)",
-						"type": "Expression"
-					},
-					"ifTrueActivities": [
-						{
-							"name": "Lookup1",
-							"type": "Lookup",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "7.00:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "AzureSqlSource",
-									"sqlReaderQuery": "SELECT * FROM [procfwk].[CurrentExecution] WHERE ISNULL([PipelineStatus],'') = 'hgf'",
-									"queryTimeout": "02:00:00"
-								},
-								"dataset": {
-									"referenceName": "GetSetMetadata",
-									"type": "DatasetReference"
-								},
-								"firstRowOnly": false
-							}
-						}
-					]
-				}
-			},
-			{
-				"name": "ForEach1",
-				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "Clean Up",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
 					"items": {
-						"value": "@activity('Lookup1').output.value",
+						"value": "@activity('Metadata Integrity Checks 2').output.value",
 						"type": "Expression"
 					},
 					"activities": [
