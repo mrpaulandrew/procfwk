@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace FactoryTesting
 {
-    public class FrameworkRunTests
+    public class FrameworkDevTests
     {
         private Helpers testHelper;
         private string cachedRunId;
