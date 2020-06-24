@@ -199,12 +199,6 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Metadata Integrity Checks",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
 						"activity": "Metadata Integrity Checks 2",
 						"dependencyConditions": [
 							"Succeeded"
@@ -280,7 +274,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Metadata Integrity Checks",
+						"activity": "Metadata Integrity Checks 2",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -319,7 +313,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Metadata Integrity Checks",
+						"activity": "Metadata Integrity Checks 2",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -349,33 +343,6 @@
 						"referenceName": "GetSetMetadata",
 						"type": "DatasetReference"
 					}
-				}
-			},
-			{
-				"name": "Metadata Integrity Checks",
-				"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
-				"type": "SqlServerStoredProcedure",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"storedProcedureName": "[procfwk].[CheckMetadataIntegrity]",
-					"storedProcedureParameters": {
-						"DebugMode": {
-							"value": "false",
-							"type": "Boolean"
-						}
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "SupportDatabase",
-					"type": "LinkedServiceReference"
 				}
 			},
 			{
