@@ -402,6 +402,36 @@
 						"type": "DatasetReference"
 					}
 				}
+			},
+			{
+				"name": "Clean Up",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Metadata Integrity Checks 2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@bool(activity('Metadata Integrity Checks 2').output.firstRow.RunningPipelines)",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "HERE",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					]
+				}
 			}
 		],
 		"folder": {
