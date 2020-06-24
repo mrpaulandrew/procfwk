@@ -423,12 +423,109 @@
 					},
 					"activities": [
 						{
-							"name": "Wait1",
-							"type": "Wait",
-							"dependsOn": [],
+							"name": "Run Pipeline Clean Up",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "Get SPN Details",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"userProperties": [],
 							"typeProperties": {
-								"waitTimeInSeconds": 1
+								"pipeline": {
+									"referenceName": "04-Infant",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"tenantId": {
+										"value": "@item().TenantId",
+										"type": "Expression"
+									},
+									"applicationId": {
+										"value": "@activity('Get SPN Details').output.firstRow.Id",
+										"type": "Expression"
+									},
+									"authenticationKey": {
+										"value": "@activity('Get SPN Details').output.firstRow.Secret",
+										"type": "Expression"
+									},
+									"subscriptionId": {
+										"value": "@item().SubscriptionId",
+										"type": "Expression"
+									},
+									"resourceGroup": {
+										"value": "@item().ResourceGroupName",
+										"type": "Expression"
+									},
+									"factoryName": {
+										"value": "@item().DataFactoryName",
+										"type": "Expression"
+									},
+									"pipelineName": {
+										"value": "@item().PipelineName",
+										"type": "Expression"
+									},
+									"runId": {
+										"value": "@item().AdfPipelineRunId",
+										"type": "Expression"
+									},
+									"executionId": {
+										"value": "@item().LocalExecutionId",
+										"type": "Expression"
+									},
+									"stageId": {
+										"value": "@item().StageId",
+										"type": "Expression"
+									},
+									"pipelineId": {
+										"value": "@item().PipelineId",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Get SPN Details",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderStoredProcedureName": "[procfwk].[GetServicePrincipal]",
+									"storedProcedureParameters": {
+										"DataFactory": {
+											"type": "String",
+											"value": {
+												"value": "@item().DataFactoryName",
+												"type": "Expression"
+											}
+										},
+										"PipelineName": {
+											"type": "String",
+											"value": {
+												"value": "@item().PipelineName",
+												"type": "Expression"
+											}
+										}
+									},
+									"queryTimeout": "02:00:00"
+								},
+								"dataset": {
+									"referenceName": "GetSetMetadata",
+									"type": "DatasetReference"
+								}
 							}
 						}
 					]
