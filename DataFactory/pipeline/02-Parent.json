@@ -465,7 +465,18 @@
 					"items": {
 						"value": "@activity('Lookup1').output.value",
 						"type": "Expression"
-					}
+					},
+					"activities": [
+						{
+							"name": "Wait1",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					]
 				}
 			}
 		],
