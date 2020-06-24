@@ -417,7 +417,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@bool(activity('Metadata Integrity Checks 2').output.firstRow.RunningPipelines)",
+						"value": "@bool(activity('Metadata Integrity Checks 2').output.firstRow.CleanUpRequired)",
 						"type": "Expression"
 					},
 					"ifTrueActivities": [
