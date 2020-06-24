@@ -405,7 +405,7 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "Clean Up",
 				"type": "ForEach",
 				"dependsOn": [
 					{
