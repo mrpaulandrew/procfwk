@@ -203,6 +203,12 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
+					},
+					{
+						"activity": "Metadata Integrity Checks 2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
 				"policy": {
@@ -364,6 +370,37 @@
 				"linkedServiceName": {
 					"referenceName": "SupportDatabase",
 					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Metadata Integrity Checks 2",
+				"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[CheckMetadataIntegrity]",
+						"storedProcedureParameters": {
+							"DebugMode": {
+								"type": "Boolean",
+								"value": "false"
+							}
+						},
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
+					}
 				}
 			}
 		],
