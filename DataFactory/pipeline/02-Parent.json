@@ -199,12 +199,6 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Metadata Integrity Checks",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
 						"activity": "Clean Up",
 						"dependencyConditions": [
 							"Succeeded"
