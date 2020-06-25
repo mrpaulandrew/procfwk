@@ -386,7 +386,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Metadata Integrity Checks 2').output.value",
+						"value": "@activity('Metadata Integrity Checks').output.value",
 						"type": "Expression"
 					},
 					"isSequential": false,
