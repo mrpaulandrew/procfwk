@@ -135,6 +135,7 @@
     <Build Include="procfwk\Stored Procedures\DeleteRecipientAlerts.sql" />
     <Build Include="procfwk\Views\PipelineParameterDataSizes.sql" />
     <None Include="Scripts\Testing\01. 300 Worker Pipelines.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogPipelineChecking.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

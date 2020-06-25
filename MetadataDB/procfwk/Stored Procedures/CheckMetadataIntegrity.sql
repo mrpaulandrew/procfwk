@@ -21,6 +21,7 @@ BEGIN
 	Check 12 - Is there a current EmailAlertBodyTemplate property available?
 	Check 13 - Does the total size of the request body for the pipeline parameters 
 				added exceed the Azure Functions size limit when the Worker execute pipeline body is created?
+	Check 14 - Are there any Running pipelines that need to be cleaned up?
 	*/
 
 	DECLARE @ErrorDetails VARCHAR(500)
@@ -232,7 +233,7 @@ BEGIN
 				'The pipeline parameters entered exceed the Azure Function request body maximum of 10MB. Query view [procfwk].[PipelineParameterDataSizes] for details.'
 				)	
 		END;
-
+	
 	--throw runtime error if checks fail
 	IF EXISTS
 		(
@@ -244,7 +245,53 @@ BEGIN
 
 			RAISERROR(@ErrorDetails, 16, 1);
 			RETURN 0;
-		END
+		END;
+	
+	--Check 14:
+	IF EXISTS
+		(
+		SELECT [LocalExecutionId] FROM [procfwk].[CurrentExecution] WHERE [PipelineStatus] NOT IN ('Success','Failed','Blocked') AND [AdfPipelineRunId] IS NOT NULL
+		)
+		BEGIN
+			--return pipelines details that require a clean up
+			SELECT 
+				t.[PropertyValue] AS TenantId,
+				s.[PropertyValue] AS SubscriptionId,
+				ce.[ResourceGroupName],
+				ce.[DataFactoryName],
+				ce.[PipelineName],
+				ce.[AdfPipelineRunId],
+				ce.[LocalExecutionId],
+				ce.[StageId],
+				ce.[PipelineId]
+			FROM 
+				[procfwk].[CurrentExecution] ce
+				INNER JOIN [procfwk].[CurrentProperties] t
+					ON t.[PropertyName] = 'TenantId'
+				INNER JOIN [procfwk].[CurrentProperties] s
+					ON s.[PropertyName] = 'SubscriptionId'
+			WHERE 
+				ce.[PipelineStatus] NOT IN ('Success','Failed','Blocked') 
+				AND ce.[AdfPipelineRunId] IS NOT NULL
+		END;
+	ELSE
+		BEGIN
+			--lookup activity must return something, even if just an empty dataset
+			SELECT 
+				NULL AS TenantId,
+				NULL AS SubscriptionId,
+				NULL AS ResourceGroupName,
+				NULL AS DataFactoryName,
+				NULL AS PipelineName,
+				NULL AS AdfPipelineRunId,
+				NULL AS LocalExecutionId,
+				NULL AS StageId,
+				NULL AS PipelineId
+			FROM
+				[procfwk].[CurrentExecution]
+			WHERE
+				1 = 2; --ensure no results
+		END;
 
 	--report issues when in debug mode
 	IF @DebugMode = 1
@@ -253,8 +300,12 @@ BEGIN
 			(
 			SELECT * FROM @MetadataIntegrityIssues
 			)
-			PRINT 'No data integrity issues found in metadata.'
+			BEGIN
+				PRINT 'No data integrity issues found in metadata.'
+			END
 		ELSE		
-			SELECT * FROM @MetadataIntegrityIssues;
+			BEGIN
+				SELECT * FROM @MetadataIntegrityIssues;
+			END;
 	END;
-END
+END;
