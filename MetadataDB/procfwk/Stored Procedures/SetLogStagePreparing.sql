@@ -15,4 +15,5 @@ BEGIN
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId
 		AND [StartDateTime] IS NULL
+		AND [IsBlocked] <> 1;
 END;

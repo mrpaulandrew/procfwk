@@ -41,3 +41,8 @@ EXEC [procfwk].[AddProperty]
 <strong>Called by Data Factory: </strong>##CalledByADF###<br/>
 <strong>Executed by Data Factory: </strong>##ExecutedByADF###<br/><hr/>',
 	@Description = N'Basic HTML template of execution information used as the eventual body in email alerts sent.';
+
+EXEC [procfwk].[AddProperty]
+	@PropertyName = N'FailureHandling',
+	@PropertyValue = N'Simple',
+	@Description = N'None, Simple, DependencyChain';
