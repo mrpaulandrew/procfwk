@@ -235,8 +235,8 @@
 				}
 			},
 			{
-				"name": "Archive Execution Log",
-				"description": "After a successful execution run the current execution metadata is moved to the long term logging table by this stored procedure call.",
+				"name": "Check Outcome and Update Logs",
+				"description": "After a successful execution run the current execution metadata is moved to the long term logging table by this stored procedure call. Otherwise an error will be raised.",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
