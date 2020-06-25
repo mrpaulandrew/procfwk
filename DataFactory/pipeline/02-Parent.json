@@ -199,7 +199,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Clean Up",
+						"activity": "Clean Up Previous Run",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -372,7 +372,7 @@
 				}
 			},
 			{
-				"name": "Clean Up",
+				"name": "Clean Up Previous Run",
 				"description": "Handle Worker pipelines that are reported as Running when the parent pipeline is called again. Get what the actual status of those pipelines is.",
 				"type": "ForEach",
 				"dependsOn": [
