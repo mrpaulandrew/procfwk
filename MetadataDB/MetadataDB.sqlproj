@@ -140,6 +140,8 @@
     <Build Include="procfwk\Tables\PipelineDependencies.sql" />
     <Build Include="procfwk\Functions\GetPropertyValueInternal.sql" />
     <Build Include="procfwk\Stored Procedures\SetExecutionBlockDependants.sql" />
+    <None Include="Scripts\Metadata\PipelineDependencies.sql" />
+    <Build Include="procfwk\Stored Procedures\AddPipelineDependant.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

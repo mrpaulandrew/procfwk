@@ -6,5 +6,6 @@
 	CONSTRAINT [PK_PipelineDependencies] PRIMARY KEY CLUSTERED ([DependencyId] ASC),
 	CONSTRAINT [FK_PipelineDependencies_Pipelines] FOREIGN KEY([PipelineId]) REFERENCES [procfwk].[Pipelines] ([PipelineId]),
 	CONSTRAINT [FK_PipelineDependencies_Pipelines1] FOREIGN KEY([DependantPipelineId]) REFERENCES [procfwk].[Pipelines] ([PipelineId]),
-	CONSTRAINT [UK_PipelinesToDependantPipelines] UNIQUE ([PipelineId],[DependantPipelineId])
+	CONSTRAINT [UK_PipelinesToDependantPipelines] UNIQUE ([PipelineId],[DependantPipelineId]),
+	CONSTRAINT [EQ_PipelineIdDependantPipelineId] CHECK ([PipelineId] <> [DependantPipelineId])
 	)
