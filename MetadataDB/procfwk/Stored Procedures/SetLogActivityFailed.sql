@@ -75,6 +75,7 @@ BEGIN
 				[LocalExecutionId] = @ExecutionId
 				AND [StageId] > @StageId;
 		END;
+	
 	ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'DependencyChain'
 		BEGIN
 			EXEC [procfwk].[SetExecutionBlockDependants]
