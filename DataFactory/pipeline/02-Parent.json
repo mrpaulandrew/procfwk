@@ -122,7 +122,7 @@
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
-									"activity": "Check for Blockers",
+									"activity": "Check and Update Blockers",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -161,7 +161,7 @@
 							}
 						},
 						{
-							"name": "Check for Blockers",
+							"name": "Check and Update Blockers",
 							"description": "Used to double check and stop the next execution stage if failures and blockers have be incurred. Without this step processing would continue regardless of upstream failures.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
