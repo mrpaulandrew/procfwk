@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [procfwk].[SetExecutionBlockDependants]
 	(
-	@ExecutionId UNIQUEIDENTIFIER,
+	@ExecutionId UNIQUEIDENTIFIER = NULL,
 	@PipelineId INT
 	)
 AS
