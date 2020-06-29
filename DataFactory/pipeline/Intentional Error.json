@@ -61,32 +61,6 @@
 								"referenceName": "SupportDatabase",
 								"type": "LinkedServiceReference"
 							}
-						},
-						{
-							"name": "Call Fail Notebook",
-							"type": "DatabricksNotebook",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "7.00:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"notebookPath": "/Playground/Throw Exception",
-								"baseParameters": {
-									"RaiseError": {
-										"value": "@pipeline().parameters.RaiseErrors",
-										"type": "Expression"
-									}
-								}
-							},
-							"linkedServiceName": {
-								"referenceName": "BricksOfData",
-								"type": "LinkedServiceReference"
-							}
 						}
 					]
 				}
