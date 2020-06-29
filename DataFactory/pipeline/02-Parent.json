@@ -162,7 +162,7 @@
 						},
 						{
 							"name": "Check and Update Blockers",
-							"description": "Used to double check and stop the next execution stage if failures and blockers have be incurred. Without this step processing would continue regardless of upstream failures.",
+							"description": "Used to double check and stop the next execution stage if failures and blockers have be incurred. This also depends on the failure handling property value which defines the stored procedure behaviour.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
 							"policy": {
