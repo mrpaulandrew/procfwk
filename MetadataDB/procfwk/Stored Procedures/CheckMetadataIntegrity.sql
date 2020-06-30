@@ -19,10 +19,10 @@ BEGIN
 	Check 10 - Is there a current PipelineStatusCheckDuration property available?
 	Check 11 - Is there a current UseFrameworkEmailAlerting property available?
 	Check 12 - Is there a current EmailAlertBodyTemplate property available?
-	Check 13 - Does the total size of the request body for the pipeline parameters 
-				added exceed the Azure Functions size limit when the Worker execute pipeline body is created?
+	Check 13 - Does the total size of the request body for the pipeline parameters added exceed the Azure Functions size limit when the Worker execute pipeline body is created?
 	Check 14 - Is there a current FailureHandling property available?
-	Check 15 - When using DependencyChain failure handling, are there any dependants in the same execution stage of the predecessor?
+	Check 15 - Does the FailureHandling property have a valid value?
+	Check 16 - When using DependencyChain failure handling, are there any dependants in the same execution stage of the predecessor?
 	---------------------------------------------------------------------------------------------------------------------------------
 	Check A: - Are there any Running pipelines that need to be cleaned up?
 	*/
@@ -256,6 +256,26 @@ BEGIN
 		END;
 
 	--Check 15:
+	IF NOT EXISTS
+		(
+		SELECT 
+			*
+		FROM
+			[procfwk].[CurrentProperties] 
+		WHERE 
+			[PropertyName] = 'FailureHandling' 
+			AND [PropertyValue] IN ('None','Simple','DependencyChain')
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				15,
+				'The property FailureHandling does not have a supported value.'
+				)	
+		END;
+
+	--Check 16:
 	IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'DependencyChain'
 	BEGIN
 		IF EXISTS
@@ -275,7 +295,7 @@ BEGIN
 			INSERT INTO @MetadataIntegrityIssues
 			VALUES
 				( 
-				15,
+				16,
 				'A dependant pipeline and its upstream predecessor exist in the same execution stage. Fix this dependency chain to allow correct failure handling.'
 				)	
 		END;
