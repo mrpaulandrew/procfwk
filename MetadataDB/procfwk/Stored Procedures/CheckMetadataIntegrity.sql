@@ -21,7 +21,10 @@ BEGIN
 	Check 12 - Is there a current EmailAlertBodyTemplate property available?
 	Check 13 - Does the total size of the request body for the pipeline parameters 
 				added exceed the Azure Functions size limit when the Worker execute pipeline body is created?
-	Check 14 - Are there any Running pipelines that need to be cleaned up?
+	Check 14 - Is there a current FailureHandling property available?
+	Check 15 - When using DependencyChain failure handling, are there any dependants in the same execution stage of the predecessor?
+	---------------------------------------------------------------------------------------------------------------------------------
+	Check A: - Are there any Running pipelines that need to be cleaned up?
 	*/
 
 	DECLARE @ErrorDetails VARCHAR(500)
@@ -30,6 +33,10 @@ BEGIN
 		[CheckNumber] INT NOT NULL,
 		[IssuesFound] VARCHAR(MAX) NOT NULL
 		)
+
+	/*
+	Checks:
+	*/
 
 	--Check 1:
 	IF NOT EXISTS
@@ -233,6 +240,51 @@ BEGIN
 				'The pipeline parameters entered exceed the Azure Function request body maximum of 10MB. Query view [procfwk].[PipelineParameterDataSizes] for details.'
 				)	
 		END;
+
+	--Check 14:
+	IF NOT EXISTS
+		(
+		SELECT * FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'FailureHandling'
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				14,
+				'A current FailureHandling value is missing from the properties table.'
+				)		
+		END;
+
+	--Check 15:
+	IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'DependencyChain'
+	BEGIN
+		IF EXISTS
+		(
+		SELECT 
+			pd.[DependencyId]
+		FROM 
+			[procfwk].[PipelineDependencies] pd
+			INNER JOIN [procfwk].[Pipelines] pp
+				ON pd.[PipelineId] = pp.[PipelineId]
+			INNER JOIN [procfwk].[Pipelines] dp
+				ON pd.[DependantPipelineId] = dp.[PipelineId]
+		WHERE
+			pp.[StageId] = dp.[StageId]
+		)	
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				15,
+				'A dependant pipeline and its upstream predecessor exist in the same execution stage. Fix this dependency chain to allow correct failure handling.'
+				)	
+		END;
+	END;
+
+
+	/*
+	Checks Outcome:
+	*/
 	
 	--throw runtime error if checks fail
 	IF EXISTS
@@ -246,8 +298,12 @@ BEGIN
 			RAISERROR(@ErrorDetails, 16, 1);
 			RETURN 0;
 		END;
+
+	/*
+	Previous Exeuction Checks:
+	*/
 	
-	--Check 14:
+	--Check A:
 	IF EXISTS
 		(
 		SELECT [LocalExecutionId] FROM [procfwk].[CurrentExecution] WHERE [PipelineStatus] NOT IN ('Success','Failed','Blocked') AND [AdfPipelineRunId] IS NOT NULL

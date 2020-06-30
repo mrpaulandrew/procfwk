@@ -12,7 +12,7 @@ BEGIN
 
 	IF @AllCount <> @SuccessCount
 		BEGIN
-			RAISERROR('Framework execution complete but not all Workers succeeded.',16,1);
+			RAISERROR('Framework execution complete but not all Worker pipelines succeeded. See the [procfwk].[CurrentExecution] table for details',16,1);
 			RETURN 0;
 		END;
 	ELSE
