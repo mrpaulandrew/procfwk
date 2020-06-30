@@ -2007,7 +2007,7 @@
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
-						"defaultValue": 90
+						"defaultValue": 15
 					}
 				},
 				"folder": {
