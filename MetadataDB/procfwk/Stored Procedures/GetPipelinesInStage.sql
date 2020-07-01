@@ -16,6 +16,7 @@ BEGIN
 	WHERE 
 		[StageId] = @StageId
 		AND ISNULL([PipelineStatus],'') <> 'Success'
+		AND [IsBlocked] <> 1
 	ORDER BY
-		[PipelineId] ASC
+		[PipelineId] ASC;
 END;

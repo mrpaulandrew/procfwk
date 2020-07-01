@@ -14,6 +14,7 @@ Post-Deployment Script Template
 :r .\Metadata\Stages.sql
 :r .\Metadata\Pipelines.sql
 :r .\Metadata\PipelineParams.sql
+:r .\Metadata\PipelineDependencies.sql
 :r .\Metadata\Recipients.sql
 :r .\Metadata\AlertOutcomes.sql
 

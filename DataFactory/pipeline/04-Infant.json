@@ -84,7 +84,7 @@
 							}
 						},
 						{
-							"name": "Set Last Update",
+							"name": "Set Last Check DateTime",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
@@ -192,7 +192,7 @@
 				}
 			},
 			{
-				"name": "Pipeline Result",
+				"name": "Set Pipeline Result",
 				"description": "Receives the outcome from the function execution for a given processing pipeline and updates the current execution table with different pipelines status values depending on the result (case).",
 				"type": "Switch",
 				"dependsOn": [

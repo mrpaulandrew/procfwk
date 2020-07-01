@@ -73,6 +73,7 @@
     <Folder Include="procfwk\Synonyms" />
     <Folder Include="Scripts\LogData" />
     <Folder Include="Scripts\Testing" />
+    <Folder Include="procfwk\Functions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="procfwk\Tables\Pipelines.sql" />
@@ -135,6 +136,13 @@
     <Build Include="procfwk\Stored Procedures\DeleteRecipientAlerts.sql" />
     <Build Include="procfwk\Views\PipelineParameterDataSizes.sql" />
     <None Include="Scripts\Testing\01. 300 Worker Pipelines.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogPipelineChecking.sql" />
+    <Build Include="procfwk\Tables\PipelineDependencies.sql" />
+    <Build Include="procfwk\Functions\GetPropertyValueInternal.sql" />
+    <Build Include="procfwk\Stored Procedures\SetExecutionBlockDependants.sql" />
+    <None Include="Scripts\Metadata\PipelineDependencies.sql" />
+    <Build Include="procfwk\Stored Procedures\AddPipelineDependant.sql" />
+    <Build Include="procfwk\Views\PipelineDependencyChains.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

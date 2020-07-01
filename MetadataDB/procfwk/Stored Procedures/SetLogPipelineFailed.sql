@@ -21,16 +21,6 @@ BEGIN
 		AND [StageId] = @StageId
 		AND [PipelineId] = @PipelineId
 
-	--flag all downstream stages as blocked
-	UPDATE
-		[procfwk].[CurrentExecution]
-	SET
-		[PipelineStatus] = 'Blocked',
-		[IsBlocked] = 1
-	WHERE
-		[LocalExecutionId] = @ExecutionId
-		AND [StageId] > @StageId
-
 	--persist failed pipeline records to long term log
 	INSERT INTO [procfwk].[ExecutionLog]
 		(
@@ -65,13 +55,50 @@ BEGIN
 	WHERE
 		[PipelineStatus] = 'Failed'
 		AND [StageId] = @StageId
-		AND [PipelineId] = @PipelineId
+		AND [PipelineId] = @PipelineId;
+	
+	IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'None'
+		BEGIN
+			--do nothing allow processing to carry on regardless
+			RETURN 0;
+		END;
+		
+	ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'Simple'
+		BEGIN
+			--flag all downstream stages as blocked
+			UPDATE
+				[procfwk].[CurrentExecution]
+			SET
+				[PipelineStatus] = 'Blocked',
+				[IsBlocked] = 1
+			WHERE
+				[LocalExecutionId] = @ExecutionId
+				AND [StageId] > @StageId
+			
+			--raise error to stop processing
+			IF @RunId IS NOT NULL
+				BEGIN
+					SET @ErrorDetail = 'Pipeline execution failed. Check Run ID: ' + CAST(@RunId AS CHAR(36)) + ' in ADF monitoring for details.'
+				END;
+			ELSE
+				BEGIN
+					SET @ErrorDetail = 'Pipeline execution failed. See ADF monitoring for details.'
+				END;
 
-	IF @RunId IS NOT NULL
-		SET @ErrorDetail = 'Pipeline execution failed. Check Run ID: ' + CAST(@RunId AS CHAR(36)) + ' in ADF monitoring for details.'
+			RAISERROR(@ErrorDetail,16,1);
+		
+			RETURN 0;
+		END;
+	
+	ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'DependencyChain'
+		BEGIN
+			EXEC [procfwk].[SetExecutionBlockDependants]
+				@ExecutionId = @ExecutionId,
+				@PipelineId = @PipelineId
+		END;
 	ELSE
-		SET @ErrorDetail = 'Pipeline execution failed. See ADF monitoring for details.'
-
-	RAISERROR(@ErrorDetail,16,1);
-	RETURN 0;
+		BEGIN
+			RAISERROR('Unknown failure handling state.',16,1);
+			RETURN 0;
+		END;
 END;

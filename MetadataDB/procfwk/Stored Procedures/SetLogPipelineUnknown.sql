@@ -57,28 +57,42 @@ BEGIN
 		AND [PipelineId] = @PipelineId;
 
 	--block down stream stages?
-	IF (
-		SELECT
-			[PropertyValue]
-		FROM
-			[procfwk].[CurrentProperties]
-		WHERE
-			[PropertyName] = 'UnknownWorkerResultBlocks'
-		) = 1
-	BEGIN
-		--flag all downstream stages as blocked
-		UPDATE
-			[procfwk].[CurrentExecution]
-		SET
-			[PipelineStatus] = 'Blocked',
-			[IsBlocked] = 1
-		WHERE
-			[LocalExecutionId] = @ExecutionId
-			AND [StageId] > @StageId
+	IF (SELECT [procfwk].[GetPropertyValueInternal]('UnknownWorkerResultBlocks')) = 1
+	BEGIN	
+		--decide how to proceed with error/failure depending on framework property configuration
+		IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'None'
+			BEGIN
+				--do nothing allow processing to carry on regardless
+				RETURN 0;
+			END;
+		
+		ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'Simple'
+			BEGIN
+				--flag all downstream stages as blocked
+				UPDATE
+					[procfwk].[CurrentExecution]
+				SET
+					[PipelineStatus] = 'Blocked',
+					[IsBlocked] = 1
+				WHERE
+					[LocalExecutionId] = @ExecutionId
+					AND [StageId] > @StageId
 
-		SET @ErrorDetail = 'Pipeline execution has an unknown status. Blocking downstream stages as a precaution.'
+				SET @ErrorDetail = 'Pipeline execution has an unknown status. Blocking downstream stages as a precaution.'
 
-		RAISERROR(@ErrorDetail,16,1);
-		RETURN 0;
-	END
+				RAISERROR(@ErrorDetail,16,1);
+				RETURN 0;
+			END;
+		ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'DependencyChain'
+			BEGIN
+				EXEC [procfwk].[SetExecutionBlockDependants]
+					@ExecutionId = @ExecutionId,
+					@PipelineId = @PipelineId
+			END;
+		ELSE
+			BEGIN
+				RAISERROR('Unknown failure handling state.',16,1);
+				RETURN 0;
+			END;
+	END;
 END;

@@ -122,7 +122,7 @@
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
-									"activity": "Check for Blockers",
+									"activity": "Check and Update Blockers",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -161,8 +161,8 @@
 							}
 						},
 						{
-							"name": "Check for Blockers",
-							"description": "Used to double check and stop the next execution stage if failures and blockers have be incurred. Without this step processing would continue regardless of upstream failures.",
+							"name": "Check and Update Blockers",
+							"description": "Used to double check and stop the next execution stage if failures and blockers have be incurred. This also depends on the failure handling property value which defines the stored procedure behaviour.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
 							"policy": {
@@ -199,7 +199,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Metadata Integrity Checks",
+						"activity": "Clean Up Previous Run",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -235,8 +235,8 @@
 				}
 			},
 			{
-				"name": "Archive Execution Log",
-				"description": "After a successful execution run the current execution metadata is moved to the long term logging table by this stored procedure call.",
+				"name": "Check Outcome and Update Logs",
+				"description": "After a successful execution run the current execution metadata is moved to the long term logging table by this stored procedure call. Otherwise an error will be raised.",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
@@ -342,7 +342,7 @@
 			{
 				"name": "Metadata Integrity Checks",
 				"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
-				"type": "SqlServerStoredProcedure",
+				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -353,17 +353,478 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[procfwk].[CheckMetadataIntegrity]",
-					"storedProcedureParameters": {
-						"DebugMode": {
-							"value": "false",
-							"type": "Boolean"
-						}
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[CheckMetadataIntegrity]",
+						"storedProcedureParameters": {
+							"DebugMode": {
+								"type": "Boolean",
+								"value": "false"
+							}
+						},
+						"queryTimeout": "02:00:00"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Clean Up Previous Run",
+				"description": "Handle Worker pipelines that are reported as Running when the parent pipeline is called again. Get what the actual status of those pipelines is.",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Metadata Integrity Checks",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
-				},
-				"linkedServiceName": {
-					"referenceName": "SupportDatabase",
-					"type": "LinkedServiceReference"
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Metadata Integrity Checks').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "Get SPN Details",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderStoredProcedureName": "[procfwk].[GetServicePrincipal]",
+									"storedProcedureParameters": {
+										"DataFactory": {
+											"type": "String",
+											"value": {
+												"value": "@item().DataFactoryName",
+												"type": "Expression"
+											}
+										},
+										"PipelineName": {
+											"type": "String",
+											"value": {
+												"value": "@item().PipelineName",
+												"type": "Expression"
+											}
+										}
+									},
+									"queryTimeout": "02:00:00"
+								},
+								"dataset": {
+									"referenceName": "GetSetMetadata",
+									"type": "DatasetReference"
+								}
+							}
+						},
+						{
+							"name": "Log Pipeline Checking",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[procfwk].[SetLogPipelineChecking]",
+								"storedProcedureParameters": {
+									"ExecutionId": {
+										"value": {
+											"value": "@item().LocalExecutionId",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									},
+									"PipelineId": {
+										"value": {
+											"value": "@item().PipelineId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"StageId": {
+										"value": {
+											"value": "@item().StageId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "SupportDatabase",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Get Pipeline Status",
+							"type": "AzureFunctionActivity",
+							"dependsOn": [
+								{
+									"activity": "Get SPN Details",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "Log Pipeline Checking",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"functionName": "CheckPipelineStatus",
+								"method": "POST",
+								"body": {
+									"value": "@concat('\n{\n    \"tenantId\": \"',item().TenantId,'\",\n    \"applicationId\": \"',activity('Get SPN Details').output.firstRow.Id,'\",\n    \"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.Secret,'\",\n    \"subscriptionId\": \"',item().SubscriptionId,'\",\n    \"resourceGroup\": \"',item().ResourceGroupName,'\",\n    \"factoryName\": \"',item().DataFactoryName,'\",\n    \"pipelineName\": \"',item().PipelineName,'\",\n    \"runId\": \"',item().AdfPipelineRunId,'\"\n}')",
+									"type": "Expression"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "FrameworkFunctions",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Set Pipeline Status",
+							"type": "Switch",
+							"dependsOn": [
+								{
+									"activity": "Get Pipeline Status",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"on": {
+									"value": "@activity('Get Pipeline Status').output.Status",
+									"type": "Expression"
+								},
+								"cases": [
+									{
+										"value": "Failed",
+										"activities": [
+											{
+												"name": "Pipeline Status Failed",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[procfwk].[SetLogPipelineFailed]",
+													"storedProcedureParameters": {
+														"ExecutionId": {
+															"value": {
+																"value": "@item().LocalExecutionId",
+																"type": "Expression"
+															},
+															"type": "Guid"
+														},
+														"PipelineId": {
+															"value": {
+																"value": "@item().PipelineId",
+																"type": "Expression"
+															},
+															"type": "Int32"
+														},
+														"RunId": {
+															"value": null,
+															"type": "Guid"
+														},
+														"StageId": {
+															"value": {
+																"value": "@item().StageId",
+																"type": "Expression"
+															},
+															"type": "Int32"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "SupportDatabase",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									},
+									{
+										"value": "Succeeded",
+										"activities": [
+											{
+												"name": "Pipeline Status Succeeded",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[procfwk].[SetLogPipelineSuccess]",
+													"storedProcedureParameters": {
+														"ExecutionId": {
+															"value": {
+																"value": "@item().LocalExecutionId",
+																"type": "Expression"
+															},
+															"type": "Guid"
+														},
+														"PipelineId": {
+															"value": {
+																"value": "@item().PipelineId",
+																"type": "Expression"
+															},
+															"type": "Int32"
+														},
+														"StageId": {
+															"value": {
+																"value": "@item().StageId",
+																"type": "Expression"
+															},
+															"type": "Int32"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "SupportDatabase",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									},
+									{
+										"value": "Queued",
+										"activities": [
+											{
+												"name": "Pipeline Status Queued - Running",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[procfwk].[SetLogPipelineRunning]",
+													"storedProcedureParameters": {
+														"ExecutionId": {
+															"value": {
+																"value": "@item().LocalExecutionId",
+																"type": "Expression"
+															},
+															"type": "Guid"
+														},
+														"PipelineId": {
+															"value": {
+																"value": "@item().PipelineId",
+																"type": "Expression"
+															},
+															"type": "Int32"
+														},
+														"StageId": {
+															"value": {
+																"value": "@item().StageId",
+																"type": "Expression"
+															},
+															"type": "Int32"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "SupportDatabase",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									},
+									{
+										"value": "InProgress",
+										"activities": [
+											{
+												"name": "Pipeline Status InProgress - Running",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[procfwk].[SetLogPipelineRunning]",
+													"storedProcedureParameters": {
+														"ExecutionId": {
+															"value": {
+																"value": "@item().LocalExecutionId",
+																"type": "Expression"
+															},
+															"type": "Guid"
+														},
+														"PipelineId": {
+															"value": {
+																"value": "@item().PipelineId",
+																"type": "Expression"
+															},
+															"type": "Int32"
+														},
+														"StageId": {
+															"value": {
+																"value": "@item().StageId",
+																"type": "Expression"
+															},
+															"type": "Int32"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "SupportDatabase",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									}
+								],
+								"defaultActivities": [
+									{
+										"name": "Pipeline Status Unknown",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[procfwk].[SetLogPipelineUnknown]",
+											"storedProcedureParameters": {
+												"ExecutionId": {
+													"value": {
+														"value": "@item().LocalExecutionId",
+														"type": "Expression"
+													},
+													"type": "Guid"
+												},
+												"PipelineId": {
+													"value": {
+														"value": "@item().PipelineId",
+														"type": "Expression"
+													},
+													"type": "Int32"
+												},
+												"StageId": {
+													"value": {
+														"value": "@item().StageId",
+														"type": "Expression"
+													},
+													"type": "Int32"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "SupportDatabase",
+											"type": "LinkedServiceReference"
+										}
+									}
+								]
+							}
+						},
+						{
+							"name": "Set Last Check DateTime",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Get Pipeline Status",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[procfwk].[SetLogPipelineLastStatusCheck]",
+								"storedProcedureParameters": {
+									"ExecutionId": {
+										"value": {
+											"value": "@item().LocalExecutionId",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									},
+									"PipelineId": {
+										"value": {
+											"value": "@item().PipelineId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"StageId": {
+										"value": {
+											"value": "@item().StageId",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "SupportDatabase",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
 				}
 			}
 		],

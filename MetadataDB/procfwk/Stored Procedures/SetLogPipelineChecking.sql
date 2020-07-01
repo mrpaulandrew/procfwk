@@ -1,19 +1,19 @@
-﻿CREATE PROCEDURE [procfwk].[SetLogStagePreparing]
+﻿CREATE PROCEDURE [procfwk].[SetLogPipelineChecking]
 	(
 	@ExecutionId UNIQUEIDENTIFIER,
-	@StageId INT
+	@StageId INT,
+	@PipelineId INT
 	)
 AS
 BEGIN
 	SET NOCOUNT ON;
-	
+
 	UPDATE
 		[procfwk].[CurrentExecution]
 	SET
-		[PipelineStatus] = 'Preparing'
+		[PipelineStatus] = 'Checking'
 	WHERE
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId
-		AND [StartDateTime] IS NULL
-		AND [IsBlocked] <> 1;
+		AND [PipelineId] = @PipelineId
 END;

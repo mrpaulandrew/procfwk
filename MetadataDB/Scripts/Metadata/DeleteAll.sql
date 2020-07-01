@@ -20,6 +20,13 @@ IF OBJECT_ID(N'[procfwk].[ExecutionLog]') IS NOT NULL
 		TRUNCATE TABLE [procfwk].[ErrorLog];
 	END
 
+--PipelineDependencies
+IF OBJECT_ID(N'[procfwk].[PipelineDependencies]') IS NOT NULL 
+	BEGIN
+		DELETE FROM [procfwk].[PipelineDependencies];
+		DBCC CHECKIDENT ('[procfwk].[PipelineDependencies]', RESEED, 0);
+	END;
+
 --PipelineAlertLink
 IF OBJECT_ID(N'[procfwk].[PipelineAlertLink]') IS NOT NULL 
 	BEGIN
