@@ -117,12 +117,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions App", "Functions 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FactoryTesting", "FactoryTesting\FactoryTesting.csproj", "{777BB424-9D89-49E5-BE29-E73E0A0E159A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1BE46EFF-A3D4-42CE-AC0D-4DAD4E2C9292}"
-	ProjectSection(SolutionItems) = preProject
-		dev.runsettings = dev.runsettings
-		test.runsettings = test.runsettings
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
