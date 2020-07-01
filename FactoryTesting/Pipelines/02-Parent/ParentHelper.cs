@@ -36,7 +36,7 @@ WHERE [PropertyName] = 'FailureHandling'");
 
         public override void TearDown()
         {
-            SimulateError(false);
+            SimulateError(false);  // ensure default behaviour is to *not* simulate errors
             base.TearDown();
         }
     }
