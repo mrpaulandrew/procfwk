@@ -90,6 +90,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataFactory", "DataFactory"
 		ARM Templates\Data Factory\v1.5 Export.json = ARM Templates\Data Factory\v1.5 Export.json
 		ARM Templates\Data Factory\v1.6 Export.json = ARM Templates\Data Factory\v1.6 Export.json
 		ARM Templates\Data Factory\v1.7 Export.json = ARM Templates\Data Factory\v1.7 Export.json
+		ARM Templates\Data Factory\v1.8 Export.json = ARM Templates\Data Factory\v1.8 Export.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "trigger", "trigger", "{FC7877EF-110F-4AD7-B203-EEECE6F08A86}"
@@ -115,7 +116,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions App", "Functions 
 		ARM Templates\Functions App\v1.6 Export.json = ARM Templates\Functions App\v1.6 Export.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FactoryTesting", "FactoryTesting\FactoryTesting.csproj", "{777BB424-9D89-49E5-BE29-E73E0A0E159A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FactoryTesting", "FactoryTesting\FactoryTesting.csproj", "{777BB424-9D89-49E5-BE29-E73E0A0E159A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
