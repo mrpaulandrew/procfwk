@@ -7,23 +7,34 @@ namespace FactoryTesting.Pipelines.Parent
 {
     public class GivenExternalDependencies
     {
-        private ParentHelper _helper;
+        //private ParentHelper _helper;
 
-        [OneTimeSetUp]
-        public async Task WhenPipelineRun()
-        {
-            _helper = new ParentHelper();
-            await _helper.RunPipeline();
-        }
+        //[OneTimeSetUp]
+        //public async Task WhenPipelineRun()
+        //{
+        //    _helper = new ParentHelper()
+        //        .WithEmptyTable("procfwk.CurrentExecution");
+        //    await _helper.RunPipeline();
+        //}
 
-        #region Integration tests
+        //#region Integration tests
 
-        [Test]
-        public void ThenPipelineOutcomeIsSucceeded()
-        {
-            _helper.RunOutcome.Should().Be("Succeeded");
-        }
+        //[Test]
+        //public void ThenPipelineOutcomeIsSucceeded()
+        //{
+        //    _helper.RunOutcome.Should().Be("Succeeded");
+        //}
 
-        #endregion
+        //#endregion
+
+        //#region Functional tests
+
+        //[Test]
+        //public void ThenCurrentExecutionTableIsEmpty()
+        //{
+        //    _helper.RowCount("procfwk.CurrentExecution").Should().Be(0);
+        //}
+
+        //#endregion
     }
 }

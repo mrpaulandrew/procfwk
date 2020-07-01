@@ -46,7 +46,7 @@ namespace FactoryTesting.Helpers
     }
 }
 
-//[SetUpFixture]
+[SetUpFixture]
 public class CoverageHelperSetup : CoverageHelper<CoverageHelperSetup>
 {
     [OneTimeSetUp]

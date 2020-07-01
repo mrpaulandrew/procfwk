@@ -10,7 +10,7 @@ namespace FactoryTesting.Helpers
 
         public DatabaseHelper()
         {
-            _conn = new SqlConnection(GetSetting("AdfTestingDbConnectionString"));
+            _conn = new SqlConnection(GetSetting(GetSetting("MetadataDbConnectionStringSecretName")));
             _conn.Open();
         }
 
@@ -21,9 +21,11 @@ namespace FactoryTesting.Helpers
             return (T)this;
         }
 
-        public int RowCount(string tableName)
+        public int RowCount(string tableName, string where = "", string equals = "")
         {
-            using (var cmd = new SqlCommand($"SELECT COUNT(*) FROM {tableName}", _conn))
+            using (var cmd = new SqlCommand($"SELECT COUNT(*) FROM {tableName}"
+                + (where?.Length == 0 ? "" : $" WHERE {where} = '{equals.Replace("'", "''")}'")
+                , _conn))
             using (var reader = cmd.ExecuteReader())
             {
                 reader.Read();
@@ -51,6 +53,12 @@ namespace FactoryTesting.Helpers
                         cmd.Parameters.Add(new SqlParameter(parameterName, parameters[parameterName]));
                 cmd.ExecuteNonQuery();
             }
+        }
+
+        public void ExecuteNonQuery(string sql)
+        {
+            using (var cmd = new SqlCommand(sql, _conn))
+                cmd.ExecuteNonQuery();
         }
 
         public override void TearDown()
