@@ -1,5 +1,4 @@
 ﻿using FactoryTesting.Helpers;
-using System;
 using System.Threading.Tasks;
 
 namespace FactoryTesting.Pipelines.Parent
@@ -11,22 +10,34 @@ namespace FactoryTesting.Pipelines.Parent
             await RunPipeline("02-Parent");
         }
 
-        internal ParentHelper WithSimulatedError()
+        public ParentHelper WithSimulatedError()
         {
-            ExecuteNonQuery(@"UPDATE pp 
-SET [ParameterValue] = 'true' 
-FROM [procfwk].[PipelineParameters] pp 
-  INNER JOIN  [procfwk].[Pipelines] p ON pp.[PipelineId] = p.[PipelineId] 
-WHERE p.[PipelineName] = 'Intentional Error' AND pp.[ParameterName] = 'RaiseErrors'");
+            SimulateError(true);
             return this;
         }
 
-        internal ParentHelper WithFailureHandling(string mode)
+        private void SimulateError(bool simulate)
+        {
+            string paramValue = simulate ? "true" : "false";
+            ExecuteNonQuery(@$"UPDATE pp 
+SET [ParameterValue] = '{paramValue}' 
+FROM [procfwk].[PipelineParameters] pp 
+  INNER JOIN  [procfwk].[Pipelines] p ON pp.[PipelineId] = p.[PipelineId] 
+WHERE p.[PipelineName] = 'Intentional Error' AND pp.[ParameterName] = 'RaiseErrors'");
+        }
+
+        public ParentHelper WithFailureHandling(string mode)
         {
             ExecuteNonQuery(@$"UPDATE [procfwk].[Properties] 
 SET [PropertyValue] = '{mode}' 
-WHERE [PropertyName] = 'FailureHandling'"); 
+WHERE [PropertyName] = 'FailureHandling'");
             return this;
+        }
+
+        public override void TearDown()
+        {
+            SimulateError(false);
+            base.TearDown();
         }
     }
 }

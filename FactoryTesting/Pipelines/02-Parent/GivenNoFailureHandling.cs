@@ -40,5 +40,11 @@ namespace FactoryTesting.Pipelines.Parent
         }
 
         #endregion
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            _helper?.TearDown();
+        }
     }
 }
