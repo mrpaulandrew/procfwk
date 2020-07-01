@@ -45,4 +45,4 @@ EXEC [procfwk].[AddProperty]
 EXEC [procfwk].[AddProperty]
 	@PropertyName = N'FailureHandling',
 	@PropertyValue = N'Simple',
-	@Description = N'None, Simple, DependencyChain';
+	@Description = N'Accepted values: None, Simple, DependencyChain. Controls processing bahaviour in the event of Worker failures. See v1.8 release notes for full definitions.';
