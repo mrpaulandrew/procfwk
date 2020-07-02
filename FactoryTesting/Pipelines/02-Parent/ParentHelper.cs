@@ -45,9 +45,9 @@ namespace FactoryTesting.Pipelines.Parent
             return this;
         }
 
-        private void EnableDisableMetadata(string table, bool simulate)
+        private void EnableDisableMetadata(string table, bool state)
         {
-            string paramValue = simulate ? "true" : "false";
+            string paramValue = state ? "true" : "false";
             ExecuteNonQuery(@$"UPDATE [procfwk].[{table}] SET [Enabled] = '{paramValue}'");
         }
 
@@ -66,6 +66,54 @@ WHERE p.[PipelineName] = 'Intentional Error' AND pp.[ParameterName] = 'RaiseErro
             ExecuteNonQuery(@$"UPDATE [procfwk].[Properties] 
 SET [PropertyValue] = '{mode}' 
 WHERE [PropertyName] = 'FailureHandling'");
+            return this;
+        }
+        public ParentHelper InsertNewPipelineParameters()
+        {
+            ExecuteNonQuery(@"INSERT INTO [procfwk].[PipelineParameters] ([PipelineId],[ParameterName],[ParameterValue])
+VALUES 
+	(1, 'WaitTime', '3'),
+	(2, 'WaitTime', '6'),
+	(6, 'WaitTime', '9'),
+	(4, 'WaitTime', '5'),
+	(5, 'WaitTime', '2'),
+	(3, 'RaiseErrors', 'false'),
+	(3, 'WaitTime', '10'),
+	(7, 'WaitTime', '3'),
+	(8, 'WaitTime', '5'),
+	(9, 'WaitTime', '7'),
+	(11, 'WaitTime', '10')");
+
+            return this;
+        }
+
+        public ParentHelper WithSingleExecutionStage()
+        {
+            ExecuteNonQuery("UPDATE [procfwk].[Pipelines] SET [StageId] = 1");
+            return this;
+        }
+
+        public ParentHelper ResetPipelineStages()
+        {
+            ExecuteNonQuery(@"UPDATE
+	[procfwk].[Pipelines]
+SET
+	[StageId] =
+		CASE [PipelineId]
+			WHEN 1 THEN 1
+			WHEN 2 THEN 1
+			WHEN 3 THEN 1
+			WHEN 4 THEN 1
+			WHEN 5 THEN 2
+			WHEN 6 THEN 2
+			WHEN 7 THEN 2
+			WHEN 8 THEN 2
+			WHEN 9 THEN 3
+			WHEN 10 THEN 3
+			WHEN 11 THEN 4
+			ELSE 1
+		END");
+
             return this;
         }
 
