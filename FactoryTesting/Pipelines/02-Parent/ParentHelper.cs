@@ -16,6 +16,12 @@ namespace FactoryTesting.Pipelines.Parent
             return this;
         }
 
+        public ParentHelper WithoutSimulatedError()
+        {
+            SimulateError(false);
+            return this;
+        }
+
         private void SimulateError(bool simulate)
         {
             string paramValue = simulate ? "true" : "false";
