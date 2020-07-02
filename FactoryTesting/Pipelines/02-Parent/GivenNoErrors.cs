@@ -14,6 +14,7 @@ namespace FactoryTesting.Pipelines.Parent
         {
             _helper = new ParentHelper()
                 .WithEmptyTable("procfwk.CurrentExecution")
+                .WithEmptyTable("procfwk.ExecutionLog")
                 .WithoutSimulatedError()
                 .WithFailureHandling("Simple"); ;
             await _helper.RunPipeline();
@@ -21,7 +22,7 @@ namespace FactoryTesting.Pipelines.Parent
 
         #region Integration tests
 
-        [Test]
+        [Test, Order(1)]
         public void ThenPipelineOutcomeIsSucceeded()
         {
             _helper.RunOutcome.Should().Be("Succeeded");
@@ -31,10 +32,16 @@ namespace FactoryTesting.Pipelines.Parent
 
         #region Functional tests
 
-        [Test]
+        [Test, Order(2)]
         public void ThenCurrentExecutionTableIsEmpty()
         {
             _helper.RowCount("procfwk.CurrentExecution").Should().Be(0);
+        }
+
+        [Test, Order(3)]
+        public void ThenElevenExecutionLogRecords()
+        {
+            _helper.RowCount("procfwk.ExecutionLog").Should().Be(11);
         }
 
         #endregion

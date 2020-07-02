@@ -14,6 +14,7 @@ namespace FactoryTesting.Pipelines.Parent
         {
             _helper = new ParentHelper()
                 .WithEmptyTable("procfwk.CurrentExecution")
+                .WithEmptyTable("procfwk.ExecutionLog")
                 .WithSimulatedError()
                 .WithFailureHandling("None");
             await _helper.RunPipeline();
@@ -21,22 +22,28 @@ namespace FactoryTesting.Pipelines.Parent
 
         #region Functional tests
 
-        [Test]
+        [Test, Order(1)]
         public void ThenPipelineOutcomeIsFailed()
         {
             _helper.RunOutcome.Should().Be("Failed");
         }
-
-        [Test]
+        
+        [Test, Order(2)]
+        public void ThenTenExecutionsSucceeded()
+        {
+            _helper.RowCount("procfwk.CurrentExecution", where: "PipelineStatus", equals: "Success").Should().Be(10);
+        }
+        
+        [Test, Order(3)]
         public void ThenOneExecutionFailed()
         {
             _helper.RowCount("procfwk.CurrentExecution", where: "PipelineStatus", equals: "Failed").Should().Be(1);
         }
 
-        [Test]
-        public void ThenTenExecutionsSucceeded()
+        [Test, Order(4)]
+        public void ThenOneExecutionLogRecord()
         {
-            _helper.RowCount("procfwk.CurrentExecution", where: "PipelineStatus", equals: "Success").Should().Be(10);
+            _helper.RowCount("procfwk.ExecutionLog", where: "PipelineStatus", equals: "Failed").Should().Be(1);
         }
 
         #endregion
