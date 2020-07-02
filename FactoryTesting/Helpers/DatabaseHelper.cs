@@ -63,6 +63,9 @@ namespace FactoryTesting.Helpers
 
         public override void TearDown()
         {
+            using (var cmd = new SqlCommand($"TRUNCATE TABLE [procfwk].[CurrentExecution]", _conn))
+                cmd.ExecuteNonQuery();
+
             _conn?.Dispose();
             base.TearDown();
         }
