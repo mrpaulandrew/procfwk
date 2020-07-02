@@ -32,7 +32,8 @@ namespace FactoryTesting.Pipelines.Grandparent
         [OneTimeTearDown]
         public void TearDown()
         {
-            _helper.WithAllWorkerPipelinesEnabled();
+            _helper.ResetParameterValue();
+            _helper.EnableAllWorkerPipelines();
             _helper?.TearDown();
         }
     }

@@ -20,7 +20,12 @@ namespace FactoryTesting.Pipelines.Grandparent
             ExecuteNonQuery("UPDATE [procfwk].[Pipelines] SET [Enabled] = 0 WHERE [PipelineId] > 1");
             return this;
         }
-        public GrandparentHelper WithAllWorkerPipelinesEnabled()
+        public GrandparentHelper ResetParameterValue()
+        {
+            ExecuteNonQuery("UPDATE [procfwk].[PipelineParameters] SET [ParameterValue] = 5 WHERE [PipelineId] = 1");
+            return this;
+        }
+        public GrandparentHelper EnableAllWorkerPipelines()
         {
             ExecuteNonQuery("UPDATE [procfwk].[Pipelines] SET [Enabled] = 1");
             return this;
