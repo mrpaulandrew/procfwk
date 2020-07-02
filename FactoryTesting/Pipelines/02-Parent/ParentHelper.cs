@@ -22,6 +22,35 @@ namespace FactoryTesting.Pipelines.Parent
             return this;
         }
 
+        public ParentHelper WithStagesDisabled()
+        {
+            EnableDisableMetadata("Stages", false);
+            return this;
+        }
+        
+        public ParentHelper WithStagesEnabled()
+        {
+            EnableDisableMetadata("Stages", true);
+            return this;
+        }
+
+        public ParentHelper WithPipelinesDisabled()
+        {
+            EnableDisableMetadata("Pipelines", false);
+            return this;
+        }
+        public ParentHelper WithPipelinesEnabled()
+        {
+            EnableDisableMetadata("Pipelines", true);
+            return this;
+        }
+
+        private void EnableDisableMetadata(string table, bool simulate)
+        {
+            string paramValue = simulate ? "true" : "false";
+            ExecuteNonQuery(@$"UPDATE [procfwk].[{table}] SET [Enabled] = '{paramValue}'");
+        }
+
         private void SimulateError(bool simulate)
         {
             string paramValue = simulate ? "true" : "false";
