@@ -15,6 +15,7 @@ namespace FactoryTesting.Pipelines.Parent
             _helper = new ParentHelper()
                 .WithEmptyTable("procfwk.CurrentExecution")
                 .WithEmptyTable("procfwk.ExecutionLog")
+                .WithEmptyTable("procfwk.ErrorLog")
                 .WithSimulatedError()
                 .WithFailureHandling("DependencyChain");
             await _helper.RunPipeline();
@@ -52,6 +53,11 @@ namespace FactoryTesting.Pipelines.Parent
             _helper.RowCount("procfwk.ExecutionLog", where: "PipelineStatus", equals: "Failed").Should().Be(1);
         }
 
+        [Test, Order(6)]
+        public void ThenTwoErrorLogRecords()
+        {
+            _helper.RowCount("procfwk.ErrorLog").Should().Be(2);
+        }
         #endregion
 
         [OneTimeTearDown]
