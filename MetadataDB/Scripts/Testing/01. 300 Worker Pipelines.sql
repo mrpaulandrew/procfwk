@@ -3,6 +3,9 @@ IF DB_NAME() = 'FrameworkMetadataTest'
 BEGIN
 
 	--clear the decks from dev metadata
+	DELETE FROM [procfwk].[PipelineDependencies];
+	DBCC CHECKIDENT ('[procfwk].[PipelineDependencies]', RESEED, 0);
+
 	DELETE FROM [procfwk].[PipelineAlertLink];
 	DBCC CHECKIDENT ('[procfwk].[PipelineAlertLink]', RESEED, 0);
 

@@ -25,7 +25,9 @@ BEGIN
 					AND [IsBlocked] = 1
 				)
 				BEGIN		
-					RAISERROR('Pipelines are blocked. Stopping processing.',16,1);
+					--Saves the child pipeline and activities being called throwing the exception at this level.
+					RAISERROR('All pipelines are blocked. Stopping processing.',16,1); 
+					--If not thrown here, the proc [procfwk].[UpdateExecutionLog] would eventually throw an exception.
 					RETURN 0;
 				END			
 		END;
