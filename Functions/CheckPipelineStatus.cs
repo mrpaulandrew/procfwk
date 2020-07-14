@@ -12,6 +12,9 @@ using Microsoft.Azure.Management.DataFactory.Models;
 using Newtonsoft.Json.Linq;
 using ADFprocfwk.Helpers;
 
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+
 namespace ADFprocfwk
 {
     public static class CheckPipelineStatus
@@ -55,6 +58,34 @@ namespace ADFprocfwk
                 return new BadRequestObjectResult("Invalid request body, value(s) missing.");
             }
             #endregion
+
+            #region ResolveKeyVaultValues
+
+            Uri uriResult;
+            bool result = Uri.TryCreate(applicationId, UriKind.Absolute, out uriResult)
+                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+
+            if (result)
+            {
+                log.LogInformation("ApplicationId provided as a URL. Querying Key Vault");
+                log.LogInformation(uriResult.ToString());
+                
+                string keyVaultURL = "https://" + uriResult.Host.ToString();
+                string secretName = uriResult.LocalPath.ToString().Replace("secrets/", "").Replace("/", "");
+
+                log.LogInformation(keyVaultURL);
+                log.LogInformation(secretName);
+
+                var _keyVaultClient = new SecretClient(new Uri(keyVaultURL), new DefaultAzureCredential());
+                var value = _keyVaultClient.GetSecret(secretName).Value.Value;
+
+                applicationId = value.ToString();
+
+                log.LogInformation(applicationId);
+            }
+
+            #endregion
+
 
             #region GetPipelineStatus
             //Create a data factory management client
