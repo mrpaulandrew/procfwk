@@ -12,9 +12,6 @@ using Microsoft.Azure.Management.DataFactory.Models;
 using Newtonsoft.Json.Linq;
 using ADFprocfwk.Helpers;
 
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
-
 namespace ADFprocfwk
 {
     public static class CheckPipelineStatus
@@ -61,41 +58,28 @@ namespace ADFprocfwk
 
             #region ResolveKeyVaultValues
 
-            Uri uriResult;
-            bool result = Uri.TryCreate(applicationId, UriKind.Absolute, out uriResult)
-                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-
-            if (result)
+            if (RequestHelper.CheckUri(applicationId))
             {
-                log.LogInformation("ApplicationId provided as a URL. Querying Key Vault");
-                log.LogInformation(uriResult.ToString());
-                
-                string keyVaultURL = "https://" + uriResult.Host.ToString();
-                string secretName = uriResult.LocalPath.ToString().Replace("secrets/", "").Replace("/", "");
-
-                log.LogInformation(keyVaultURL);
-                log.LogInformation(secretName);
-
-                var _keyVaultClient = new SecretClient(new Uri(keyVaultURL), new DefaultAzureCredential());
-                var value = _keyVaultClient.GetSecret(secretName).Value.Value;
-
-                applicationId = value.ToString();
-
-                log.LogInformation(applicationId);
+                log.LogInformation("Getting applicationId from Key Vault");
+                applicationId = KeyVaultClient.GetSecretFromUri(applicationId);
             }
 
+            if (RequestHelper.CheckUri(authenticationKey))
+            {
+                log.LogInformation("Getting authenticationKey from Key Vault");
+                authenticationKey = KeyVaultClient.GetSecretFromUri(authenticationKey);
+            }
             #endregion
-
 
             #region GetPipelineStatus
             //Create a data factory management client
             log.LogInformation("Creating ADF connectivity client.");
             
-            using (var client = DataFactoryClient.CreateDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
+            using (var adfClient = DataFactoryClient.CreateDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
             {
                 //Get pipeline status with provided run id
                 PipelineRun pipelineRun;
-                pipelineRun = client.PipelineRuns.Get(resourceGroup, factoryName, runId);
+                pipelineRun = adfClient.PipelineRuns.Get(resourceGroup, factoryName, runId);
                 log.LogInformation("Checking ADF pipeline status.");
 
                 //Create simple status for Data Factory Until comparison checks

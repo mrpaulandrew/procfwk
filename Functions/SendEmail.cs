@@ -72,7 +72,7 @@ namespace ADFprocfwk
             using (var client = SMTPClient.CreateSMTPClient())
             {
                 #region CreateMail                
-                MailAddress from = new MailAddress(SMTPClient.fromEmail);
+                MailAddress from = new MailAddress(SMTPClient.FromEmail);
                 MailMessage mail = new MailMessage
                 {
                     From = from,

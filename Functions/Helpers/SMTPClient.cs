@@ -5,7 +5,7 @@ namespace ADFprocfwk.Helpers
 {
     internal class SMTPClient
     {
-        public static string fromEmail { get; set; }
+        public static string FromEmail { get; set; }
 
         public static SmtpClient CreateSMTPClient()
         {
@@ -14,7 +14,7 @@ namespace ADFprocfwk.Helpers
             string smtpUser = Environment.GetEnvironmentVariable("AppSettingSmtpUser");
             string smtpPass = Environment.GetEnvironmentVariable("AppSettingSmtpPass");
             
-            fromEmail = Environment.GetEnvironmentVariable("AppSettingFromEmail");
+            FromEmail = Environment.GetEnvironmentVariable("AppSettingFromEmail");
 
             SmtpClient emailClient = new SmtpClient
             {

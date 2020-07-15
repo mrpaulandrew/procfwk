@@ -8,7 +8,7 @@ BEGIN
 	DECLARE @PropertyValue NVARCHAR(MAX)
 
 	SELECT
-		@PropertyValue = [PropertyValue]
+		@PropertyValue = ISNULL([PropertyValue],'')
 	FROM
 		[procfwk].[CurrentProperties]
 	WHERE
