@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [procfwk].[DeleteServicePrincipal]
 	(
 	@DataFactory NVARCHAR(200),
-	@PrincipalId NVARCHAR(256),
+	@PrincipalIdValue NVARCHAR(256),
 	@SpecificPipelineName NVARCHAR(200) = NULL
 	)
 AS
@@ -9,19 +9,49 @@ BEGIN
 	SET NOCOUNT ON;
 
 	DECLARE @ErrorDetails NVARCHAR(500) = ''
-	DECLARE @LocalPrincipalId UNIQUEIDENTIFIER
+	DECLARE @CredentialId INT
 
-	--defensive checks
-	BEGIN TRY
-		SELECT --assigned to variable just to supress output of SELECT
-			@LocalPrincipalId = CAST(@PrincipalId AS UNIQUEIDENTIFIER)
-	END TRY
-	BEGIN CATCH
-			SET @ErrorDetails = 'Invalid @PrincipalId provided. The format must be a UNIQUEIDENTIFIER.'
-			RAISERROR(@ErrorDetails, 16, 1);
+	--resolve principal Id or Url to credential Id
+	IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInDatabase'
+		BEGIN
+			--defensive checks
+			BEGIN TRY
+				DECLARE @LocalPrincipalId UNIQUEIDENTIFIER
+
+				SELECT --assigned to variable just to supress output of SELECT
+					@LocalPrincipalId = CAST(@PrincipalIdValue AS UNIQUEIDENTIFIER)
+			END TRY
+			BEGIN CATCH
+					SET @ErrorDetails = 'Invalid @PrincipalId provided. The format must be a UNIQUEIDENTIFIER.'
+					RAISERROR(@ErrorDetails, 16, 1);
+					RETURN 0;
+			END CATCH	
+			
+			--get cred id using principal id
+			SELECT
+				@CredentialId = [CredentialId]
+			FROM
+				[dbo].[ServicePrincipals]
+			WHERE
+				[PrincipalId] = @PrincipalIdValue
+		END
+	ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInKeyVault'
+		BEGIN
+			--get cred id using principal id url
+			SELECT
+				@CredentialId = [CredentialId]
+			FROM
+				[dbo].[ServicePrincipals]
+			WHERE
+				[PrincipalIdUrl] = @PrincipalIdValue
+		END;
+	ELSE
+		BEGIN
+			RAISERROR('Unknown SPN deletion method.',16,1);
 			RETURN 0;
-	END CATCH	
-	
+		END;
+
+	--secondary defensive checks
 	IF NOT EXISTS
 		(
 		SELECT [DataFactoryName] FROM [procfwk].[DataFactorys] WHERE [DataFactoryName] = @DataFactory
@@ -32,16 +62,12 @@ BEGIN
 			RETURN 0;
 		END
 
-	IF NOT EXISTS
-		(
-		SELECT [PrincipalId] FROM [dbo].[ServicePrincipals] WHERE [PrincipalId] = @PrincipalId
-		)
+	IF @CredentialId IS NULL
 		BEGIN
-			SET @ErrorDetails = 'Invalid Service Principal Id. Please ensure the Service Principal exists.'
+			SET @ErrorDetails = 'Invalid Service Principal Id Value provided. Please ensure the Service Principal exists.'
 			RAISERROR(@ErrorDetails, 16, 1);
 			RETURN 0;
 		END
-
 
 	--delete SPN for specific pipeline
 	IF @SpecificPipelineName IS NOT NULL
@@ -56,7 +82,7 @@ BEGIN
 					RETURN 0;
 				END
 			
-			--delete link
+			--delete links
 			DELETE
 				L
 			FROM
@@ -71,10 +97,11 @@ BEGIN
 			WHERE
 				P.[PipelineName] = @SpecificPipelineName
 				AND D.[DataFactoryName] = @DataFactory
-				AND S.[PrincipalId] = @PrincipalId;
+				AND S.[CredentialId] = @CredentialId;
 		END
 	ELSE
 		BEGIN
+			--delete links
 			DELETE
 				L
 			FROM
@@ -86,10 +113,10 @@ BEGIN
 					ON L.[CredentialId] = S.[CredentialId]
 			WHERE
 				D.[DataFactoryName] = @DataFactory
-				AND S.[PrincipalId] = @PrincipalId;
+				AND S.[CredentialId] = @CredentialId;
 		END
 
-	--delete principal only if not still used by other pipelines
+	--finall, delete principal only if not still used by other pipelines
 	DELETE 
 		SP
 	FROM 
@@ -97,6 +124,6 @@ BEGIN
 		LEFT OUTER JOIN [procfwk].[PipelineAuthLink] AL
 			ON SP.[CredentialId] = AL.[CredentialId]
 	WHERE 
-		SP.[PrincipalId] = @PrincipalId
+		SP.[CredentialId] = @CredentialId
 		AND AL.[CredentialId] IS NULL;
 END;

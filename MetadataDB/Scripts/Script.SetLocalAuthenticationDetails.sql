@@ -16,22 +16,40 @@ EXEC [procfwk].[AddProperty]
 	@PropertyValue = '$(AZURE_SUBSCRIPTION_ID)',
 	@Description = 'Used to provide authentication throughout the framework execution.'
 
---Add SPN for execution of all worker pipelines
-EXEC [procfwk].[AddServicePrincipalWrapper]
-	@DataFactory = N'FrameworkFactory',
-	@PrincipalIdValue = '$(AZURE_CLIENT_ID)',
-	@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET)',
-	@PrincipalName = '$(AZURE_CLIENT_NAME)'
 
---Add specific SPN for execution of Wait 1 pipeline (functional testing)	
-EXEC [procfwk].[DeleteServicePrincipal]
-	@DataFactory = N'FrameworkFactory',
-	@PrincipalId = '$(AZURE_CLIENT_ID)',
-	@SpecificPipelineName = N'Wait 1'
+IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInDatabase'
+	BEGIN
+		--Add SPN for execution of all worker pipelines using database to store SPN values
+		EXEC [procfwk].[AddServicePrincipalWrapper]
+			@DataFactory = N'FrameworkFactory',
+			@PrincipalIdValue = '$(AZURE_CLIENT_ID)',
+			@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET)',
+			@PrincipalName = '$(AZURE_CLIENT_NAME)';
 
-EXEC [procfwk].[AddServicePrincipalWrapper]
-	@DataFactory = N'FrameworkFactory',
-	@PrincipalIdValue = '$(AZURE_CLIENT_ID_2)',
-	@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET_2)',
-	@PrincipalName = '$(AZURE_CLIENT_NAME_2)',
-	@SpecificPipelineName = N'Wait 1'
+		--Add specific SPN for execution of Wait 1 pipeline (functional testing)	
+		EXEC [procfwk].[DeleteServicePrincipal]
+			@DataFactory = N'FrameworkFactory',
+			@PrincipalId = '$(AZURE_CLIENT_ID)',
+			@SpecificPipelineName = N'Wait 1';
+
+		EXEC [procfwk].[AddServicePrincipalWrapper]
+			@DataFactory = N'FrameworkFactory',
+			@PrincipalIdValue = '$(AZURE_CLIENT_ID_2)',
+			@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET_2)',
+			@PrincipalName = '$(AZURE_CLIENT_NAME_2)',
+			@SpecificPipelineName = N'Wait 1';
+	END
+ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInKeyVault'
+	BEGIN
+		--Add SPN for execution of all worker pipelines using database to store key vault URLs
+		EXEC [procfwk].[AddServicePrincipalWrapper]
+			@DataFactory = N'FrameworkFactory',
+			@PrincipalIdValue = '$(AZURE_CLIENT_ID_URL)',
+			@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET_URL)',
+			@PrincipalName = '$(AZURE_CLIENT_NAME)';
+	END
+ELSE
+	BEGIN
+		RAISERROR('Unknown SPN insert method.',16,1);
+		RETURN 0;
+	END;	
