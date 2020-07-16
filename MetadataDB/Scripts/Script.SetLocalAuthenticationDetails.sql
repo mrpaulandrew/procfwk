@@ -29,7 +29,7 @@ IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreIn
 		--Add specific SPN for execution of Wait 1 pipeline (functional testing)	
 		EXEC [procfwk].[DeleteServicePrincipal]
 			@DataFactory = N'FrameworkFactory',
-			@PrincipalId = '$(AZURE_CLIENT_ID)',
+			@PrincipalIdValue = '$(AZURE_CLIENT_ID)',
 			@SpecificPipelineName = N'Wait 1';
 
 		EXEC [procfwk].[AddServicePrincipalWrapper]
@@ -51,5 +51,4 @@ ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'St
 ELSE
 	BEGIN
 		RAISERROR('Unknown SPN insert method.',16,1);
-		RETURN 0;
 	END;	
