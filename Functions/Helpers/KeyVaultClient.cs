@@ -14,34 +14,11 @@ namespace ADFprocfwk.Helpers
 
         private static SecretClient kvClient;
 
-        public static SecretClient CreateKeyVaultClient()
-        {
-            string keyVaultURL = Environment.GetEnvironmentVariable("keyVaultURL");
-
-            kvClient = new SecretClient(new Uri(keyVaultURL), defaultCred);
-
-            return kvClient;
-        }
-
-        public static SecretClient CreateKeyVaultClient(string keyVaultURL)
-        {
-            kvClient = new SecretClient(new Uri(keyVaultURL), defaultCred);
-
-            return kvClient;
-        }
-
-        public static SecretClient CreateKeyVaultClient(Uri keyVaultURL)
-        {
-            kvClient = new SecretClient(keyVaultURL, defaultCred);
-
-            return kvClient;
-        }
-
         public static string GetSecretFromUri(string secretString)
         {
             return GetSecretFromUri(new Uri(secretString));
         }
-
+        
         public static string GetSecretFromUri(Uri secretUri)
         {
             string keyVaultURL = "https://" + secretUri.Host.ToString();
@@ -58,5 +35,28 @@ namespace ADFprocfwk.Helpers
 
             return value;
         }
+
+        private static SecretClient CreateKeyVaultClient()
+        {
+            string keyVaultURL = Environment.GetEnvironmentVariable("keyVaultURL");
+
+            kvClient = new SecretClient(new Uri(keyVaultURL), defaultCred);
+
+            return kvClient;
+        }
+
+        private static SecretClient CreateKeyVaultClient(string keyVaultURL)
+        {
+            kvClient = new SecretClient(new Uri(keyVaultURL), defaultCred);
+
+            return kvClient;
+        }
+
+        private static SecretClient CreateKeyVaultClient(Uri keyVaultURL)
+        {
+            kvClient = new SecretClient(keyVaultURL, defaultCred);
+
+            return kvClient;
+        }  
     }
 }
