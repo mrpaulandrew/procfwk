@@ -45,6 +45,18 @@ BEGIN
 			RETURN 0;
 		END
 	
+	IF (SELECT [procfwk].[CheckForValidURL](@PrincipalIdUrl)) = 0
+	BEGIN
+		SET @ErrorDetails = 'PrincipalIdUrl value is not in the expected format. . Please confirm the URL follows the structure https://{YourKeyVaultName}.vault.azure.net/secrets/{YourSecretName} and does not include the secret version guid.'
+		PRINT @ErrorDetails;
+	END
+
+	IF (SELECT [procfwk].[CheckForValidURL](@PrincipalSecretUrl)) = 0
+	BEGIN
+		SET @ErrorDetails = 'PrincipalSecretUrl value is not in the expected format. Please confirm the URL follows the structure https://{YourKeyVaultName}.vault.azure.net/secrets/{YourSecretName} and does not include the secret version guid.'
+		PRINT @ErrorDetails;		
+	END
+
 	--add SPN for specific pipeline
 	IF @SpecificPipelineName IS NOT NULL
 		BEGIN
@@ -61,12 +73,7 @@ BEGIN
 			
 			--spn may already exist for other pipelines
 			IF NOT EXISTS
-				(
-				/*
-				HERE 
-				change fields to URL versions
-				*/
-				
+				(				
 				SELECT [PrincipalIdUrl] FROM [dbo].[ServicePrincipals] WHERE [PrincipalIdUrl] = @PrincipalIdUrl
 				)
 				BEGIN
