@@ -13,5 +13,12 @@ namespace ADFprocfwk.Helpers
 
             return result;
         }
+
+        public static bool CheckGuid(string idValue)
+        {
+            bool result = Guid.TryParse(idValue, out Guid idResult);
+
+            return result;
+        }
     }
 }

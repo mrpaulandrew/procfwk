@@ -58,7 +58,9 @@ namespace ADFprocfwk
 
             #region ResolveKeyVaultValues
 
-            if (RequestHelper.CheckUri(applicationId))
+            log.LogInformation(RequestHelper.CheckGuid(applicationId).ToString());
+
+            if (!RequestHelper.CheckGuid(applicationId) && RequestHelper.CheckUri(applicationId))
             {
                 log.LogInformation("Getting applicationId from Key Vault");
                 applicationId = KeyVaultClient.GetSecretFromUri(applicationId);
