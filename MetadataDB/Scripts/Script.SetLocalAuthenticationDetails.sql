@@ -16,6 +16,12 @@ EXEC [procfwk].[AddProperty]
 	@PropertyValue = '$(AZURE_SUBSCRIPTION_ID)',
 	@Description = 'Used to provide authentication throughout the framework execution.'
 
+/*
+EXEC [procfwk].[AddProperty]
+	@PropertyName = N'SPNHandlingMethod',
+	@PropertyValue = N'StoreInKeyVault',
+	@Description = N'Accepted values: StoreInDatabase, StoreInKeyVault. See v1.8.2 release notes for full details.';
+*/
 
 IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInDatabase'
 	BEGIN
@@ -51,4 +57,6 @@ ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'St
 ELSE
 	BEGIN
 		RAISERROR('Unknown SPN insert method.',16,1);
-	END;	
+	END;
+
+SELECT * FROM [dbo].[ServicePrincipals];
