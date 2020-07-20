@@ -23,6 +23,7 @@ BEGIN
 	Check 14 - Is there a current FailureHandling property available?
 	Check 15 - Does the FailureHandling property have a valid value?
 	Check 16 - When using DependencyChain failure handling, are there any dependants in the same execution stage of the predecessor?
+	Check 17 - Does the SPNHandlingMethod property have a valid value?
 	---------------------------------------------------------------------------------------------------------------------------------
 	Check A: - Are there any Running pipelines that need to be cleaned up?
 	*/
@@ -301,9 +302,28 @@ BEGIN
 		END;
 	END;
 
+	--Check 17:
+	IF NOT EXISTS
+		(
+		SELECT 
+			*
+		FROM
+			[procfwk].[CurrentProperties] 
+		WHERE 
+			[PropertyName] = 'SPNHandlingMethod' 
+			AND [PropertyValue] IN ('StoreInDatabase','StoreInKeyVault')
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				17,
+				'The property SPNHandlingMethod does not have a supported value.'
+				)	
+		END;
 
 	/*
-	Checks Outcome:
+	Integrity Checks Outcome:
 	*/
 	
 	--throw runtime error if checks fail

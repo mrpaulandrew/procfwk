@@ -30,8 +30,10 @@ Furthermore, in the case of most deployment steps, things can be tailored to you
 17. Set your Tenant ID in the properties table. Its important that you do this first to later support the SPN details added.
 18. Add a target Data Factory where you Worker pipelines exist.
 19. Add your Worker Pipeline and Stages metadata as required.
-20. Add your SPN from step 11 to your metadata for your Worker pipelines. Use the stored procedure **[procfwk].[AddServicePrincipal].**
-21. Add pipeline parameters as required.
-22. Add recipients for email alerting, optional.
+20. Set the property 'SPNHandlingMethod' to your preferred method of handling. Via the metadata database directly or using Azure Key Vault.
+21. Add your SPN details from step 11 to your metadata directly or using Key Vault URLs. Use the stored procedure **[procfwk].[AddServicePrincipalWrapper].**
+22. Add pipeline parameters as required.
+23. Add recipients for email alerting, optional. Use the stored procedure **[procfwk].[AddRecipientPipelineAlerts]**.
+24. Set the property 'FailureHandling' to your preferred method of handling.
 --------------------------------------------------------------------------------------------
-23. Run it :-)
+25. Run it :-)
