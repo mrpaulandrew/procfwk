@@ -70,13 +70,17 @@ namespace ADFprocfwk
                 //Create simple status for Data Factory Until comparison checks
                 string simpleStatus;
 
-                if (pipelineRun.Status == "InProgress")
+                switch (pipelineRun.Status)
                 {
-                    simpleStatus = "Running";
-                }
-                else
-                {
-                    simpleStatus = "Done";
+                    case "InProgress":
+                        simpleStatus = "Running";
+                        break;
+                    case "Canceling":
+                        simpleStatus = "Canceling";
+                        break;
+                    default:
+                        simpleStatus = "Done";
+                        break;
                 }
 
                 log.LogInformation("ADF pipeline status: " + pipelineRun.Status);

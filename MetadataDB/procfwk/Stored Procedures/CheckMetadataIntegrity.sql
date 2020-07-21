@@ -347,7 +347,7 @@ BEGIN
 				INNER JOIN [procfwk].[CurrentProperties] s
 					ON s.[PropertyName] = 'SubscriptionId'
 			WHERE 
-				ce.[PipelineStatus] NOT IN ('Success','Failed','Blocked') 
+				ce.[PipelineStatus] NOT IN ('Success','Failed','Blocked','Cancelled') 
 				AND ce.[AdfPipelineRunId] IS NOT NULL
 		END;
 	ELSE
