@@ -81,11 +81,14 @@ BEGIN
 	FROM
 		[procfwk].[Pipelines];
 	
+	--use Key Vault SPNs
+	UPDATE [procfwk].[Properties] SET [PropertyValue] = 'StoreInKeyVault' WHERE [PropertyName] = 'SPNHandlingMethod';
+
 	--add SPN for workers
-	EXEC [procfwk].[AddServicePrincipal]
+	EXEC [procfwk].[AddServicePrincipalWrapper]
 		@DataFactory = N'WorkersFactory',
-		@PrincipalId = '$(AZURE_CLIENT_ID)',
-		@PrincipalSecret = '$(AZURE_CLIENT_SECRET)',
+		@PrincipalIdValue = '$(AZURE_CLIENT_ID_URL)',
+		@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET_URL)',
 		@PrincipalName = '$(AZURE_CLIENT_NAME)';
 
 END;
