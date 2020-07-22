@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [procfwk].[SetLogPipelineUnknown]
+﻿CREATE PROCEDURE [procfwk].[SetLogPipelineCancelled]
 	(
 	@ExecutionId UNIQUEIDENTIFIER,
 	@StageId INT,
@@ -14,13 +14,13 @@ BEGIN
 	UPDATE
 		[procfwk].[CurrentExecution]
 	SET
-		[PipelineStatus] = 'Unknown'
+		[PipelineStatus] = 'Cancelled'
 	WHERE
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId
 		AND [PipelineId] = @PipelineId
 
-	--persist unknown pipeline records to long term log
+	--persist cancelled pipeline records to long term log
 	INSERT INTO [procfwk].[ExecutionLog]
 		(
 		[LocalExecutionId],
@@ -52,12 +52,12 @@ BEGIN
 	FROM
 		[procfwk].[CurrentExecution]
 	WHERE
-		[PipelineStatus] = 'Unknown'
+		[PipelineStatus] = 'Cancelled'
 		AND [StageId] = @StageId
 		AND [PipelineId] = @PipelineId;
 
 	--block down stream stages?
-	IF (SELECT [procfwk].[GetPropertyValueInternal]('UnknownWorkerResultBlocks')) = 1
+	IF (SELECT [procfwk].[GetPropertyValueInternal]('CancelledWorkerResultBlocks')) = 1
 	BEGIN	
 		--decide how to proceed with error/failure depending on framework property configuration
 		IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'None'
@@ -78,7 +78,7 @@ BEGIN
 					[LocalExecutionId] = @ExecutionId
 					AND [StageId] > @StageId
 
-				SET @ErrorDetail = 'Pipeline execution has an unknown status. Blocking downstream stages as a precaution.'
+				SET @ErrorDetail = 'Pipeline execution was cancelled status. Blocking downstream stages as a precaution.'
 
 				RAISERROR(@ErrorDetail,16,1);
 				RETURN 0;
@@ -91,7 +91,7 @@ BEGIN
 			END;
 		ELSE
 			BEGIN
-				RAISERROR('Unknown failure handling state.',16,1);
+				RAISERROR('Cancelled execution failure handling state.',16,1);
 				RETURN 0;
 			END;
 	END;

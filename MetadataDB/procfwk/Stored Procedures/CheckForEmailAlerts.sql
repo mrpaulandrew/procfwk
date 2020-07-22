@@ -23,16 +23,18 @@ BEGIN
 			--based on piplines to recipients link
 			IF EXISTS
 				(
-				SELECT 
-					al.[AlertId] 
-				FROM 
-					[procfwk].[PipelineAlertLink] al
-					INNER JOIN [procfwk].[Recipients] r
-						ON al.[RecipientId] = r.[RecipientId]
-				WHERE 
-					al.[PipelineId] = @PipelineId
-					AND al.[Enabled] = 1
-					AND r.[Enabled] = 1
+				SELECT pal.AlertId
+				FROM procfwk.CurrentExecution AS ce
+				INNER JOIN procfwk.AlertOutcomes AS ao
+					ON ao.PipelineOutcomeStatus = ce.PipelineStatus
+				INNER JOIN procfwk.PipelineAlertLink AS pal
+					ON pal.PipelineId = ce.PipelineId
+				INNER JOIN procfwk.Recipients AS r
+					ON r.RecipientId = pal.RecipientId
+				WHERE ce.PipelineId = @PipelineId
+					  AND ao.BitValue & pal.OutcomesBitValue > 0
+					  AND pal.[Enabled] = 1
+					  AND r.[Enabled] = 1
 				)
 				BEGIN
 					SET @SendAlerts = 1;

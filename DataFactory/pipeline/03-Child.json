@@ -406,7 +406,20 @@
 							"name": "Check For Alerts",
 							"description": "Checks the properties tables and if any recipients in the database require alerts sending for the current pipeline ID.",
 							"type": "Lookup",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "Set Run Id",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "Running Pipeline Handler",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "7.00:00:00",
 								"retry": 0,
@@ -443,21 +456,9 @@
 							"type": "IfCondition",
 							"dependsOn": [
 								{
-									"activity": "Set Run Id",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								},
-								{
 									"activity": "Check For Alerts",
 									"dependencyConditions": [
 										"Succeeded"
-									]
-								},
-								{
-									"activity": "Running Pipeline Handler",
-									"dependencyConditions": [
-										"Completed"
 									]
 								}
 							],
