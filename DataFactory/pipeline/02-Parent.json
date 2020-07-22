@@ -258,7 +258,10 @@
 					"storedProcedureName": "[procfwk].[UpdateExecutionLog]",
 					"storedProcedureParameters": {
 						"PerformErrorCheck": {
-							"value": "false",
+							"value": {
+								"value": "@bool(0)",
+								"type": "Expression"
+							},
 							"type": "Boolean"
 						}
 					}
