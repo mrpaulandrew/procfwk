@@ -87,7 +87,15 @@ namespace FactoryTesting.Helpers
             var status = await GetRunStatus(pipelineRunId);
             return status == "Queued" || status == "InProgress" || status == "Canceling";
         }
-
+        public async void CancelRunningPipeline(string pipelineRunId)
+        {
+            await InitialiseClient();
+            var status = await GetRunStatus(pipelineRunId);
+            if (status == "Running")
+            {
+                _adfClient.PipelineRuns.Cancel(_rgName, _adfName, pipelineRunId);
+            }
+        }
         public DataFactoryHelper()
         {
             _adfName = GetSetting("DataFactoryName");
