@@ -11,11 +11,7 @@ BEGIN
 
 	--get property
 	SELECT
-		@AlertingEnabled = [PropertyValue]
-	FROM
-		[procfwk].[CurrentProperties]
-	WHERE
-		[PropertyName] = 'UseFrameworkEmailAlerting'
+		@AlertingEnabled = [procfwk].[GetPropertyValueInternal]('UseFrameworkEmailAlerting');
 
 	--based on global property
 	IF (@AlertingEnabled = 1)

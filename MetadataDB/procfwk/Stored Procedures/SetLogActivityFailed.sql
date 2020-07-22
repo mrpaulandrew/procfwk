@@ -57,13 +57,13 @@ BEGIN
 		AND [PipelineId] = @PipelineId
 	
 	--decide how to proceed with error/failure depending on framework property configuration
-	IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'None'
+	IF ([procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'None'
 		BEGIN
 			--do nothing allow processing to carry on regardless
 			RETURN 0;
 		END;
 		
-	ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'Simple'
+	ELSE IF ([procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'Simple'
 		BEGIN
 			--flag all downstream stages as blocked
 			UPDATE
@@ -76,7 +76,7 @@ BEGIN
 				AND [StageId] > @StageId;
 		END;
 	
-	ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'DependencyChain'
+	ELSE IF ([procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'DependencyChain'
 		BEGIN
 			EXEC [procfwk].[SetExecutionBlockDependants]
 				@ExecutionId = @ExecutionId,

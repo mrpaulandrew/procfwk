@@ -59,12 +59,8 @@ BEGIN
 	
 	--get tenant Id to include in encryption
 	SELECT
-		@TenantId = ISNULL([PropertyValue],'')
-	FROM
-		[procfwk].[CurrentProperties]
-	WHERE
-		[PropertyName] = 'TenantId'
-
+		@TenantId = [procfwk].[GetPropertyValueInternal]('TenantId');
+		
 	--add SPN for specific pipeline
 	IF @SpecificPipelineName IS NOT NULL
 		BEGIN

@@ -9,7 +9,7 @@
 AS
 BEGIN
 	
-	IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInDatabase'
+	IF ([procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInDatabase'
 		BEGIN
 			EXEC [procfwk].[AddServicePrincipal]
 				@DataFactory = @DataFactory,
@@ -18,7 +18,7 @@ BEGIN
 				@PrincipalName = @PrincipalName,
 				@SpecificPipelineName = @SpecificPipelineName			
 		END
-	ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInKeyVault'
+	ELSE IF ([procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInKeyVault'
 		BEGIN
 			EXEC [procfwk].[AddServicePrincipalUrls]
 				@DataFactory = @DataFactory,

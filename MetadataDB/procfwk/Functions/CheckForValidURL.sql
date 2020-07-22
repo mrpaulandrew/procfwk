@@ -6,19 +6,19 @@ BEGIN
 	DECLARE @TempString VARCHAR(50)
 
 	--check URL start
-	IF CHARINDEX('https://', @url) <> 1
+	IF CHARINDEX('https://', @Url) <> 1
     BEGIN
         RETURN 0;
     END
 
 	--check for expected sub domains
-    IF CHARINDEX('vault.azure.net', @url) = 0
+    IF CHARINDEX('vault.azure.net', @Url) = 0
     BEGIN
         RETURN 0;
     END
 
 	--check for expected value type
-    IF CHARINDEX('secrets', @url) = 0
+    IF CHARINDEX('secrets', @Url) = 0
     BEGIN
 		RETURN 0;
     END
@@ -27,8 +27,8 @@ BEGIN
 	SELECT 
 		@Ending = 
 			CASE
-				WHEN RIGHT(@URL,1) = '/' THEN REVERSE(LEFT(@URL,LEN(@URL)-1))
-				ELSE REVERSE(@URL)
+				WHEN RIGHT(@Url,1) = '/' THEN REVERSE(LEFT(@Url,LEN(@Url)-1))
+				ELSE REVERSE(@Url)
 			END,
 		@Ending = REVERSE(LEFT(@Ending,CHARINDEX('/',@Ending)-1))
 

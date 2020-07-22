@@ -12,7 +12,7 @@ BEGIN
 	DECLARE @CredentialId INT
 
 	--resolve principal Id or Url to credential Id
-	IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInDatabase'
+	IF ([procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInDatabase'
 		BEGIN
 			--defensive checks
 			BEGIN TRY
@@ -35,7 +35,7 @@ BEGIN
 			WHERE
 				[PrincipalId] = @PrincipalIdValue
 		END
-	ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInKeyVault'
+	ELSE IF ([procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInKeyVault'
 		BEGIN
 			--get cred id using principal id url
 			SELECT
