@@ -56,15 +56,32 @@ namespace ADFprocfwk
             }
             #endregion
 
+            #region ResolveKeyVaultValues
+
+            log.LogInformation(RequestHelper.CheckGuid(applicationId).ToString());
+
+            if (!RequestHelper.CheckGuid(applicationId) && RequestHelper.CheckUri(applicationId))
+            {
+                log.LogInformation("Getting applicationId from Key Vault");
+                applicationId = KeyVaultClient.GetSecretFromUri(applicationId);
+            }
+
+            if (RequestHelper.CheckUri(authenticationKey))
+            {
+                log.LogInformation("Getting authenticationKey from Key Vault");
+                authenticationKey = KeyVaultClient.GetSecretFromUri(authenticationKey);
+            }
+            #endregion
+
             #region GetPipelineStatus
             //Create a data factory management client
             log.LogInformation("Creating ADF connectivity client.");
             
-            using (var client = DataFactoryClient.CreateDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
+            using (var adfClient = DataFactoryClient.CreateDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
             {
                 //Get pipeline status with provided run id
                 PipelineRun pipelineRun;
-                pipelineRun = client.PipelineRuns.Get(resourceGroup, factoryName, runId);
+                pipelineRun = adfClient.PipelineRuns.Get(resourceGroup, factoryName, runId);
                 log.LogInformation("Checking ADF pipeline status.");
 
                 //Create simple status for Data Factory Until comparison checks

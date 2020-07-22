@@ -143,6 +143,9 @@
     <None Include="Scripts\Metadata\PipelineDependencies.sql" />
     <Build Include="procfwk\Stored Procedures\AddPipelineDependant.sql" />
     <Build Include="procfwk\Views\PipelineDependencyChains.sql" />
+    <Build Include="procfwk\Stored Procedures\AddServicePrincipalWrapper.sql" />
+    <Build Include="procfwk\Stored Procedures\AddServicePrincipalUrls.sql" />
+    <Build Include="procfwk\Functions\CheckForValidURL.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

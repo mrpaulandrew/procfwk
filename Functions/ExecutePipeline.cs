@@ -55,6 +55,21 @@ namespace ADFprocfwk
 
             #endregion
 
+            #region ResolveKeyVaultValues
+
+            if (!RequestHelper.CheckGuid(applicationId) && RequestHelper.CheckUri(applicationId))
+            {
+                log.LogInformation("Getting applicationId from Key Vault");
+                applicationId = KeyVaultClient.GetSecretFromUri(applicationId);
+            }
+
+            if (RequestHelper.CheckUri(authenticationKey))
+            {
+                log.LogInformation("Getting authenticationKey from Key Vault");
+                authenticationKey = KeyVaultClient.GetSecretFromUri(authenticationKey);
+            }
+            #endregion
+
             #region CreatePipelineRun
             //Create a data factory management client
             log.LogInformation("Creating ADF connectivity client.");

@@ -23,6 +23,8 @@ BEGIN
 	Check 14 - Is there a current FailureHandling property available?
 	Check 15 - Does the FailureHandling property have a valid value?
 	Check 16 - When using DependencyChain failure handling, are there any dependants in the same execution stage of the predecessor?
+	Check 17 - Does the SPNHandlingMethod property have a valid value?
+	Check 18 - Does the Service Principal table contain both types of SPN handling for a single credential?
 	---------------------------------------------------------------------------------------------------------------------------------
 	Check A: - Are there any Running pipelines that need to be cleaned up?
 	*/
@@ -301,9 +303,55 @@ BEGIN
 		END;
 	END;
 
+	--Check 17:
+	IF NOT EXISTS
+		(
+		SELECT 
+			*
+		FROM
+			[procfwk].[CurrentProperties] 
+		WHERE 
+			[PropertyName] = 'SPNHandlingMethod' 
+			AND [PropertyValue] IN ('StoreInDatabase','StoreInKeyVault')
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				17,
+				'The property SPNHandlingMethod does not have a supported value.'
+				)	
+		END;
+
+	--Check 18:
+	IF EXISTS
+		(
+		SELECT
+			*
+		FROM
+			[dbo].[ServicePrincipals]
+		WHERE
+			(
+			[PrincipalId] IS NOT NULL
+			OR [PrincipalSecret] IS NOT NULL
+			)
+			AND 
+			(
+			[PrincipalIdUrl] IS NOT NULL
+			OR [PrincipalSecretUrl] IS NOT NULL
+			)
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				18,
+				'The table [dbo].[ServicePrincipals] can only have one method of SPN details sorted per credential ID.'
+				)	
+		END;
 
 	/*
-	Checks Outcome:
+	Integrity Checks Outcome:
 	*/
 	
 	--throw runtime error if checks fail

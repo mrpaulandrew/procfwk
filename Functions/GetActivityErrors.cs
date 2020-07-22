@@ -56,6 +56,21 @@ namespace ADFprocfwk
 
             #endregion
 
+            #region ResolveKeyVaultValues
+
+            if (!RequestHelper.CheckGuid(applicationId) && RequestHelper.CheckUri(applicationId))
+            {
+                log.LogInformation("Getting applicationId from Key Vault");
+                applicationId = KeyVaultClient.GetSecretFromUri(applicationId);
+            }
+
+            if (RequestHelper.CheckUri(authenticationKey))
+            {
+                log.LogInformation("Getting authenticationKey from Key Vault");
+                authenticationKey = KeyVaultClient.GetSecretFromUri(authenticationKey);
+            }
+            #endregion
+
             //Query and output support variables
             int daysOfRuns = 7; //max duration for mandatory RunFilterParameters
             DateTime today = DateTime.Now;
