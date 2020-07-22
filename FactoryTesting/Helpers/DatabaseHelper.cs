@@ -6,7 +6,7 @@ namespace FactoryTesting.Helpers
 {
     public class DatabaseHelper<T> : PipelineRunHelper<T> where T : DatabaseHelper<T>
     {
-        private SqlConnection _conn;
+        public SqlConnection _conn;
 
         public DatabaseHelper()
         {

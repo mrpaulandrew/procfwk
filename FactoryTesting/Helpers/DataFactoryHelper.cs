@@ -5,6 +5,7 @@ using Microsoft.Rest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace FactoryTesting.Helpers
@@ -87,6 +88,7 @@ namespace FactoryTesting.Helpers
             var status = await GetRunStatus(pipelineRunId);
             return status == "Queued" || status == "InProgress" || status == "Canceling";
         }
+        
         public async void CancelRunningPipeline(string pipelineRunId)
         {
             await InitialiseClient();
