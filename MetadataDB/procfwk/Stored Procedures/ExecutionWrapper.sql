@@ -11,13 +11,8 @@ BEGIN
 	IF @CallingDataFactory IS NULL
 		SET @CallingDataFactory = 'Unknown';
 
-	--get restart overide property
-	SELECT
-		@RestartStatus = [PropertyValue] 
-	FROM
-		[procfwk].[CurrentProperties]
-	WHERE
-		[PropertyName] = 'OverideRestart'
+	--get restart overide property	
+	SELECT @RestartStatus = [procfwk].[GetPropertyValueInternal]('OverideRestart')
 
 	--check for running execution
 	IF EXISTS
@@ -46,6 +41,8 @@ BEGIN
 		AND @RestartStatus = 1
 		BEGIN
 			EXEC [procfwk].[UpdateExecutionLog]
+				@PerformErrorCheck = 0; --Special case when OverideRestart = 1;
+
 			EXEC [procfwk].[CreateNewExecution] 
 				@CallingDataFactoryName = @CallingDataFactory
 		END
