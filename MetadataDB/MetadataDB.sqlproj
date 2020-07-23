@@ -72,7 +72,6 @@
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="procfwk\Synonyms" />
     <Folder Include="Scripts\LogData" />
-    <Folder Include="Scripts\Testing" />
     <Folder Include="procfwk\Functions" />
     <Folder Include="procfwkHelpers" />
     <Folder Include="procfwkTesting" />
@@ -129,7 +128,6 @@
     <None Include="Scripts\Metadata\Recipients.sql" />
     <Build Include="procfwk\Tables\AlertOutcomes.sql" />
     <Build Include="procfwk\Views\PipelineParameterDataSizes.sql" />
-    <None Include="Scripts\Testing\01. 300 Worker Pipelines.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineChecking.sql" />
     <Build Include="procfwk\Tables\PipelineDependencies.sql" />
     <Build Include="procfwk\Functions\GetPropertyValueInternal.sql" />
