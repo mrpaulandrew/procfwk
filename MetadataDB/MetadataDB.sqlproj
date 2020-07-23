@@ -191,6 +191,7 @@
     <Build Include="procfwkHelpers\Stored Procedures\SetDefaultRecipientPipelineAlerts.sql" />
     <Build Include="procfwkTesting\Stored Procedures\CleanUpMetadata.sql" />
     <Build Include="procfwkTesting\Stored Procedures\ResetMetadata.sql" />
+    <Build Include="procfwkTesting\Stored Procedures\Add300WorkerPipelines.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
