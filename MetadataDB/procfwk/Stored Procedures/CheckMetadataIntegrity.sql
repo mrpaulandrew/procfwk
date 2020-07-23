@@ -147,9 +147,7 @@ BEGIN
 		END;
 
 	--Check 8:
-	IF (
-		SELECT [PropertyValue] FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'TenantId'
-		) = '1234-1234-1234-1234-1234'
+	IF ([procfwk].[GetPropertyValueInternal]('TenantId')) = '1234-1234-1234-1234-1234'
 		BEGIN
 			INSERT INTO @MetadataIntegrityIssues
 			VALUES
@@ -160,9 +158,7 @@ BEGIN
 		END;
 
 	--Check 9:
-	IF (
-		SELECT [PropertyValue] FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'SubscriptionId'
-		) = '1234-1234-1234-1234-1234'
+	IF ([procfwk].[GetPropertyValueInternal]('SubscriptionId')) = '1234-1234-1234-1234-1234'
 		BEGIN
 			INSERT INTO @MetadataIntegrityIssues
 			VALUES
@@ -278,7 +274,7 @@ BEGIN
 		END;
 
 	--Check 16:
-	IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'DependencyChain'
+	IF ([procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'DependencyChain'
 	BEGIN
 		IF EXISTS
 		(
@@ -379,24 +375,20 @@ BEGIN
 		BEGIN
 			--return pipelines details that require a clean up
 			SELECT 
-				t.[PropertyValue] AS TenantId,
-				s.[PropertyValue] AS SubscriptionId,
-				ce.[ResourceGroupName],
-				ce.[DataFactoryName],
-				ce.[PipelineName],
-				ce.[AdfPipelineRunId],
-				ce.[LocalExecutionId],
-				ce.[StageId],
-				ce.[PipelineId]
+				[procfwk].[GetPropertyValueInternal]('TenantId') AS TenantId,
+				[procfwk].[GetPropertyValueInternal]('SubscriptionId') AS SubscriptionId,
+				[ResourceGroupName],
+				[DataFactoryName],
+				[PipelineName],
+				[AdfPipelineRunId],
+				[LocalExecutionId],
+				[StageId],
+				[PipelineId]
 			FROM 
-				[procfwk].[CurrentExecution] ce
-				INNER JOIN [procfwk].[CurrentProperties] t
-					ON t.[PropertyName] = 'TenantId'
-				INNER JOIN [procfwk].[CurrentProperties] s
-					ON s.[PropertyName] = 'SubscriptionId'
+				[procfwk].[CurrentExecution]
 			WHERE 
-				ce.[PipelineStatus] NOT IN ('Success','Failed','Blocked','Cancelled') 
-				AND ce.[AdfPipelineRunId] IS NOT NULL
+				[PipelineStatus] NOT IN ('Success','Failed','Blocked','Cancelled') 
+				AND [AdfPipelineRunId] IS NOT NULL
 		END;
 	ELSE
 		BEGIN

@@ -255,7 +255,16 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[procfwk].[UpdateExecutionLog]"
+					"storedProcedureName": "[procfwk].[UpdateExecutionLog]",
+					"storedProcedureParameters": {
+						"PerformErrorCheck": {
+							"value": {
+								"value": "@bool(0)",
+								"type": "Expression"
+							},
+							"type": "Boolean"
+						}
+					}
 				},
 				"linkedServiceName": {
 					"referenceName": "SupportDatabase",

@@ -1,4 +1,4 @@
-﻿CREATE VIEW procfwk.CurrentProperties
+﻿CREATE VIEW [procfwk].[CurrentProperties]
 AS
 
 SELECT
