@@ -9,7 +9,8 @@ Post-Deployment Script Template
                SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
---load metadata
+--load default metadata
+:r .\Metadata\Properties.sql
 :r .\Metadata\DataFactorys.sql
 :r .\Metadata\Stages.sql
 :r .\Metadata\Pipelines.sql
@@ -17,6 +18,7 @@ Post-Deployment Script Template
 :r .\Metadata\PipelineDependencies.sql
 :r .\Metadata\Recipients.sql
 :r .\Metadata\AlertOutcomes.sql
+:r .\Metadata\RecipientAlertsLink.sql
 
 --restore log data
 :r .\LogData\ExecutionLogRestore.sql
@@ -25,7 +27,3 @@ Post-Deployment Script Template
 --object transfers
 :r .\Metadata\TransferHelperObjects.sql
 :r .\Metadata\TransferReportingObjects.sql
-
---merged
-:r .\Metadata\Properties.sql
-:r .\Metadata\RecipientAlertsLink.sql

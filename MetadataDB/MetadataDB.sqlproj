@@ -81,6 +81,7 @@
     <Folder Include="procfwkReporting" />
     <Folder Include="procfwkReporting\Views" />
     <Folder Include="procfwkHelpers\Views" />
+    <Folder Include="procfwkTesting\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="procfwk\Tables\Pipelines.sql" />
@@ -177,6 +178,19 @@
     <Build Include="procfwkHelpers\Views\PipelineDependencyChains.sql" />
     <Build Include="procfwkReporting\Views\WorkerParallelismOverTime.sql" />
     <None Include="Scripts\Metadata\DropLegacyObjects.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\DeleteMetadataWithIntegrity.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\DeleteMetadataWithoutIntegrity.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\SetDefaultProperties.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\SetDefaultStages.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\SetDefaultDataFactorys.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\SetDefaultPipelines.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\SetDefaultPipelineParameters.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\SetDefaultPipelineDependants.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\SetDefaultAlertOutcomes.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\SetDefaultRecipients.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\SetDefaultRecipientPipelineAlerts.sql" />
+    <Build Include="procfwkTesting\Stored Procedures\CleanUpMetadata.sql" />
+    <Build Include="procfwkTesting\Stored Procedures\ResetMetadata.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
