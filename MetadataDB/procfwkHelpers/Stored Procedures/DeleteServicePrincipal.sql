@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [procfwk].[DeleteServicePrincipal]
+﻿CREATE PROCEDURE [procfwkHelpers].[DeleteServicePrincipal]
 	(
 	@DataFactory NVARCHAR(200),
 	@PrincipalIdValue NVARCHAR(256),

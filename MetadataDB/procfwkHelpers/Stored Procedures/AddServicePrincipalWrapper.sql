@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [procfwk].[AddServicePrincipalWrapper]
+﻿CREATE PROCEDURE [procfwkHelpers].[AddServicePrincipalWrapper]
 	(
 	@DataFactory NVARCHAR(200),
 	@PrincipalIdValue NVARCHAR(MAX),

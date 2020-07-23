@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [procfwk].[CheckForValidURL] (@Url NVARCHAR(MAX))
+﻿CREATE FUNCTION [procfwkHelpers].[CheckForValidURL] (@Url NVARCHAR(MAX))
 RETURNS INT
 AS
 BEGIN

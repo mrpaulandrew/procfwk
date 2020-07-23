@@ -1,4 +1,4 @@
-﻿CREATE VIEW [procfwk].[AverageStageDuration]
+﻿CREATE VIEW [procfwkReporting].[AverageStageDuration]
 AS
 
 WITH stageStartEnd AS

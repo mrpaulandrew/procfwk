@@ -6,18 +6,18 @@ PRINT 'TenantId: ' + '$(AZURE_TENANT_ID)'
 PRINT 'SubscriptionId: ' + '$(AZURE_SUBSCRIPTION_ID)'
 
 --Add new properties for your Azure tenant
-EXEC [procfwk].[AddProperty] 
+EXEC [procfwkHelpers].[AddProperty] 
 	@PropertyName = 'TenantId',
 	@PropertyValue = '$(AZURE_TENANT_ID)',
 	@Description = 'Used to provide authentication throughout the framework execution.'
 
-EXEC [procfwk].[AddProperty] 
+EXEC [procfwkHelpers].[AddProperty] 
 	@PropertyName = 'SubscriptionId',
 	@PropertyValue = '$(AZURE_SUBSCRIPTION_ID)',
 	@Description = 'Used to provide authentication throughout the framework execution.'
 
 /*
-EXEC [procfwk].[AddProperty]
+EXEC [procfwkHelpers].[AddProperty]
 	@PropertyName = N'SPNHandlingMethod',
 	@PropertyValue = N'StoreInKeyVault',
 	@Description = N'Accepted values: StoreInDatabase, StoreInKeyVault. See v1.8.2 release notes for full details.';
@@ -26,19 +26,19 @@ EXEC [procfwk].[AddProperty]
 IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInDatabase'
 	BEGIN
 		--Add SPN for execution of all worker pipelines using database to store SPN values
-		EXEC [procfwk].[AddServicePrincipalWrapper]
+		EXEC [procfwkHelpers].[AddServicePrincipalWrapper]
 			@DataFactory = N'FrameworkFactory',
 			@PrincipalIdValue = '$(AZURE_CLIENT_ID)',
 			@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET)',
 			@PrincipalName = '$(AZURE_CLIENT_NAME)';
 
 		--Add specific SPN for execution of Wait 1 pipeline (functional testing)	
-		EXEC [procfwk].[DeleteServicePrincipal]
+		EXEC [procfwkHelpers].[DeleteServicePrincipal]
 			@DataFactory = N'FrameworkFactory',
 			@PrincipalIdValue = '$(AZURE_CLIENT_ID)',
 			@SpecificPipelineName = N'Wait 1';
 
-		EXEC [procfwk].[AddServicePrincipalWrapper]
+		EXEC [procfwkHelpers].[AddServicePrincipalWrapper]
 			@DataFactory = N'FrameworkFactory',
 			@PrincipalIdValue = '$(AZURE_CLIENT_ID_2)',
 			@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET_2)',
@@ -48,7 +48,7 @@ IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreIn
 ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInKeyVault'
 	BEGIN
 		--Add SPN for execution of all worker pipelines using database to store key vault URLs
-		EXEC [procfwk].[AddServicePrincipalWrapper]
+		EXEC [procfwkHelpers].[AddServicePrincipalWrapper]
 			@DataFactory = N'FrameworkFactory',
 			@PrincipalIdValue = '$(AZURE_CLIENT_ID_URL)',
 			@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET_URL)',

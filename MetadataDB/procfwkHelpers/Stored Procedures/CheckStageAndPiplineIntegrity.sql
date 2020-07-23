@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [procfwk].[CheckStageAndPiplineIntegrity]
+﻿CREATE PROCEDURE [procfwkHelpers].[CheckStageAndPiplineIntegrity]
 AS
 
 BEGIN

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [procfwk].[AddPipelineDependant]
+﻿CREATE PROCEDURE [procfwkHelpers].[AddPipelineDependant]
 	(
 	@PipelineName NVARCHAR(200),
 	@DependantPipelineName NVARCHAR(200)

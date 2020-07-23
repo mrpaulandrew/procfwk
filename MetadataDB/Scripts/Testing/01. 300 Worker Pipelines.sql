@@ -85,7 +85,7 @@ BEGIN
 	UPDATE [procfwk].[Properties] SET [PropertyValue] = 'StoreInKeyVault' WHERE [PropertyName] = 'SPNHandlingMethod';
 
 	--add SPN for workers
-	EXEC [procfwk].[AddServicePrincipalWrapper]
+	EXEC [procfwkHelpers].[AddServicePrincipalWrapper]
 		@DataFactory = N'WorkersFactory',
 		@PrincipalIdValue = '$(AZURE_CLIENT_ID_URL)',
 		@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET_URL)',

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [procfwk].[AddRecipientPipelineAlerts]
+﻿CREATE PROCEDURE [procfwkHelpers].[AddRecipientPipelineAlerts]
 	(
 	@RecipientName VARCHAR(255),
 	@PipelineName NVARCHAR(200) = NULL,

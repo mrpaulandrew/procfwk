@@ -1,4 +1,4 @@
-﻿CREATE VIEW [procfwk].[PipelineDependencyChains]
+﻿CREATE VIEW [procfwkHelpers].[PipelineDependencyChains]
 AS
 
 SELECT 

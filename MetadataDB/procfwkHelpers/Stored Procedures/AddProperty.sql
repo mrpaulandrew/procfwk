@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [procfwk].[AddProperty]
+﻿CREATE PROCEDURE [procfwkHelpers].[AddProperty]
 	(
 	@PropertyName VARCHAR(128),
 	@PropertyValue NVARCHAR(MAX),

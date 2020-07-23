@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [procfwk].[DeleteRecipientAlerts]
+﻿CREATE PROCEDURE [procfwkHelpers].[DeleteRecipientAlerts]
 	(
 	@EmailAddress NVARCHAR(500),
 	@SoftDeleteOnly BIT = 1

@@ -1,4 +1,4 @@
-﻿CREATE VIEW [procfwk].[LastExecutionSummary]
+﻿CREATE VIEW [procfwkReporting].[LastExecution]
 AS
 
 WITH maxLog AS
@@ -18,11 +18,17 @@ WITH maxLog AS
 			ON maxLog.[MaxLogId] = el1.[LogId]
 	)
 SELECT
-	el2.[LocalExecutionId],
-	DATEDIFF(MINUTE, MIN(el2.[StartDateTime]), MAX(el2.[EndDateTime])) 'RunDurationMinutes'
+	el2.[LogId],
+	el2.[StageId],
+	el2.[PipelineId],
+	el2.[PipelineName],
+	el2.[StartDateTime],
+	el2.[PipelineStatus],
+	el2.[EndDateTime],
+	DATEDIFF(MINUTE, el2.[StartDateTime], el2.[EndDateTime]) AS RunDurationMinutes
 FROM 
 	[procfwk].[ExecutionLog] el2
 	INNER JOIN lastExecutionId
 		ON el2.[LocalExecutionId] = lastExecutionId.[LocalExecutionId]
-GROUP BY
-	el2.[LocalExecutionId]
+WHERE
+	el2.[EndDateTime] IS NOT NULL;

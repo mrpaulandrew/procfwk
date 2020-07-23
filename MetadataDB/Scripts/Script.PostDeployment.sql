@@ -22,6 +22,10 @@ Post-Deployment Script Template
 :r .\LogData\ExecutionLogRestore.sql
 :r .\LogData\ErrorLogRestore.sql
 
+--object transfers
+:r .\Metadata\TransferHelperObjects.sql
+:r .\Metadata\TransferReportingObjects.sql
+
 --merged
 :r .\Metadata\Properties.sql
 :r .\Metadata\RecipientAlertsLink.sql

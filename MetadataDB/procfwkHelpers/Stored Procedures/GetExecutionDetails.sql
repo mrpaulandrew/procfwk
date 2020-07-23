@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [procfwk].[GetExecutionDetails]
+﻿CREATE PROCEDURE [procfwkHelpers].[GetExecutionDetails]
 	(
 	@LocalExecutionId UNIQUEIDENTIFIER = NULL
 	)

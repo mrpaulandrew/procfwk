@@ -1,8 +1,8 @@
-﻿CREATE PROCEDURE [procfwk].[AddServicePrincipalUrls]
+﻿CREATE PROCEDURE [procfwkHelpers].[AddServicePrincipal]
 	(
 	@DataFactory NVARCHAR(200),
-	@PrincipalIdUrl NVARCHAR(MAX),
-	@PrincipalSecretUrl NVARCHAR(MAX),
+	@PrincipalId NVARCHAR(256),
+	@PrincipalSecret NVARCHAR(MAX),
 	@SpecificPipelineName NVARCHAR(200) = NULL,
 	@PrincipalName NVARCHAR(256) = NULL
 	)
@@ -13,8 +13,20 @@ BEGIN
 
 	DECLARE @ErrorDetails NVARCHAR(500) = ''
 	DECLARE @CredentialId INT
+	DECLARE @TenantId CHAR(36)
+	DECLARE @LocalPrincipalId UNIQUEIDENTIFIER
 
 	--defensive checks
+	BEGIN TRY
+		SELECT --assigned to variable just to supress output of SELECT
+			@LocalPrincipalId = CAST(@PrincipalId AS UNIQUEIDENTIFIER)
+	END TRY
+	BEGIN CATCH
+			SET @ErrorDetails = 'Invalid @PrincipalId provided. The format must be a UNIQUEIDENTIFIER.'
+			RAISERROR(@ErrorDetails, 16, 1);
+			RETURN 0;
+	END CATCH
+
 	IF NOT EXISTS
 		(
 		SELECT [DataFactoryName] FROM [procfwk].[DataFactorys] WHERE [DataFactoryName] = @DataFactory
@@ -45,18 +57,10 @@ BEGIN
 			RETURN 0;
 		END
 	
-	IF (SELECT [procfwk].[CheckForValidURL](@PrincipalIdUrl)) = 0
-	BEGIN
-		SET @ErrorDetails = 'PrincipalIdUrl value is not in the expected format. . Please confirm the URL follows the structure https://{YourKeyVaultName}.vault.azure.net/secrets/{YourSecretName} and does not include the secret version guid.'
-		PRINT @ErrorDetails;
-	END
-
-	IF (SELECT [procfwk].[CheckForValidURL](@PrincipalSecretUrl)) = 0
-	BEGIN
-		SET @ErrorDetails = 'PrincipalSecretUrl value is not in the expected format. Please confirm the URL follows the structure https://{YourKeyVaultName}.vault.azure.net/secrets/{YourSecretName} and does not include the secret version guid.'
-		PRINT @ErrorDetails;		
-	END
-
+	--get tenant Id to include in encryption
+	SELECT
+		@TenantId = [procfwk].[GetPropertyValueInternal]('TenantId');
+		
 	--add SPN for specific pipeline
 	IF @SpecificPipelineName IS NOT NULL
 		BEGIN
@@ -73,27 +77,27 @@ BEGIN
 			
 			--spn may already exist for other pipelines
 			IF NOT EXISTS
-				(				
-				SELECT [PrincipalIdUrl] FROM [dbo].[ServicePrincipals] WHERE [PrincipalIdUrl] = @PrincipalIdUrl
+				(
+				SELECT [PrincipalId] FROM [dbo].[ServicePrincipals] WHERE [PrincipalId] = @PrincipalId
 				)
 				BEGIN
 					--add service principal
 					INSERT INTO [dbo].[ServicePrincipals]
 						( 
 						[PrincipalName],
-						[PrincipalIdUrl],
-						[PrincipalSecretUrl]
+						[PrincipalId],
+						[PrincipalSecret]
 						)
 					SELECT
 						ISNULL(@PrincipalName, 'Unknown'),
-						@PrincipalIdUrl,
-						@PrincipalSecretUrl
+						@PrincipalId,
+						ENCRYPTBYPASSPHRASE(CONCAT(@TenantId, @DataFactory, @SpecificPipelineName), @PrincipalSecret)
 
 					SET @CredentialId = SCOPE_IDENTITY()
 				END
 			ELSE
 				BEGIN
-					SELECT @CredentialId = [CredentialId] FROM [dbo].[ServicePrincipals] WHERE [PrincipalIdUrl] = @PrincipalIdUrl
+					SELECT @CredentialId = [CredentialId] FROM [dbo].[ServicePrincipals] WHERE [PrincipalId] = @PrincipalId
 				END
 
 			--add single pipeline to SPN link
@@ -122,13 +126,13 @@ BEGIN
 			INSERT INTO [dbo].[ServicePrincipals]
 				( 
 				[PrincipalName],
-				[PrincipalIdUrl],
-				[PrincipalSecretUrl]
+				[PrincipalId],
+				[PrincipalSecret]
 				)
 			SELECT
 				ISNULL(@PrincipalName, 'Unknown'),
-				@PrincipalIdUrl,
-				@PrincipalSecretUrl
+				@PrincipalId,
+				ENCRYPTBYPASSPHRASE(CONCAT(@TenantId, @DataFactory), @PrincipalSecret)
 
 			SET @CredentialId = SCOPE_IDENTITY()
 
