@@ -12,22 +12,23 @@ This framework can also be used in any Azure Tenant and allow the creation of co
 
  ## Framework Features
 
-* Granular metadata control.
-* Metadata integrity checking.
-* Global properties.
-* Complete pipeline dependency chains.
-* Execution restart-ability.
-* Parallel execution.
-* Full execution and error logs.
-* Operational dashboards.
-* Low cost orchestration.
-* Disconnection between framework and Worker pipelines.
-* Cross Data Factory control flows.
-* Pipeline parameter support.
-* Simple troubleshooting.
-* Easy deployment.
-* Email alerting.
-* Azure Key Vault integration.
+ * Granular metadata control.
+ * Metadata integrity checking.
+ * Global properties.
+ * Complete pipeline dependency chains.
+ * Execution restart-ability.
+ * Parallel execution.
+ * Full execution and error logs.
+ * Operational dashboards.
+ * Low cost orchestration.
+ * Disconnection between framework and Worker pipelines.
+ * Cross Data Factory control flows.
+ * Pipeline parameter support.
+ * Simple troubleshooting.
+ * Easy deployment.
+ * Email alerting.
+ * Automated testing.
+ * Azure Key Vault integration.
 
 [ADFprocfwk.com](http://ADFprocfwk.com/)
 
