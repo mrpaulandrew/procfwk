@@ -6,13 +6,13 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'None'
+	IF ([procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'None'
 		BEGIN
 			--do nothing allow processing to carry on regardless
 			RETURN 0;
 		END;
 		
-	ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'Simple'
+	ELSE IF ([procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'Simple'
 		BEGIN
 			IF EXISTS
 				(
@@ -32,7 +32,7 @@ BEGIN
 				END			
 		END;
 	
-	ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'DependencyChain'
+	ELSE IF ([procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'DependencyChain'
 		BEGIN
 			IF EXISTS
 				(

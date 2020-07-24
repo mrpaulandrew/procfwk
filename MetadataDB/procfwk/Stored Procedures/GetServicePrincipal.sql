@@ -11,7 +11,7 @@ BEGIN
 	DECLARE @Secret NVARCHAR(MAX)
 	DECLARE @TenantId CHAR(36)
 
-	IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInDatabase'
+	IF ([procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInDatabase'
 		BEGIN
 			--get tenant Id to include in decryption
 			SELECT
@@ -59,7 +59,7 @@ BEGIN
 			WHERE
 				[Secret] IS NOT NULL
 		END
-	ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInKeyVault'
+	ELSE IF ([procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInKeyVault'
 		BEGIN
 			
 			--get auth details regardless of being pipeline specific and regardless of a pipeline param being passed

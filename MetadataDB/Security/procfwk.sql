@@ -1,3 +1,3 @@
 ﻿CREATE SCHEMA [procfwk]
-    AUTHORIZATION [dbo];
+AUTHORIZATION [dbo];
 
