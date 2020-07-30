@@ -55,3 +55,6 @@ EXEC #DropLegacyObjects 'CurrentExecutionSummary', 'V';
 EXEC #DropLegacyObjects 'LastExecution', 'V';
 EXEC #DropLegacyObjects 'LastExecutionSummary', 'V';
 EXEC #DropLegacyObjects 'WorkerParallelismOverTime', 'V';
+
+--replaced with new precursor concept in v1.8.5:
+IF OBJECT_ID(N'[dbo].[SetRandomWaitValues]') IS NOT NULL DROP PROCEDURE [dbo].[SetRandomWaitValues];

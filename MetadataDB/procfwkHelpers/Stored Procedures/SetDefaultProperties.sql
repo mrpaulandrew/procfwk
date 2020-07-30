@@ -54,4 +54,9 @@ BEGIN
 		@PropertyName = N'SPNHandlingMethod',
 		@PropertyValue = N'StoreInDatabase',
 		@Description = N'Accepted values: StoreInDatabase, StoreInKeyVault. See v1.8.2 release notes for full details.';
+
+	EXEC [procfwkHelpers].[AddProperty]
+		@PropertyName = N'ExecutionPrecursorProc',
+		@PropertyValue = N'[dbo].[ExampleCustomExecutionPrecursor]',
+		@Description = N'This procedure will be called first in the parent pipeline and can be used to perform/update any required custom behaviour in the framework execution. For example, enable/disable Worker pipelines given a certain run time/day. Invalid proc name values will be ignored.'
 END;
