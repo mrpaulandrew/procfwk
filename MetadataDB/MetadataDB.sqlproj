@@ -191,6 +191,7 @@
     <Build Include="procfwkTesting\Stored Procedures\Add300WorkerPipelines.sql" />
     <Build Include="procfwk\Stored Procedures\ExecutePrecursorProcedure.sql" />
     <Build Include="dbo\Stored Procedures\ExampleCustomExecutionPrecursor.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\AddPipelineViaPowerShell.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
