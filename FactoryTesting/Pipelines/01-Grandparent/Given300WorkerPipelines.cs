@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FactoryTesting.Pipelines.Grandparent
 {
-    public class GivenOneWorkerPipeline
+    public class Given300WorkerPipelines
     {
         private GrandparentHelper _helper;
 
@@ -14,12 +14,11 @@ namespace FactoryTesting.Pipelines.Grandparent
         {
             _helper = new GrandparentHelper()
                 .WithBasicMetadata()
+                .With300WorkerPipelinesEnabled()
                 .WithSubscriptionId()
                 .WithTenantId()
-                .WithSPNInDatabase("FrameworkFactory")
-                .WithEmptyExecutionTables()
-                .WithSimpleFailureHandling()
-                .WithOneWorkerPipelineEnabled();
+                .WithSPNInKeyVault("WorkersFactory");
+
             await _helper.RunPipeline();
         }
 
@@ -32,7 +31,7 @@ namespace FactoryTesting.Pipelines.Grandparent
         }
 
         #endregion
-        
+
         [OneTimeTearDown]
         public void TearDown()
         {

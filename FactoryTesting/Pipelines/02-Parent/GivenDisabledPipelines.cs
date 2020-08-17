@@ -13,6 +13,11 @@ namespace FactoryTesting.Pipelines.Parent
         public async Task WhenPipelineRun()
         {
             _helper = new ParentHelper()
+                .WithBasicMetadata()
+                .WithSubscriptionId()
+                .WithTenantId()
+                .WithSPNInDatabase("FrameworkFactory")
+                .WithEmptyExecutionTables()
                 .WithPipelinesDisabled();
             await _helper.RunPipeline();
         }
@@ -30,7 +35,6 @@ namespace FactoryTesting.Pipelines.Parent
         [OneTimeTearDown]
         public void TearDown()
         {
-            _helper.WithPipelinesEnabled();
             _helper?.TearDown();
         }
     }

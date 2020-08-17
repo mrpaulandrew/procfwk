@@ -1,11 +1,11 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using System.Threading.Tasks;
 
 namespace FactoryTesting.Pipelines.Parent
 {
-    public class GivenNoErrors
+    public class GivenNoErrorsAndSPNStoredInKeyVault
     {
         private ParentHelper _helper;
 
@@ -13,10 +13,13 @@ namespace FactoryTesting.Pipelines.Parent
         public async Task WhenPipelineRun()
         {
             _helper = new ParentHelper()
-                .WithEmptyTable("procfwk.CurrentExecution")
-                .WithEmptyTable("procfwk.ExecutionLog")
+                .WithBasicMetadata()
+                .WithSubscriptionId()
+                .WithTenantId()
+                .WithSPNInKeyVault("FrameworkFactory")
+                .WithEmptyExecutionTables()
                 .WithoutSimulatedError()
-                .WithFailureHandling("Simple"); ;
+                .WithFailureHandling("Simple");
             await _helper.RunPipeline();
         }
 

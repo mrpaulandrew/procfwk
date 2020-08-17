@@ -13,9 +13,11 @@ namespace FactoryTesting.Pipelines.Parent
         public async Task WhenPipelineRun()
         {
             _helper = new ParentHelper()
-                .WithEmptyTable("procfwk.CurrentExecution")
-                .WithEmptyTable("procfwk.ExecutionLog")
-                .WithEmptyTable("procfwk.ErrorLog")
+                .WithBasicMetadata()
+                .WithSubscriptionId()
+                .WithTenantId()
+                .WithSPNInDatabase("FrameworkFactory")
+                .WithEmptyExecutionTables()
                 .WithSimulatedError()
                 .WithFailureHandling("None");
             await _helper.RunPipeline();

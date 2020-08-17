@@ -13,8 +13,11 @@ namespace FactoryTesting.Pipelines.Parent
         public async Task WhenPipelineRun()
         {
             _helper = new ParentHelper()
-                .WithEmptyTable("procfwk.CurrentExecution")
-                .WithEmptyTable("procfwk.PipelineParameters")
+                .WithBasicMetadata()
+                .WithSubscriptionId()
+                .WithTenantId()
+                .WithSPNInDatabase("FrameworkFactory")
+                .WithEmptyExecutionTables()
                 .WithoutSimulatedError()
                 .WithFailureHandling("Simple"); ;
             await _helper.RunPipeline();
@@ -37,7 +40,6 @@ namespace FactoryTesting.Pipelines.Parent
         [OneTimeTearDown]
         public void TearDown()
         {
-            _helper.InsertNewPipelineParameters();
             _helper?.TearDown();
         }
     }

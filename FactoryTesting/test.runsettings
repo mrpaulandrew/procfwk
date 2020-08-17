@@ -5,6 +5,7 @@
 <!--        <Parameter name="KeyVaultUrl" value="" />  -->
         <Parameter name="DataFactoryResourceGroup" value="ADF.procfwk" />
         <Parameter name="DataFactoryName" value="FrameworkFactoryTest" />
+        <Parameter name="WorkersDataFactoryName" value="WorkersFactory" />
         <Parameter name="ReportTestCoverage" value="false" />
     </TestRunParameters>
 </RunSettings>

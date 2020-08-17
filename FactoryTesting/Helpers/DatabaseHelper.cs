@@ -61,10 +61,66 @@ namespace FactoryTesting.Helpers
                 cmd.ExecuteNonQuery();
         }
 
+        public void AddTenantId()
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                ["@PropertyName"] = "TenantId",
+                ["@PropertyValue"] = GetSetting("AZURE_TENANT_ID"),
+                ["@Description"] = "Used to provide authentication throughout the framework execution."
+            };
+            ExecuteStoredProcedure("[procfwkHelpers].[AddProperty]", parameters);
+        }
+
+        public void AddSubscriptionId()
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                ["@PropertyName"] = "SubscriptionId",
+                ["@PropertyValue"] = GetSetting("AZURE_SUBSCRIPTION_ID"),
+                ["@Description"] = "Used to provide authentication throughout the framework execution."
+            };
+            ExecuteStoredProcedure("[procfwkHelpers].[AddProperty]", parameters);
+        }
+
+        public void AddWorkerSPNStoredInDatabase(string workerFactoryName)
+        {
+            ExecuteNonQuery("UPDATE [procfwk].[Properties] SET [PropertyValue] = 'StoreInDatabase' WHERE [PropertyName] = 'SPNHandlingMethod';");
+
+            var parameters = new Dictionary<string, object>
+            {
+                ["@DataFactory"] = workerFactoryName,
+                ["@PrincipalIdValue"] = GetSetting("AZURE_CLIENT_ID"),
+                ["@PrincipalSecretValue"] = GetSetting("AZURE_CLIENT_SECRET"),
+                ["@PrincipalName"] = GetSetting("AZURE_CLIENT_NAME")
+            };
+
+            ExecuteStoredProcedure("[procfwkHelpers].[AddServicePrincipalWrapper]", parameters);
+        }
+
+        public void AddWorkerSPNStoredInKeyVault(string workerFactoryName)
+        {
+            ExecuteNonQuery("UPDATE [procfwk].[Properties] SET [PropertyValue] = 'StoreInKeyVault' WHERE [PropertyName] = 'SPNHandlingMethod';");
+
+            var parameters = new Dictionary<string, object>
+            {
+                ["@DataFactory"] = workerFactoryName,
+                ["@PrincipalIdValue"] = GetSetting("AZURE_CLIENT_ID_URL"),
+                ["@PrincipalSecretValue"] = GetSetting("AZURE_CLIENT_SECRET_URL"),
+                ["@PrincipalName"] = GetSetting("AZURE_CLIENT_NAME")
+            };
+
+            ExecuteStoredProcedure("[procfwkHelpers].[AddServicePrincipalWrapper]", parameters);
+        }
+
+        public void AddBasicMetadata()
+        {
+            ExecuteStoredProcedure("[procfwkTesting].[ResetMetadata]", null);
+        }
+
         public override void TearDown()
         {
-            using (var cmd = new SqlCommand($"TRUNCATE TABLE [procfwk].[CurrentExecution]", _conn))
-                cmd.ExecuteNonQuery();
+            ExecuteStoredProcedure("[procfwkTesting].[CleanUpMetadata]", null);
 
             _conn?.Dispose();
             base.TearDown();
