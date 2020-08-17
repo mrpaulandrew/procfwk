@@ -36,7 +36,8 @@
 								}
 							}
 						},
-						"queryTimeout": "02:00:00"
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"dataset": {
 						"referenceName": "GetSetMetadata",
@@ -226,7 +227,8 @@
 								}
 							}
 						},
-						"queryTimeout": "02:00:00"
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"dataset": {
 						"referenceName": "GetSetMetadata",
@@ -259,7 +261,7 @@
 					"storedProcedureParameters": {
 						"PerformErrorCheck": {
 							"value": {
-								"value": "@bool(0)",
+								"value": "@bool(1)",
 								"type": "Expression"
 							},
 							"type": "Boolean"
@@ -301,7 +303,8 @@
 								"value": "TenantId"
 							}
 						},
-						"queryTimeout": "02:00:00"
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"dataset": {
 						"referenceName": "GetSetMetadata",
@@ -340,7 +343,8 @@
 								"value": "SubscriptionId"
 							}
 						},
-						"queryTimeout": "02:00:00"
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"dataset": {
 						"referenceName": "GetSetMetadata",
@@ -378,7 +382,8 @@
 								"value": "false"
 							}
 						},
-						"queryTimeout": "02:00:00"
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"dataset": {
 						"referenceName": "GetSetMetadata",
@@ -439,7 +444,8 @@
 											}
 										}
 									},
-									"queryTimeout": "02:00:00"
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
 								},
 								"dataset": {
 									"referenceName": "GetSetMetadata",
