@@ -116,7 +116,6 @@
     <Build Include="procfwk\Synonyms\ProcessingStageDetails.sql" />
     <Build Include="procfwk\Synonyms\DataFactoryDetails.sql" />
     <Build Include="procfwk\Stored Procedures\CheckMetadataIntegrity.sql" />
-    <Build Include="dbo\Stored Procedures\SetRandomWaitValues.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineLastStatusCheck.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineRunId.sql" />
     <Build Include="procfwk\Tables\ErrorLog.sql" />
@@ -190,6 +189,9 @@
     <Build Include="procfwkTesting\Stored Procedures\CleanUpMetadata.sql" />
     <Build Include="procfwkTesting\Stored Procedures\ResetMetadata.sql" />
     <Build Include="procfwkTesting\Stored Procedures\Add300WorkerPipelines.sql" />
+    <Build Include="procfwk\Stored Procedures\ExecutePrecursorProcedure.sql" />
+    <Build Include="dbo\Stored Procedures\ExampleCustomExecutionPrecursor.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\AddPipelineViaPowerShell.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
@@ -216,11 +218,6 @@
     <PreDeploy Include="Scripts\Script.PreDeployment.sql" />
   </ItemGroup>
   <ItemGroup>
-    <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
-      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac</HintPath>
-      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
-      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
-    </ArtifactReference>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
       <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac</HintPath>
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>

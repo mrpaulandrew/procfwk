@@ -1,6 +1,6 @@
 # ADF.procfwk
 
-![alt text](https://mrpaulandrew.files.wordpress.com/2020/06/repo-image.png "ADF.procfwk Icon")
+![alt text](https://mrpaulandrew.files.wordpress.com/2020/07/repo-image-1.png "ADF.procfwk Icon")
 
 ## Code Project Overview
 
@@ -68,6 +68,7 @@ Go to... [Glossary](https://github.com/mrpaulandrew/ADF.procfwk/blob/master/Glos
 
 | Version | Overview | Related Blog(s) & Version Details |
 |:----:|--------------|--------|
+| 1.8.5 |<u>Execution Precursor</u> added, plus:<ul><li>PowerShell helper to add initial Worker metadata.</li></ul> |[ADF.procfwk v1.8.5 - Execution Precursor](https://mrpaulandrew.com/2020/08/17/adf-procfwk-v1-8-5-execution-precursor/) |
 | 1.8.4 |<u>Database Schema Reorganise and Restructuring</u> |[ADF.procfwk v1.8.4 - Database Schema Reorganise and Restructuring](https://mrpaulandrew.com/2020/07/23/adf-procfwk-v1-8-4-database-schema-reorganise-and-restructuring/) |
 | 1.8.3 |<u>Bug Fixes from the Community</u>, including:<ul><li>Email alerts sent to blank email addresses due to wrong flow in Child pipeline.</li><li>Worker pipelines cancelled during an execution fail when the framework is restarted due to missing Parent pipeline clean up condition.</li></ul> |Issues:</br>[ADF.procfwk #38](https://github.com/mrpaulandrew/ADF.procfwk/issues/38)<br/>[ADF.procfwk #37](https://github.com/mrpaulandrew/ADF.procfwk/issues/37) |
 | 1.8.2 |<u>Optionally Store SPN Details in Azure Key Vault</u> |[ADF.procfwk v1.8.2 - Optionally Store SPN Details in Azure Key Vault](https://mrpaulandrew.com/2020/07/22/adf-procfwk-v1-8-2-optionally-store-spn-details-in-azure-key-vault/) |
