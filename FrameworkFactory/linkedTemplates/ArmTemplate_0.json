@@ -1062,7 +1062,8 @@
 										"value": "PipelineStatusCheckDuration"
 									}
 								},
-								"queryTimeout": "02:00:00"
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
@@ -1153,7 +1154,8 @@
 										}
 									}
 								},
-								"queryTimeout": "02:00:00"
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
@@ -1256,7 +1258,8 @@
 													}
 												}
 											},
-											"queryTimeout": "02:00:00"
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
 										},
 										"dataset": {
 											"referenceName": "GetSetMetadata",
@@ -1342,7 +1345,8 @@
 													}
 												}
 											},
-											"queryTimeout": "02:00:00"
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
 										},
 										"dataset": {
 											"referenceName": "GetSetMetadata",
@@ -1569,7 +1573,8 @@
 													}
 												}
 											},
-											"queryTimeout": "02:00:00"
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
 										},
 										"dataset": {
 											"referenceName": "GetSetMetadata",
@@ -1623,7 +1628,8 @@
 																}
 															}
 														},
-														"queryTimeout": "02:00:00"
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
 													},
 													"dataset": {
 														"referenceName": "GetSetMetadata",
@@ -1746,7 +1752,8 @@
 										}
 									}
 								},
-								"queryTimeout": "02:00:00"
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
@@ -1937,7 +1944,8 @@
 										}
 									}
 								},
-								"queryTimeout": "02:00:00"
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
@@ -1967,7 +1975,16 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"storedProcedureName": "[[procfwk].[UpdateExecutionLog]"
+							"storedProcedureName": "[[procfwk].[UpdateExecutionLog]",
+							"storedProcedureParameters": {
+								"PerformErrorCheck": {
+									"value": {
+										"value": "@bool(1)",
+										"type": "Expression"
+									},
+									"type": "Boolean"
+								}
+							}
 						},
 						"linkedServiceName": {
 							"referenceName": "SupportDatabase",
@@ -2004,7 +2021,8 @@
 										"value": "TenantId"
 									}
 								},
-								"queryTimeout": "02:00:00"
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
@@ -2044,7 +2062,8 @@
 										"value": "SubscriptionId"
 									}
 								},
-								"queryTimeout": "02:00:00"
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
@@ -2057,7 +2076,14 @@
 						"name": "Metadata Integrity Checks",
 						"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
 						"type": "Lookup",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Execute Precursor",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -2076,7 +2102,8 @@
 										"value": "false"
 									}
 								},
-								"queryTimeout": "02:00:00"
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
@@ -2138,7 +2165,8 @@
 													}
 												}
 											},
-											"queryTimeout": "02:00:00"
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
 										},
 										"dataset": {
 											"referenceName": "GetSetMetadata",
@@ -2591,6 +2619,26 @@
 								}
 							]
 						}
+					},
+					{
+						"name": "Execute Precursor",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[procfwk].[ExecutePrecursorProcedure]"
+						},
+						"linkedServiceName": {
+							"referenceName": "SupportDatabase",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"folder": {
@@ -2617,14 +2665,7 @@
 					{
 						"name": "Framework Processing",
 						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Set Random Waits",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
@@ -2633,27 +2674,6 @@
 							},
 							"waitOnCompletion": true,
 							"parameters": {}
-						}
-					},
-					{
-						"name": "Set Random Waits",
-						"description": "For functional testing only.",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[SetRandomWaitValues]"
-						},
-						"linkedServiceName": {
-							"referenceName": "SupportDatabase",
-							"type": "LinkedServiceReference"
 						}
 					}
 				],
@@ -2665,8 +2685,7 @@
 				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/02-Parent')]",
-				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
+				"[concat(variables('factoryId'), '/pipelines/02-Parent')]"
 			]
 		},
 		{
