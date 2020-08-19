@@ -558,6 +558,7 @@
 										"activities": [
 											{
 												"name": "Pipeline Status Failed",
+												"description": "Updates the current execution table with a pipeline status of failed if the function outcome is failed. Also blocks pipelines in the downstream execution stage.",
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
@@ -610,6 +611,7 @@
 										"activities": [
 											{
 												"name": "Pipeline Status Succeeded",
+												"description": "Updates the current execution table with a pipeline status of success if the function outcome is succeeded.",
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
@@ -658,6 +660,7 @@
 										"activities": [
 											{
 												"name": "Pipeline Status Queued - Running",
+												"description": "Updates the current execution table with a pipeline status of running if the function outcome is queued.",
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
@@ -706,6 +709,7 @@
 										"activities": [
 											{
 												"name": "Pipeline Status InProgress - Running",
+												"description": "Updates the current execution table with a pipeline status of running if the function outcome is in progress.",
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
@@ -750,10 +754,11 @@
 										]
 									},
 									{
-										"value": "Cancelled",
+										"value": "Canceled",
 										"activities": [
 											{
 												"name": "Pipeline Status Cancelled",
+												"description": "Updates the current execution table with a pipeline status of cancelled if the function outcome is canceled (not a typo) Microsoft status.",
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
@@ -801,6 +806,7 @@
 								"defaultActivities": [
 									{
 										"name": "Pipeline Status Unknown",
+										"description": "Updates the current execution table with a pipeline status of unknown if the function returns an unexpected outcome.",
 										"type": "SqlServerStoredProcedure",
 										"dependsOn": [],
 										"policy": {
