@@ -29,7 +29,8 @@
 								}
 							}
 						},
-						"queryTimeout": "02:00:00"
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"dataset": {
 						"referenceName": "GetSetMetadata",
@@ -57,7 +58,7 @@
 						"type": "Expression"
 					},
 					"isSequential": false,
-					"batchCount": 40,
+					"batchCount": 50,
 					"activities": [
 						{
 							"name": "Execute Pipeline",
@@ -130,7 +131,8 @@
 											}
 										}
 									},
-									"queryTimeout": "02:00:00"
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
 								},
 								"dataset": {
 									"referenceName": "GetSetMetadata",
@@ -215,7 +217,8 @@
 											}
 										}
 									},
-									"queryTimeout": "02:00:00"
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
 								},
 								"dataset": {
 									"referenceName": "GetSetMetadata",
@@ -441,7 +444,8 @@
 											}
 										}
 									},
-									"queryTimeout": "02:00:00"
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
 								},
 								"dataset": {
 									"referenceName": "GetSetMetadata",
@@ -494,7 +498,8 @@
 														}
 													}
 												},
-												"queryTimeout": "02:00:00"
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
 											},
 											"dataset": {
 												"referenceName": "GetSetMetadata",

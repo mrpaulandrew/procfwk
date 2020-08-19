@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FactoryTesting.Pipelines.Grandparent
 {
-    public class GivenOneWorkerPipeline
+    public class Given300WorkerPipelines
     {
         private GrandparentHelper _helper;
 
@@ -14,25 +14,35 @@ namespace FactoryTesting.Pipelines.Grandparent
         {
             _helper = new GrandparentHelper()
                 .WithBasicMetadata()
+                .With300WorkerPipelinesEnabled()
                 .WithSubscriptionId()
                 .WithTenantId()
-                .WithSPNInDatabase("FrameworkFactory")
-                .WithEmptyExecutionTables()
-                .WithSimpleFailureHandling()
-                .WithOneWorkerPipelineEnabled();
+                .WithSPNInKeyVault("WorkersFactory");
+
             await _helper.RunPipeline();
         }
 
         #region Integration tests
 
-        [Test]
+        [Test, Order(1)]
         public void ThenPipelineOutcomeIsSucceeded()
         {
             _helper.RunOutcome.Should().Be("Succeeded");
         }
+        [Test, Order(2)]
+        public void ThenCurrentExecutionTableIsEmpty()
+        {
+            _helper.RowCount("procfwk.CurrentExecution").Should().Be(0);
+        }
+
+        [Test, Order(3)]
+        public void Then300ExecutionLogRecords()
+        {
+            _helper.RowCount("procfwk.ExecutionLog").Should().Be(300);
+        }
 
         #endregion
-        
+
         [OneTimeTearDown]
         public void TearDown()
         {

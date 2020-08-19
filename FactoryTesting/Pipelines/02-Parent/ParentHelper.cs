@@ -12,6 +12,43 @@ namespace FactoryTesting.Pipelines.Parent
         {
             await RunPipeline("02-Parent");
         }
+        public ParentHelper WithTenantId()
+        {
+            AddTenantId();
+            return this;
+        }
+
+        public ParentHelper WithSubscriptionId()
+        {
+            AddSubscriptionId();
+            return this;
+        }
+        public ParentHelper WithSPNInDatabase(string workerFactoryName)
+        {
+            AddWorkerSPNStoredInDatabase(workerFactoryName);
+            return this;
+        }
+
+        public ParentHelper WithSPNInKeyVault(string workerFactoryName)
+        {
+            AddWorkerSPNStoredInKeyVault(workerFactoryName);
+            return this;
+        }
+
+        public ParentHelper WithBasicMetadata()
+        {
+            AddBasicMetadata();
+            return this;
+        }
+
+        public ParentHelper WithEmptyExecutionTables()
+        {
+            WithEmptyTable("procfwk.CurrentExecution");
+            WithEmptyTable("procfwk.ExecutionLog");
+            WithEmptyTable("procfwk.ErrorLog");
+
+            return this;
+        }
 
         public ParentHelper WithSimulatedError()
         {
@@ -115,52 +152,10 @@ SET [PropertyValue] = '{mode}'
 WHERE [PropertyName] = 'FailureHandling'");
             return this;
         }
-        public ParentHelper InsertNewPipelineParameters()
-        {
-            ExecuteNonQuery(@"INSERT INTO [procfwk].[PipelineParameters] ([PipelineId],[ParameterName],[ParameterValue])
-VALUES 
-	(1, 'WaitTime', '3'),
-	(2, 'WaitTime', '6'),
-	(6, 'WaitTime', '9'),
-	(4, 'WaitTime', '5'),
-	(5, 'WaitTime', '2'),
-	(3, 'RaiseErrors', 'false'),
-	(3, 'WaitTime', '10'),
-	(7, 'WaitTime', '3'),
-	(8, 'WaitTime', '5'),
-	(9, 'WaitTime', '7'),
-	(11, 'WaitTime', '10')");
-
-            return this;
-        }
 
         public ParentHelper WithSingleExecutionStage()
         {
             ExecuteNonQuery("UPDATE [procfwk].[Pipelines] SET [StageId] = 1");
-            return this;
-        }
-
-        public ParentHelper ResetPipelineStages()
-        {
-            ExecuteNonQuery(@"UPDATE
-	[procfwk].[Pipelines]
-SET
-	[StageId] =
-		CASE [PipelineId]
-			WHEN 1 THEN 1
-			WHEN 2 THEN 1
-			WHEN 3 THEN 1
-			WHEN 4 THEN 1
-			WHEN 5 THEN 2
-			WHEN 6 THEN 2
-			WHEN 7 THEN 2
-			WHEN 8 THEN 2
-			WHEN 9 THEN 3
-			WHEN 10 THEN 3
-			WHEN 11 THEN 4
-			ELSE 1
-		END");
-
             return this;
         }
 

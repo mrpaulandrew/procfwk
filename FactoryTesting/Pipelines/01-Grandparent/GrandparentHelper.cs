@@ -1,4 +1,5 @@
 ﻿using FactoryTesting.Helpers;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FactoryTesting.Pipelines.Grandparent
@@ -8,6 +9,45 @@ namespace FactoryTesting.Pipelines.Grandparent
         public async Task RunPipeline()
         {
             await RunPipeline("01-Grandparent");
+        }
+
+        public GrandparentHelper WithTenantId()
+        {
+            AddTenantId();
+            return this;
+        }
+
+        public GrandparentHelper WithSubscriptionId()
+        {
+            AddSubscriptionId();
+            return this;
+        }
+
+        public GrandparentHelper WithSPNInDatabase(string workerFactoryName)
+        {
+            AddWorkerSPNStoredInDatabase(workerFactoryName);
+            return this;
+        }
+
+        public GrandparentHelper WithSPNInKeyVault(string workerFactoryName)
+        {
+            AddWorkerSPNStoredInKeyVault(workerFactoryName);
+            return this;
+        }
+
+        public GrandparentHelper WithBasicMetadata()
+        {
+            AddBasicMetadata();
+            return this;
+        }
+
+        public GrandparentHelper WithEmptyExecutionTables()
+        {
+            WithEmptyTable("procfwk.CurrentExecution");
+            WithEmptyTable("procfwk.ExecutionLog");
+            WithEmptyTable("procfwk.ErrorLog");
+
+            return this;
         }
 
         public GrandparentHelper WithSimpleFailureHandling()
@@ -20,14 +60,11 @@ namespace FactoryTesting.Pipelines.Grandparent
             ExecuteNonQuery("UPDATE [procfwk].[Pipelines] SET [Enabled] = 0 WHERE [PipelineId] > 1");
             return this;
         }
-        public GrandparentHelper ResetParameterValue()
+
+        public GrandparentHelper With300WorkerPipelinesEnabled()
         {
-            ExecuteNonQuery("UPDATE [procfwk].[PipelineParameters] SET [ParameterValue] = 5 WHERE [PipelineId] = 1");
-            return this;
-        }
-        public GrandparentHelper EnableAllWorkerPipelines()
-        {
-            ExecuteNonQuery("UPDATE [procfwk].[Pipelines] SET [Enabled] = 1");
+            ExecuteStoredProcedure("[procfwkTesting].[Add300WorkerPipelines]", null);
+
             return this;
         }
     }

@@ -29,7 +29,7 @@ Furthermore, in the case of most deployment steps, things can be tailored to you
 16. Set your Subscription ID in the properties table.
 17. Set your Tenant ID in the properties table. Its important that you do this first to later support the SPN details added.
 18. Add a target Data Factory where you Worker pipelines exist.
-19. Add your Worker Pipeline and Stages metadata as required.
+19. Add your Worker Pipeline and Stages metadata as required. The PowerShell script **PopulatePipelinesInDb.ps1** can help with this.
 20. Set the property 'SPNHandlingMethod' to your preferred method of handling. Via the metadata database directly or using Azure Key Vault.
 21. Add your SPN details from step 11 to your metadata directly or using Key Vault URLs. Use the stored procedure **[procfwk].[AddServicePrincipalWrapper].**
 22. Add pipeline parameters as required.

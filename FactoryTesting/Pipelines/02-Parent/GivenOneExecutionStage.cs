@@ -13,7 +13,11 @@ namespace FactoryTesting.Pipelines.Parent
         public async Task WhenPipelineRun()
         {
             _helper = new ParentHelper()
-                .WithEmptyTable("procfwk.CurrentExecution")
+                .WithBasicMetadata()
+                .WithSubscriptionId()
+                .WithTenantId()
+                .WithSPNInDatabase("FrameworkFactory")
+                .WithEmptyExecutionTables()
                 .WithoutSimulatedError()
                 .WithFailureHandling("Simple")
                 .WithSingleExecutionStage(); 
@@ -33,7 +37,6 @@ namespace FactoryTesting.Pipelines.Parent
         [OneTimeTearDown]
         public void TearDown()
         {
-            _helper.ResetPipelineStages();
             _helper?.TearDown();
         }
     }

@@ -26,6 +26,8 @@
     <None Include="DataFactory\config-all.csv" />
     <None Include="DataFactory\DeployProcFwkComponents.ps1" />
     <None Include="DataFactory\Get Pipelines.ps1" />
+    <None Include="DataFactory\GlobalVars.ps1" />
+    <None Include="DataFactory\PopulatePipelinesInDb.ps1" />
     <None Include="DataFactory\ProcFwkComponents.json" />
     <None Include="Deployment.targets">
       <Visible>False</Visible>

@@ -1,7 +1,11 @@
-﻿# Set global variables as required:
-$resourceGroupName = "ADF.procfwk"
-$dataFactoryName = "FrameworkFactory"
-$region = "uksouth"
+﻿Param(
+    [Parameter(Mandatory)]
+    [string]$resourceGroupName,
+    [Parameter(Mandatory)]
+    [string]$dataFactoryName,
+    [Parameter(Mandatory)]
+    [string]$region
+)
 
 #SPN for deploying ADF:
 $tenantId = [System.Environment]::GetEnvironmentVariable('AZURE_TENANT_ID')
@@ -22,16 +26,21 @@ Import-Module -Name "azure.datafactory.tools"
 Get-Module -Name "*DataFactory*"
 
 # Login as a Service Principal
-$passwd = ConvertTo-SecureString $spKey -AsPlainText -Force
-$pscredential = New-Object System.Management.Automation.PSCredential($spId, $passwd)
-Connect-AzAccount -ServicePrincipal -Credential $pscredential -TenantId $tenantId | Out-Null
+if ($spId) {
+    $passwd = ConvertTo-SecureString $spKey -AsPlainText -Force
+    $pscredential = New-Object System.Management.Automation.PSCredential($spId, $passwd)
+    Connect-AzAccount -ServicePrincipal -Credential $pscredential -TenantId $tenantId | Out-Null
+}
+Get-AzContext
 
 #$VerbosePreference = 'Continue'
 $ErrorActionPreference = 'Stop'
 
 # Get Deployment Objects and Params files
 $scriptPath = Join-Path -Path (Get-Location) -ChildPath "\DeploymentTools\DataFactory"
-$deploymentFilePath = Join-Path -Path $scriptPath -ChildPath "\ProcFwkComponents.json"
+$deploymentFilePath = Join-Path -Path $scriptPath -ChildPath "ProcFwkComponents.json"
+$configFilePath = Join-Path -Path $scriptPath -ChildPath "config-all.csv"
+$Env:SQLDatabase = "<secretKeyToDbConnectionString>"
 
 $opt = New-AdfPublishOption
 $deploymentObject = (Get-Content $deploymentFilePath) | ConvertFrom-Json 
@@ -51,6 +60,6 @@ Publish-AdfV2FromJson -RootFolder $AdfPath `
     -DataFactoryName $dataFactoryName `
     -Location $region `
     -Option $opt `
-    -Stage "all"
+    -Stage $configFilePath
 
 
