@@ -853,6 +853,7 @@
 						},
 						{
 							"name": "Set Last Check DateTime",
+							"description": "Update the current execution table with a date time from when the function last checked the pipeline status.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
