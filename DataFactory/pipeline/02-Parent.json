@@ -537,6 +537,7 @@
 						},
 						{
 							"name": "Set Pipeline Status",
+							"description": "Update the metadata depending on the actual pipeline outcome. Using the status as the case.",
 							"type": "Switch",
 							"dependsOn": [
 								{
@@ -754,11 +755,11 @@
 										]
 									},
 									{
-										"value": "Canceled",
+										"value": "Cancelled",
 										"activities": [
 											{
 												"name": "Pipeline Status Cancelled",
-												"description": "Updates the current execution table with a pipeline status of cancelled if the function outcome is canceled (not a typo) Microsoft status.",
+												"description": "Updates the current execution table with a pipeline status of cancelled if the function outcome is cancelled.",
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
