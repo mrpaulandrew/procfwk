@@ -572,15 +572,15 @@
 		},
 		"variables": {
 			"WorkerPipelineState": {
-				"type": "Boolean",
-				"defaultValue": false
+				"type": "Boolean"
 			}
 		},
 		"folder": {
 			"name": "_ProcFwk"
 		},
 		"annotations": [
-			"ADF.procfwk"
+			"ADF.procfwk",
+			"Infant"
 		]
 	}
 }

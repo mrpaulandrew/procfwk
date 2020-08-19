@@ -565,7 +565,8 @@
 			"name": "_ProcFwk"
 		},
 		"annotations": [
-			"ADF.procfwk"
+			"ADF.procfwk",
+			"Child"
 		]
 	}
 }
