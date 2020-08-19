@@ -920,6 +920,7 @@
 			},
 			{
 				"name": "Set Execution Id",
+				"description": "Set the local execution Id to a pipeline variable for each in several downstream activities.",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
