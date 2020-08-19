@@ -505,6 +505,7 @@
 			},
 			{
 				"name": "Get Wait Duration",
+				"description": "Return wait duration in seconds from database properties table to be used during each Until iteration when the Worker pipeline is still running.",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
