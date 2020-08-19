@@ -9,7 +9,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Execution Wrapper",
+						"activity": "Set Execution Id",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -31,7 +31,7 @@
 							"ExecutionId": {
 								"type": "Guid",
 								"value": {
-									"value": "@activity('Execution Wrapper').output.firstRow.ExecutionId",
+									"value": "@variables('ExecutionId')",
 									"type": "Expression"
 								}
 							}
@@ -917,8 +917,33 @@
 					"referenceName": "SupportDatabase",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Set Execution Id",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Execution Wrapper",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ExecutionId",
+					"value": {
+						"value": "@activity('Execution Wrapper').output.firstRow.ExecutionId",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"variables": {
+			"ExecutionId": {
+				"type": "String"
+			}
+		},
 		"folder": {
 			"name": "_ProcFwk"
 		},
