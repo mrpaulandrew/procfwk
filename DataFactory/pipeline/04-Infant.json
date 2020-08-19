@@ -409,11 +409,11 @@
 							]
 						},
 						{
-							"value": "Cancelled",
+							"value": "Canceled",
 							"activities": [
 								{
 									"name": "Pipeline Status Cancelled",
-									"description": "Updates the current execution table with a pipeline status of unknown if the function returns an unexpected outcome.",
+									"description": "Updates the current execution table with a pipeline status of cancelled if the function outcome is canceled (not a typo) Microsoft status.",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
