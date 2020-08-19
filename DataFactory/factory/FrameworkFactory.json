@@ -1,0 +1,11 @@
+{
+	"name": "FrameworkFactory",
+	"properties": {
+		"globalParameters": {
+			"Test": {
+				"type": "string",
+				"value": "5"
+			}
+		}
+	}
+}
