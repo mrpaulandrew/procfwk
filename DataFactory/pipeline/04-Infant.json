@@ -18,7 +18,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@equals('Done',activity('Get Pipeline Status').output.SimpleStatus)",
+						"value": "@variables('WorkerPipelineState')",
 						"type": "Expression"
 					},
 					"activities": [
@@ -54,7 +54,7 @@
 							"type": "IfCondition",
 							"dependsOn": [
 								{
-									"activity": "Get Pipeline Status",
+									"activity": "Set Worker State",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -63,7 +63,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@equals('Done',activity('Get Pipeline Status').output.SimpleStatus)",
+									"value": "@variables('WorkerPipelineState')",
 									"type": "Expression"
 								},
 								"ifFalseActivities": [
@@ -185,6 +185,26 @@
 							"linkedServiceName": {
 								"referenceName": "SupportDatabase",
 								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Set Worker State",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Get Pipeline Status",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "WorkerPipelineState",
+								"value": {
+									"value": "@equals('Done',activity('Get Pipeline Status').output.SimpleStatus)",
+									"type": "Expression"
+								}
 							}
 						}
 					],
@@ -505,7 +525,8 @@
 								"value": "PipelineStatusCheckDuration"
 							}
 						},
-						"queryTimeout": "02:00:00"
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"dataset": {
 						"referenceName": "GetSetMetadata",
@@ -547,6 +568,12 @@
 			},
 			"pipelineId": {
 				"type": "int"
+			}
+		},
+		"variables": {
+			"WorkerPipelineState": {
+				"type": "Boolean",
+				"defaultValue": false
 			}
 		},
 		"folder": {
