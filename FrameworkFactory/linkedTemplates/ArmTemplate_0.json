@@ -1184,7 +1184,7 @@
 								"type": "Expression"
 							},
 							"isSequential": false,
-							"batchCount": 40,
+							"batchCount": 50,
 							"activities": [
 								{
 									"name": "Execute Pipeline",
@@ -2132,6 +2132,7 @@
 								"type": "Expression"
 							},
 							"isSequential": false,
+							"batchCount": 20,
 							"activities": [
 								{
 									"name": "Get SPN Details",
