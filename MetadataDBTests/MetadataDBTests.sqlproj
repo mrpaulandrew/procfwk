@@ -57,6 +57,10 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
+    <Folder Include="Scripts" />
+    <Folder Include="_TestClasses" />
+    <Folder Include="procfwk_GetPropertyValueInternal" />
+    <Folder Include="procfwk_GetPropertyValue" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MetadataDB\MetadataDB.sqlproj">
@@ -76,5 +80,23 @@
       <HintPath>tSQLt.dacpac</HintPath>
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
     </ArtifactReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PreDeploy Include="Scripts\Script.PreDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="_TestClasses\procfwk_GetPropertyValueInternal.sql" />
+    <Build Include="procfwk_GetPropertyValueInternal\test WHEN property does not exist THEN empty string returned.sql" />
+    <Build Include="procfwk_GetPropertyValueInternal\test WHEN property exists THEN property value returned.sql" />
+    <Build Include="_TestClasses\procfwk_GetPropertyValue.sql" />
+    <Build Include="procfwk_GetPropertyValue\test WHEN property does not exist THEN error raised.sql" />
+    <Build Include="procfwk_GetPropertyValueInternal\test WHEN property name is null THEN empty string returned.sql" />
+    <Build Include="procfwk_GetPropertyValue\test WHEN property invalidated THEN error raised.sql" />
+    <Build Include="procfwk_GetPropertyValue\test WHEN property name is null THEN error raised.sql" />
+    <Build Include="procfwk_GetPropertyValue\test WHEN property exists THEN property value returned.sql" />
+    <Build Include="procfwk_GetPropertyValue\setup.sql" />
   </ItemGroup>
 </Project>
