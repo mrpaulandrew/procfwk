@@ -6,18 +6,6 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "FrameworkFactory"
-		},
-		"FrameworkFunctions_properties_typeProperties_functionAppUrl": {
-			"type": "string",
-			"defaultValue": "https://frameworksupportfunctions.azurewebsites.net"
-		},
-		"Keys_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://FrameworkKeys.vault.azure.net/"
-		},
-		"SupportDatabase_properties_typeProperties_connectionString_secretName": {
-			"type": "string",
-			"defaultValue": "FrameworkMetadataDev"
 		}
 	},
 	"variables": {
@@ -41,8 +29,7 @@
 								"referenceName": "02-Parent",
 								"type": "PipelineReference"
 							},
-							"waitOnCompletion": true,
-							"parameters": {}
+							"waitOnCompletion": true
 						}
 					}
 				],
@@ -103,8 +90,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -295,8 +281,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						}
 					},
@@ -372,8 +357,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": true
 						}
@@ -413,8 +397,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						}
 					},
@@ -453,8 +436,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -517,8 +499,7 @@
 										},
 										"dataset": {
 											"referenceName": "GetSetMetadata",
-											"type": "DatasetReference",
-											"parameters": {}
+											"type": "DatasetReference"
 										}
 									}
 								},
@@ -593,7 +574,6 @@
 									"typeProperties": {
 										"functionName": "CheckPipelineStatus",
 										"method": "POST",
-										"headers": {},
 										"body": {
 											"value": "@concat('\n{\n    \"tenantId\": \"',item().TenantId,'\",\n    \"applicationId\": \"',activity('Get SPN Details').output.firstRow.Id,'\",\n    \"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.Secret,'\",\n    \"subscriptionId\": \"',item().SubscriptionId,'\",\n    \"resourceGroup\": \"',item().ResourceGroupName,'\",\n    \"factoryName\": \"',item().DataFactoryName,'\",\n    \"pipelineName\": \"',item().PipelineName,'\",\n    \"runId\": \"',item().AdfPipelineRunId,'\"\n}')",
 											"type": "Expression"
@@ -1031,10 +1011,7 @@
 				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
-				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]",
-				"[concat(variables('factoryId'), '/pipelines/03-Child')]",
-				"[concat(variables('factoryId'), '/linkedServices/FrameworkFunctions')]"
+				"[concat(variables('factoryId'), '/pipelines/03-Child')]"
 			]
 		},
 		{
@@ -1075,8 +1052,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -1137,7 +1113,6 @@
 									"typeProperties": {
 										"functionName": "ExecutePipeline",
 										"method": "POST",
-										"headers": {},
 										"body": {
 											"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"',activity('Get SPN Details').output.firstRow.Id,'\",\n\t\"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.Secret,'\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"',item().ResourceGroupName,'\",\n\t\"factoryName\": \"',item().DataFactoryName,'\",\n\t\"pipelineName\": \"',item().PipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
 											"type": "Expression"
@@ -1179,8 +1154,7 @@
 										},
 										"dataset": {
 											"referenceName": "GetSetMetadata",
-											"type": "DatasetReference",
-											"parameters": {}
+											"type": "DatasetReference"
 										}
 									}
 								},
@@ -1266,8 +1240,7 @@
 										},
 										"dataset": {
 											"referenceName": "GetSetMetadata",
-											"type": "DatasetReference",
-											"parameters": {}
+											"type": "DatasetReference"
 										}
 									}
 								},
@@ -1494,8 +1467,7 @@
 										},
 										"dataset": {
 											"referenceName": "GetSetMetadata",
-											"type": "DatasetReference",
-											"parameters": {}
+											"type": "DatasetReference"
 										},
 										"firstRowOnly": true
 									}
@@ -1549,8 +1521,7 @@
 													},
 													"dataset": {
 														"referenceName": "GetSetMetadata",
-														"type": "DatasetReference",
-														"parameters": {}
+														"type": "DatasetReference"
 													},
 													"firstRowOnly": true
 												}
@@ -1577,7 +1548,6 @@
 												"typeProperties": {
 													"functionName": "SendEmail",
 													"method": "POST",
-													"headers": {},
 													"body": {
 														"value": "@activity('Get Email Parts').output.firstRow",
 														"type": "Expression"
@@ -1618,9 +1588,6 @@
 				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
-				"[concat(variables('factoryId'), '/linkedServices/FrameworkFunctions')]",
-				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]",
 				"[concat(variables('factoryId'), '/pipelines/04-Infant')]"
 			]
 		},
@@ -1666,7 +1633,6 @@
 									"typeProperties": {
 										"functionName": "CheckPipelineStatus",
 										"method": "POST",
-										"headers": {},
 										"body": {
 											"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',pipeline().parameters.applicationId,'\",\n    \"authenticationKey\": \"',pipeline().parameters.authenticationKey,'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',pipeline().parameters.runId,'\"\n}')",
 											"type": "Expression"
@@ -1981,7 +1947,6 @@
 											"typeProperties": {
 												"functionName": "GetActivityErrors",
 												"method": "POST",
-												"headers": {},
 												"body": {
 													"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',pipeline().parameters.applicationId,'\",\n    \"authenticationKey\": \"',pipeline().parameters.authenticationKey,'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',pipeline().parameters.runId,'\"\n}')",
 													"type": "Expression"
@@ -2164,8 +2129,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						}
 					}
@@ -2218,571 +2182,7 @@
 					"Infant"
 				]
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
-				"[concat(variables('factoryId'), '/linkedServices/FrameworkFunctions')]",
-				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Intentional Error')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
-				"activities": [
-					{
-						"name": "Wait1",
-						"type": "Wait",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"waitTimeInSeconds": {
-								"value": "@pipeline().parameters.WaitTime",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Raise Errors or Not",
-						"type": "IfCondition",
-						"dependsOn": [
-							{
-								"activity": "Wait1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@equals(pipeline().parameters.RaiseErrors,'true')",
-								"type": "Expression"
-							},
-							"ifTrueActivities": [
-								{
-									"name": "Call Fail Procedure",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[FailProcedure]",
-										"storedProcedureParameters": {
-											"RaiseError": {
-												"value": {
-													"value": "@pipeline().parameters.RaiseErrors",
-													"type": "Expression"
-												},
-												"type": "String"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "SupportDatabase",
-										"type": "LinkedServiceReference"
-									}
-								}
-							]
-						}
-					}
-				],
-				"parameters": {
-					"RaiseErrors": {
-						"type": "string",
-						"defaultValue": "false"
-					},
-					"WaitTime": {
-						"type": "int",
-						"defaultValue": 5
-					}
-				},
-				"folder": {
-					"name": "_Workers"
-				},
-				"annotations": [
-					"Worker"
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Wait 1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
-				"activities": [
-					{
-						"name": "Wait1",
-						"type": "Wait",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"waitTimeInSeconds": {
-								"value": "@pipeline().parameters.WaitTime",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"parameters": {
-					"WaitTime": {
-						"type": "int",
-						"defaultValue": 5
-					}
-				},
-				"folder": {
-					"name": "_Workers"
-				},
-				"annotations": [
-					"Worker"
-				]
-			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Wait 10')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
-				"activities": [
-					{
-						"name": "Wait10",
-						"type": "Wait",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"waitTimeInSeconds": {
-								"value": "@pipeline().parameters.WaitTime",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"parameters": {
-					"WaitTime": {
-						"type": "int",
-						"defaultValue": 5
-					}
-				},
-				"folder": {
-					"name": "_Workers"
-				},
-				"annotations": [
-					"Worker"
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Wait 2')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
-				"activities": [
-					{
-						"name": "Wait2",
-						"type": "Wait",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"waitTimeInSeconds": {
-								"value": "@pipeline().parameters.WaitTime",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"parameters": {
-					"WaitTime": {
-						"type": "int",
-						"defaultValue": 5
-					}
-				},
-				"folder": {
-					"name": "_Workers"
-				},
-				"annotations": [
-					"Worker"
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Wait 3')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
-				"activities": [
-					{
-						"name": "Wait3",
-						"type": "Wait",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"waitTimeInSeconds": {
-								"value": "@pipeline().parameters.WaitTime",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"parameters": {
-					"WaitTime": {
-						"type": "int",
-						"defaultValue": 5
-					}
-				},
-				"folder": {
-					"name": "_Workers"
-				},
-				"annotations": [
-					"Worker"
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Wait 4')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
-				"activities": [
-					{
-						"name": "Wait4",
-						"type": "Wait",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"waitTimeInSeconds": {
-								"value": "@pipeline().parameters.WaitTime",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"parameters": {
-					"WaitTime": {
-						"type": "int",
-						"defaultValue": 5
-					}
-				},
-				"folder": {
-					"name": "_Workers"
-				},
-				"annotations": [
-					"Worker"
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Wait 5')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
-				"activities": [
-					{
-						"name": "Wait5",
-						"type": "Wait",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"waitTimeInSeconds": {
-								"value": "@pipeline().parameters.WaitTime",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"parameters": {
-					"WaitTime": {
-						"type": "int",
-						"defaultValue": 5
-					}
-				},
-				"folder": {
-					"name": "_Workers"
-				},
-				"annotations": [
-					"Worker"
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Wait 6')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
-				"activities": [
-					{
-						"name": "Wait6",
-						"type": "Wait",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"waitTimeInSeconds": {
-								"value": "@pipeline().parameters.WaitTime",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"parameters": {
-					"WaitTime": {
-						"type": "int",
-						"defaultValue": 5
-					}
-				},
-				"folder": {
-					"name": "_Workers"
-				},
-				"annotations": [
-					"Worker"
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Wait 7')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
-				"activities": [
-					{
-						"name": "Wait7",
-						"type": "Wait",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"waitTimeInSeconds": {
-								"value": "@pipeline().parameters.WaitTime",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"parameters": {
-					"WaitTime": {
-						"type": "int",
-						"defaultValue": 5
-					}
-				},
-				"folder": {
-					"name": "_Workers"
-				},
-				"annotations": [
-					"Worker"
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Wait 8')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
-				"activities": [
-					{
-						"name": "Wait8",
-						"type": "Wait",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"waitTimeInSeconds": {
-								"value": "@pipeline().parameters.WaitTime",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"parameters": {
-					"WaitTime": {
-						"type": "int",
-						"defaultValue": 5
-					}
-				},
-				"folder": {
-					"name": "_Workers"
-				},
-				"annotations": [
-					"Worker"
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Wait 9')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
-				"activities": [
-					{
-						"name": "Wait9",
-						"type": "Wait",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"waitTimeInSeconds": {
-								"value": "@pipeline().parameters.WaitTime",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"parameters": {
-					"WaitTime": {
-						"type": "int",
-						"defaultValue": 15
-					}
-				},
-				"folder": {
-					"name": "_Workers"
-				},
-				"annotations": [
-					"Worker"
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/GetSetMetadata')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "SupportDatabase",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [
-					"ADF.procfwk"
-				],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FrameworkFunctions')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [
-					"ADF.procfwk"
-				],
-				"type": "AzureFunction",
-				"typeProperties": {
-					"functionAppUrl": "[parameters('FrameworkFunctions_properties_typeProperties_functionAppUrl')]",
-					"functionKey": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "Keys",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "FrameworkFunctionsKey"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Keys')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Keys')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Connection to Key Vault for all other ADF linked service credentials required to run the processing framework.",
-				"annotations": [
-					"ADF.procfwk"
-				],
-				"type": "AzureKeyVault",
-				"typeProperties": {
-					"baseUrl": "[parameters('Keys_properties_typeProperties_baseUrl')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SupportDatabase')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Connection between ADF and processing framework metadata SQLDB.",
-				"annotations": [
-					"ADF.procfwk"
-				],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "Keys",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "[parameters('SupportDatabase_properties_typeProperties_connectionString_secretName')]"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Keys')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FunctionalTestingTrigger')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Used for functional testing of the framework in a dedicated environment.",
-				"annotations": [
-					"ADF.procfwk"
-				],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "01-Grandparent",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Hour",
-						"interval": 2,
-						"startTime": "2020-04-06T15:00:00.000Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/01-Grandparent')]"
-			]
 		}
 	]
 }

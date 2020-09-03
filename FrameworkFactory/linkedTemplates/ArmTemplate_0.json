@@ -560,7 +560,7 @@
 				"activities": [
 					{
 						"name": "Wait Until Pipeline Completes",
-						"description": "Loops until the pipeline called completes.\n\nSimple status:\n- Running = new iteration.\n- Done = break.",
+						"description": "Loops until the Worker pipeline called completes.\n\nSimple status:\n- Running = new iteration.\n- Done = break.",
 						"type": "Until",
 						"dependsOn": [
 							{
@@ -573,7 +573,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@equals('Done',activity('Get Pipeline Status').output.SimpleStatus)",
+								"value": "@variables('WorkerPipelineState')",
 								"type": "Expression"
 							},
 							"activities": [
@@ -606,11 +606,11 @@
 								},
 								{
 									"name": "Wait If Running",
-									"description": "True = Do nothing.\nFalse = Wait.",
+									"description": "True = Do nothing.\nFalse = Wait, before the next iteration.",
 									"type": "IfCondition",
 									"dependsOn": [
 										{
-											"activity": "Get Pipeline Status",
+											"activity": "Set Worker State",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -619,7 +619,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"expression": {
-											"value": "@equals('Done',activity('Get Pipeline Status').output.SimpleStatus)",
+											"value": "@variables('WorkerPipelineState')",
 											"type": "Expression"
 										},
 										"ifFalseActivities": [
@@ -641,6 +641,7 @@
 								},
 								{
 									"name": "Set Last Check DateTime",
+									"description": "Update the current execution table with a date time from when the Worker pipeline status was last checked as part of the Until iterations.",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [
 										{
@@ -691,6 +692,7 @@
 								},
 								{
 									"name": "Log Activity Failure",
+									"description": "Report to the current execution table that the framework pipeline activity has failed. This failure is outside of the scope of the framework and is probably related to a wider platform problem.",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [
 										{
@@ -741,6 +743,27 @@
 									"linkedServiceName": {
 										"referenceName": "SupportDatabase",
 										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Set Worker State",
+									"description": "Set the bool state of the Worker pipeline to be used by the Until and If expressions. True = Complete, False = Running.",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Get Pipeline Status",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "WorkerPipelineState",
+										"value": {
+											"value": "@equals('Done',activity('Get Pipeline Status').output.SimpleStatus)",
+											"type": "Expression"
+										}
 									}
 								}
 							],
@@ -947,7 +970,7 @@
 									"activities": [
 										{
 											"name": "Pipeline Status Cancelled",
-											"description": "Updates the current execution table with a pipeline status of unknown if the function returns an unexpected outcome.",
+											"description": "Updates the current execution table with a pipeline status of cancelled if the function outcome is cancelled.",
 											"type": "SqlServerStoredProcedure",
 											"dependsOn": [],
 											"policy": {
@@ -1042,6 +1065,7 @@
 					},
 					{
 						"name": "Get Wait Duration",
+						"description": "Return wait duration in seconds from database properties table to be used during each Until iteration when the Worker pipeline is still running.",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
@@ -1108,11 +1132,17 @@
 						"type": "int"
 					}
 				},
+				"variables": {
+					"WorkerPipelineState": {
+						"type": "Boolean"
+					}
+				},
 				"folder": {
 					"name": "_ProcFwk"
 				},
 				"annotations": [
-					"ADF.procfwk"
+					"ADF.procfwk",
+					"Infant"
 				]
 			},
 			"dependsOn": [
@@ -1693,16 +1723,12 @@
 						"type": "string"
 					}
 				},
-				"variables": {
-					"FunctionBody": {
-						"type": "String"
-					}
-				},
 				"folder": {
 					"name": "_ProcFwk"
 				},
 				"annotations": [
-					"ADF.procfwk"
+					"ADF.procfwk",
+					"Child"
 				]
 			},
 			"dependsOn": [
@@ -1725,7 +1751,7 @@
 						"type": "Lookup",
 						"dependsOn": [
 							{
-								"activity": "Execution Wrapper",
+								"activity": "Set Execution Id",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1747,7 +1773,7 @@
 									"ExecutionId": {
 										"type": "Guid",
 										"value": {
-											"value": "@activity('Execution Wrapper').output.firstRow.ExecutionId",
+											"value": "@variables('ExecutionId')",
 											"type": "Expression"
 										}
 									}
@@ -1820,7 +1846,7 @@
 												"type": "Expression"
 											},
 											"ExecutionId": {
-												"value": "@activity('Execution Wrapper').output.firstRow.ExecutionId",
+												"value": "@variables('ExecutionId')",
 												"type": "Expression"
 											},
 											"TenantId": {
@@ -1859,7 +1885,7 @@
 										"storedProcedureParameters": {
 											"ExecutionId": {
 												"value": {
-													"value": "@activity('Execution Wrapper').output.firstRow.ExecutionId",
+													"value": "@variables('ExecutionId')",
 													"type": "Expression"
 												},
 												"type": "Guid"
@@ -2260,6 +2286,7 @@
 								},
 								{
 									"name": "Set Pipeline Status",
+									"description": "Update the metadata depending on the actual pipeline outcome. Using the status as the case.",
 									"type": "Switch",
 									"dependsOn": [
 										{
@@ -2281,6 +2308,7 @@
 												"activities": [
 													{
 														"name": "Pipeline Status Failed",
+														"description": "Updates the current execution table with a pipeline status of failed if the function outcome is failed. Also blocks pipelines in the downstream execution stage.",
 														"type": "SqlServerStoredProcedure",
 														"dependsOn": [],
 														"policy": {
@@ -2333,6 +2361,7 @@
 												"activities": [
 													{
 														"name": "Pipeline Status Succeeded",
+														"description": "Updates the current execution table with a pipeline status of success if the function outcome is succeeded.",
 														"type": "SqlServerStoredProcedure",
 														"dependsOn": [],
 														"policy": {
@@ -2381,6 +2410,7 @@
 												"activities": [
 													{
 														"name": "Pipeline Status Queued - Running",
+														"description": "Updates the current execution table with a pipeline status of running if the function outcome is queued.",
 														"type": "SqlServerStoredProcedure",
 														"dependsOn": [],
 														"policy": {
@@ -2429,6 +2459,7 @@
 												"activities": [
 													{
 														"name": "Pipeline Status InProgress - Running",
+														"description": "Updates the current execution table with a pipeline status of running if the function outcome is in progress.",
 														"type": "SqlServerStoredProcedure",
 														"dependsOn": [],
 														"policy": {
@@ -2477,6 +2508,7 @@
 												"activities": [
 													{
 														"name": "Pipeline Status Cancelled",
+														"description": "Updates the current execution table with a pipeline status of cancelled if the function outcome is cancelled.",
 														"type": "SqlServerStoredProcedure",
 														"dependsOn": [],
 														"policy": {
@@ -2524,6 +2556,7 @@
 										"defaultActivities": [
 											{
 												"name": "Pipeline Status Unknown",
+												"description": "Updates the current execution table with a pipeline status of unknown if the function returns an unexpected outcome.",
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
@@ -2570,6 +2603,7 @@
 								},
 								{
 									"name": "Set Last Check DateTime",
+									"description": "Update the current execution table with a date time from when the function last checked the pipeline status.",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [
 										{
@@ -2640,13 +2674,40 @@
 							"referenceName": "SupportDatabase",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "Set Execution Id",
+						"description": "Set the local execution Id to a pipeline variable for each in several downstream activities.",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execution Wrapper",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "ExecutionId",
+							"value": {
+								"value": "@activity('Execution Wrapper').output.firstRow.ExecutionId",
+								"type": "Expression"
+							}
+						}
 					}
 				],
+				"variables": {
+					"ExecutionId": {
+						"type": "String"
+					}
+				},
 				"folder": {
 					"name": "_ProcFwk"
 				},
 				"annotations": [
-					"ADF.procfwk"
+					"ADF.procfwk",
+					"Parent"
 				]
 			},
 			"dependsOn": [
@@ -2682,7 +2743,8 @@
 					"name": "_ProcFwk"
 				},
 				"annotations": [
-					"ADF.procfwk"
+					"ADF.procfwk",
+					"Grandparent"
 				]
 			},
 			"dependsOn": [
