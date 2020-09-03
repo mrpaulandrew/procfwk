@@ -29,7 +29,7 @@ BEGIN
 	EXEC [procfwkHelpers].[AddProperty]
 		@PropertyName = N'CancelledWorkerResultBlocks',
 		@PropertyValue = N'1',
-		@Description = N'If a worker pipeline returns an canceled (not a typo) status. Should this block and fail downstream pipeline? 1 = Yes, 0 = No.';
+		@Description = N'If a worker pipeline returns an cancelled status. Should this block and fail downstream pipeline? 1 = Yes, 0 = No.';
 
 	EXEC [procfwkHelpers].[AddProperty]
 		@PropertyName = N'UseFrameworkEmailAlerting',
