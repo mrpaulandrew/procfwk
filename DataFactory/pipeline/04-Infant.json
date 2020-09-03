@@ -5,7 +5,7 @@
 		"activities": [
 			{
 				"name": "Wait Until Pipeline Completes",
-				"description": "Loops until the pipeline called completes.\n\nSimple status:\n- Running = new iteration.\n- Done = break.",
+				"description": "Loops until the Worker pipeline called completes.\n\nSimple status:\n- Running = new iteration.\n- Done = break.",
 				"type": "Until",
 				"dependsOn": [
 					{
@@ -18,7 +18,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@equals('Done',activity('Get Pipeline Status').output.SimpleStatus)",
+						"value": "@variables('WorkerPipelineState')",
 						"type": "Expression"
 					},
 					"activities": [
@@ -50,11 +50,11 @@
 						},
 						{
 							"name": "Wait If Running",
-							"description": "True = Do nothing.\nFalse = Wait.",
+							"description": "True = Do nothing.\nFalse = Wait, before the next iteration.",
 							"type": "IfCondition",
 							"dependsOn": [
 								{
-									"activity": "Get Pipeline Status",
+									"activity": "Set Worker State",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -63,7 +63,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@equals('Done',activity('Get Pipeline Status').output.SimpleStatus)",
+									"value": "@variables('WorkerPipelineState')",
 									"type": "Expression"
 								},
 								"ifFalseActivities": [
@@ -85,6 +85,7 @@
 						},
 						{
 							"name": "Set Last Check DateTime",
+							"description": "Update the current execution table with a date time from when the Worker pipeline status was last checked as part of the Until iterations.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
@@ -135,6 +136,7 @@
 						},
 						{
 							"name": "Log Activity Failure",
+							"description": "Report to the current execution table that the framework pipeline activity has failed. This failure is outside of the scope of the framework and is probably related to a wider platform problem.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
@@ -185,6 +187,27 @@
 							"linkedServiceName": {
 								"referenceName": "SupportDatabase",
 								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Set Worker State",
+							"description": "Set the bool state of the Worker pipeline to be used by the Until and If expressions. True = Complete, False = Running.",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Get Pipeline Status",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "WorkerPipelineState",
+								"value": {
+									"value": "@equals('Done',activity('Get Pipeline Status').output.SimpleStatus)",
+									"type": "Expression"
+								}
 							}
 						}
 					],
@@ -390,7 +413,7 @@
 							"activities": [
 								{
 									"name": "Pipeline Status Cancelled",
-									"description": "Updates the current execution table with a pipeline status of unknown if the function returns an unexpected outcome.",
+									"description": "Updates the current execution table with a pipeline status of cancelled if the function outcome is cancelled.",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
@@ -485,6 +508,7 @@
 			},
 			{
 				"name": "Get Wait Duration",
+				"description": "Return wait duration in seconds from database properties table to be used during each Until iteration when the Worker pipeline is still running.",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -505,7 +529,8 @@
 								"value": "PipelineStatusCheckDuration"
 							}
 						},
-						"queryTimeout": "02:00:00"
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"dataset": {
 						"referenceName": "GetSetMetadata",
@@ -549,11 +574,17 @@
 				"type": "int"
 			}
 		},
+		"variables": {
+			"WorkerPipelineState": {
+				"type": "Boolean"
+			}
+		},
 		"folder": {
 			"name": "_ProcFwk"
 		},
 		"annotations": [
-			"ADF.procfwk"
+			"ADF.procfwk",
+			"Infant"
 		]
 	}
 }

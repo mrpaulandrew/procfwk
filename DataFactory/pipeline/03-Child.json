@@ -561,16 +561,12 @@
 				"type": "string"
 			}
 		},
-		"variables": {
-			"FunctionBody": {
-				"type": "String"
-			}
-		},
 		"folder": {
 			"name": "_ProcFwk"
 		},
 		"annotations": [
-			"ADF.procfwk"
+			"ADF.procfwk",
+			"Child"
 		]
 	}
 }

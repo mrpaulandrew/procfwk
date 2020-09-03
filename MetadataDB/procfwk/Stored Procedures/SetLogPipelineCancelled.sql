@@ -65,7 +65,7 @@ BEGIN
 				--do nothing allow processing to carry on regardless
 				RETURN 0;
 			END;
-		
+
 		ELSE IF ([procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'Simple'
 			BEGIN
 				--flag all downstream stages as blocked
@@ -78,7 +78,7 @@ BEGIN
 					[LocalExecutionId] = @ExecutionId
 					AND [StageId] > @StageId
 
-				SET @ErrorDetail = 'Pipeline execution was cancelled status. Blocking downstream stages as a precaution.'
+				SET @ErrorDetail = 'Pipeline execution has a cancelled status. Blocking downstream stages as a precaution.'
 
 				RAISERROR(@ErrorDetail,16,1);
 				RETURN 0;

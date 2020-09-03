@@ -92,8 +92,8 @@ namespace ADFprocfwk
                     case "InProgress":
                         simpleStatus = "Running";
                         break;
-                    case "Canceling":
-                        simpleStatus = "Canceling";
+                    case "Cancelling":
+                        simpleStatus = "Cancelling";
                         break;
                     default:
                         simpleStatus = "Done";
