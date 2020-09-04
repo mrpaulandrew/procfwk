@@ -192,6 +192,7 @@
     <Build Include="procfwk\Stored Procedures\ExecutePrecursorProcedure.sql" />
     <Build Include="dbo\Stored Procedures\ExampleCustomExecutionPrecursor.sql" />
     <Build Include="procfwkHelpers\Stored Procedures\AddPipelineViaPowerShell.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogPipelineCancelled.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

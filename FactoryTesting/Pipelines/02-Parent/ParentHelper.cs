@@ -1,5 +1,8 @@
 ﻿using FactoryTesting.Helpers;
+using System;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace FactoryTesting.Pipelines.Parent
 {
@@ -71,6 +74,14 @@ namespace FactoryTesting.Pipelines.Parent
             return this;
         }
 
+        public ParentHelper WithOnlyStageOneEnabled()
+        {
+            EnableDisableMetadata("Stages", false, "StageId", "2");
+            EnableDisableMetadata("Stages", false, "StageId", "3");
+            EnableDisableMetadata("Stages", false, "StageId", "4");
+            return this;
+        }
+
         public ParentHelper WithPipelinesDisabled()
         {
             EnableDisableMetadata("Pipelines", false);
@@ -81,11 +92,47 @@ namespace FactoryTesting.Pipelines.Parent
             EnableDisableMetadata("Pipelines", true);
             return this;
         }
+        public ParentHelper WithLongRunningWorkers()
+        {
+            SetParameterValue("600", "ParameterName", "WaitTime");
+            return this;
+        }
+
+        public string GetWorkerRunId()
+        {
+            string AdfPipelineRunId = string.Empty;
+            Guid RunIdValidated;
+
+            while (string.IsNullOrEmpty(AdfPipelineRunId))
+            {
+                using (var cmd = new SqlCommand($"SELECT TOP 1 [AdfPipelineRunId] FROM [procfwk].[CurrentExecution] WHERE [AdfPipelineRunId] IS NOT NULL;", _conn))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    reader.Read();
+                    AdfPipelineRunId = reader.GetString(0);
+                };
+                System.Threading.Thread.Sleep(15000);
+
+                if (Guid.TryParse(AdfPipelineRunId, out RunIdValidated)) break;
+            }
+
+            return AdfPipelineRunId;
+        }
 
         private void EnableDisableMetadata(string table, bool state)
         {
             string paramValue = state ? "true" : "false";
             ExecuteNonQuery(@$"UPDATE [procfwk].[{table}] SET [Enabled] = '{paramValue}'");
+        }
+
+        private void EnableDisableMetadata(string table, bool state, string where, string equals)
+        {
+            string paramValue = state ? "true" : "false";
+            ExecuteNonQuery(@$"UPDATE [procfwk].[{table}] SET [Enabled] = '{paramValue}' WHERE {where} = '{equals.Replace("'", "''")}'");
+        }
+        private void SetParameterValue(string value, string where, string equals)
+        {
+            ExecuteNonQuery(@$"UPDATE [procfwk].[PipelineParameters] SET [ParameterValue] = '{value.Replace("'", "''")}' WHERE {where} = '{equals.Replace("'", "''")}'");
         }
 
         private void SimulateError(bool simulate)
