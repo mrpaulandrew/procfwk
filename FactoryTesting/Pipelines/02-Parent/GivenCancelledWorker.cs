@@ -16,15 +16,16 @@ namespace FactoryTesting.Pipelines.Parent
                 .WithEmptyTable("procfwk.CurrentExecution")
                 .WithEmptyTable("procfwk.ExecutionLog")
                 .WithEmptyTable("procfwk.ErrorLog")
-                .WithFailureHandling("Simple")
-                .WithOnlyStageOneEnabled()
-                .WithLongRunningWorkers();   
-            //await _helper.RunPipeline();
-         
+                .WithFailureHandling("Simple");
+             //   .WithOnlyStageOneEnabled()
+            //    .WithLongRunningWorkers();   
+            await _helper.RunPipeline();
+         /*
             Task task1 = Task.Factory.StartNew(() => _helper.RunPipeline());
             Task task2 = Task.Factory.StartNew(() => _helper.CancelRunningPipeline(_helper.GetWorkerRunId()));
 
             Task.WaitAll(task1, task2);
+         */
         }
 
         #region Integration tests
@@ -39,12 +40,7 @@ namespace FactoryTesting.Pipelines.Parent
 
         [OneTimeTearDown]
         public void TearDown()
-        {
-            _helper = new ParentHelper()
-                .WithStagesEnabled()
-                .WithEmptyTable("procfwk.PipelineParameters")
-                .InsertNewPipelineParameters();
-            
+        {                            
             _helper?.TearDown();
         }
     }
