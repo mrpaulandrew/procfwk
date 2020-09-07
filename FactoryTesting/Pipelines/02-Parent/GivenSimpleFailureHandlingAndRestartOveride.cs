@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FactoryTesting.Pipelines.Parent
 {
-    public class GivenCancelledWorkerAndRestart
+    public class GivenSimpleFailureHandlingAndRestartOveride
     {
         private ParentHelper _helperFirstRun;
         private ParentHelper _helperRestartRun;
@@ -19,20 +19,16 @@ namespace FactoryTesting.Pipelines.Parent
                 .WithTenantId()
                 .WithSPNInDatabase("FrameworkFactory")
                 .WithEmptyExecutionTables()
-                .WithoutPrecursorObject() //done to ensure 2min waits are used, not example precursor waits
-                .With2MinWaitsOnWorkers() //to ensure the cancel call has enough time
-                .WithCancelledWorkersBlock(true)
+                .WithSimulatedError()
                 .WithFailureHandling("Simple");
+            await _helperFirstRun.RunPipeline();
 
-            var runOrchestrator = _helperFirstRun.RunPipeline();
-            var cancelWorker = _helperFirstRun.CancelAnyWorkerPipeline();
-
-            await Task.WhenAll(runOrchestrator, cancelWorker);
-
-            _helperRestartRun = new ParentHelper();
+            _helperRestartRun = new ParentHelper()
+                .WithoutSimulatedError()
+                .WithOverideRestart(true);
             await _helperRestartRun.RunPipeline();
         }
-        #region Integration tests
+        #region Functional tests
 
         [Test]
         public void ThenPipelineOutcomeIsSucceeded()
@@ -41,14 +37,24 @@ namespace FactoryTesting.Pipelines.Parent
         }
 
         [Test]
-        public void ThenOneExecutionLogRecord()
+        public void ThenOneExecutionLogFailedRecord()
         {
-            _helperRestartRun.RowCount("procfwk.ExecutionLog", where: "PipelineStatus", equals: "Cancelled").Should().Be(1);
+            _helperRestartRun.RowCount("procfwk.ExecutionLog", where: "PipelineStatus", equals: "Failed").Should().Be(2);
         }
         [Test]
-        public void ThenElevenExecutionsSucceeded()
+        public void ThenElevenExecutionLogSuccessRecord()
         {
-            _helperRestartRun.RowCount("procfwk.ExecutionLog", where: "PipelineStatus", equals: "Success").Should().Be(11);
+            _helperRestartRun.RowCount("procfwk.ExecutionLog", where: "PipelineStatus", equals: "Success").Should().Be(14);
+        }
+        [Test]
+        public void ThenSevenExecutionsBlocked()
+        {
+            _helperRestartRun.RowCount("procfwk.ExecutionLog", where: "PipelineStatus", equals: "Blocked").Should().Be(7);
+        }
+        [Test]
+        public void ThenTwoErrorLogRecords()
+        {
+            _helperRestartRun.RowCount("procfwk.ErrorLog").Should().Be(2);
         }
         #endregion
 

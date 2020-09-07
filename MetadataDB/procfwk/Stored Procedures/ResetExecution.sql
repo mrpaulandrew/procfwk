@@ -1,13 +1,17 @@
 ﻿CREATE PROCEDURE [procfwk].[ResetExecution]
 AS
 BEGIN 
-	
-	--capture any pipelines that may have been cancelled
+	SET NOCOUNT	ON;
+
+	--capture any pipelines that might be in an unexpected state
 	INSERT INTO [procfwk].[ExecutionLog]
 		(
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
+		[CallingDataFactoryName],
+		[ResourceGroupName],
+		[DataFactoryName],
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
@@ -17,20 +21,24 @@ BEGIN
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
+		[CallingDataFactoryName],
+		[ResourceGroupName],
+		[DataFactoryName],
 		[PipelineName],
 		[StartDateTime],
-		'Cancelled', --assumption that this is what happened
+		'Unknown',
 		[EndDateTime]
 	FROM
 		[procfwk].[CurrentExecution]
 	WHERE
-		--these are predicted states so aren't considered cancellations
+		--these are predicted states
 		[PipelineStatus] NOT IN
 			(
 			'Success',
 			'Failed',
-			'Blocked'
-			)
+			'Blocked',
+			'Cancelled'
+			);
 		
 	--reset status ready for next attempt
 	UPDATE
@@ -45,12 +53,11 @@ BEGIN
 		[IsBlocked] = 0
 	WHERE
 		ISNULL([PipelineStatus],'') <> 'Success'
-		OR [IsBlocked] = 1
+		OR [IsBlocked] = 1;
 	
 	--return current execution id
 	SELECT DISTINCT
 		[LocalExecutionId] AS ExecutionId
 	FROM
-		[procfwk].[CurrentExecution]
-
-END
+		[procfwk].[CurrentExecution];
+END;

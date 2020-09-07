@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FactoryTesting.Helpers
@@ -69,7 +70,6 @@ namespace FactoryTesting.Helpers
 
             return activityRuns;
         }
-
         public virtual void TearDown()
         {
             _adfClient?.Dispose();
@@ -81,23 +81,85 @@ namespace FactoryTesting.Helpers
             var run = await _adfClient.PipelineRuns.GetAsync(_rgName, _adfName, pipelineRunId);
             return run.Status;
         }
+        public async Task<string> GetRunStatus(string pipelineRunId, string adfName)
+        {
+            await InitialiseClient();
+            var run = await _adfClient.PipelineRuns.GetAsync(_rgName, adfName, pipelineRunId);
+            return run.Status;
+        }
 
         public async Task<bool> IsInProgress(string pipelineRunId)
         {
             await InitialiseClient();
             var status = await GetRunStatus(pipelineRunId);
-            return status == "Queued" || status == "InProgress" || status == "Canceling";
+            return status == "Queued" || status == "InProgress" || status == "Cancelling";
         }
-        
-        public async void CancelRunningPipeline(string pipelineRunId)
+        public async Task<bool> IsInProgress(string pipelineRunId, string adfName)
+        {
+            await InitialiseClient();
+            var status = await GetRunStatus(pipelineRunId, adfName);
+            return status == "Queued" || status == "InProgress" || status == "Cancelling";
+        }
+
+        public async Task<bool> IsQueued(string pipelineRunId)
         {
             await InitialiseClient();
             var status = await GetRunStatus(pipelineRunId);
-            if (status == "Running")
-            {
-                _adfClient.PipelineRuns.Cancel(_rgName, _adfName, pipelineRunId);
-            }
+            return status == "Queued";
         }
+
+        public async Task<bool> IsCancelling(string pipelineRunId)
+        {
+            await InitialiseClient();
+            var status = await GetRunStatus(pipelineRunId);
+            return status == "Cancelling" || status == "Canceling"; //microsoft typo
+        }
+
+        public async Task<bool> IsCancelling(string pipelineRunId, string adfName)
+        {
+            await InitialiseClient();
+            var status = await GetRunStatus(pipelineRunId, adfName);
+            return status == "Cancelling" || status == "Canceling"; //microsoft typo
+        }
+
+        public async Task<string> CancelRunningPipeline(string pipelineRunId, bool recurseCancel = true)
+        {
+            await InitialiseClient();
+            if (await IsInProgress(pipelineRunId))
+            {
+                _adfClient.PipelineRuns.Cancel(_rgName, _adfName, pipelineRunId, recurseCancel);
+
+                while (await IsCancelling(pipelineRunId))
+                    Thread.Sleep(2000);
+            }
+            else
+            {
+                throw new Exception("Pipeline is not in a state that can be cancelled.");
+            }
+
+            string status = await GetRunStatus(pipelineRunId);
+            return status;
+        }
+
+        public async Task<string> CancelRunningPipeline(string pipelineRunId, string adfName, bool recurseCancel = true)
+        {
+            await InitialiseClient();
+            if (await IsInProgress(pipelineRunId, adfName))
+            {
+                _adfClient.PipelineRuns.Cancel(_rgName, adfName, pipelineRunId, recurseCancel);
+
+                while (await IsCancelling(pipelineRunId, adfName))
+                    Thread.Sleep(2000);
+            }
+            else
+            {
+                throw new Exception("Pipeline is not in a state that can be cancelled.");
+            }
+
+            string status = await GetRunStatus(pipelineRunId, adfName);
+            return status;
+        }
+
         public DataFactoryHelper()
         {
             _adfName = GetSetting("DataFactoryName");

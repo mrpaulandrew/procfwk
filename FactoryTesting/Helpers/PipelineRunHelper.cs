@@ -45,6 +45,20 @@ namespace FactoryTesting.Helpers
             RunOutcome = await GetRunStatus(RunId);
         }
 
+        public async Task RunPipelineAndCancel(string pipelineName)
+        {
+            if (_hasRun)
+                throw new Exception("RunPipeline() can only be called once per instance lifetime");
+            _hasRun = true;
+
+            RunId = await TriggerPipeline(pipelineName, _parameters);
+            while (await IsQueued(RunId))
+                Thread.Sleep(2000);
+
+            await CancelRunningPipeline(RunId, true);
+            RunOutcome = await GetRunStatus(RunId);
+        }
+
         public async Task<IEnumerable<ActivityRun>> GetActivityRuns()
         {
             await InitialiseActivityRuns();
