@@ -126,7 +126,7 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "MetadataDBTests", "Metadata
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pages", "Pages", "{F3EF658C-291F-4BAD-AEDE-92073EB6ECB0}"
 	ProjectSection(SolutionItems) = preProject
-		404.md = 404.md
+		docs\404.md = 404.md
 		docs\index.md = docs\index.md
 	EndProjectSection
 EndProject
