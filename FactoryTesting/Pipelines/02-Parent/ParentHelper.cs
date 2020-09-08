@@ -1,5 +1,8 @@
 ﻿using FactoryTesting.Helpers;
+using System;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace FactoryTesting.Pipelines.Parent
 {
@@ -8,6 +11,20 @@ namespace FactoryTesting.Pipelines.Parent
         public async Task RunPipeline()
         {
             await RunPipeline("02-Parent");
+        }
+
+        public async Task CancelAnyWorkerPipeline()
+        {
+            await CancelRunningPipeline(GetWorkerRunId(), GetSetting("WorkersDataFactoryName"));
+        }
+        public async Task CancelIntentionalErrorWorkerPipeline()
+        {
+            await CancelRunningPipeline(GetWorkerRunId("Intentional Error"), GetSetting("WorkersDataFactoryName"));
+        }
+
+        public virtual Task RunAsync()
+        {
+            return Task.CompletedTask;
         }
         public ParentHelper WithTenantId()
         {
@@ -71,6 +88,14 @@ namespace FactoryTesting.Pipelines.Parent
             return this;
         }
 
+        public ParentHelper WithOnlyStageOneEnabled()
+        {
+            EnableDisableMetadata("Stages", false, "StageId", "2");
+            EnableDisableMetadata("Stages", false, "StageId", "3");
+            EnableDisableMetadata("Stages", false, "StageId", "4");
+            return this;
+        }
+
         public ParentHelper WithPipelinesDisabled()
         {
             EnableDisableMetadata("Pipelines", false);
@@ -81,11 +106,82 @@ namespace FactoryTesting.Pipelines.Parent
             EnableDisableMetadata("Pipelines", true);
             return this;
         }
+        public ParentHelper With2MinWaitsOnWorkers()
+        {
+            SetParameterValue("120", "ParameterName", "WaitTime");
+            return this;
+        }
+        public ParentHelper WithFailureHandling(string mode)
+        {
+            ExecuteNonQuery(@$"UPDATE [procfwk].[Properties] 
+SET [PropertyValue] = '{mode}' 
+WHERE [PropertyName] = 'FailureHandling'");
+            return this;
+        }
+
+        public ParentHelper WithCancelledWorkersBlock(bool mode)
+        {
+            string modeString = mode ? "1" : "0";
+            ExecuteNonQuery(@$"UPDATE [procfwk].[Properties] 
+SET [PropertyValue] = '{modeString}' 
+WHERE [PropertyName] = 'CancelledWorkerResultBlocks'");
+            return this;
+        }
+        public ParentHelper WithOverideRestart(bool mode)
+        {
+            string modeString = mode ? "1" : "0";
+            ExecuteNonQuery(@$"UPDATE [procfwk].[Properties] 
+SET [PropertyValue] = '{modeString}' 
+WHERE [PropertyName] = 'OverideRestart'");
+            return this;
+        }
+
+        public ParentHelper WithoutPrecursorObject()
+        {
+            ExecuteNonQuery(@$"UPDATE [procfwk].[Properties] 
+SET [PropertyValue] = '[dbo].[none]' 
+WHERE [PropertyName] = 'ExecutionPrecursorProc'");
+            return this;
+        }
+        public ParentHelper WithSingleExecutionStage()
+        {
+            ExecuteNonQuery("UPDATE [procfwk].[Pipelines] SET [StageId] = 1");
+            return this;
+        }
+
+        private string GetWorkerRunId(string pipelineName = null)
+        {
+            string AdfPipelineRunId;
+
+            using (var cmd = new SqlCommand("procfwkTesting.GetRunIdWhenAvailable", _conn))
+            {
+                cmd.CommandTimeout = 600;
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                if (pipelineName != null) cmd.Parameters.Add(new SqlParameter("@PipelineName", pipelineName));
+
+                using var reader = cmd.ExecuteReader();
+                reader.Read();
+                AdfPipelineRunId = reader.GetString(0).ToLower();
+            }
+            return AdfPipelineRunId;
+        }
 
         private void EnableDisableMetadata(string table, bool state)
         {
             string paramValue = state ? "true" : "false";
             ExecuteNonQuery(@$"UPDATE [procfwk].[{table}] SET [Enabled] = '{paramValue}'");
+        }
+
+        private void EnableDisableMetadata(string table, bool state, string where, string equals)
+        {
+            string paramValue = state ? "true" : "false";
+            ExecuteNonQuery(@$"UPDATE [procfwk].[{table}] SET [Enabled] = '{paramValue}' WHERE {where} = '{equals.Replace("'", "''")}'");
+        }
+        private void SetParameterValue(string value, string where, string equals)
+        {
+            string sqlStatement = @$"UPDATE [procfwk].[PipelineParameters] SET [ParameterValue] = '{value.Replace("'", "''")}' WHERE {where} = '{equals.Replace("'", "''")}'";
+            ExecuteNonQuery(sqlStatement);
         }
 
         private void SimulateError(bool simulate)
@@ -98,23 +194,8 @@ FROM [procfwk].[PipelineParameters] pp
 WHERE p.[PipelineName] = 'Intentional Error' AND pp.[ParameterName] = 'RaiseErrors'");
         }
 
-        public ParentHelper WithFailureHandling(string mode)
-        {
-            ExecuteNonQuery(@$"UPDATE [procfwk].[Properties] 
-SET [PropertyValue] = '{mode}' 
-WHERE [PropertyName] = 'FailureHandling'");
-            return this;
-        }
-
-        public ParentHelper WithSingleExecutionStage()
-        {
-            ExecuteNonQuery("UPDATE [procfwk].[Pipelines] SET [StageId] = 1");
-            return this;
-        }
-
         public override void TearDown()
         {
-            SimulateError(false);  // ensure default behaviour is to *not* simulate errors
             base.TearDown();
         }
     }

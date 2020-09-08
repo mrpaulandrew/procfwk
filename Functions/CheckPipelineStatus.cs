@@ -92,8 +92,11 @@ namespace ADFprocfwk
                     case "InProgress":
                         simpleStatus = "Running";
                         break;
-                    case "Canceling":
-                        simpleStatus = "Canceling";
+                    case "Canceling": //microsoft typo
+                        simpleStatus = "Running";
+                        break;
+                    case "Cancelling":
+                        simpleStatus = "Running";
                         break;
                     default:
                         simpleStatus = "Done";
@@ -106,7 +109,7 @@ namespace ADFprocfwk
                 outputString = "{ \"PipelineName\": \"" + pipelineName +
                                         "\", \"RunId\": \"" + pipelineRun.RunId +
                                         "\", \"SimpleStatus\": \"" + simpleStatus +
-                                        "\", \"Status\": \"" + pipelineRun.Status +
+                                        "\", \"Status\": \"" + pipelineRun.Status.Replace("Canceling", "Cancelling") + //deal with microsoft typo
                                         "\" }";
             }
 

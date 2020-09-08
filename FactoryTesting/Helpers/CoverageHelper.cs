@@ -18,6 +18,12 @@ namespace FactoryTesting.Helpers
                     RecordActivityRun(ar, callStack.ToString());
         }
 
+        public new async Task RunPipelineAndCancel(string pipelineName)
+        {
+            var callStack = new System.Diagnostics.StackTrace();
+            await base.RunPipelineAndCancel(pipelineName);
+        }
+
         public bool ReportTestCoverage
         {
             get
