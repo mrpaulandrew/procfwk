@@ -1,6 +1,6 @@
-# ADF.procfwk
+# Welcome to the ADF.procfwk Documentation Home Page
 
-![alt text](https://mrpaulandrew.files.wordpress.com/2020/07/repo-image-1.png "ADF.procfwk Icon")
+This site provides details on the latest version of the processing framework code project as a single source of all information needed to implement this solution in your Azure data platform environment.
 
 ## Code Project Overview
 
@@ -30,7 +30,7 @@ This framework can also be used in any Azure Tenant and allow the creation of co
  * Automated testing.
  * Azure Key Vault integration.
 
-[ADFprocfwk.com](http://ADFprocfwk.com/)
+![alt text](https://mrpaulandrew.files.wordpress.com/2020/07/repo-image-1.png "ADF.procfwk Icon")
 
 ## Complete Data Factory Activity Chain
 
@@ -57,7 +57,7 @@ Go to... [External Requests](https://github.com/mrpaulandrew/ADF.procfwk/project
 Go to... [Internal Backlog](https://github.com/mrpaulandrew/ADF.procfwk/projects/1)
 
 ## Glossary
-
+[Glossary](https://mrpaulandrew.github.io/ADF.procfwk/Glossary)
 Go to... [Glossary](https://github.com/mrpaulandrew/ADF.procfwk/blob/master/Glossary.md)
 
 ## Resources and Content
