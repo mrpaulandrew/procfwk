@@ -122,6 +122,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions App", "Functions 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FactoryTesting", "FactoryTesting\FactoryTesting.csproj", "{777BB424-9D89-49E5-BE29-E73E0A0E159A}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "MetadataDBTests", "MetadataDBTests\MetadataDBTests.sqlproj", "{32D54B90-932D-44A3-911D-007C4B90BC55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -146,6 +148,12 @@ Global
 		{777BB424-9D89-49E5-BE29-E73E0A0E159A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{777BB424-9D89-49E5-BE29-E73E0A0E159A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{777BB424-9D89-49E5-BE29-E73E0A0E159A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32D54B90-932D-44A3-911D-007C4B90BC55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32D54B90-932D-44A3-911D-007C4B90BC55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32D54B90-932D-44A3-911D-007C4B90BC55}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{32D54B90-932D-44A3-911D-007C4B90BC55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32D54B90-932D-44A3-911D-007C4B90BC55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32D54B90-932D-44A3-911D-007C4B90BC55}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
