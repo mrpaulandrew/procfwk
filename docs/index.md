@@ -57,8 +57,7 @@ Go to... [External Requests](https://github.com/mrpaulandrew/ADF.procfwk/project
 Go to... [Internal Backlog](https://github.com/mrpaulandrew/ADF.procfwk/projects/1)
 
 ## Glossary
-[Glossary](https://mrpaulandrew.github.io/ADF.procfwk/Glossary)
-Go to... [Glossary](https://github.com/mrpaulandrew/ADF.procfwk/blob/master/Glossary.md)
+Go to... [Glossary](https://mrpaulandrew.github.io/ADF.procfwk/glossary)
 
 ## Resources and Content
 

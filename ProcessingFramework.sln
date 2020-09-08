@@ -124,12 +124,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FactoryTesting", "FactoryTe
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "MetadataDBTests", "MetadataDBTests\MetadataDBTests.sqlproj", "{32D54B90-932D-44A3-911D-007C4B90BC55}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pages", "Pages", "{F3EF658C-291F-4BAD-AEDE-92073EB6ECB0}"
-	ProjectSection(SolutionItems) = preProject
-		docs\404.md = 404.md
-		docs\index.md = docs\index.md
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
