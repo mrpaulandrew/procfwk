@@ -36,26 +36,6 @@ This framework can also be used in any Azure Tenant and allow the creation of co
 
 ![alt text](https://mrpaulandrew.files.wordpress.com/2020/09/activity-chain.png "ADF.procfwk Icon")
 
-## Contributors
-
-| Who | Details |
-|------------|-------------|
-|Paul Andrew |[@mrpaulandrew](https://twitter.com/mrpaulandrew)<br/>[mrpaulandrew.tech](https://mrpaulandrew.tech)|
-|Kamil Nowinski |[@NowinskiK](https://twitter.com/NowinskiK)<br/>[sqlplayer.net](https://sqlplayer.net)|
-|Richard Swinbank |[@RichardSwinbank](https://twitter.com/RichardSwinbank)<br/>[richardswinbank.net](https://richardswinbank.net/)|
-|Niall Langley |[@NiallLangley](https://twitter.com/NiallLangley)<br/>[github.com/NJLangley](https://github.com/NJLangley)|
-
-## Issues
-
-If you've found a bug or have a new feature request please log the details using the repository issues.
-
-Go to... [Issues](https://github.com/mrpaulandrew/ADF.procfwk/issues)
-
-## Projects
-Go to... [External Requests](https://github.com/mrpaulandrew/ADF.procfwk/projects/2)
-
-Go to... [Internal Backlog](https://github.com/mrpaulandrew/ADF.procfwk/projects/1)
-
 ## Glossary
 Go to... [Glossary](https://mrpaulandrew.github.io/ADF.procfwk/glossary)
 

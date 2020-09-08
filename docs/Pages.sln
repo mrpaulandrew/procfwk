@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pages", "Pages", "{2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}"
+	ProjectSection(SolutionItems) = preProject
+		404.md = 404.md
+		contributors.md = contributors.md
+		database.md = database.md
+		glossary.md = glossary.md
+		index.md = index.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B9D92735-56E9-4E65-9C0E-0111778FC7D1}
+	EndGlobalSection
+EndGlobal
