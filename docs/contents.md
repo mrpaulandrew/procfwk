@@ -6,11 +6,16 @@
 * Datasets
 * Linked Services
 
+## [Synapse](https://mrpaulandrew.github.io/ADF.procfwk/synapse)
+* [Current Support & Limitations](https://mrpaulandrew.com/2020/06/03/adf-procfwk-and-azure-synapse-orchestrate-preview-and-limitations/)
+
 ## [Datasbase](https://mrpaulandrew.github.io/ADF.procfwk/database)
 * Properties
 * Schemas
 * Tables
 * Stored Procedures
+
+
 
 ## [Functions](https://mrpaulandrew.github.io/ADF.procfwk/functions)
 * Client Helpers
@@ -37,4 +42,4 @@
 * [Release Details]()
 * [Glossary](https://mrpaulandrew.github.io/ADF.procfwk/glossary)
 * [Contributors](https://mrpaulandrew.github.io/ADF.procfwk/contributors)
-* [Resources]()
+* [Resources](https://mrpaulandrew.github.io/ADF.procfwk/resources)

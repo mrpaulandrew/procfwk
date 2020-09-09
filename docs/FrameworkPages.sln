@@ -8,6 +8,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pages", "Pages", "{2BB4EF83
 		404.md = 404.md
 		contents.md = contents.md
 		index.md = index.md
+		releasedetails.md = releasedetails.md
+		resources.md = resources.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{0261DDC1-17FF-4054-B280-711E91A30B3E}"
@@ -38,6 +40,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{8DB1
 		releasedetails.md = releasedetails.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Synapse", "Synapse", "{33C75DB2-77DF-4C9E-8760-06DCFAFA5D5F}"
+	ProjectSection(SolutionItems) = preProject
+		synapse.md = synapse.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,6 +54,7 @@ Global
 		{F9DFE9B3-0EA5-4CE9-A76F-762AC58ABD65} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
 		{9F58ED69-1325-4126-BDF2-5AC84139EFD8} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
 		{8DB1ED23-8248-4CC1-889B-87D6A8180094} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
+		{33C75DB2-77DF-4C9E-8760-06DCFAFA5D5F} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B9D92735-56E9-4E65-9C0E-0111778FC7D1}
