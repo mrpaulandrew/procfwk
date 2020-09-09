@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pages", "Pages", "{2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}"
 	ProjectSection(SolutionItems) = preProject
 		404.md = 404.md
+		contents.md = contents.md
 		contributors.md = contributors.md
 		database.md = database.md
 		datafactory.md = datafactory.md

@@ -1,4 +1,4 @@
 theme: jekyll-theme-minimal
 logo: https://mrpaulandrew.github.io/ADF.procfwk/thumbnail.png
 title: ADF.procfwk
-description: <iframe src="https://mrpaulandrew.github.io/ADF.procfwk/sidebar" scrolling="no" style="border:none;" height="600px" width="100%"></iframe>
+description: A metadata driven processing framework for Azure Data Factory (ADF) achieved by coupling ADF with an Azure SQLDB and Azure Functions.<hr/><a href="https://mrpaulandrew.github.io/ADF.procfwk/">Overview</a><br /><a href="https://mrpaulandrew.github.io/ADF.procfwk/contents">Contents</a><hr/>
