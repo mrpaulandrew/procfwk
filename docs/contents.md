@@ -2,9 +2,9 @@
 # Framework Components
 
 ## [Data Factory](/ADF.procfwk/datafactory)
-* Piplines
-* Datasets
-* Linked Services
+* [Pipelines](/ADF.procfwk/pipelines)
+* [Datasets](/ADF.procfwk/datasets)
+* [Linked Services](/ADF.procfwk/linkedservices)
 
 ## [Synapse](/ADF.procfwk/synapse)
 * [Current Support & Limitations](https://mrpaulandrew.com/2020/06/03/adf-procfwk-and-azure-synapse-orchestrate-preview-and-limitations/)
