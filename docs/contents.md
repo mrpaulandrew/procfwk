@@ -39,7 +39,7 @@
 * Testing
 
 # Framework Support
-* [Release Details]()
+* [Release Details](https://mrpaulandrew.github.io/ADF.procfwk/releasedetails)
 * [Glossary](https://mrpaulandrew.github.io/ADF.procfwk/glossary)
 * [Contributors](https://mrpaulandrew.github.io/ADF.procfwk/contributors)
 * [Resources](https://mrpaulandrew.github.io/ADF.procfwk/resources)
