@@ -7,13 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pages", "Pages", "{2BB4EF83
 	ProjectSection(SolutionItems) = preProject
 		404.md = 404.md
 		contents.md = contents.md
-		contributors.md = contributors.md
-		database.md = database.md
-		datafactory.md = datafactory.md
-		functions.md = functions.md
-		glossary.md = glossary.md
 		index.md = index.md
-		sidebar.html = sidebar.html
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{0261DDC1-17FF-4054-B280-711E91A30B3E}"
@@ -21,9 +15,38 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{0261DD
 		_config.yml = _config.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataFactory", "DataFactory", "{43D8C262-5EA3-48B4-BA51-EE5E13891CB3}"
+	ProjectSection(SolutionItems) = preProject
+		datafactory.md = datafactory.md
+		pipelines.md = pipelines.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{F9DFE9B3-0EA5-4CE9-A76F-762AC58ABD65}"
+	ProjectSection(SolutionItems) = preProject
+		database.md = database.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{9F58ED69-1325-4126-BDF2-5AC84139EFD8}"
+	ProjectSection(SolutionItems) = preProject
+		functions.md = functions.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{8DB1ED23-8248-4CC1-889B-87D6A8180094}"
+	ProjectSection(SolutionItems) = preProject
+		contributors.md = contributors.md
+		glossary.md = glossary.md
+		releasedetails.md = releasedetails.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{43D8C262-5EA3-48B4-BA51-EE5E13891CB3} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
+		{F9DFE9B3-0EA5-4CE9-A76F-762AC58ABD65} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
+		{9F58ED69-1325-4126-BDF2-5AC84139EFD8} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
+		{8DB1ED23-8248-4CC1-889B-87D6A8180094} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B9D92735-56E9-4E65-9C0E-0111778FC7D1}
