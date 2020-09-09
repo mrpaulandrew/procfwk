@@ -1,15 +1,15 @@
 
 # Framework Components
 
-## [Data Factory](https://mrpaulandrew.github.io/ADF.procfwk/datafactory)
+## [Data Factory](/ADF.procfwk/datafactory)
 * Piplines
 * Datasets
 * Linked Services
 
-## [Synapse](https://mrpaulandrew.github.io/ADF.procfwk/synapse)
+## [Synapse](/ADF.procfwk/synapse)
 * [Current Support & Limitations](https://mrpaulandrew.com/2020/06/03/adf-procfwk-and-azure-synapse-orchestrate-preview-and-limitations/)
 
-## [Datasbase](https://mrpaulandrew.github.io/ADF.procfwk/database)
+## [Datasbase](/ADF.procfwk/database)
 * Properties
 * Schemas
 * Tables
@@ -17,7 +17,7 @@
 
 
 
-## [Functions](https://mrpaulandrew.github.io/ADF.procfwk/functions)
+## [Functions](/ADF.procfwk/functions)
 * Client Helpers
 * Execute Pipeline
 * Check Pipeline Status
@@ -39,7 +39,7 @@
 * Testing
 
 # Framework Support
-* [Release Details](https://mrpaulandrew.github.io/ADF.procfwk/releasedetails)
-* [Glossary](https://mrpaulandrew.github.io/ADF.procfwk/glossary)
-* [Contributors](https://mrpaulandrew.github.io/ADF.procfwk/contributors)
-* [Resources](https://mrpaulandrew.github.io/ADF.procfwk/resources)
+* [Release Details](/ADF.procfwk/releasedetails)
+* [Glossary](/ADF.procfwk/glossary)
+* [Contributors](/ADF.procfwk/contributors)
+* [Resources](/ADF.procfwk/resources)

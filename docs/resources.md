@@ -1,4 +1,4 @@
-# Resources and Content
+# Other Resources and Content
 
 | ![alt text](https://mrpaulandrew.files.wordpress.com/2020/03/azure-square-logo.png?w=75 "Blog Icon") | Blogs |[mrpaulandrew.com/ADF.procfwk](https://mrpaulandrew.com/category/azure/data-factory/adf-procfwk/)|
 |:----:|:----:|:----:|

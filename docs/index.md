@@ -2,7 +2,7 @@
 
 This site provides details on the latest version of the processing framework code project as a single source of all information needed to implement this solution in your Azure data platform environment.
 
-Please use the [Contents](/contents) page, also available in the side bar, to navigate the pages of information.
+Please use the [Contents](/ADF.procfwk/contents) page, also available in the side bar, to navigate the pages of information.
 
 ## Code Project Overview
 
