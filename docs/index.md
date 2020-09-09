@@ -1,9 +1,3 @@
----
-# Feel free to add content and custom Front Matter to this file.
-# To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
-
-layout: home
----
 # Welcome to the ADF.procfwk Documentation Home Page
 
 This site provides details on the latest version of the processing framework code project as a single source of all information needed to implement this solution in your Azure data platform environment.
