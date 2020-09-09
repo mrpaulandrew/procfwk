@@ -34,6 +34,7 @@
 * Previous Run Clean Up
 * Failure Handling
 * PowerShell Deployments
+* Apply To An Existing Data Factory
 * Email Alerting
 * Reporting
 * Testing
