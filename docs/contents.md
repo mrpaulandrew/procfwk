@@ -15,8 +15,6 @@
 * Tables
 * Stored Procedures
 
-
-
 ## [Functions](/ADF.procfwk/functions)
 * Client Helpers
 * Execute Pipeline
@@ -24,8 +22,8 @@
 * Get Error Details
 * Send Email
 
-# Framework Features
-* Execution Stages
+# Framework Capabilities
+* [Execution Stages](/ADF.procfwk/executionstages)
 * Worker Pipeline Authentication
 * SPN Handling (Database vs Key Vault)
 * Scale Out Processing

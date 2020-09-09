@@ -13,7 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pages", "Pages", "{2BB4EF83
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{0261DDC1-17FF-4054-B280-711E91A30B3E}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
 		_config.yml = _config.yml
+		favicon.ico = favicon.ico
+		Gemfile = Gemfile
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataFactory", "DataFactory", "{43D8C262-5EA3-48B4-BA51-EE5E13891CB3}"
@@ -46,6 +49,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Synapse", "Synapse", "{33C7
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C83634-3A1B-43AA-87C4-D97D3BDD3D31}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Capabilities", "Capabilities", "{7BD21269-6F71-4ED1-8DB6-73734A01F8C2}"
+	ProjectSection(SolutionItems) = preProject
+		executionstages.md = executionstages.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -56,6 +64,7 @@ Global
 		{9F58ED69-1325-4126-BDF2-5AC84139EFD8} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
 		{8DB1ED23-8248-4CC1-889B-87D6A8180094} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
 		{33C75DB2-77DF-4C9E-8760-06DCFAFA5D5F} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
+		{7BD21269-6F71-4ED1-8DB6-73734A01F8C2} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B9D92735-56E9-4E65-9C0E-0111778FC7D1}

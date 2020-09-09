@@ -2,7 +2,7 @@
 
 This site provides details on the latest version of the processing framework code project as a single source of all information needed to implement this solution in your Azure data platform environment.
 
-Please use the [Contents](/ADF.procfwk/contents) page, also available in the side bar, to navigate the pages of information.
+Please use the [Contents](/ADF.procfwk/contents) page, also available in the side bar, to navigate the pages of information available for this project.
 
 ## Code Project Overview
 
@@ -14,7 +14,9 @@ The framework is designed to integrate with any existing Data Factory solution b
 
 This framework can also be used in any Azure Tenant and allow the creation of complex control flows across multiple Data Factory resources by connecting Service Principal details through metadata to targeted Subscriptions &gt; Resource Groups &gt; Data Factory's and Pipelines, this offers very granular administration over data processing components in a given environment.
 
-## Framework Features
+If your not convinced please watch my [YouTube video](https://www.youtube.com/watch?v=rVlc-GBpNnc) on why you need a metadata driven processing framework.
+
+## Framework Capabilities
 
  * Granular metadata control.
  * Metadata integrity checking.
