@@ -26,19 +26,21 @@
 
 # Framework Capabilities
 * [Execution Stages](/ADF.procfwk/executionstages)
-* Worker Pipeline Authentication
-* SPN Handling (Database vs Key Vault)
 * [Scale Out Processing](/ADF.procfwk/scaleoutprocessing)
-* Restarting Executions
+* [Restarting Executions](/ADF.procfwk/frameworkrestart)
+* [Worker SPN Storage (Database vs Azure Key Vault)](/ADF.procfwk/spnhandling)
 * [Worker Pipeline Decoupling](/ADF.procfwk/workerdecoupling)
-* Pipeline Dependencies
-* Previous Run Clean Up
-* Failure & Cancellation Handling
-* PowerShell Deployments
-* Apply To An Existing Data Factory
-* Email Alerting
-* Reporting
-* Testing
+* [Worker Pipeline Error Details](/ADF.procfwk/errordetails)
+* [Worker Pipeline Dependency Chains](/ADF.procfwk/dependencychains)
+* [Failure & Cancellation Handling](/ADF.procfwk/failurehandling)
+* [Previous Execution Run Clean Up](/ADF.procfwk/prevruncleanup)
+* [Execution Precursor](/ADF.procfwk/executionprecursor)
+* [Metadata Integrity Checks](/ADF.procfwk/metadataintegritychecks)
+* [PowerShell Deployment Of ADF Components](/ADF.procfwk/poshdeployingadfparts)
+* [Apply To Existing Data Factory Instances](/ADF.procfwk/applytoexistingadfs)
+* [Email Alerting](/ADF.procfwk/emailalerting)
+* [Reporting](/ADF.procfwk/reporting)
+* [Testing](/ADF.procfwk/testing)
 
 # Framework Support
 * [Release Details](/ADF.procfwk/releasedetails)

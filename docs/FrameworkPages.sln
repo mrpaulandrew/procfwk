@@ -78,9 +78,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C836
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Capabilities", "Capabilities", "{7BD21269-6F71-4ED1-8DB6-73734A01F8C2}"
 	ProjectSection(SolutionItems) = preProject
+		applytoexistingadfs.md = applytoexistingadfs.md
+		dependencychains.md = dependencychains.md
 		emailalerting.md = emailalerting.md
+		errordetails.md = errordetails.md
+		executionprecursor.md = executionprecursor.md
 		executionstages.md = executionstages.md
+		failurehandling.md = failurehandling.md
+		frameworkrestart.md = frameworkrestart.md
+		metadataintegritychecks.md = metadataintegritychecks.md
+		poshdeployingadfparts.md = poshdeployingadfparts.md
+		prevruncleanup.md = prevruncleanup.md
+		reporting.md = reporting.md
 		scaleoutprocessing.md = scaleoutprocessing.md
+		spnhandling.md = spnhandling.md
+		testing.md = testing.md
 		workerdecoupling.md = workerdecoupling.md
 	EndProjectSection
 EndProject

@@ -8,7 +8,7 @@ ___
 ## AlertOutcomes
 __Schema:__ procfwk
 
-__Definition:__ Used to provide a static list of available pipeline status outcomes that can be compared to email recipient requirements for event alerts at runtime. These status values are used in the context of a bitmask potition when the framework performs any [email alerting](/ADF.procfwk/emailalerting).
+__Definition:__ Used to provide a static list of available pipeline status outcomes that can be compared to email recipient requirements for event alerts at runtime. These status values are used in the context of a bitmask potition when the framework performs any [email alerting](/ADF.procfwk/emailalerting). The position means an email recipient can subscribe to any combination of pipeline outcomes.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -21,7 +21,7 @@ ___
 ## CurrentExecution
 __Schema:__ procfwk
 
-__Definition:__ For a given execution run this table will be used to handle all metadata exchanges between
+__Definition:__ For a given execution run this table will be used to handle all metadata exchanges between Data Factory and the database. After a successful run the table is truncated. Indexing is used here to ensure the current execution run has access to the requested metadata given common where clause requirements.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -44,7 +44,7 @@ __Definition:__ For a given execution run this table will be used to handle all 
 ## DataFactorys
 __Schema:__ procfwk
 
-__Definition:__ Stores things.
+__Definition:__ To support the [decoupling](/ADF.procfwk/workerdecoupling) of worker[pipelines](/ADF.procfwk/pipelines)from the orchestration[pipelines](/ADF.procfwk/pipelines)this table houses information about the Data Factory resources used by the framework when executing workers. It does not need to contain data about the Data Factory where the orchestration [pipelines](/ADF.procfwk/pipelines) are running from.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -57,7 +57,7 @@ __Definition:__ Stores things.
 ## ErrorLog
 __Schema:__ procfwk
 
-__Definition:__ Stores things.
+__Definition:__ In the event of a worker pipeline failure, activity level error message details will be captured and inserted into this table.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -75,7 +75,7 @@ __Definition:__ Stores things.
 ## ExecutionLog
 __Schema:__ procfwk
 
-__Definition:__ Stores things.
+__Definition:__ This table is used as a long term store from the current execution table. When the current execution table is cleared now records will be moved here.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -97,7 +97,7 @@ __Definition:__ Stores things.
 ## PipelineAlertLink
 __Schema:__ procfwk
 
-__Definition:__ Stores things.
+__Definition:__ This table provides a many to many connection between the email recipients and the [pipelines](/ADF.procfwk/pipelines) they wish to subscribe to for email alerts.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -111,7 +111,7 @@ __Definition:__ Stores things.
 ## PipelineAuthLink
 __Schema:__ procfwk
 
-__Definition:__ Stores things.
+__Definition:__ For the purposes of granular sercurity when providing service principal details that can be used to execute worker [pipelines](/ADF.procfwk/pipelines) this table provides that many to many link and has further referential integrity checks against the Data Factory as well.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -124,7 +124,7 @@ __Definition:__ Stores things.
 ## PipelineDependencies
 __Schema:__ procfwk
 
-__Definition:__ Stores things.
+__Definition:__ When using the failure handling [property](/ADF.procfwk/properties) this table is used to establish the links for worker [pipelines](/ADF.procfwk/pipelines) across the [execution stages](/ADF.procfwk/executionstages).
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -136,7 +136,7 @@ __Definition:__ Stores things.
 ## PipelineParameters
 __Schema:__ procfwk
 
-__Definition:__ Stores things.
+__Definition:__ Worker pipeline parameters are sorted in this table as metadata and provided to the worker at runtime by the framework. A given worker can have none or many parameters limited only by the underlying resources in terms of amount and size.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -149,7 +149,7 @@ __Definition:__ Stores things.
 ## Pipelines
 __Schema:__ procfwk
 
-__Definition:__ Stores things.
+__Definition:__ This core table in the framework houses all worker [pipelines](/ADF.procfwk/pipelines) that the framework is expected to call per [execution stage](/ADF.procfwk/executionstage) and for a given worker Data Factory.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -164,7 +164,7 @@ __Definition:__ Stores things.
 ## Properties
 __Schema:__ procfwk
 
-__Definition:__ Stores things.
+__Definition:__ [Properties](/ADF.procfwk/properties) and values housed in this table provide runtime configuration information for the framework to influence behaviour and setup.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -180,7 +180,7 @@ __Definition:__ Stores things.
 ## Recipients
 __Schema:__ procfwk
 
-__Definition:__ Stores things.
+__Definition:__ Named people and email addresses are stored in this table for the purposes of providing [email alerting](/ADF.procfwk/emailalerting) when worker [pipelines](/ADF.procfwk/pipelines) are executed by the framework.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -194,7 +194,7 @@ __Definition:__ Stores things.
 ## ServicePrincipals
 __Schema:__ dbo
 
-__Definition:__ Stores things.
+__Definition:__ At runtime a worker [pipeline](/ADF.procfwk/pipelines) will be executed by the framework [functions](/ADF.procfwk/functions). The function will authenticate against the target worker data factory using SPN details sorted in this table directly, or referenced by this tableto Azure Key Vault.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -209,7 +209,7 @@ __Definition:__ Stores things.
 ## Stages
 __Schema:__ procfwk
 
-__Definition:__ Stores things.
+__Definition:__ This core table in the framework houses details of all the sequential [execution stages](/ADF.procfwk/executionstages) that need to process by the framework in order based on the stage Id.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
