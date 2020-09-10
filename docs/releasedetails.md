@@ -1,5 +1,10 @@
 # Release Details
 
+___
+[<< Contents](/ADF.procfwk/contents) 
+
+___
+
 | Version | Overview | Related Blog(s) & Version Details |
 |:----:|--------------|--------|
 | 1.8.6 |<u>Pipeline Expressions Refactored to Use Variables</u> added, plus:<ul><li>New integration tests created.</li><li>Complete activity chain redrawn in Visio.</li></ul> |Issues:</br>[ADF.procfwk #51](https://github.com/mrpaulandrew/ADF.procfwk/issues/51)<br/>[ADF.procfwk #52](https://github.com/mrpaulandrew/ADF.procfwk/issues/52) |

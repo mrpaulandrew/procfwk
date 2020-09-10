@@ -1,7 +1,6 @@
-# Execution Stages
+# Worker Pipeline Decoupling
 
 ___
 [<< Contents](/ADF.procfwk/contents) 
 
 ___
-

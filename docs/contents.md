@@ -10,24 +10,25 @@
 * [Current Support & Limitations](https://mrpaulandrew.com/2020/06/03/adf-procfwk-and-azure-synapse-orchestrate-preview-and-limitations/)
 
 ## [Datasbase](/ADF.procfwk/database)
-* Properties
-* Schemas
-* Tables
-* Stored Procedures
+* [Properties](/ADF.procfwk/properties)
+* [Schemas](/ADF.procfwk/schemas)
+* [Tables](/ADF.procfwk/tables)
+* [Stored Procedures](/ADF.procfwk/storedprocedures)
 
 ## [Functions](/ADF.procfwk/functions)
-* Client Helpers
-* Execute Pipeline
-* Check Pipeline Status
-* Get Error Details
-* Send Email
+* [Helpers](/ADF.procfwk/helpers)
+* [Execute Pipeline](/ADF.procfwk/executepipeline)
+* [Check Pipeline Status](/ADF.procfwk/checkpipelinestatus)
+* [Get Error Details](/ADF.procfwk/geterrordetails)
+* [Send Email](/ADF.procfwk/sendemail)
 
 # Framework Capabilities
 * [Execution Stages](/ADF.procfwk/executionstages)
 * Worker Pipeline Authentication
 * SPN Handling (Database vs Key Vault)
-* Scale Out Processing
+* [Scale Out Processing](/ADF.procfwk/scaleoutprocessing)
 * Restarting Executions
+* [Worker Pipeline Decoupling](/ADF.procfwk/workerdecoupling)
 * Pipeline Dependencies
 * Previous Run Clean Up
 * Failure Handling

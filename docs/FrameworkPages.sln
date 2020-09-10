@@ -30,11 +30,20 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{F9DFE9B3-0EA5-4CE9-A76F-762AC58ABD65}"
 	ProjectSection(SolutionItems) = preProject
 		database.md = database.md
+		properties.md = properties.md
+		schemas.md = schemas.md
+		storedprocedures.md = storedprocedures.md
+		tables.md = tables.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{9F58ED69-1325-4126-BDF2-5AC84139EFD8}"
 	ProjectSection(SolutionItems) = preProject
+		checkpipelinestatus.md = checkpipelinestatus.md
+		executepipeline.md = executepipeline.md
 		functions.md = functions.md
+		geterrordetails.md = geterrordetails.md
+		helpers.md = helpers.md
+		sendemail.md = sendemail.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{8DB1ED23-8248-4CC1-889B-87D6A8180094}"
@@ -50,10 +59,26 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Synapse", "Synapse", "{33C7
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C83634-3A1B-43AA-87C4-D97D3BDD3D31}"
+	ProjectSection(SolutionItems) = preProject
+		child.png = child.png
+		datafactory.png = datafactory.png
+		function.png = function.png
+		grandparent.png = grandparent.png
+		infant.png = infant.png
+		keyvault.png = keyvault.png
+		parent.png = parent.png
+		powerbi.png = powerbi.png
+		sqldb.png = sqldb.png
+		synapse.png = synapse.png
+		thumbnail.png = thumbnail.png
+		worker.png = worker.png
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Capabilities", "Capabilities", "{7BD21269-6F71-4ED1-8DB6-73734A01F8C2}"
 	ProjectSection(SolutionItems) = preProject
 		executionstages.md = executionstages.md
+		scaleoutprocessing.md = scaleoutprocessing.md
+		workerdecoupling.md = workerdecoupling.md
 	EndProjectSection
 EndProject
 Global
