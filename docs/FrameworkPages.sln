@@ -33,7 +33,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{F9
 		properties.md = properties.md
 		schemas.md = schemas.md
 		storedprocedures.md = storedprocedures.md
+		synonyms.md = synonyms.md
 		tables.md = tables.md
+		views.md = views.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{9F58ED69-1325-4126-BDF2-5AC84139EFD8}"
@@ -76,6 +78,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C836
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Capabilities", "Capabilities", "{7BD21269-6F71-4ED1-8DB6-73734A01F8C2}"
 	ProjectSection(SolutionItems) = preProject
+		emailalerting.md = emailalerting.md
 		executionstages.md = executionstages.md
 		scaleoutprocessing.md = scaleoutprocessing.md
 		workerdecoupling.md = workerdecoupling.md

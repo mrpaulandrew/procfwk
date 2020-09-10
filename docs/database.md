@@ -6,6 +6,8 @@ ___
 * [Properties](/ADF.procfwk/properties)
 * [Schemas](/ADF.procfwk/schemas)
 * [Tables](/ADF.procfwk/tables)
+* [Views](/ADF.procfwk/views)
+* [Synonyms](/ADF.procfwk/synonyms)
 * [Stored Procedures](/ADF.procfwk/storedprocedures)
 
 ___

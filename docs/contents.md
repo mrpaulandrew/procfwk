@@ -13,6 +13,8 @@
 * [Properties](/ADF.procfwk/properties)
 * [Schemas](/ADF.procfwk/schemas)
 * [Tables](/ADF.procfwk/tables)
+* [Views](/ADF.procfwk/views)
+* [Synonyms](/ADF.procfwk/synonyms)
 * [Stored Procedures](/ADF.procfwk/storedprocedures)
 
 ## [Functions](/ADF.procfwk/functions)
@@ -31,7 +33,7 @@
 * [Worker Pipeline Decoupling](/ADF.procfwk/workerdecoupling)
 * Pipeline Dependencies
 * Previous Run Clean Up
-* Failure Handling
+* Failure & Cancellation Handling
 * PowerShell Deployments
 * Apply To An Existing Data Factory
 * Email Alerting
