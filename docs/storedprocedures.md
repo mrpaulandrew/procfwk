@@ -12,7 +12,7 @@ __Schema:__ procfwk
 |---|:---:|
 |@StageId|int
 
-__Definition:__ Does stuff.
+__Role:__ Used within parent [pipeline](/ADF.procfwk/pipelines) as part of the sequential foreach activity this procedure establishes if any worker pipelines in the next execution stage are blocked. Then depending on the configured [failure handing](/ADF.procfwk/failurehandling) updates the current execution [table](/ADF.procfwk/tables) before proceeding.
 
 ___
 
@@ -24,7 +24,7 @@ __Schema:__ procfwk
 |---|:---:|
 |@PipelineId|int
 
-__Definition:__ Does stuff.
+__Role:__ Assuming [email alerting](/ADF.procfwk/eamilalerting) is enabled this procedure inspects the metadata [tables](/ADF.procfwk/tables) and returns a simple true or false (bit value) depending on what alerts are required for a given worker [pipeline](/ADF.procfwk/pipelines) Id. This checks is used within the infant pipeline before any effort is spent constructing email content to be sent.
 
 ___
 
@@ -36,7 +36,9 @@ __Schema:__ procfwk
 |---|:---:|
 |@DebugMode|bit
 
-__Definition:__ Does stuff.
+__Role:__ Called early on in the parent [pipeline](/ADF.procfwk/pipelines) this procedure serves two purposes. Firstly, to perform a series on basic checks against the database metadata ensuring key conditions are met before Data Factory starts a new execution. See [metadata integrity checks](/ADF.procfwk/metadataintegritychecks) for more details. 
+
+Secondly, in the event of an external platform failure where the framework is left in an unexecpted state. This procedure queries the current execution [table](/ADF.procfwk/tables) and returns values to Data Factory so a [clean up](/ADF.procfwk/prevruncleanup) routine can take place as part of the parent [pipeline](/ADF.procfwk/pipelines) execution.
 
 ___
 
@@ -48,7 +50,7 @@ __Schema:__ procfwk
 |---|:---:|
 |@CallingDataFactoryName|nvarchar
 
-__Definition:__ Does stuff.
+__Role:__ Once the parent [pipeline](/ADF.procfwk/pipelines) has completed all pre-execution operations this procedure is used to set a new local execution Id (GUID) value and update the current execution table. For runtime perform an index re-build is also done by this procedure.
 
 ___
 
@@ -56,7 +58,7 @@ ___
 
 __Schema:__ procfwk
 
-__Definition:__ Does stuff.
+__Role:__ See [Execution Precursor](/ADF.procfwk/executionprecursor) for details.
 
 ___
 
@@ -68,7 +70,7 @@ __Schema:__ procfwk
 |---|:---:|
 |@CallingDataFactory|nvarchar
 
-__Definition:__ Does stuff.
+__Role:__ This procedure establishs what the framework should do with the current execution table when the parent pipeline is triggered. Depending on the configured [properties](/ADF.procfwk/properties) this will then create a new execution run or restart the previous run if a failure has occured.
 
 ___
 
@@ -80,7 +82,7 @@ __Schema:__ procfwk
 |---|:---:|
 |@PipelineId|int
 
-__Definition:__ Does stuff.
+__Role:__ When an [email alert](/ADF.procfwk/emailalerting) is going to be sent by the framework this procedure gathers up all required metadata parts for the [send email](/ADF.procfwk/sendemail) function. This includes the recipient, subject and body. The returning select statement means exactly the format required by the function allowing the infant pipeline to pass through the content from the lookup activity unchanged.
 
 ___
 
@@ -92,7 +94,7 @@ __Schema:__ procfwk
 |---|:---:|
 |@PipelineId|int
 
-__Definition:__ Does stuff.
+__Role:__ Within the child pipeline foreach activity this procedure queries the metadata database for any parameters required by the given worker pipeline Id. What's returned by the stored procedure is a JSON safe string that can be injected into the [execute pipeline](/ADF.procfwk/executepipeline) function along with the other worker [pipeline](/ADF.procfwk/pipelines) details.
 
 ___
 
@@ -104,7 +106,7 @@ __Schema:__ procfwk
 |---|:---:|
 |@StageId|int
 
-__Definition:__ Does stuff.
+__Role:__ Called from the child [pipeline](/ADF.procfwk/pipeline) this procedure returns a simple list of all worker pipelines to be executed within a given [execution stage](/ADF.procfwk/executionstage). Filtering ensures only worker pipelines that haven't already completed successfully or workers that aren't blocked are returned.
 
 ___
 
@@ -116,7 +118,7 @@ __Schema:__ procfwk
 |---|:---:|
 |@PropertyName|varchar
 
-__Definition:__ Does stuff.
+__Role:__ This procedure is used by [Data Factory](/ADF.procfwk/datafactory) through the framework [pipelines](/ADF.procfwk/pipelines) to return a [property](/ADF.procfwk/properties) value from a provided name. This is done so Data Factory can use the SELECT output value directly, rather than this being an actual OUTPUT of the procedure.
 
 ___
 
@@ -129,7 +131,7 @@ __Schema:__ procfwk
 |@DataFactory|nvarchar
 |@PipelineName|nvarchar
 
-__Definition:__ Does stuff.
+__Role:__ Depending on the configured [properties](/ADF.procfwk/properties) this procedure queries the service principal table and returns credentials that [Data Factory](/ADF.procfwk/datafactory) can use when executing a worker pipeline. See [worker SPN storage](/ADF.procfwk/spnhandling) for more details.
 
 ___
 
@@ -141,7 +143,7 @@ __Schema:__ procfwk
 |---|:---:|
 |@ExecutionId|uniqueidentifier
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -149,7 +151,7 @@ ___
 
 __Schema:__ procfwk
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -162,7 +164,7 @@ __Schema:__ procfwk
 |@LocalExecutionId|uniqueidentifier
 |@JsonErrorDetails|varchar
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -175,7 +177,7 @@ __Schema:__ procfwk
 |@ExecutionId|uniqueidentifier
 |@PipelineId|int
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -190,7 +192,7 @@ __Schema:__ procfwk
 |@PipelineId|int
 |@CallingActivity|varchar
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -204,7 +206,7 @@ __Schema:__ procfwk
 |@StageId|int
 |@PipelineId|int
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -218,7 +220,7 @@ __Schema:__ procfwk
 |@StageId|int
 |@PipelineId|int
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -233,7 +235,7 @@ __Schema:__ procfwk
 |@PipelineId|int
 |@RunId|uniqueidentifier
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -247,7 +249,7 @@ __Schema:__ procfwk
 |@StageId|int
 |@PipelineId|int
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -262,7 +264,7 @@ __Schema:__ procfwk
 |@PipelineId|int
 |@RunId|uniqueidentifier
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -276,7 +278,7 @@ __Schema:__ procfwk
 |@StageId|int
 |@PipelineId|int
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -290,7 +292,7 @@ __Schema:__ procfwk
 |@StageId|int
 |@PipelineId|int
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -304,7 +306,7 @@ __Schema:__ procfwk
 |@StageId|int
 |@PipelineId|int
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -317,7 +319,7 @@ __Schema:__ procfwk
 |@ExecutionId|uniqueidentifier
 |@StageId|int
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -329,7 +331,7 @@ __Schema:__ procfwk
 |---|:---:|
 |@PerformErrorCheck|bit
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -342,7 +344,7 @@ __Schema:__ procfwkHelpers
 |@PipelineName|nvarchar
 |@DependantPipelineName|nvarchar
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -356,7 +358,7 @@ __Schema:__ procfwkHelpers
 |@DataFactoryName|nvarchar
 |@PipelineName|nvarchar
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -370,7 +372,7 @@ __Schema:__ procfwkHelpers
 |@PropertyValue|nvarchar
 |@Description|nvarchar
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -384,7 +386,7 @@ __Schema:__ procfwkHelpers
 |@PipelineName|nvarchar
 |@AlertForStatus|nvarchar
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -400,7 +402,7 @@ __Schema:__ procfwkHelpers
 |@SpecificPipelineName|nvarchar
 |@PrincipalName|nvarchar
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -416,7 +418,7 @@ __Schema:__ procfwkHelpers
 |@SpecificPipelineName|nvarchar
 |@PrincipalName|nvarchar
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -432,7 +434,7 @@ __Schema:__ procfwkHelpers
 |@SpecificPipelineName|nvarchar
 |@PrincipalName|nvarchar
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -440,7 +442,7 @@ ___
 
 __Schema:__ procfwkHelpers
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -448,7 +450,7 @@ ___
 
 __Schema:__ procfwkHelpers
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -456,7 +458,7 @@ ___
 
 __Schema:__ procfwkHelpers
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -469,7 +471,7 @@ __Schema:__ procfwkHelpers
 |@EmailAddress|nvarchar
 |@SoftDeleteOnly|bit
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -483,7 +485,7 @@ __Schema:__ procfwkHelpers
 |@PrincipalIdValue|nvarchar
 |@SpecificPipelineName|nvarchar
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -495,7 +497,7 @@ __Schema:__ procfwkHelpers
 |---|:---:|
 |@LocalExecutionId|uniqueidentifier
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -503,7 +505,7 @@ ___
 
 __Schema:__ procfwkHelpers
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -511,7 +513,7 @@ ___
 
 __Schema:__ procfwkHelpers
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -519,7 +521,7 @@ ___
 
 __Schema:__ procfwkHelpers
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -527,7 +529,7 @@ ___
 
 __Schema:__ procfwkHelpers
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -535,7 +537,7 @@ ___
 
 __Schema:__ procfwkHelpers
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -543,7 +545,7 @@ ___
 
 __Schema:__ procfwkHelpers
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -551,7 +553,7 @@ ___
 
 __Schema:__ procfwkHelpers
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -559,7 +561,7 @@ ___
 
 __Schema:__ procfwkHelpers
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -567,7 +569,7 @@ ___
 
 __Schema:__ procfwkHelpers
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -575,7 +577,7 @@ ___
 
 __Schema:__ procfwkHelpers
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -583,7 +585,7 @@ ___
 
 __Schema:__ procfwkTesting
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -591,7 +593,7 @@ ___
 
 __Schema:__ procfwkTesting
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -603,7 +605,7 @@ __Schema:__ procfwkTesting
 |---|:---:|
 |@PipelineName|nvarchar
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
 
@@ -611,6 +613,6 @@ ___
 
 __Schema:__ procfwkTesting
 
-__Definition:__ Does stuff.
+__Role:__ Does stuff.
 
 ___
