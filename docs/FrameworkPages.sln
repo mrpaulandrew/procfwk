@@ -30,6 +30,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{F9DFE9B3-0EA5-4CE9-A76F-762AC58ABD65}"
 	ProjectSection(SolutionItems) = preProject
 		database.md = database.md
+		dbfunctions.md = dbfunctions.md
 		properties.md = properties.md
 		schemas.md = schemas.md
 		storedprocedures.md = storedprocedures.md
