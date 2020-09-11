@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{0261DD
 		_config.yml = _config.yml
 		favicon.ico = favicon.ico
 		Gemfile = Gemfile
+		Generate Markdown for Database Tables.sql = Generate Markdown for Database Tables.sql
+		Generate Page Down for Database Procedures.sql = Generate Page Down for Database Procedures.sql
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataFactory", "DataFactory", "{43D8C262-5EA3-48B4-BA51-EE5E13891CB3}"
@@ -64,6 +66,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C83634-3A1B-43AA-87C4-D97D3BDD3D31}"
 	ProjectSection(SolutionItems) = preProject
 		child.png = child.png
+		csharpdotnetcore.png = csharpdotnetcore.png
 		datafactory.png = datafactory.png
 		function.png = function.png
 		grandparent.png = grandparent.png
