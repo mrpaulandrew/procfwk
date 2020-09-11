@@ -9,7 +9,7 @@
 ## [Synapse](/ADF.procfwk/synapse)
 * [Current Support & Limitations](https://mrpaulandrew.com/2020/06/03/adf-procfwk-and-azure-synapse-orchestrate-preview-and-limitations/)
 
-## [Datasbase](/ADF.procfwk/database)
+## [Database](/ADF.procfwk/database)
 * [Properties](/ADF.procfwk/properties)
 * [Schemas](/ADF.procfwk/schemas)
 * [Tables](/ADF.procfwk/tables)
