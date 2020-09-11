@@ -12,9 +12,9 @@ The framework is designed to integrate with any existing Data Factory solution b
 
 ![alt text](https://mrpaulandrew.files.wordpress.com/2020/07/repo-image-1.png "ADF.procfwk Icon")
 
-This framework can also be used in any Azure Tenant and allow the creation of complex control flows across multiple Data Factory resources by connecting Service Principal details through metadata to targeted Subscriptions &gt; Resource Groups &gt; Data Factory's and Pipelines, this offers very granular administration over data processing components in a given environment.
+This framework can also be used in any Azure Tenant and allow the creation of complex control flows across multiple Data Factory resources by connecting Service Principal details through metadata to targeted Subscriptions &gt; Resource Groups &gt; Data Factories and Pipelines, this offers very granular administration over data processing components in a given environment.
 
-If your not convinced please watch my [YouTube video](https://www.youtube.com/watch?v=rVlc-GBpNnc) on why you need a metadata driven processing framework.
+If you're not convinced please watch my [YouTube video](https://www.youtube.com/watch?v=rVlc-GBpNnc) on why you need a metadata driven processing framework.
 
 ## Framework Capabilities
 
