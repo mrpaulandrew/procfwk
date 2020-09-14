@@ -61,7 +61,7 @@
 					"batchCount": 50,
 					"activities": [
 						{
-							"name": "Run Worker Pipeline",
+							"name": "Worker Pipeline Executor",
 							"description": "Run the required worker pipeline and wait for its completion. Update metadata once done.",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
