@@ -376,7 +376,7 @@
 										"PipelineId": {
 											"type": "Int32",
 											"value": {
-												"value": "@item().PipelineId",
+												"value": "@pipeline().parameters.pipelineId",
 												"type": "Expression"
 											}
 										}
