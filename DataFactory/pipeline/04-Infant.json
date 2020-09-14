@@ -176,7 +176,7 @@
 				}
 			},
 			{
-				"name": "Log Activity Failure 1",
+				"name": "Log Execute Function Activity Failure",
 				"description": "Handle true failures from calling out to the Azure Function and update the current execution table accordingly so a restart can occur.",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
@@ -570,7 +570,7 @@
 							}
 						},
 						{
-							"name": "Log Activity Failure 2",
+							"name": "Log Check Function Activity Failure",
 							"description": "Report to the current execution table that the framework pipeline activity has failed. This failure is outside of the scope of the framework and is probably related to a wider platform problem.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
