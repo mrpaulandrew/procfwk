@@ -61,7 +61,8 @@
 					"batchCount": 50,
 					"activities": [
 						{
-							"name": "Running Worker Pipeline",
+							"name": "Run Worker Pipeline",
+							"description": "Run the required worker pipeline and wait for its completion. Update metadata once done.",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
 							"userProperties": [],
@@ -74,14 +75,6 @@
 								"parameters": {
 									"tenantId": {
 										"value": "@pipeline().parameters.TenantId",
-										"type": "Expression"
-									},
-									"applicationId": {
-										"value": "@activity('Get SPN Details').output.firstRow.Id",
-										"type": "Expression"
-									},
-									"authenticationKey": {
-										"value": "@activity('Get SPN Details').output.firstRow.Secret",
 										"type": "Expression"
 									},
 									"subscriptionId": {
@@ -98,10 +91,6 @@
 									},
 									"pipelineName": {
 										"value": "@item().PipelineName",
-										"type": "Expression"
-									},
-									"runId": {
-										"value": "@activity('Execute Pipeline').output.RunId",
 										"type": "Expression"
 									},
 									"executionId": {
