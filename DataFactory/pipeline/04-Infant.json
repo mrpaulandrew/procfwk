@@ -4,7 +4,7 @@
 		"description": "ADF.procfwk infant pipeline used to check when the processing pipeline called by the Child completes and passes the resulting status back to the metadata database.",
 		"activities": [
 			{
-				"name": "Execute Pipeline",
+				"name": "Execute Worker Pipeline",
 				"description": "The lowest level executor with the metadata framework to call existing processing pipelines within Data Factory. The function called will block processing and wait for an outcome.",
 				"type": "AzureFunctionActivity",
 				"dependsOn": [
@@ -181,7 +181,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Execute Pipeline",
+						"activity": "Execute Worker Pipeline",
 						"dependencyConditions": [
 							"Failed"
 						]
@@ -220,7 +220,7 @@
 							"type": "Int32"
 						},
 						"CallingActivity": {
-							"value": "ExecutePipeline",
+							"value": "ExecuteWorkerPipeline",
 							"type": "String"
 						}
 					}
@@ -438,7 +438,7 @@
 						]
 					},
 					{
-						"activity": "Execute Pipeline",
+						"activity": "Execute Worker Pipeline",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -458,7 +458,7 @@
 					},
 					"activities": [
 						{
-							"name": "Get Pipeline Status",
+							"name": "Get Worker Pipeline Status",
 							"description": "Checks the status of a given processing pipeline and provides the value for the downstream framework activities to act upon.",
 							"type": "AzureFunctionActivity",
 							"dependsOn": [],
@@ -524,7 +524,7 @@
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
-									"activity": "Get Pipeline Status",
+									"activity": "Get Worker Pipeline Status",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -575,7 +575,7 @@
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
 								{
-									"activity": "Get Pipeline Status",
+									"activity": "Get Worker Pipeline Status",
 									"dependencyConditions": [
 										"Failed"
 									]
@@ -593,7 +593,7 @@
 								"storedProcedureName": "[procfwk].[SetLogActivityFailed]",
 								"storedProcedureParameters": {
 									"CallingActivity": {
-										"value": "GetPipelineStatus",
+										"value": "GetWorkerPipelineStatus",
 										"type": "String"
 									},
 									"ExecutionId": {
@@ -630,7 +630,7 @@
 							"type": "SetVariable",
 							"dependsOn": [
 								{
-									"activity": "Get Pipeline Status",
+									"activity": "Get Worker Pipeline Status",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -640,7 +640,7 @@
 							"typeProperties": {
 								"variableName": "WorkerPipelineState",
 								"value": {
-									"value": "@equals('Done',activity('Get Pipeline Status').output.SimpleStatus)",
+									"value": "@equals('Done',activity('Get Worker Pipeline Status').output.SimpleStatus)",
 									"type": "Expression"
 								}
 							}
@@ -664,7 +664,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"on": {
-						"value": "@activity('Get Pipeline Status').output.Status",
+						"value": "@activity('Get Worker Pipeline Status').output.Status",
 						"type": "Expression"
 					},
 					"cases": [
@@ -772,7 +772,7 @@
 									}
 								},
 								{
-									"name": "Get Error Details",
+									"name": "Get Worker Pipeline Error Details",
 									"description": "Get the activity error details for the run ID of the worker pipeline called. Returns an array of all errors.",
 									"type": "AzureFunctionActivity",
 									"dependsOn": [],
@@ -803,7 +803,7 @@
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [
 										{
-											"activity": "Get Error Details",
+											"activity": "Get Worker Pipeline Error Details",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -822,7 +822,7 @@
 										"storedProcedureParameters": {
 											"JsonErrorDetails": {
 												"value": {
-													"value": "@string(activity('Get Error Details').output)",
+													"value": "@string(activity('Get Worker Pipeline Error Details').output)",
 													"type": "Expression"
 												},
 												"type": "String"
@@ -988,7 +988,7 @@
 				"typeProperties": {
 					"variableName": "WorkerAppId",
 					"value": {
-						"value": "activity('Get Worker Authentication Details').output.firstRow.Id",
+						"value": "@activity('Get Worker Authentication Details').output.firstRow.Id",
 						"type": "Expression"
 					}
 				}
@@ -1008,7 +1008,7 @@
 				"typeProperties": {
 					"variableName": "WorkerAppSecret",
 					"value": {
-						"value": "activity('Get Worker Authentication Details').output.firstRow.Secret",
+						"value": "@activity('Get Worker Authentication Details').output.firstRow.Secret",
 						"type": "Expression"
 					}
 				}
@@ -1018,7 +1018,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Execute Pipeline",
+						"activity": "Execute Worker Pipeline",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -1028,7 +1028,7 @@
 				"typeProperties": {
 					"variableName": "WorkerRunId",
 					"value": {
-						"value": "@activity('Execute Pipeline').output.RunId",
+						"value": "@activity('Execute Worker Pipeline').output.RunId",
 						"type": "Expression"
 					}
 				}
