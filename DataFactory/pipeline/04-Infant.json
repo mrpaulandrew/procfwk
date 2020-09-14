@@ -134,8 +134,8 @@
 				}
 			},
 			{
-				"name": "Get SPN Details",
-				"description": "Return the SPN ID and Secret for the processing pipeline being executed. Called at this level as each pipeline can have a different SPN.",
+				"name": "Get Worker Authentication Details",
+				"description": "Return the SPN ID and Secret for the worker pipeline being executed. Called at this level as each pipeline can have a different SPN.",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -978,7 +978,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Get SPN Details",
+						"activity": "Get Worker Authentication Details",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -988,7 +988,7 @@
 				"typeProperties": {
 					"variableName": "WorkerAppId",
 					"value": {
-						"value": "activity('Get SPN Details').output.firstRow.Id",
+						"value": "activity('Get Worker Authentication Details').output.firstRow.Id",
 						"type": "Expression"
 					}
 				}
@@ -998,7 +998,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Get SPN Details",
+						"activity": "Get Worker Authentication Details",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -1008,7 +1008,7 @@
 				"typeProperties": {
 					"variableName": "WorkerAppSecret",
 					"value": {
-						"value": "activity('Get SPN Details').output.firstRow.Secret",
+						"value": "activity('Get Worker Authentication Details').output.firstRow.Secret",
 						"type": "Expression"
 					}
 				}
