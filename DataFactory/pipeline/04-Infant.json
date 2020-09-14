@@ -21,7 +21,13 @@
 						]
 					},
 					{
-						"activity": "Get SPN Details",
+						"activity": "Set App Id",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set App Secret",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -39,7 +45,7 @@
 					"functionName": "ExecutePipeline",
 					"method": "POST",
 					"body": {
-						"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"',activity('Get SPN Details').output.firstRow.Id,'\",\n\t\"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.Secret,'\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"',item().ResourceGroupName,'\",\n\t\"factoryName\": \"',item().DataFactoryName,'\",\n\t\"pipelineName\": \"',item().PipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
+						"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n\t\"factoryName\": \"',pipeline().parameters.factoryName,'\",\n\t\"pipelineName\": \"',pipeline().parameters.pipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
 						"type": "Expression"
 					}
 				},
@@ -69,7 +75,7 @@
 							"PipelineId": {
 								"type": "Int32",
 								"value": {
-									"value": "@item().PipelineId",
+									"value": "@pipeline().parameters.pipelineId",
 									"type": "Expression"
 								}
 							}
@@ -108,7 +114,7 @@
 						},
 						"PipelineId": {
 							"value": {
-								"value": "@item().PipelineId",
+								"value": "@pipeline().parameters.pipelineId",
 								"type": "Expression"
 							},
 							"type": "Int32"
@@ -148,14 +154,14 @@
 							"DataFactory": {
 								"type": "String",
 								"value": {
-									"value": "@item().DataFactoryName",
+									"value": "@pipeline().parameters.factoryName",
 									"type": "Expression"
 								}
 							},
 							"PipelineName": {
 								"type": "String",
 								"value": {
-									"value": "@item().PipelineName",
+									"value": "@pipeline().parameters.pipelineName",
 									"type": "Expression"
 								}
 							}
@@ -201,7 +207,7 @@
 						},
 						"PipelineId": {
 							"value": {
-								"value": "@item().PipelineId",
+								"value": "@pipeline().parameters.pipelineId",
 								"type": "Expression"
 							},
 							"type": "Int32"
@@ -225,12 +231,12 @@
 				}
 			},
 			{
-				"name": "Set Run Id",
+				"name": "Update Run Id",
 				"description": "Provide the actual ADF run ID back to the current execution table for long term logging and alignment between the metadata other Azure monitoring tools.",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Execute Pipeline",
+						"activity": "Set Run Id",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -256,14 +262,14 @@
 						},
 						"PipelineId": {
 							"value": {
-								"value": "@item().PipelineId",
+								"value": "@pipeline().parameters.pipelineId",
 								"type": "Expression"
 							},
 							"type": "Int32"
 						},
 						"RunId": {
 							"value": {
-								"value": "@activity('Execute Pipeline').output.RunId",
+								"value": "@variables('WorkerRunId')",
 								"type": "Expression"
 							},
 							"type": "Guid"
@@ -288,7 +294,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Set Run Id",
+						"activity": "Update Run Id",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -316,7 +322,7 @@
 							"PipelineId": {
 								"type": "Int32",
 								"value": {
-									"value": "@item().PipelineId",
+									"value": "@pipeline().parameters.pipelineId",
 									"type": "Expression"
 								}
 							}
@@ -436,6 +442,12 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
+					},
+					{
+						"activity": "Set Run Id",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
 				"userProperties": [],
@@ -462,7 +474,7 @@
 								"functionName": "CheckPipelineStatus",
 								"method": "POST",
 								"body": {
-									"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',pipeline().parameters.applicationId,'\",\n    \"authenticationKey\": \"',pipeline().parameters.authenticationKey,'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',pipeline().parameters.runId,'\"\n}')",
+									"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 									"type": "Expression"
 								}
 							},
@@ -740,7 +752,7 @@
 											},
 											"RunId": {
 												"value": {
-													"value": "@activity('Get Pipeline Status').output.RunId",
+													"value": "@variables('WorkerRunId')",
 													"type": "Expression"
 												},
 												"type": "Guid"
@@ -776,7 +788,7 @@
 										"functionName": "GetActivityErrors",
 										"method": "POST",
 										"body": {
-											"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',pipeline().parameters.applicationId,'\",\n    \"authenticationKey\": \"',pipeline().parameters.authenticationKey,'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',pipeline().parameters.runId,'\"\n}')",
+											"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 											"type": "Expression"
 										}
 									},
@@ -960,16 +972,70 @@
 						"type": "DatasetReference"
 					}
 				}
+			},
+			{
+				"name": "Set App Id",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get SPN Details",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "WorkerAppId",
+					"value": {
+						"value": "activity('Get SPN Details').output.firstRow.Id",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set App Secret",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get SPN Details",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "WorkerAppSecret",
+					"value": {
+						"value": "activity('Get SPN Details').output.firstRow.Secret",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set Run Id",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Execute Pipeline",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "WorkerRunId",
+					"value": {
+						"value": "@activity('Execute Pipeline').output.RunId",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"parameters": {
 			"tenantId": {
-				"type": "string"
-			},
-			"applicationId": {
-				"type": "string"
-			},
-			"authenticationKey": {
 				"type": "string"
 			},
 			"subscriptionId": {
@@ -982,9 +1048,6 @@
 				"type": "string"
 			},
 			"pipelineName": {
-				"type": "string"
-			},
-			"runId": {
 				"type": "string"
 			},
 			"executionId": {
@@ -1000,6 +1063,15 @@
 		"variables": {
 			"WorkerPipelineState": {
 				"type": "Boolean"
+			},
+			"WorkerAppId": {
+				"type": "String"
+			},
+			"WorkerAppSecret": {
+				"type": "String"
+			},
+			"WorkerRunId": {
+				"type": "String"
 			}
 		},
 		"folder": {
