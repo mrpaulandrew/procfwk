@@ -4,12 +4,435 @@
 		"description": "ADF.procfwk infant pipeline used to check when the processing pipeline called by the Child completes and passes the resulting status back to the metadata database.",
 		"activities": [
 			{
+				"name": "Execute Pipeline",
+				"description": "The lowest level executor with the metadata framework to call existing processing pipelines within Data Factory. The function called will block processing and wait for an outcome.",
+				"type": "AzureFunctionActivity",
+				"dependsOn": [
+					{
+						"activity": "Log Pipeline Running",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Get Pipeline Params",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Get SPN Details",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"functionName": "ExecutePipeline",
+					"method": "POST",
+					"body": {
+						"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"',activity('Get SPN Details').output.firstRow.Id,'\",\n\t\"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.Secret,'\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"',item().ResourceGroupName,'\",\n\t\"factoryName\": \"',item().DataFactoryName,'\",\n\t\"pipelineName\": \"',item().PipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
+						"type": "Expression"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "FrameworkFunctions",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Get Pipeline Params",
+				"description": "Returns any parameters from metadata required for the processing pipeline being called. The output can be an empty string if no parameters are required.",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetPipelineParameters]",
+						"storedProcedureParameters": {
+							"PipelineId": {
+								"type": "Int32",
+								"value": {
+									"value": "@item().PipelineId",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Log Pipeline Running",
+				"description": "Sets the current pipeline with a status of running within the current execution database table.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[procfwk].[SetLogPipelineRunning]",
+					"storedProcedureParameters": {
+						"ExecutionId": {
+							"value": {
+								"value": "@pipeline().parameters.ExecutionId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"PipelineId": {
+							"value": {
+								"value": "@item().PipelineId",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"StageId": {
+							"value": {
+								"value": "@pipeline().parameters.StageId",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "SupportDatabase",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Get SPN Details",
+				"description": "Return the SPN ID and Secret for the processing pipeline being executed. Called at this level as each pipeline can have a different SPN.",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetServicePrincipal]",
+						"storedProcedureParameters": {
+							"DataFactory": {
+								"type": "String",
+								"value": {
+									"value": "@item().DataFactoryName",
+									"type": "Expression"
+								}
+							},
+							"PipelineName": {
+								"type": "String",
+								"value": {
+									"value": "@item().PipelineName",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Log Activity Failure 1",
+				"description": "Handle true failures from calling out to the Azure Function and update the current execution table accordingly so a restart can occur.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Execute Pipeline",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[procfwk].[SetLogActivityFailed]",
+					"storedProcedureParameters": {
+						"ExecutionId": {
+							"value": {
+								"value": "@pipeline().parameters.ExecutionId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"PipelineId": {
+							"value": {
+								"value": "@item().PipelineId",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"StageId": {
+							"value": {
+								"value": "@pipeline().parameters.StageId",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"CallingActivity": {
+							"value": "ExecutePipeline",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "SupportDatabase",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Set Run Id",
+				"description": "Provide the actual ADF run ID back to the current execution table for long term logging and alignment between the metadata other Azure monitoring tools.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Execute Pipeline",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[procfwk].[SetLogPipelineRunId]",
+					"storedProcedureParameters": {
+						"ExecutionId": {
+							"value": {
+								"value": "@pipeline().parameters.ExecutionId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"PipelineId": {
+							"value": {
+								"value": "@item().PipelineId",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"RunId": {
+							"value": {
+								"value": "@activity('Execute Pipeline').output.RunId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"StageId": {
+							"value": {
+								"value": "@pipeline().parameters.StageId",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "SupportDatabase",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Check For Alerts",
+				"description": "Checks the properties tables and if any recipients in the database require alerts sending for the current pipeline ID.",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Set Run Id",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Pipeline Result",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[CheckForEmailAlerts]",
+						"storedProcedureParameters": {
+							"PipelineId": {
+								"type": "Int32",
+								"value": {
+									"value": "@item().PipelineId",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "Send Alerts",
+				"description": "True = alerts need sending.\nFalse = do nothing.",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Check For Alerts",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@activity('Check For Alerts').output.firstRow.SendAlerts",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Get Email Parts",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderStoredProcedureName": "[procfwk].[GetEmailAlertParts]",
+									"storedProcedureParameters": {
+										"PipelineId": {
+											"type": "Int32",
+											"value": {
+												"value": "@item().PipelineId",
+												"type": "Expression"
+											}
+										}
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"dataset": {
+									"referenceName": "GetSetMetadata",
+									"type": "DatasetReference"
+								},
+								"firstRowOnly": true
+							}
+						},
+						{
+							"name": "Send Email",
+							"type": "AzureFunctionActivity",
+							"dependsOn": [
+								{
+									"activity": "Get Email Parts",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"functionName": "SendEmail",
+								"method": "POST",
+								"body": {
+									"value": "@activity('Get Email Parts').output.firstRow",
+									"type": "Expression"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "FrameworkFunctions",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			},
+			{
 				"name": "Wait Until Pipeline Completes",
 				"description": "Loops until the Worker pipeline called completes.\n\nSimple status:\n- Running = new iteration.\n- Done = break.",
 				"type": "Until",
 				"dependsOn": [
 					{
 						"activity": "Get Wait Duration",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Execute Pipeline",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -135,7 +558,7 @@
 							}
 						},
 						{
-							"name": "Log Activity Failure",
+							"name": "Log Activity Failure 2",
 							"description": "Report to the current execution table that the framework pipeline activity has failed. This failure is outside of the scope of the framework and is probably related to a wider platform problem.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [
