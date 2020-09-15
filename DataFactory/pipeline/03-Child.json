@@ -21,6 +21,13 @@
 						"type": "AzureSqlSource",
 						"sqlReaderStoredProcedureName": "[procfwk].[GetPipelinesInStage]",
 						"storedProcedureParameters": {
+							"ExecutionId": {
+								"type": "Guid",
+								"value": {
+									"value": "@pipeline().parameters.ExecutionId",
+									"type": "Expression"
+								}
+							},
 							"StageId": {
 								"type": "Int32",
 								"value": {
@@ -73,26 +80,6 @@
 								},
 								"waitOnCompletion": true,
 								"parameters": {
-									"tenantId": {
-										"value": "@pipeline().parameters.TenantId",
-										"type": "Expression"
-									},
-									"subscriptionId": {
-										"value": "@pipeline().parameters.SubscriptionId",
-										"type": "Expression"
-									},
-									"resourceGroup": {
-										"value": "@item().ResourceGroupName",
-										"type": "Expression"
-									},
-									"factoryName": {
-										"value": "@item().DataFactoryName",
-										"type": "Expression"
-									},
-									"pipelineName": {
-										"value": "@item().PipelineName",
-										"type": "Expression"
-									},
 									"executionId": {
 										"value": "@pipeline().parameters.ExecutionId",
 										"type": "Expression"
@@ -117,12 +104,6 @@
 				"type": "int"
 			},
 			"ExecutionId": {
-				"type": "string"
-			},
-			"TenantId": {
-				"type": "string"
-			},
-			"SubscriptionId": {
 				"type": "string"
 			}
 		},
