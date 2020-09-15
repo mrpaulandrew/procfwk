@@ -13,7 +13,6 @@ BEGIN
 
 	DECLARE @ErrorDetails NVARCHAR(500) = ''
 	DECLARE @CredentialId INT
-	DECLARE @TenantId CHAR(36)
 	DECLARE @LocalPrincipalId UNIQUEIDENTIFIER
 
 	--defensive checks
@@ -56,10 +55,6 @@ BEGIN
 			RAISERROR(@ErrorDetails, 16, 1);
 			RETURN 0;
 		END
-	
-	--get tenant Id to include in encryption
-	SELECT
-		@TenantId = [procfwk].[GetPropertyValueInternal]('TenantId');
 		
 	--add SPN for specific pipeline
 	IF @SpecificPipelineName IS NOT NULL
@@ -91,7 +86,7 @@ BEGIN
 					SELECT
 						ISNULL(@PrincipalName, 'Unknown'),
 						@PrincipalId,
-						ENCRYPTBYPASSPHRASE(CONCAT(@TenantId, @DataFactory, @SpecificPipelineName), @PrincipalSecret)
+						ENCRYPTBYPASSPHRASE(CONCAT(@DataFactory, @SpecificPipelineName), @PrincipalSecret)
 
 					SET @CredentialId = SCOPE_IDENTITY()
 				END
@@ -132,7 +127,7 @@ BEGIN
 			SELECT
 				ISNULL(@PrincipalName, 'Unknown'),
 				@PrincipalId,
-				ENCRYPTBYPASSPHRASE(CONCAT(@TenantId, @DataFactory), @PrincipalSecret)
+				ENCRYPTBYPASSPHRASE(@DataFactory, @PrincipalSecret)
 
 			SET @CredentialId = SCOPE_IDENTITY()
 

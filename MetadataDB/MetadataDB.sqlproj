@@ -104,7 +104,6 @@
     <Build Include="dbo\Tables\ServicePrincipals.sql" />
     <Build Include="procfwk\Tables\DataFactorys.sql" />
     <Build Include="procfwk\Tables\PipelineAuthLink.sql" />
-    <Build Include="procfwk\Stored Procedures\GetServicePrincipal.sql" />
     <Build Include="Security\adf_procfwkuser.sql" />
     <Build Include="dbo\Stored Procedures\FailProcedure.sql" />
     <Build Include="procfwk\Stored Procedures\ResetExecution.sql" />
@@ -194,6 +193,13 @@
     <Build Include="procfwkHelpers\Stored Procedures\AddPipelineViaPowerShell.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineCancelled.sql" />
     <Build Include="procfwkTesting\Stored Procedures\GetRunIdWhenAvailable.sql" />
+    <Build Include="procfwk\Stored Procedures\GetWorkerAuthDetails.sql" />
+    <Build Include="procfwk\Stored Procedures\GetWorkerPipelineDetails.sql" />
+    <Build Include="procfwk\Tables\Tenants.sql" />
+    <Build Include="procfwk\Tables\Subscriptions.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\SetDefaultSubscription.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\SetDefaultTenant.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\GetServicePrincipal.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
