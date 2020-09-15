@@ -586,6 +586,36 @@
 								"dependencyConditions": [
 									"Succeeded"
 								]
+							},
+							{
+								"activity": "Set Subscription Id",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set Tenant Id",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set Pipeline Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set Data Factory Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set Resource Group",
+								"dependencyConditions": [
+									"Succeeded"
+								]
 							}
 						],
 						"policy": {
@@ -601,7 +631,7 @@
 							"method": "POST",
 							"headers": {},
 							"body": {
-								"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n\t\"factoryName\": \"',pipeline().parameters.factoryName,'\",\n\t\"pipelineName\": \"',pipeline().parameters.pipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
+								"value": "@concat('\n{\n\t\"tenantId\": \"',variables('WorkerTenantId'),'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n\t\"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n\t\"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n\t\"pipelineName\": \"',variables('WorkerPipelineName'),'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
 								"type": "Expression"
 							}
 						},
@@ -706,19 +736,26 @@
 						"typeProperties": {
 							"source": {
 								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[procfwk].[GetServicePrincipal]",
+								"sqlReaderStoredProcedureName": "[[procfwk].[GetWorkerAuthDetails]",
 								"storedProcedureParameters": {
-									"DataFactory": {
-										"type": "String",
+									"ExecutionId": {
+										"type": "Guid",
 										"value": {
-											"value": "@pipeline().parameters.factoryName",
+											"value": "@pipeline().parameters.executionId",
 											"type": "Expression"
 										}
 									},
-									"PipelineName": {
-										"type": "String",
+									"PipelineId": {
+										"type": "Int32",
 										"value": {
-											"value": "@pipeline().parameters.pipelineName",
+											"value": "@pipeline().parameters.pipelineId",
+											"type": "Expression"
+										}
+									},
+									"StageId": {
+										"type": "Int32",
+										"value": {
+											"value": "@pipeline().parameters.stageId",
 											"type": "Expression"
 										}
 									}
@@ -1036,7 +1073,7 @@
 										"method": "POST",
 										"headers": {},
 										"body": {
-											"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
+											"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerTenantId'),'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n    \"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n    \"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n    \"pipelineName\": \"',variables('WorkerPipelineName'),'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 											"type": "Expression"
 										}
 									},
@@ -1351,7 +1388,7 @@
 												"method": "POST",
 												"headers": {},
 												"body": {
-													"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
+													"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerTenantId'),'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n    \"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n    \"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n    \"pipelineName\": \"',variables('WorkerPipelineName'),'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 													"type": "Expression"
 												}
 											},
@@ -1552,7 +1589,7 @@
 						"typeProperties": {
 							"variableName": "WorkerAppId",
 							"value": {
-								"value": "@activity('Get Worker Authentication Details').output.firstRow.Id",
+								"value": "@activity('Get Worker Authentication Details').output.firstRow.AppId",
 								"type": "Expression"
 							}
 						}
@@ -1572,7 +1609,7 @@
 						"typeProperties": {
 							"variableName": "WorkerAppSecret",
 							"value": {
-								"value": "@activity('Get Worker Authentication Details').output.firstRow.Secret",
+								"value": "@activity('Get Worker Authentication Details').output.firstRow.AppSecret",
 								"type": "Expression"
 							}
 						}
@@ -1596,24 +1633,158 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "Get Worker Pipeline Details",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[procfwk].[GetWorkerPipelineDetails]",
+								"storedProcedureParameters": {
+									"ExecutionId": {
+										"type": "Guid",
+										"value": {
+											"value": "@pipeline().parameters.ExecutionId",
+											"type": "Expression"
+										}
+									},
+									"PipelineId": {
+										"type": "Int32",
+										"value": {
+											"value": "@pipeline().parameters.pipelineId",
+											"type": "Expression"
+										}
+									},
+									"StageId": {
+										"type": "Int32",
+										"value": {
+											"value": "@pipeline().parameters.stageId",
+											"type": "Expression"
+										}
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "GetSetMetadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Set Tenant Id",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Worker Authentication Details",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "WorkerTenantId",
+							"value": {
+								"value": "@activity('Get Worker Authentication Details').output.firstRow.TenantId",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Subscription Id",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Worker Authentication Details",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "WorkerSubscriptionId",
+							"value": {
+								"value": "@activity('Get Worker Authentication Details').output.firstRow.SubscriptionId",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Pipeline Name",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Worker Pipeline Details",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "WorkerPipelineName",
+							"value": {
+								"value": "@activity('Get Worker Pipeline Details').output.firstRow.PipelineName",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Data Factory Name",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Worker Pipeline Details",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "WorkerDataFactoryName",
+							"value": {
+								"value": "@activity('Get Worker Pipeline Details').output.firstRow.DataFactoryName",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Resource Group",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Worker Pipeline Details",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "WorkerResourceGroup",
+							"value": {
+								"value": "@activity('Get Worker Pipeline Details').output.firstRow.ResourceGroupName",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"parameters": {
-					"tenantId": {
-						"type": "string"
-					},
-					"subscriptionId": {
-						"type": "string"
-					},
-					"resourceGroup": {
-						"type": "string"
-					},
-					"factoryName": {
-						"type": "string"
-					},
-					"pipelineName": {
-						"type": "string"
-					},
 					"executionId": {
 						"type": "string"
 					},
@@ -1641,6 +1812,15 @@
 						"type": "String"
 					},
 					"WorkerSubscriptionId": {
+						"type": "String"
+					},
+					"WorkerPipelineName": {
+						"type": "String"
+					},
+					"WorkerDataFactoryName": {
+						"type": "String"
+					},
+					"WorkerResourceGroup": {
 						"type": "String"
 					}
 				},
@@ -1683,6 +1863,13 @@
 								"type": "AzureSqlSource",
 								"sqlReaderStoredProcedureName": "[[procfwk].[GetPipelinesInStage]",
 								"storedProcedureParameters": {
+									"ExecutionId": {
+										"type": "Guid",
+										"value": {
+											"value": "@pipeline().parameters.ExecutionId",
+											"type": "Expression"
+										}
+									},
 									"StageId": {
 										"type": "Int32",
 										"value": {
@@ -1736,26 +1923,6 @@
 										},
 										"waitOnCompletion": true,
 										"parameters": {
-											"tenantId": {
-												"value": "@pipeline().parameters.TenantId",
-												"type": "Expression"
-											},
-											"subscriptionId": {
-												"value": "@pipeline().parameters.SubscriptionId",
-												"type": "Expression"
-											},
-											"resourceGroup": {
-												"value": "@item().ResourceGroupName",
-												"type": "Expression"
-											},
-											"factoryName": {
-												"value": "@item().DataFactoryName",
-												"type": "Expression"
-											},
-											"pipelineName": {
-												"value": "@item().PipelineName",
-												"type": "Expression"
-											},
 											"executionId": {
 												"value": "@pipeline().parameters.ExecutionId",
 												"type": "Expression"
@@ -1780,12 +1947,6 @@
 						"type": "int"
 					},
 					"ExecutionId": {
-						"type": "string"
-					},
-					"TenantId": {
-						"type": "string"
-					},
-					"SubscriptionId": {
 						"type": "string"
 					}
 				},
@@ -1863,18 +2024,6 @@
 								"dependencyConditions": [
 									"Succeeded"
 								]
-							},
-							{
-								"activity": "Get Tenant Id",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Get Subscription Id",
-								"dependencyConditions": [
-									"Succeeded"
-								]
 							}
 						],
 						"userProperties": [],
@@ -1911,14 +2060,6 @@
 											},
 											"ExecutionId": {
 												"value": "@variables('ExecutionId')",
-												"type": "Expression"
-											},
-											"TenantId": {
-												"value": "@activity('Get Tenant Id').output.firstRow.PropertyValue",
-												"type": "Expression"
-											},
-											"SubscriptionId": {
-												"value": "@activity('Get Subscription Id').output.firstRow.PropertyValue",
 												"type": "Expression"
 											}
 										}
@@ -1984,6 +2125,13 @@
 									"typeProperties": {
 										"storedProcedureName": "[[procfwk].[CheckForBlockedPipelines]",
 										"storedProcedureParameters": {
+											"ExecutionId": {
+												"value": {
+													"value": "@variables('ExecutionId')",
+													"type": "Expression"
+												},
+												"type": "Guid"
+											},
 											"StageId": {
 												"value": {
 													"value": "@item().StageId",
@@ -2082,87 +2230,6 @@
 						}
 					},
 					{
-						"name": "Get Tenant Id",
-						"description": "Returning the Azure Tenant Id from the metadata properties table.",
-						"type": "Lookup",
-						"dependsOn": [
-							{
-								"activity": "Metadata Integrity Checks",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[procfwk].[GetPropertyValue]",
-								"storedProcedureParameters": {
-									"PropertyName": {
-										"type": "String",
-										"value": "TenantId"
-									}
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": true
-						}
-					},
-					{
-						"name": "Get Subscription Id",
-						"description": "Returning the Azure Subscription Id from the metadata properties table.",
-						"type": "Lookup",
-						"dependsOn": [
-							{
-								"activity": "Metadata Integrity Checks",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": true
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[procfwk].[GetPropertyValue]",
-								"storedProcedureParameters": {
-									"PropertyName": {
-										"type": "String",
-										"value": "SubscriptionId"
-									}
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						}
-					},
-					{
 						"name": "Metadata Integrity Checks",
 						"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
 						"type": "Lookup",
@@ -2239,19 +2306,26 @@
 									"typeProperties": {
 										"source": {
 											"type": "AzureSqlSource",
-											"sqlReaderStoredProcedureName": "[[procfwk].[GetServicePrincipal]",
+											"sqlReaderStoredProcedureName": "[[procfwk].[GetWorkerAuthDetails]",
 											"storedProcedureParameters": {
-												"DataFactory": {
-													"type": "String",
+												"ExecutionId": {
+													"type": "Guid",
 													"value": {
-														"value": "@item().DataFactoryName",
+														"value": "@item().LocalExecutionId",
 														"type": "Expression"
 													}
 												},
-												"PipelineName": {
-													"type": "String",
+												"PipelineId": {
+													"type": "Int32",
 													"value": {
-														"value": "@item().PipelineName",
+														"value": "@item().PipelineId",
+														"type": "Expression"
+													}
+												},
+												"StageId": {
+													"type": "Int32",
+													"value": {
+														"value": "@item().StageId",
 														"type": "Expression"
 													}
 												}
@@ -2339,7 +2413,7 @@
 										"method": "POST",
 										"headers": {},
 										"body": {
-											"value": "@concat('\n{\n    \"tenantId\": \"',item().TenantId,'\",\n    \"applicationId\": \"',activity('Get SPN Details').output.firstRow.Id,'\",\n    \"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.Secret,'\",\n    \"subscriptionId\": \"',item().SubscriptionId,'\",\n    \"resourceGroup\": \"',item().ResourceGroupName,'\",\n    \"factoryName\": \"',item().DataFactoryName,'\",\n    \"pipelineName\": \"',item().PipelineName,'\",\n    \"runId\": \"',item().AdfPipelineRunId,'\"\n}')",
+											"value": "@concat('\n{\n    \"tenantId\": \"',activity('Get SPN Details').output.firstRow.TenantId,'\",\n    \"applicationId\": \"',activity('Get SPN Details').output.firstRow.AppId,'\",\n    \"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.AppSecret,'\",\n    \"subscriptionId\": \"',activity('Get SPN Details').output.firstRow.SubscriptionId,'\",\n    \"resourceGroup\": \"',item().ResourceGroupName,'\",\n    \"factoryName\": \"',item().DataFactoryName,'\",\n    \"pipelineName\": \"',item().PipelineName,'\",\n    \"runId\": \"',item().AdfPipelineRunId,'\"\n}')",
 											"type": "Expression"
 										}
 									},
