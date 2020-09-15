@@ -75,7 +75,7 @@
 					"functionName": "ExecutePipeline",
 					"method": "POST",
 					"body": {
-						"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n\t\"factoryName\": \"',pipeline().parameters.factoryName,'\",\n\t\"pipelineName\": \"',pipeline().parameters.pipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
+						"value": "@concat('\n{\n\t\"tenantId\": \"',variables('WorkerTenantId'),'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n\t\"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n\t\"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n\t\"pipelineName\": \"',variables('WorkerPipelineName'),'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
 						"type": "Expression"
 					}
 				},
@@ -167,7 +167,20 @@
 				"name": "Get Worker Authentication Details",
 				"description": "Return the SPN ID and Secret for the worker pipeline being executed. Called at this level as each pipeline can have a different SPN.",
 				"type": "Lookup",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Set Pipeline Name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Data Factory Name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -184,14 +197,14 @@
 							"DataFactory": {
 								"type": "String",
 								"value": {
-									"value": "@pipeline().parameters.factoryName",
+									"value": "@variables('WorkerDataFactoryName')",
 									"type": "Expression"
 								}
 							},
 							"PipelineName": {
 								"type": "String",
 								"value": {
-									"value": "@pipeline().parameters.pipelineName",
+									"value": "@variables('WorkerPipelineName')",
 									"type": "Expression"
 								}
 							}
@@ -504,7 +517,7 @@
 								"functionName": "CheckPipelineStatus",
 								"method": "POST",
 								"body": {
-									"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
+									"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerTenantId'),'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n    \"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n    \"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n    \"pipelineName\": \"',variables('WorkerPipelineName'),'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 									"type": "Expression"
 								}
 							},
@@ -818,7 +831,7 @@
 										"functionName": "GetActivityErrors",
 										"method": "POST",
 										"body": {
-											"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
+											"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerTenantId'),'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n    \"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n    \"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n    \"pipelineName\": \"',variables('WorkerPipelineName'),'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 											"type": "Expression"
 										}
 									},
