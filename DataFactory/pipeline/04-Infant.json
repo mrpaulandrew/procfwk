@@ -149,7 +149,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[procfwk].[GetServicePrincipal]",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetWorkerAuthDetails]",
 						"storedProcedureParameters": {
 							"DataFactory": {
 								"type": "String",
