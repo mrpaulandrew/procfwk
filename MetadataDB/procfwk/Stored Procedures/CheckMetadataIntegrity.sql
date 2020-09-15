@@ -10,12 +10,12 @@ BEGIN
 	Check 1 - Are there execution stages enabled in the metadata?
 	Check 2 - Are there pipelines enabled in the metadata?
 	Check 3 - Are there any service principals available to run the processing pipelines?
-	Check 4 - Is there a current TenantId property available?
-	Check 5 - Is there a current SubscriptionId property available?
+	Check 4 - Is there at least one TenantId available?
+	Check 5 - Is there at least one SubscriptionId available?
 	Check 6 - Is there a current OverideRestart property available?
 	Check 7 - Are there any enabled pipelines configured without a service principal?
-	Check 8 - Does the TenantId property still have its default value?
-	Check 9 - Does the SubscriptionId property still have its default value?
+	Check 8 - Are any Data Factorys set to use the default subscription value?
+	Check 9 - Are any Subscription set to use the default tenant value?
 	Check 10 - Is there a current PipelineStatusCheckDuration property available?
 	Check 11 - Is there a current UseFrameworkEmailAlerting property available?
 	Check 12 - Is there a current EmailAlertBodyTemplate property available?
@@ -85,28 +85,28 @@ BEGIN
 	--Check 4:
 	IF NOT EXISTS
 		(
-		SELECT * FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'TenantId'
+		SELECT * FROM [procfwk].[Tenants]
 		)
 		BEGIN
 			INSERT INTO @MetadataIntegrityIssues
 			VALUES
 				( 
 				4,
-				'A current TenantId value is missing from the properties table.'
+				'TenantId value is missing from the [procfwk].[Tenants] table.'
 				)		
 		END;
 
 	--Check 5:
 	IF NOT EXISTS
 		(
-		SELECT * FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'SubscriptionId'
+		SELECT * FROM [procfwk].[Subscriptions]
 		)
 		BEGIN
 			INSERT INTO @MetadataIntegrityIssues
 			VALUES
 				( 
 				5,
-				'A current SubscriptionId value is missing from the properties table.'
+				'SubscriptionId value is missing from the [procfwk].[Subscriptions] table.'
 				)		
 		END;
 
@@ -147,24 +147,30 @@ BEGIN
 		END;
 
 	--Check 8:
-	IF ([procfwk].[GetPropertyValueInternal]('TenantId')) = '1234-1234-1234-1234-1234'
+	IF EXISTS
+		(
+		SELECT * FROM [procfwk].[DataFactorys] WHERE [SubscriptionId] = '12345678-1234-1234-1234-012345678910'
+		)
 		BEGIN
 			INSERT INTO @MetadataIntegrityIssues
 			VALUES
 				( 
 				8,
-				'Tenant Id property is still set to its default value of 1234-1234-1234-1234-1234.'
+				'Data Factorys still set to use the default subscription value of 12345678-1234-1234-1234-012345678910.'
 				)		
 		END;
 
 	--Check 9:
-	IF ([procfwk].[GetPropertyValueInternal]('SubscriptionId')) = '1234-1234-1234-1234-1234'
+	IF EXISTS
+		(
+		SELECT * FROM [procfwk].[Subscriptions] WHERE [TenantId] = '12345678-1234-1234-1234-012345678910'
+		)
 		BEGIN
 			INSERT INTO @MetadataIntegrityIssues
 			VALUES
 				( 
 				9,
-				'Subscription Id property is still set to its default value of 1234-1234-1234-1234-1234.'
+				'Subscription still set to use the default tenant value of 12345678-1234-1234-1234-012345678910.'
 				)		
 		END;
 
@@ -375,8 +381,6 @@ BEGIN
 		BEGIN
 			--return pipelines details that require a clean up
 			SELECT 
-				[procfwk].[GetPropertyValueInternal]('TenantId') AS TenantId,
-				[procfwk].[GetPropertyValueInternal]('SubscriptionId') AS SubscriptionId,
 				[ResourceGroupName],
 				[DataFactoryName],
 				[PipelineName],
@@ -394,8 +398,6 @@ BEGIN
 		BEGIN
 			--lookup activity must return something, even if just an empty dataset
 			SELECT 
-				NULL AS TenantId,
-				NULL AS SubscriptionId,
 				NULL AS ResourceGroupName,
 				NULL AS DataFactoryName,
 				NULL AS PipelineName,

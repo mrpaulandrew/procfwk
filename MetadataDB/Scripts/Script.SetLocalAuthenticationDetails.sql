@@ -5,16 +5,36 @@
 PRINT 'TenantId: ' + '$(AZURE_TENANT_ID)'
 PRINT 'SubscriptionId: ' + '$(AZURE_SUBSCRIPTION_ID)'
 
---Add new properties for your Azure tenant
-EXEC [procfwkHelpers].[AddProperty] 
-	@PropertyName = 'TenantId',
-	@PropertyValue = '$(AZURE_TENANT_ID)',
-	@Description = 'Used to provide authentication throughout the framework execution.'
+--add my tenant
+INSERT INTO [procfwk].[Tenants]
+	(
+	[TenantId],
+	[Name],
+	[Description]
+	)
+VALUES
+	('$(AZURE_TENANT_ID)', 'mrpaulandrew.com', NULL);
 
-EXEC [procfwkHelpers].[AddProperty] 
-	@PropertyName = 'SubscriptionId',
-	@PropertyValue = '$(AZURE_SUBSCRIPTION_ID)',
-	@Description = 'Used to provide authentication throughout the framework execution.'
+--add my subscription
+INSERT INTO [procfwk].[Subscriptions]
+	(
+	[SubscriptionId],
+	[Name],
+	[Description],
+	[TenantId]
+	)
+VALUES
+	('$(AZURE_SUBSCRIPTION_ID)', 'Microsoft Sponsored Subscription', NULL, '$(AZURE_TENANT_ID)');
+
+--update data factorys with new subscription
+UPDATE
+	[procfwk].[DataFactorys]
+SET
+	[SubscriptionId] = '$(AZURE_SUBSCRIPTION_ID)';
+
+--remove default values
+DELETE FROM [procfwk].[Subscriptions] WHERE [SubscriptionId] = '12345678-1234-1234-1234-012345678910';
+DELETE FROM [procfwk].[Tenants] WHERE [TenantId] = '12345678-1234-1234-1234-012345678910';
 
 /*
 EXEC [procfwkHelpers].[AddProperty]

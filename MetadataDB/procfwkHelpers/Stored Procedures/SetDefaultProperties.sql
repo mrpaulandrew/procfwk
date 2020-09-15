@@ -1,16 +1,6 @@
 ﻿CREATE PROCEDURE [procfwkHelpers].[SetDefaultProperties]
 AS
 BEGIN
-	EXEC [procfwkHelpers].[AddProperty] 
-		@PropertyName = 'TenantId',
-		@PropertyValue = '1234-1234-1234-1234-1234',
-		@Description = 'Used to provide authentication throughout the framework execution.';
-
-	EXEC [procfwkHelpers].[AddProperty] 
-		@PropertyName = 'SubscriptionId',
-		@PropertyValue = '1234-1234-1234-1234-1234',
-		@Description = 'Used to provide authentication throughout the framework execution.';
-
 	EXEC [procfwkHelpers].[AddProperty]
 		@PropertyName = N'OverideRestart',
 		@PropertyValue = N'0',

@@ -1,21 +1,21 @@
-﻿CREATE PROCEDURE [procfwk].[GetPipelinesInStage]
+﻿CREATE PROCEDURE [procfwk].[GetWorkerPipelineDetails]
 	(
 	@ExecutionId UNIQUEIDENTIFIER,
-	@StageId INT
+	@StageId INT,
+	@PipelineId INT
 	)
 AS
 BEGIN
 	SET NOCOUNT ON;
 
 	SELECT 
-		[PipelineId]
+		[PipelineName],
+		[DataFactoryName],
+		[ResourceGroupName]
 	FROM 
 		[procfwk].[CurrentExecution]
 	WHERE 
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId
-		AND ISNULL([PipelineStatus],'') <> 'Success'
-		AND [IsBlocked] <> 1
-	ORDER BY
-		[PipelineId] ASC;
+		AND [PipelineId] = @PipelineId;
 END;
