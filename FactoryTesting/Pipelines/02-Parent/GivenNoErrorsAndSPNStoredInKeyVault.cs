@@ -14,8 +14,7 @@ namespace FactoryTesting.Pipelines.Parent
         {
             _helper = new ParentHelper()
                 .WithBasicMetadata()
-                .WithSubscriptionId()
-                .WithTenantId()
+                .WithTenantAndSubscriptionIds()
                 .WithSPNInKeyVault("FrameworkFactory")
                 .WithEmptyExecutionTables()
                 .WithoutSimulatedError()

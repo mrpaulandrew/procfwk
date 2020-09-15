@@ -163,14 +163,14 @@ BEGIN
 	--Check 9:
 	IF EXISTS
 		(
-		SELECT * FROM [procfwk].[Subscriptions] WHERE [TenantId] = '12345678-1234-1234-1234-012345678910'
+		SELECT * FROM [procfwk].[Subscriptions] WHERE [TenantId] = '12345678-1234-1234-1234-012345678910' AND [SubscriptionId] <> '12345678-1234-1234-1234-012345678910'
 		)
 		BEGIN
 			INSERT INTO @MetadataIntegrityIssues
 			VALUES
 				( 
 				9,
-				'Subscription still set to use the default tenant value of 12345678-1234-1234-1234-012345678910.'
+				'None default subscription still set to use the default tenant value of 12345678-1234-1234-1234-012345678910.'
 				)		
 		END;
 

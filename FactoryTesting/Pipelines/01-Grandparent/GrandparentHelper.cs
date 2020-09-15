@@ -11,15 +11,9 @@ namespace FactoryTesting.Pipelines.Grandparent
             await RunPipeline("01-Grandparent");
         }
 
-        public GrandparentHelper WithTenantId()
+        public GrandparentHelper WithTenantAndSubscriptionIds()
         {
-            AddTenantId();
-            return this;
-        }
-
-        public GrandparentHelper WithSubscriptionId()
-        {
-            AddSubscriptionId();
+            AddTenantAndSubscription();
             return this;
         }
 

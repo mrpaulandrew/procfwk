@@ -14,8 +14,7 @@ namespace FactoryTesting.Pipelines.Grandparent
         {
             _helper = new GrandparentHelper()
                 .WithBasicMetadata()
-                .WithSubscriptionId()
-                .WithTenantId()
+                .WithTenantAndSubscriptionIds()
                 .WithSPNInDatabase("FrameworkFactory")
                 .WithEmptyExecutionTables()
                 .WithSimpleFailureHandling()

@@ -26,15 +26,9 @@ namespace FactoryTesting.Pipelines.Parent
         {
             return Task.CompletedTask;
         }
-        public ParentHelper WithTenantId()
+        public ParentHelper WithTenantAndSubscriptionIds()
         {
-            AddTenantId();
-            return this;
-        }
-
-        public ParentHelper WithSubscriptionId()
-        {
-            AddSubscriptionId();
+            AddTenantAndSubscription();
             return this;
         }
         public ParentHelper WithSPNInDatabase(string workerFactoryName)

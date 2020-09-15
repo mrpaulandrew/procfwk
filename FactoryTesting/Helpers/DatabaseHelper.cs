@@ -61,26 +61,14 @@ namespace FactoryTesting.Helpers
                 cmd.ExecuteNonQuery();
         }
 
-        public void AddTenantId()
+        public void AddTenantAndSubscription(string tenantId = null, string subscriptionId = null)
         {
-            var parameters = new Dictionary<string, object>
-            {
-                ["@PropertyName"] = "TenantId",
-                ["@PropertyValue"] = GetSetting("AZURE_TENANT_ID"),
-                ["@Description"] = "Used to provide authentication throughout the framework execution."
-            };
-            ExecuteStoredProcedure("[procfwkHelpers].[AddProperty]", parameters);
-        }
+            if (string.IsNullOrEmpty(tenantId)) tenantId = GetSetting("AZURE_TENANT_ID");
+            if (string.IsNullOrEmpty(subscriptionId)) subscriptionId = GetSetting("AZURE_SUBSCRIPTION_ID");
 
-        public void AddSubscriptionId()
-        {
-            var parameters = new Dictionary<string, object>
-            {
-                ["@PropertyName"] = "SubscriptionId",
-                ["@PropertyValue"] = GetSetting("AZURE_SUBSCRIPTION_ID"),
-                ["@Description"] = "Used to provide authentication throughout the framework execution."
-            };
-            ExecuteStoredProcedure("[procfwkHelpers].[AddProperty]", parameters);
+            ExecuteNonQuery($"INSERT INTO[procfwk].[Tenants] ([TenantId],[Name],[Description]) VALUES ('{tenantId}', 'mrpaulandrew.com', NULL);");
+            ExecuteNonQuery($"INSERT INTO [procfwk].[Subscriptions] ([SubscriptionId],[Name],[Description],[TenantId]) VALUES ('{subscriptionId}', 'Microsoft Sponsored Subscription', NULL, '{tenantId}');");
+            ExecuteNonQuery($"UPDATE [procfwk].[DataFactorys] SET [SubscriptionId] = '{subscriptionId}';");
         }
 
         public void AddWorkerSPNStoredInDatabase(string workerFactoryName)
