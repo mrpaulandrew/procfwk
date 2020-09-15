@@ -43,6 +43,24 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
+					},
+					{
+						"activity": "Set Pipeline Name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Data Factory Name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Resource Group",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
 				"policy": {
@@ -1062,8 +1080,26 @@
 						"type": "AzureSqlSource",
 						"sqlReaderStoredProcedureName": "[procfwk].[GetWorkerPipelineDetails]",
 						"storedProcedureParameters": {
+							"ExecutionId": {
+								"type": "Guid",
+								"value": {
+									"value": "@pipeline().parameters.ExecutionId",
+									"type": "Expression"
+								}
+							},
 							"PipelineId": {
-								"type": "Int32"
+								"type": "Int32",
+								"value": {
+									"value": "@pipeline().parameters.pipelineId",
+									"type": "Expression"
+								}
+							},
+							"StageId": {
+								"type": "Int32",
+								"value": {
+									"value": "@pipeline().parameters.stageId",
+									"type": "Expression"
+								}
 							}
 						},
 						"queryTimeout": "02:00:00",
