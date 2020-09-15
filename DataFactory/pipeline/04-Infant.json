@@ -1072,6 +1072,12 @@
 			},
 			"WorkerRunId": {
 				"type": "String"
+			},
+			"WorkerTenantId": {
+				"type": "String"
+			},
+			"WorkerSubscriptionId": {
+				"type": "String"
 			}
 		},
 		"folder": {
