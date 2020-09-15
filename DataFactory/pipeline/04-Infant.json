@@ -1122,7 +1122,14 @@
 						]
 					}
 				],
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "WorkerTenantId",
+					"value": {
+						"value": "@pipeline().parameters.tenantId",
+						"type": "Expression"
+					}
+				}
 			},
 			{
 				"name": "Set Subscription Id",
@@ -1135,7 +1142,14 @@
 						]
 					}
 				],
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "WorkerSubscriptionId",
+					"value": {
+						"value": "@pipeline().parameters.subscriptionId",
+						"type": "Expression"
+					}
+				}
 			},
 			{
 				"name": "Set Pipeline Name",
@@ -1148,7 +1162,14 @@
 						]
 					}
 				],
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "WorkerPipelineName",
+					"value": {
+						"value": "@activity('Get Worker Pipeline Details').output.firstRow.PipelineName",
+						"type": "Expression"
+					}
+				}
 			},
 			{
 				"name": "Set Data Factory Name",
@@ -1161,7 +1182,14 @@
 						]
 					}
 				],
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "WorkerDataFactoryName",
+					"value": {
+						"value": "@activity('Get Worker Pipeline Details').output.firstRow.DataFactoryName",
+						"type": "Expression"
+					}
+				}
 			},
 			{
 				"name": "Set Resource Group",
@@ -1174,7 +1202,14 @@
 						]
 					}
 				],
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "WorkerResourceGroup",
+					"value": {
+						"value": "@activity('Get Worker Pipeline Details').output.firstRow.ResourceGroupName",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"parameters": {
