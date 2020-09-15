@@ -167,20 +167,7 @@
 				"name": "Get Worker Authentication Details",
 				"description": "Return the SPN ID and Secret for the worker pipeline being executed. Called at this level as each pipeline can have a different SPN.",
 				"type": "Lookup",
-				"dependsOn": [
-					{
-						"activity": "Set Pipeline Name",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Set Data Factory Name",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -194,17 +181,24 @@
 						"type": "AzureSqlSource",
 						"sqlReaderStoredProcedureName": "[procfwk].[GetWorkerAuthDetails]",
 						"storedProcedureParameters": {
-							"DataFactory": {
-								"type": "String",
+							"ExecutionId": {
+								"type": "Guid",
 								"value": {
-									"value": "@variables('WorkerDataFactoryName')",
+									"value": "@pipeline().parameters.executionId",
 									"type": "Expression"
 								}
 							},
-							"PipelineName": {
-								"type": "String",
+							"PipelineId": {
+								"type": "Int32",
 								"value": {
-									"value": "@variables('WorkerPipelineName')",
+									"value": "@pipeline().parameters.pipelineId",
+									"type": "Expression"
+								}
+							},
+							"StageId": {
+								"type": "Int32",
+								"value": {
+									"value": "@pipeline().parameters.stageId",
 									"type": "Expression"
 								}
 							}
@@ -1031,7 +1025,7 @@
 				"typeProperties": {
 					"variableName": "WorkerAppId",
 					"value": {
-						"value": "@activity('Get Worker Authentication Details').output.firstRow.Id",
+						"value": "@activity('Get Worker Authentication Details').output.firstRow.AppId",
 						"type": "Expression"
 					}
 				}
@@ -1051,7 +1045,7 @@
 				"typeProperties": {
 					"variableName": "WorkerAppSecret",
 					"value": {
-						"value": "@activity('Get Worker Authentication Details').output.firstRow.Secret",
+						"value": "@activity('Get Worker Authentication Details').output.firstRow.AppSecret",
 						"type": "Expression"
 					}
 				}
@@ -1139,7 +1133,7 @@
 				"typeProperties": {
 					"variableName": "WorkerTenantId",
 					"value": {
-						"value": "@pipeline().parameters.tenantId",
+						"value": "@activity('Get Worker Authentication Details').output.firstRow.TenantId",
 						"type": "Expression"
 					}
 				}
@@ -1159,7 +1153,7 @@
 				"typeProperties": {
 					"variableName": "WorkerSubscriptionId",
 					"value": {
-						"value": "@pipeline().parameters.subscriptionId",
+						"value": "@activity('Get Worker Authentication Details').output.firstRow.SubscriptionId",
 						"type": "Expression"
 					}
 				}
@@ -1226,21 +1220,6 @@
 			}
 		],
 		"parameters": {
-			"tenantId": {
-				"type": "string"
-			},
-			"subscriptionId": {
-				"type": "string"
-			},
-			"resourceGroup": {
-				"type": "string"
-			},
-			"factoryName": {
-				"type": "string"
-			},
-			"pipelineName": {
-				"type": "string"
-			},
 			"executionId": {
 				"type": "string"
 			},
