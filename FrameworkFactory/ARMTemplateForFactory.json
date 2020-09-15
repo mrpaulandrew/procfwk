@@ -1103,240 +1103,10 @@
 							"batchCount": 50,
 							"activities": [
 								{
-									"name": "Execute Pipeline",
-									"description": "The lowest level executor with the metadata framework to call existing processing pipelines within Data Factory. The function called will block processing and wait for an outcome.",
-									"type": "AzureFunctionActivity",
-									"dependsOn": [
-										{
-											"activity": "Log Pipeline Running",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										},
-										{
-											"activity": "Get Pipeline Params",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										},
-										{
-											"activity": "Get SPN Details",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"functionName": "ExecutePipeline",
-										"method": "POST",
-										"headers": {},
-										"body": {
-											"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"',activity('Get SPN Details').output.firstRow.Id,'\",\n\t\"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.Secret,'\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"',item().ResourceGroupName,'\",\n\t\"factoryName\": \"',item().DataFactoryName,'\",\n\t\"pipelineName\": \"',item().PipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
-											"type": "Expression"
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "FrameworkFunctions",
-										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "Get Pipeline Params",
-									"description": "Returns any parameters from metadata required for the processing pipeline being called. The output can be an empty string if no parameters are required.",
-									"type": "Lookup",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"sqlReaderStoredProcedureName": "[[procfwk].[GetPipelineParameters]",
-											"storedProcedureParameters": {
-												"PipelineId": {
-													"type": "Int32",
-													"value": {
-														"value": "@item().PipelineId",
-														"type": "Expression"
-													}
-												}
-											},
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"dataset": {
-											"referenceName": "GetSetMetadata",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									}
-								},
-								{
-									"name": "Log Pipeline Running",
-									"description": "Sets the current pipeline with a status of running within the current execution database table.",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[procfwk].[SetLogPipelineRunning]",
-										"storedProcedureParameters": {
-											"ExecutionId": {
-												"value": {
-													"value": "@pipeline().parameters.ExecutionId",
-													"type": "Expression"
-												},
-												"type": "Guid"
-											},
-											"PipelineId": {
-												"value": {
-													"value": "@item().PipelineId",
-													"type": "Expression"
-												},
-												"type": "Int32"
-											},
-											"StageId": {
-												"value": {
-													"value": "@pipeline().parameters.StageId",
-													"type": "Expression"
-												},
-												"type": "Int32"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "SupportDatabase",
-										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "Get SPN Details",
-									"description": "Return the SPN ID and Secret for the processing pipeline being executed. Called at this level as each pipeline can have a different SPN.",
-									"type": "Lookup",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"sqlReaderStoredProcedureName": "[[procfwk].[GetServicePrincipal]",
-											"storedProcedureParameters": {
-												"DataFactory": {
-													"type": "String",
-													"value": {
-														"value": "@item().DataFactoryName",
-														"type": "Expression"
-													}
-												},
-												"PipelineName": {
-													"type": "String",
-													"value": {
-														"value": "@item().PipelineName",
-														"type": "Expression"
-													}
-												}
-											},
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"dataset": {
-											"referenceName": "GetSetMetadata",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									}
-								},
-								{
-									"name": "Log Activity Failure",
-									"description": "Handle true failures from calling out to the Azure Function and update the current execution table accordingly so a restart can occur.",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "Execute Pipeline",
-											"dependencyConditions": [
-												"Failed"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[procfwk].[SetLogActivityFailed]",
-										"storedProcedureParameters": {
-											"ExecutionId": {
-												"value": {
-													"value": "@pipeline().parameters.ExecutionId",
-													"type": "Expression"
-												},
-												"type": "Guid"
-											},
-											"PipelineId": {
-												"value": {
-													"value": "@item().PipelineId",
-													"type": "Expression"
-												},
-												"type": "Int32"
-											},
-											"StageId": {
-												"value": {
-													"value": "@pipeline().parameters.StageId",
-													"type": "Expression"
-												},
-												"type": "Int32"
-											},
-											"CallingActivity": {
-												"value": "ExecutePipeline",
-												"type": "String"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "SupportDatabase",
-										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "Running Pipeline Handler",
+									"name": "Worker Pipeline Executor",
+									"description": "Run the required worker pipeline and wait for its completion. Update metadata once done.",
 									"type": "ExecutePipeline",
-									"dependsOn": [
-										{
-											"activity": "Execute Pipeline",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
+									"dependsOn": [],
 									"userProperties": [],
 									"typeProperties": {
 										"pipeline": {
@@ -1347,14 +1117,6 @@
 										"parameters": {
 											"tenantId": {
 												"value": "@pipeline().parameters.TenantId",
-												"type": "Expression"
-											},
-											"applicationId": {
-												"value": "@activity('Get SPN Details').output.firstRow.Id",
-												"type": "Expression"
-											},
-											"authenticationKey": {
-												"value": "@activity('Get SPN Details').output.firstRow.Secret",
 												"type": "Expression"
 											},
 											"subscriptionId": {
@@ -1373,10 +1135,6 @@
 												"value": "@item().PipelineName",
 												"type": "Expression"
 											},
-											"runId": {
-												"value": "@activity('Execute Pipeline').output.RunId",
-												"type": "Expression"
-											},
 											"executionId": {
 												"value": "@pipeline().parameters.ExecutionId",
 												"type": "Expression"
@@ -1390,205 +1148,6 @@
 												"type": "Expression"
 											}
 										}
-									}
-								},
-								{
-									"name": "Set Run Id",
-									"description": "Provide the actual ADF run ID back to the current execution table for long term logging and alignment between the metadata other Azure monitoring tools.",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "Execute Pipeline",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[procfwk].[SetLogPipelineRunId]",
-										"storedProcedureParameters": {
-											"ExecutionId": {
-												"value": {
-													"value": "@pipeline().parameters.ExecutionId",
-													"type": "Expression"
-												},
-												"type": "Guid"
-											},
-											"PipelineId": {
-												"value": {
-													"value": "@item().PipelineId",
-													"type": "Expression"
-												},
-												"type": "Int32"
-											},
-											"RunId": {
-												"value": {
-													"value": "@activity('Execute Pipeline').output.RunId",
-													"type": "Expression"
-												},
-												"type": "Guid"
-											},
-											"StageId": {
-												"value": {
-													"value": "@pipeline().parameters.StageId",
-													"type": "Expression"
-												},
-												"type": "Int32"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "SupportDatabase",
-										"type": "LinkedServiceReference"
-									}
-								},
-								{
-									"name": "Check For Alerts",
-									"description": "Checks the properties tables and if any recipients in the database require alerts sending for the current pipeline ID.",
-									"type": "Lookup",
-									"dependsOn": [
-										{
-											"activity": "Set Run Id",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										},
-										{
-											"activity": "Running Pipeline Handler",
-											"dependencyConditions": [
-												"Completed"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"sqlReaderStoredProcedureName": "[[procfwk].[CheckForEmailAlerts]",
-											"storedProcedureParameters": {
-												"PipelineId": {
-													"type": "Int32",
-													"value": {
-														"value": "@item().PipelineId",
-														"type": "Expression"
-													}
-												}
-											},
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"dataset": {
-											"referenceName": "GetSetMetadata",
-											"type": "DatasetReference",
-											"parameters": {}
-										},
-										"firstRowOnly": true
-									}
-								},
-								{
-									"name": "Send Alerts",
-									"description": "True = alerts need sending.\nFalse = do nothing.",
-									"type": "IfCondition",
-									"dependsOn": [
-										{
-											"activity": "Check For Alerts",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"expression": {
-											"value": "@activity('Check For Alerts').output.firstRow.SendAlerts",
-											"type": "Expression"
-										},
-										"ifTrueActivities": [
-											{
-												"name": "Get Email Parts",
-												"type": "Lookup",
-												"dependsOn": [],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"source": {
-														"type": "AzureSqlSource",
-														"sqlReaderStoredProcedureName": "[[procfwk].[GetEmailAlertParts]",
-														"storedProcedureParameters": {
-															"PipelineId": {
-																"type": "Int32",
-																"value": {
-																	"value": "@item().PipelineId",
-																	"type": "Expression"
-																}
-															}
-														},
-														"queryTimeout": "02:00:00",
-														"partitionOption": "None"
-													},
-													"dataset": {
-														"referenceName": "GetSetMetadata",
-														"type": "DatasetReference",
-														"parameters": {}
-													},
-													"firstRowOnly": true
-												}
-											},
-											{
-												"name": "Send Email",
-												"type": "AzureFunctionActivity",
-												"dependsOn": [
-													{
-														"activity": "Get Email Parts",
-														"dependencyConditions": [
-															"Succeeded"
-														]
-													}
-												],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"functionName": "SendEmail",
-													"method": "POST",
-													"headers": {},
-													"body": {
-														"value": "@activity('Get Email Parts').output.firstRow",
-														"type": "Expression"
-													}
-												},
-												"linkedServiceName": {
-													"referenceName": "FrameworkFunctions",
-													"type": "LinkedServiceReference"
-												}
-											}
-										]
 									}
 								}
 							]
@@ -1619,8 +1178,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
-				"[concat(variables('factoryId'), '/linkedServices/FrameworkFunctions')]",
-				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]",
 				"[concat(variables('factoryId'), '/pipelines/04-Infant')]"
 			]
 		},
@@ -1632,12 +1189,453 @@
 				"description": "ADF.procfwk infant pipeline used to check when the processing pipeline called by the Child completes and passes the resulting status back to the metadata database.",
 				"activities": [
 					{
+						"name": "Execute Worker Pipeline",
+						"description": "The lowest level executor with the metadata framework to call existing processing pipelines within Data Factory. The function called will block processing and wait for an outcome.",
+						"type": "AzureFunctionActivity",
+						"dependsOn": [
+							{
+								"activity": "Log Pipeline Running",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Get Pipeline Params",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set App Id",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set App Secret",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"functionName": "ExecutePipeline",
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"value": "@concat('\n{\n\t\"tenantId\": \"',pipeline().parameters.TenantId,'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',pipeline().parameters.SubscriptionId,'\",\n\t\"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n\t\"factoryName\": \"',pipeline().parameters.factoryName,'\",\n\t\"pipelineName\": \"',pipeline().parameters.pipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
+								"type": "Expression"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "FrameworkFunctions",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Get Pipeline Params",
+						"description": "Returns any parameters from metadata required for the processing pipeline being called. The output can be an empty string if no parameters are required.",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[procfwk].[GetPipelineParameters]",
+								"storedProcedureParameters": {
+									"PipelineId": {
+										"type": "Int32",
+										"value": {
+											"value": "@pipeline().parameters.pipelineId",
+											"type": "Expression"
+										}
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "GetSetMetadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Log Pipeline Running",
+						"description": "Sets the current pipeline with a status of running within the current execution database table.",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[procfwk].[SetLogPipelineRunning]",
+							"storedProcedureParameters": {
+								"ExecutionId": {
+									"value": {
+										"value": "@pipeline().parameters.ExecutionId",
+										"type": "Expression"
+									},
+									"type": "Guid"
+								},
+								"PipelineId": {
+									"value": {
+										"value": "@pipeline().parameters.pipelineId",
+										"type": "Expression"
+									},
+									"type": "Int32"
+								},
+								"StageId": {
+									"value": {
+										"value": "@pipeline().parameters.StageId",
+										"type": "Expression"
+									},
+									"type": "Int32"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SupportDatabase",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Get Worker Authentication Details",
+						"description": "Return the SPN ID and Secret for the worker pipeline being executed. Called at this level as each pipeline can have a different SPN.",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[procfwk].[GetServicePrincipal]",
+								"storedProcedureParameters": {
+									"DataFactory": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().parameters.factoryName",
+											"type": "Expression"
+										}
+									},
+									"PipelineName": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().parameters.pipelineName",
+											"type": "Expression"
+										}
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "GetSetMetadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Log Execute Function Activity Failure",
+						"description": "Handle true failures from calling out to the Azure Function and update the current execution table accordingly so a restart can occur.",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Execute Worker Pipeline",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[procfwk].[SetLogActivityFailed]",
+							"storedProcedureParameters": {
+								"ExecutionId": {
+									"value": {
+										"value": "@pipeline().parameters.ExecutionId",
+										"type": "Expression"
+									},
+									"type": "Guid"
+								},
+								"PipelineId": {
+									"value": {
+										"value": "@pipeline().parameters.pipelineId",
+										"type": "Expression"
+									},
+									"type": "Int32"
+								},
+								"StageId": {
+									"value": {
+										"value": "@pipeline().parameters.StageId",
+										"type": "Expression"
+									},
+									"type": "Int32"
+								},
+								"CallingActivity": {
+									"value": "ExecuteWorkerPipeline",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SupportDatabase",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Update Run Id",
+						"description": "Provide the actual ADF run ID back to the current execution table for long term logging and alignment between the metadata other Azure monitoring tools.",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Set Run Id",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[procfwk].[SetLogPipelineRunId]",
+							"storedProcedureParameters": {
+								"ExecutionId": {
+									"value": {
+										"value": "@pipeline().parameters.ExecutionId",
+										"type": "Expression"
+									},
+									"type": "Guid"
+								},
+								"PipelineId": {
+									"value": {
+										"value": "@pipeline().parameters.pipelineId",
+										"type": "Expression"
+									},
+									"type": "Int32"
+								},
+								"RunId": {
+									"value": {
+										"value": "@variables('WorkerRunId')",
+										"type": "Expression"
+									},
+									"type": "Guid"
+								},
+								"StageId": {
+									"value": {
+										"value": "@pipeline().parameters.StageId",
+										"type": "Expression"
+									},
+									"type": "Int32"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SupportDatabase",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Check For Alerts",
+						"description": "Checks the properties tables and if any recipients in the database require alerts sending for the current pipeline ID.",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Update Run Id",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set Pipeline Result",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[procfwk].[CheckForEmailAlerts]",
+								"storedProcedureParameters": {
+									"PipelineId": {
+										"type": "Int32",
+										"value": {
+											"value": "@pipeline().parameters.pipelineId",
+											"type": "Expression"
+										}
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "GetSetMetadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": true
+						}
+					},
+					{
+						"name": "Send Alerts",
+						"description": "True = alerts need sending.\nFalse = do nothing.",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Check For Alerts",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@activity('Check For Alerts').output.firstRow.SendAlerts",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Get Email Parts",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderStoredProcedureName": "[[procfwk].[GetEmailAlertParts]",
+											"storedProcedureParameters": {
+												"PipelineId": {
+													"type": "Int32",
+													"value": {
+														"value": "@pipeline().parameters.pipelineId",
+														"type": "Expression"
+													}
+												}
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "GetSetMetadata",
+											"type": "DatasetReference",
+											"parameters": {}
+										},
+										"firstRowOnly": true
+									}
+								},
+								{
+									"name": "Send Email",
+									"type": "AzureFunctionActivity",
+									"dependsOn": [
+										{
+											"activity": "Get Email Parts",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"functionName": "SendEmail",
+										"method": "POST",
+										"headers": {},
+										"body": {
+											"value": "@activity('Get Email Parts').output.firstRow",
+											"type": "Expression"
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "FrameworkFunctions",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					},
+					{
 						"name": "Wait Until Pipeline Completes",
 						"description": "Loops until the Worker pipeline called completes.\n\nSimple status:\n- Running = new iteration.\n- Done = break.",
 						"type": "Until",
 						"dependsOn": [
 							{
 								"activity": "Get Wait Duration",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Execute Worker Pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set Run Id",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1651,7 +1649,7 @@
 							},
 							"activities": [
 								{
-									"name": "Get Pipeline Status",
+									"name": "Get Worker Pipeline Status",
 									"description": "Checks the status of a given processing pipeline and provides the value for the downstream framework activities to act upon.",
 									"type": "AzureFunctionActivity",
 									"dependsOn": [],
@@ -1668,7 +1666,7 @@
 										"method": "POST",
 										"headers": {},
 										"body": {
-											"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',pipeline().parameters.applicationId,'\",\n    \"authenticationKey\": \"',pipeline().parameters.authenticationKey,'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',pipeline().parameters.runId,'\"\n}')",
+											"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 											"type": "Expression"
 										}
 									},
@@ -1718,7 +1716,7 @@
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [
 										{
-											"activity": "Get Pipeline Status",
+											"activity": "Get Worker Pipeline Status",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -1764,12 +1762,12 @@
 									}
 								},
 								{
-									"name": "Log Activity Failure",
+									"name": "Log Check Function Activity Failure",
 									"description": "Report to the current execution table that the framework pipeline activity has failed. This failure is outside of the scope of the framework and is probably related to a wider platform problem.",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [
 										{
-											"activity": "Get Pipeline Status",
+											"activity": "Get Worker Pipeline Status",
 											"dependencyConditions": [
 												"Failed"
 											]
@@ -1787,7 +1785,7 @@
 										"storedProcedureName": "[[procfwk].[SetLogActivityFailed]",
 										"storedProcedureParameters": {
 											"CallingActivity": {
-												"value": "GetPipelineStatus",
+												"value": "GetWorkerPipelineStatus",
 												"type": "String"
 											},
 											"ExecutionId": {
@@ -1824,7 +1822,7 @@
 									"type": "SetVariable",
 									"dependsOn": [
 										{
-											"activity": "Get Pipeline Status",
+											"activity": "Get Worker Pipeline Status",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -1834,7 +1832,7 @@
 									"typeProperties": {
 										"variableName": "WorkerPipelineState",
 										"value": {
-											"value": "@equals('Done',activity('Get Pipeline Status').output.SimpleStatus)",
+											"value": "@equals('Done',activity('Get Worker Pipeline Status').output.SimpleStatus)",
 											"type": "Expression"
 										}
 									}
@@ -1858,7 +1856,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"on": {
-								"value": "@activity('Get Pipeline Status').output.Status",
+								"value": "@activity('Get Worker Pipeline Status').output.Status",
 								"type": "Expression"
 							},
 							"cases": [
@@ -1946,7 +1944,7 @@
 													},
 													"RunId": {
 														"value": {
-															"value": "@activity('Get Pipeline Status').output.RunId",
+															"value": "@variables('WorkerRunId')",
 															"type": "Expression"
 														},
 														"type": "Guid"
@@ -1966,7 +1964,7 @@
 											}
 										},
 										{
-											"name": "Get Error Details",
+											"name": "Get Worker Pipeline Error Details",
 											"description": "Get the activity error details for the run ID of the worker pipeline called. Returns an array of all errors.",
 											"type": "AzureFunctionActivity",
 											"dependsOn": [],
@@ -1983,7 +1981,7 @@
 												"method": "POST",
 												"headers": {},
 												"body": {
-													"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',pipeline().parameters.applicationId,'\",\n    \"authenticationKey\": \"',pipeline().parameters.authenticationKey,'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',pipeline().parameters.runId,'\"\n}')",
+													"value": "@concat('\n{\n    \"tenantId\": \"',pipeline().parameters.TenantId,'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',pipeline().parameters.subscriptionId,'\",\n    \"resourceGroup\": \"',pipeline().parameters.resourceGroup,'\",\n    \"factoryName\": \"',pipeline().parameters.factoryName,'\",\n    \"pipelineName\": \"',pipeline().parameters.pipelineName,'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 													"type": "Expression"
 												}
 											},
@@ -1998,7 +1996,7 @@
 											"type": "SqlServerStoredProcedure",
 											"dependsOn": [
 												{
-													"activity": "Get Error Details",
+													"activity": "Get Worker Pipeline Error Details",
 													"dependencyConditions": [
 														"Succeeded"
 													]
@@ -2017,7 +2015,7 @@
 												"storedProcedureParameters": {
 													"JsonErrorDetails": {
 														"value": {
-															"value": "@string(activity('Get Error Details').output)",
+															"value": "@string(activity('Get Worker Pipeline Error Details').output)",
 															"type": "Expression"
 														},
 														"type": "String"
@@ -2168,16 +2166,70 @@
 								"parameters": {}
 							}
 						}
+					},
+					{
+						"name": "Set App Id",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Worker Authentication Details",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "WorkerAppId",
+							"value": {
+								"value": "@activity('Get Worker Authentication Details').output.firstRow.Id",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set App Secret",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Worker Authentication Details",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "WorkerAppSecret",
+							"value": {
+								"value": "@activity('Get Worker Authentication Details').output.firstRow.Secret",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Run Id",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Execute Worker Pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "WorkerRunId",
+							"value": {
+								"value": "@activity('Execute Worker Pipeline').output.RunId",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"parameters": {
 					"tenantId": {
-						"type": "string"
-					},
-					"applicationId": {
-						"type": "string"
-					},
-					"authenticationKey": {
 						"type": "string"
 					},
 					"subscriptionId": {
@@ -2190,9 +2242,6 @@
 						"type": "string"
 					},
 					"pipelineName": {
-						"type": "string"
-					},
-					"runId": {
 						"type": "string"
 					},
 					"executionId": {
@@ -2208,6 +2257,21 @@
 				"variables": {
 					"WorkerPipelineState": {
 						"type": "Boolean"
+					},
+					"WorkerAppId": {
+						"type": "String"
+					},
+					"WorkerAppSecret": {
+						"type": "String"
+					},
+					"WorkerRunId": {
+						"type": "String"
+					},
+					"WorkerTenantId": {
+						"type": "String"
+					},
+					"WorkerSubscriptionId": {
+						"type": "String"
 					}
 				},
 				"folder": {
@@ -2219,8 +2283,8 @@
 				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
 				"[concat(variables('factoryId'), '/linkedServices/FrameworkFunctions')]",
+				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
 				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
 			]
 		},
