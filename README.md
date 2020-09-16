@@ -1,6 +1,6 @@
 # ADF.procfwk
 
-![alt text](https://mrpaulandrew.files.wordpress.com/2020/07/repo-image-1.png "ADF.procfwk Icon")
+[ ![](https://mrpaulandrew.github.io/ADF.procfwk/overview.png) ](https://mrpaulandrew.github.io/ADF.procfwk/overview.png)
 
 ## Documentation
 
@@ -28,7 +28,7 @@ For complete documentation on this solution see [ADFprocfwk.com](http://ADFprocf
 
 ## Complete Data Factory Activity Chain
 
-![alt text](https://mrpaulandrew.files.wordpress.com/2020/09/activity-chain.png "ADF.procfwk Icon")
+[ ![](https://mrpaulandrew.github.io/ADF.procfwk/activitychain-full.png) ](https://mrpaulandrew.github.io/ADF.procfwk/activitychain-full.png)
 
 ## Issues
 

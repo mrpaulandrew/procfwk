@@ -16,7 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Markdown", "Markdown", "{C7
 		CONTRIBUTING.md = CONTRIBUTING.md
 		DeploymentTools\Deployment Steps.md = DeploymentTools\Deployment Steps.md
 		.github\ISSUE_TEMPLATE\feature-request.md = .github\ISSUE_TEMPLATE\feature-request.md
-		Glossary.md = Glossary.md
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
