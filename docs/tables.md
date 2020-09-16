@@ -44,14 +44,15 @@ __Definition:__ For a given execution run this table will be used to handle all 
 ## DataFactorys
 __Schema:__ procfwk
 
-__Definition:__ To support the [decoupling](/ADF.procfwk/workerdecoupling) of worker[pipelines](/ADF.procfwk/pipelines)from the orchestration[pipelines](/ADF.procfwk/pipelines)this table houses information about the Data Factory resources used by the framework when executing workers. It does not need to contain data about the Data Factory where the orchestration [pipelines](/ADF.procfwk/pipelines) are running from.
+__Definition:__ To support the [decoupling](/ADF.procfwk/workerdecoupling) of worker [pipelines](/ADF.procfwk/pipelines) from the orchestration [pipelines](/ADF.procfwk/pipelines) this table houses information about the Data Factory resources used by the framework when executing workers. It does not need to contain data about the Data Factory where the orchestration [pipelines](/ADF.procfwk/pipelines) are running from.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
 |1|DataFactoryId|int|4|No
 |2|DataFactoryName|nvarchar|400|No
 |3|ResourceGroupName|nvarchar|400|No
-|4|Description|nvarchar|max|Yes
+|4|SubscriptionId|uniqueidentifier|16|No
+|5|Description|nvarchar|max|Yes
 
 
 ## ErrorLog
@@ -218,3 +219,30 @@ __Definition:__ This core table in the framework houses details of all the seque
 |3|StageDescription|varchar|4000|Yes
 |4|Enabled|bit|1|No
 
+## Subscriptions
+__Schema:__ procfwk
+
+__Definition:__ To support the [decoupling](/ADF.procfwk/workerdecoupling) of pipelines and [Data Factory's](/ADF.procfwk/datafactory) this table houses details of Azure Subscriptions that are connected with 1 or many worker Data Factory instances.
+
+At least 1 subscription must exist within the metadata.
+
+|Id|Attribute|Data Type|Length|Nullable
+|:---:|---|---|:---:|:---:|
+|1|SubscriptionId|uniqueidentifier|16|No
+|2|Name|nvarchar|400|No
+|3|Description|nvarchar|max|Yes
+|4|TenantId|uniqueidentifier|16|No
+
+
+## Tenants
+__Schema:__ procfwk
+
+__Definition:__ To support the [decoupling](/ADF.procfwk/workerdecoupling) of pipelines within [Data Factory's](/ADF.procfwk/datafactory) at this final level tenant details are sorted within this table and connected to 1 or many Azure Subscriptions.
+
+At least 1 tenant must exist within the metadata.
+
+|Id|Attribute|Data Type|Length|Nullable
+|:---:|---|---|:---:|:---:|
+|1|TenantId|uniqueidentifier|16|No
+|2|Name|nvarchar|400|No
+|3|Description|nvarchar|max|Yes

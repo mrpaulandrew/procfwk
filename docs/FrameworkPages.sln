@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{0261DD
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataFactory", "DataFactory", "{43D8C262-5EA3-48B4-BA51-EE5E13891CB3}"
 	ProjectSection(SolutionItems) = preProject
+		activities.md = activities.md
 		datafactory.md = datafactory.md
 		datasets.md = datasets.md
 		linkedservices.md = linkedservices.md
@@ -55,7 +56,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{8DB1
 	ProjectSection(SolutionItems) = preProject
 		contributors.md = contributors.md
 		glossary.md = glossary.md
-		releasedetails.md = releasedetails.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Synapse", "Synapse", "{33C75DB2-77DF-4C9E-8760-06DCFAFA5D5F}"
@@ -85,6 +85,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Capabilities", "Capabilities", "{7BD21269-6F71-4ED1-8DB6-73734A01F8C2}"
 	ProjectSection(SolutionItems) = preProject
 		applytoexistingadfs.md = applytoexistingadfs.md
+		crosstenantexecution.md = crosstenantexecution.md
 		dependencychains.md = dependencychains.md
 		emailalerting.md = emailalerting.md
 		errordetails.md = errordetails.md

@@ -10,7 +10,7 @@ ___
 __Role:__ Optional level platform setup.
 
 The grandparent level within the ADFprocfwk solution is completely optional. It is expected that here higher level platform operations are performed to make the environment ready before the core framework is triggered. For example, scaling up compute resources.
-## Parent
+## Parent - Framework Executor
 ![Parent Pipeline](/ADF.procfwk/parent.png){:style="float: right;margin-left: 15px;margin-bottom: 10px;"}
 __Role:__ Execution run wrapper and execution stage iterator.
 
@@ -18,19 +18,16 @@ The parent pipeline is primarily used to setup and/or cleanup the next execution
 
 As a secondary function at this level the parent pipeline initiates the first __ForEach__ activity used to _sequentitally_ iterate over [Execution Stages](/ADF.procfwk/executionstages). For each iteration the framework will also check for any workers that may have blocked processing due to pipeline failures.
 
-Finally, the parent is responsible for getting/setting the following metadata to be used in downstream activities:
-* Local Execution ID
-* Tenant ID
-* Subscription ID
+Finally, the parent is responsible for getting/setting of the Local Execution ID which is then used through all downstream pipelines when making updates to the current execution [table](/ADF.procfwk/tables).
 
-## Child
+## Child - Stage Executor
 ![Child Pipeline](/ADF.procfwk/child.png){:style="float: right;margin-left: 15px;margin-bottom: 10px;"}
 __Role:__ Scale out triggering of worker pipelines within the execution stage.
 
 The child pipeline is called once per execution stage and performs the second level __ForEach__ activity, this time used to trigger all worker pipelines within the current execution stage _in parallel_. This [Scale Out Processing](/ADF.procfwk/scaleoutprocessing) is achieved using the default behaviour for the Data Factory activity.
-## Infant
+## Infant - Worker Executor
 ![Infant Pipeline](/ADF.procfwk/infant.png){:style="float: right;margin-left: 15px;margin-bottom: 10px;"}
-__Role:__ Monitoring and reporting the outcome of a single worker pipeline.
+__Role:__ Worker executor, monitor and reporting of the outcome for the single worker pipeline.
 
 Once a worker pipeline has been triggered by the child one infant pipeline per worker is used to handle and monitor its execution. The infant will use an __Until__ activity to iterate over the status of its given worker pipeline waiting until it completes. Once complete the infant will update the metadata with the relevant status information and error details in the event of a worker failure.
 

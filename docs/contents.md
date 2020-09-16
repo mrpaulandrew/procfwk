@@ -2,9 +2,10 @@
 # Framework Components
 
 ## [Data Factory](/ADF.procfwk/datafactory)
-* [Pipelines](/ADF.procfwk/pipelines)
-* [Datasets](/ADF.procfwk/datasets)
 * [Linked Services](/ADF.procfwk/linkedservices)
+* [Datasets](/ADF.procfwk/datasets)
+* [Pipelines](/ADF.procfwk/pipelines)
+* [Activities](/ADF.procfwk/activities)
 
 ## [Synapse](/ADF.procfwk/synapse)
 * [Current Support & Limitations](https://mrpaulandrew.com/2020/06/03/adf-procfwk-and-azure-synapse-orchestrate-preview-and-limitations/)
@@ -30,6 +31,7 @@
 * [Scale Out Processing](/ADF.procfwk/scaleoutprocessing)
 * [Restarting Executions](/ADF.procfwk/frameworkrestart)
 * [Worker SPN Storage (Database vs Azure Key Vault)](/ADF.procfwk/spnhandling)
+* [Cross Tenant & Subscription Execution](/ADF.procfwk/crosstenantexecution)
 * [Worker Pipeline Decoupling](/ADF.procfwk/workerdecoupling)
 * [Worker Pipeline Error Details](/ADF.procfwk/errordetails)
 * [Worker Pipeline Dependency Chains](/ADF.procfwk/dependencychains)
@@ -44,7 +46,7 @@
 * [Testing](/ADF.procfwk/testing)
 
 # Framework Support
-* [Release Details](/ADF.procfwk/releasedetails)
 * [Glossary](/ADF.procfwk/glossary)
 * [Contributors](/ADF.procfwk/contributors)
 * [Resources](/ADF.procfwk/resources)
+* [Release Details (Read Me)](https://github.com/mrpaulandrew/ADF.procfwk/blob/master/README.md)

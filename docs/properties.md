@@ -11,22 +11,6 @@ The properties table within the metadata database controls configuration to supp
 ## Properties:
 ___
 
-### TenantId	
-
-__Example Value:__ 1234-1234-1234-1234-1234	
-
-__Role:__ Used to provide authentication throughout the framework execution.
-
-___
-
-### SubscriptionId	
-
-__Example Value:__ 1234-1234-1234-1234-1234	
-
-__Role:__ Used to provide authentication throughout the framework execution.
-
-___
-
 ### OverideRestart	
 
 __Default Value:__ 0	
