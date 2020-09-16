@@ -22,7 +22,7 @@ BEGIN
 		INNER JOIN [procfwk].[Pipelines] p
 			ON pp.[PipelineId] = p.[PipelineId]
 	WHERE
-		p.[PipelineName] LIKE 'Wait%'
+		pp.[ParameterName] LIKE 'Wait%'
 		AND p.[Enabled] = 1;
 
 

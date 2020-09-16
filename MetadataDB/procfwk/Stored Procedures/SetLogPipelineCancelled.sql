@@ -2,7 +2,8 @@
 	(
 	@ExecutionId UNIQUEIDENTIFIER,
 	@StageId INT,
-	@PipelineId INT
+	@PipelineId INT,
+	@CleanUpRun BIT = 0
 	)
 AS
 BEGIN
@@ -19,6 +20,9 @@ BEGIN
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId
 		AND [PipelineId] = @PipelineId
+	
+	--no need to block and log if done during a clean up cycle
+	IF @CleanUpRun = 1 RETURN 0;
 
 	--persist cancelled pipeline records to long term log
 	INSERT INTO [procfwk].[ExecutionLog]

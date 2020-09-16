@@ -376,7 +376,7 @@ BEGIN
 	--Check A:
 	IF EXISTS
 		(
-		SELECT [LocalExecutionId] FROM [procfwk].[CurrentExecution] WHERE [PipelineStatus] NOT IN ('Success','Failed','Blocked') AND [AdfPipelineRunId] IS NOT NULL
+		SELECT [LocalExecutionId] FROM [procfwk].[CurrentExecution] WHERE [PipelineStatus] NOT IN ('Success','Failed','Blocked', 'Cancelled') AND [AdfPipelineRunId] IS NOT NULL
 		)
 		BEGIN
 			--return pipelines details that require a clean up
