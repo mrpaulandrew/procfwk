@@ -14,9 +14,8 @@ namespace FactoryTesting.Pipelines.Grandparent
         {
             _helper = new GrandparentHelper()
                 .WithBasicMetadata()
+                .WithTenantAndSubscriptionIds()
                 .With300WorkerPipelinesEnabled()
-                .WithSubscriptionId()
-                .WithTenantId()
                 .WithSPNInKeyVault("WorkersFactory");
 
             await _helper.RunPipeline();

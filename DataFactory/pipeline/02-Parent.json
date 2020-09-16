@@ -56,18 +56,6 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
-					},
-					{
-						"activity": "Get Tenant Id",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Get Subscription Id",
-						"dependencyConditions": [
-							"Succeeded"
-						]
 					}
 				],
 				"userProperties": [],
@@ -104,14 +92,6 @@
 									},
 									"ExecutionId": {
 										"value": "@variables('ExecutionId')",
-										"type": "Expression"
-									},
-									"TenantId": {
-										"value": "@activity('Get Tenant Id').output.firstRow.PropertyValue",
-										"type": "Expression"
-									},
-									"SubscriptionId": {
-										"value": "@activity('Get Subscription Id').output.firstRow.PropertyValue",
 										"type": "Expression"
 									}
 								}
@@ -177,6 +157,13 @@
 							"typeProperties": {
 								"storedProcedureName": "[procfwk].[CheckForBlockedPipelines]",
 								"storedProcedureParameters": {
+									"ExecutionId": {
+										"value": {
+											"value": "@variables('ExecutionId')",
+											"type": "Expression"
+										},
+										"type": "Guid"
+									},
 									"StageId": {
 										"value": {
 											"value": "@item().StageId",
@@ -274,85 +261,6 @@
 				}
 			},
 			{
-				"name": "Get Tenant Id",
-				"description": "Returning the Azure Tenant Id from the metadata properties table.",
-				"type": "Lookup",
-				"dependsOn": [
-					{
-						"activity": "Metadata Integrity Checks",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[procfwk].[GetPropertyValue]",
-						"storedProcedureParameters": {
-							"PropertyName": {
-								"type": "String",
-								"value": "TenantId"
-							}
-						},
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "GetSetMetadata",
-						"type": "DatasetReference"
-					},
-					"firstRowOnly": true
-				}
-			},
-			{
-				"name": "Get Subscription Id",
-				"description": "Returning the Azure Subscription Id from the metadata properties table.",
-				"type": "Lookup",
-				"dependsOn": [
-					{
-						"activity": "Metadata Integrity Checks",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": true
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[procfwk].[GetPropertyValue]",
-						"storedProcedureParameters": {
-							"PropertyName": {
-								"type": "String",
-								"value": "SubscriptionId"
-							}
-						},
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "GetSetMetadata",
-						"type": "DatasetReference"
-					}
-				}
-			},
-			{
 				"name": "Metadata Integrity Checks",
 				"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
 				"type": "Lookup",
@@ -428,19 +336,26 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
-									"sqlReaderStoredProcedureName": "[procfwk].[GetServicePrincipal]",
+									"sqlReaderStoredProcedureName": "[procfwk].[GetWorkerAuthDetails]",
 									"storedProcedureParameters": {
-										"DataFactory": {
-											"type": "String",
+										"ExecutionId": {
+											"type": "Guid",
 											"value": {
-												"value": "@item().DataFactoryName",
+												"value": "@item().LocalExecutionId",
 												"type": "Expression"
 											}
 										},
-										"PipelineName": {
-											"type": "String",
+										"PipelineId": {
+											"type": "Int32",
 											"value": {
-												"value": "@item().PipelineName",
+												"value": "@item().PipelineId",
+												"type": "Expression"
+											}
+										},
+										"StageId": {
+											"type": "Int32",
+											"value": {
+												"value": "@item().StageId",
 												"type": "Expression"
 											}
 										}
@@ -526,7 +441,7 @@
 								"functionName": "CheckPipelineStatus",
 								"method": "POST",
 								"body": {
-									"value": "@concat('\n{\n    \"tenantId\": \"',item().TenantId,'\",\n    \"applicationId\": \"',activity('Get SPN Details').output.firstRow.Id,'\",\n    \"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.Secret,'\",\n    \"subscriptionId\": \"',item().SubscriptionId,'\",\n    \"resourceGroup\": \"',item().ResourceGroupName,'\",\n    \"factoryName\": \"',item().DataFactoryName,'\",\n    \"pipelineName\": \"',item().PipelineName,'\",\n    \"runId\": \"',item().AdfPipelineRunId,'\"\n}')",
+									"value": "@concat('\n{\n    \"tenantId\": \"',activity('Get SPN Details').output.firstRow.TenantId,'\",\n    \"applicationId\": \"',activity('Get SPN Details').output.firstRow.AppId,'\",\n    \"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.AppSecret,'\",\n    \"subscriptionId\": \"',activity('Get SPN Details').output.firstRow.SubscriptionId,'\",\n    \"resourceGroup\": \"',item().ResourceGroupName,'\",\n    \"factoryName\": \"',item().DataFactoryName,'\",\n    \"pipelineName\": \"',item().PipelineName,'\",\n    \"runId\": \"',item().AdfPipelineRunId,'\"\n}')",
 									"type": "Expression"
 								}
 							},
@@ -793,6 +708,13 @@
 																"type": "Expression"
 															},
 															"type": "Int32"
+														},
+														"CleanUpRun": {
+															"value": {
+																"value": "@bool(1)",
+																"type": "Expression"
+															},
+															"type": "Boolean"
 														}
 													}
 												},
@@ -841,6 +763,13 @@
 														"type": "Expression"
 													},
 													"type": "Int32"
+												},
+												"CleanUpRun": {
+													"value": {
+														"value": "@bool(1)",
+														"type": "Expression"
+													},
+													"type": "Boolean"
 												}
 											}
 										},

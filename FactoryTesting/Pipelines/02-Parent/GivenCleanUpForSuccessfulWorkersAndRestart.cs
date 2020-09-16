@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FactoryTesting.Pipelines.Parent
 {
-    public class GivenCancelledWorkerAndRestart
+    public class GivenCleanUpForSuccessfulWorkersAndRestart
     {
         private ParentHelper _helperFirstRun;
         private ParentHelper _helperRestartRun;
@@ -28,7 +28,10 @@ namespace FactoryTesting.Pipelines.Parent
 
             await Task.WhenAll(runOrchestrator, cancelWorker);
 
-            _helperRestartRun = new ParentHelper();
+            _helperRestartRun = new ParentHelper()
+                .WithPrecursorObject()
+                .WithRunningPipelineStatusInPlaceOf("Success");
+
             await _helperRestartRun.RunPipeline();
         }
         #region Integration tests
@@ -37,6 +40,13 @@ namespace FactoryTesting.Pipelines.Parent
         public void ThenPipelineOutcomeIsSucceeded()
         {
             _helperRestartRun.RunOutcome.Should().Be("Succeeded");
+        }
+
+        [Test]
+        public async Task ThenActivityShouldReturnThreeRowsForCleanUp()
+        {
+            var count = await _helperRestartRun.GetActivityOutput("Metadata Integrity Checks", "$.count");
+            int.Parse(count).Should().Be(3);
         }
 
         [Test]

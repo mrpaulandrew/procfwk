@@ -91,3 +91,15 @@
 			DELETE FROM [procfwk].[Stages];
 			DBCC CHECKIDENT ('[procfwk].[Stages]', RESEED, 0);
 		END;
+
+	--Subscriptions
+	IF OBJECT_ID(N'[procfwk].[Subscriptions]') IS NOT NULL 
+		BEGIN
+			DELETE FROM [procfwk].[Subscriptions];
+		END;
+	
+	--Tenants
+	IF OBJECT_ID(N'[procfwk].[Tenants]') IS NOT NULL 
+		BEGIN
+			DELETE FROM [procfwk].[Tenants];
+		END;

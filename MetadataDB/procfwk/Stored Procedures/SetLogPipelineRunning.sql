@@ -11,7 +11,8 @@ BEGIN
 	UPDATE
 		[procfwk].[CurrentExecution]
 	SET
-		[StartDateTime] = GETUTCDATE(),
+		--case for clean up runs
+		[StartDateTime] = CASE WHEN [StartDateTime] IS NULL THEN GETUTCDATE() ELSE [StartDateTime] END,
 		[PipelineStatus] = 'Running'
 	WHERE
 		[LocalExecutionId] = @ExecutionId

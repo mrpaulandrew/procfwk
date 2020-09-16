@@ -26,15 +26,9 @@ namespace FactoryTesting.Pipelines.Parent
         {
             return Task.CompletedTask;
         }
-        public ParentHelper WithTenantId()
+        public ParentHelper WithTenantAndSubscriptionIds()
         {
-            AddTenantId();
-            return this;
-        }
-
-        public ParentHelper WithSubscriptionId()
-        {
-            AddSubscriptionId();
+            AddTenantAndSubscription();
             return this;
         }
         public ParentHelper WithSPNInDatabase(string workerFactoryName)
@@ -61,6 +55,12 @@ namespace FactoryTesting.Pipelines.Parent
             WithEmptyTable("procfwk.ExecutionLog");
             WithEmptyTable("procfwk.ErrorLog");
 
+            return this;
+        }
+
+        public ParentHelper WithRunningPipelineStatusInPlaceOf(string statusToOveride)
+        {
+            SetFalsePipelineStatus("Running", "PipelineStatus", statusToOveride);
             return this;
         }
 
@@ -143,9 +143,23 @@ SET [PropertyValue] = '[dbo].[none]'
 WHERE [PropertyName] = 'ExecutionPrecursorProc'");
             return this;
         }
+
+        public ParentHelper WithPrecursorObject()
+        {
+            ExecuteNonQuery(@$"UPDATE [procfwk].[Properties] 
+SET [PropertyValue] = '[dbo].[ExampleCustomExecutionPrecursor]' 
+WHERE [PropertyName] = 'ExecutionPrecursorProc'");
+            return this;
+        }
         public ParentHelper WithSingleExecutionStage()
         {
             ExecuteNonQuery("UPDATE [procfwk].[Pipelines] SET [StageId] = 1");
+            return this;
+        }
+
+        private ParentHelper SetFalsePipelineStatus(string falseStatus, string where, string equals)
+        {
+            ExecuteNonQuery($"UPDATE [procfwk].[CurrentExecution] SET [PipelineStatus] = '{falseStatus}' WHERE {where} = '{equals.Replace("'", "''")}'");
             return this;
         }
 

@@ -4,7 +4,7 @@
     <TestRunParameters>
         <Parameter name="KeyVaultUrl" value="https://frameworkkeys.vault.azure.net/" />
         <Parameter name="DataFactoryResourceGroup" value="ADF.procfwk" />
-        <Parameter name="DataFactoryName" value="FrameworkFactoryDev" />
+        <Parameter name="DataFactoryName" value="FrameworkFactory" />
         <Parameter name="WorkersDataFactoryName" value="FrameworkFactory" />
         <Parameter name="MetadataDbConnectionStringSecretName" value="FrameworkMetadataDev" />
         <Parameter name="ReportTestCoverage" value="false" />

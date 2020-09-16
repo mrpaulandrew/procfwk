@@ -11,8 +11,9 @@ BEGIN
 	UPDATE
 		[procfwk].[CurrentExecution]
 	SET
-		[PipelineStatus] = 'Success',
-		[EndDateTime] = GETUTCDATE()
+		--case for clean up runs
+		[EndDateTime] = CASE WHEN [EndDateTime] IS NULL THEN GETUTCDATE() ELSE [EndDateTime] END,
+		[PipelineStatus] = 'Success'
 	WHERE
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId

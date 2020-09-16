@@ -14,8 +14,7 @@ namespace FactoryTesting.Pipelines.Parent
         {
             _helper = new ParentHelper()
                 .WithBasicMetadata()
-                .WithSubscriptionId()
-                .WithTenantId()
+                .WithTenantAndSubscriptionIds()
                 .WithSPNInDatabase("FrameworkFactory")
                 .WithEmptyExecutionTables()
                 .WithoutPrecursorObject() //done to ensure 2min waits are used, not example precursor waits
