@@ -58,6 +58,12 @@ namespace FactoryTesting.Pipelines.Parent
             return this;
         }
 
+        public ParentHelper WithRunningPipelineStatusInPlaceOf(string statusToOveride)
+        {
+            SetFalsePipelineStatus("Running", "PipelineStatus", statusToOveride);
+            return this;
+        }
+
         public ParentHelper WithSimulatedError()
         {
             SimulateError(true);
@@ -137,9 +143,23 @@ SET [PropertyValue] = '[dbo].[none]'
 WHERE [PropertyName] = 'ExecutionPrecursorProc'");
             return this;
         }
+
+        public ParentHelper WithPrecursorObject()
+        {
+            ExecuteNonQuery(@$"UPDATE [procfwk].[Properties] 
+SET [PropertyValue] = '[dbo].[ExampleCustomExecutionPrecursor]' 
+WHERE [PropertyName] = 'ExecutionPrecursorProc'");
+            return this;
+        }
         public ParentHelper WithSingleExecutionStage()
         {
             ExecuteNonQuery("UPDATE [procfwk].[Pipelines] SET [StageId] = 1");
+            return this;
+        }
+
+        private ParentHelper SetFalsePipelineStatus(string falseStatus, string where, string equals)
+        {
+            ExecuteNonQuery($"UPDATE [procfwk].[CurrentExecution] SET [PipelineStatus] = '{falseStatus}' WHERE {where} = '{equals.Replace("'", "''")}'");
             return this;
         }
 
