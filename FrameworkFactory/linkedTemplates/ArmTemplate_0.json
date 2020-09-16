@@ -2680,6 +2680,13 @@
 																		"type": "Expression"
 																	},
 																	"type": "Int32"
+																},
+																"CleanUpRun": {
+																	"value": {
+																		"value": "@bool(1)",
+																		"type": "Expression"
+																	},
+																	"type": "Boolean"
 																}
 															}
 														},
@@ -2728,6 +2735,13 @@
 																"type": "Expression"
 															},
 															"type": "Int32"
+														},
+														"CleanUpRun": {
+															"value": {
+																"value": "@bool(1)",
+																"type": "Expression"
+															},
+															"type": "Boolean"
 														}
 													}
 												},
