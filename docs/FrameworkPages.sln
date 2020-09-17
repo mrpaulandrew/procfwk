@@ -67,7 +67,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Synapse", "Synapse", "{33C7
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C83634-3A1B-43AA-87C4-D97D3BDD3D31}"
 	ProjectSection(SolutionItems) = preProject
+		activitychain-child.png = activitychain-child.png
 		activitychain-full.png = activitychain-full.png
+		activitychain-infant.png = activitychain-infant.png
+		activitychain-parent.png = activitychain-parent.png
 		child.png = child.png
 		csharpdotnetcore.png = csharpdotnetcore.png
 		datafactory.png = datafactory.png
