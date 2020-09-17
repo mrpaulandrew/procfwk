@@ -1,4 +1,4 @@
-# Welcome to the Orchestrate .procfwk Documentation Home Page
+# Welcome to the Orchestrate .procfwk Home Page
 
 This site provides details on the latest version of the processing framework (procfwk) code project, available on [GitHub](https://github.com/mrpaulandrew/procfwk) as a single source of all information needed to support the solution.
 
