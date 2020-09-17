@@ -1,5 +1,5 @@
 theme: jekyll-theme-minimal
 logo: /thumbnail.png
-title: ADF.procfwk
-description: A metadata driven processing framework for Azure Data Factory (ADF) achieved by coupling ADF with an SQL database and Azure Functions.<br/><br/><a href="/ADF.procfwk/index"> - Overview</a><br/><a href="/ADF.procfwk/contents"> - Contents</a>
+title: Orchestrate<br/>.procfwk
+description: A cross tenant metadata driven processing framework for Azure Data Factory and Azure Synapse Analytics achieved by coupling orchestration pipelines with a SQL database and a set of Azure Functions.<hr/><a href="/ADF.procfwk/index"> - Overview</a><br/><a href="/ADF.procfwk/contents"> - Contents</a><br/><br/><hr/><img src="/ADF.procfwk/sidebar.png">
 baseurl: /ADF.procfwk

@@ -5,6 +5,8 @@ ___
 
 ___
 
+Depending on your experience with Azure some of the below might be obvious. However, as a baseline this glossary has been created to provide definitions in the specfic context of the processing framework solution.
+
 | Term | Explanation and Context |
 |:----:|--------------|
 | PaaS |Platform as a Service |
