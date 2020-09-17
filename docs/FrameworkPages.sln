@@ -20,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{0261DD
 		Gemfile = Gemfile
 		Generate Markdown for Database Tables.sql = Generate Markdown for Database Tables.sql
 		Generate Page Down for Database Procedures.sql = Generate Page Down for Database Procedures.sql
+		Images.pptx = Images.pptx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataFactory", "DataFactory", "{43D8C262-5EA3-48B4-BA51-EE5E13891CB3}"
@@ -70,12 +71,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C836
 		child.png = child.png
 		csharpdotnetcore.png = csharpdotnetcore.png
 		datafactory.png = datafactory.png
+		dataset.png = dataset.png
 		dbpart1.png = dbpart1.png
 		dbpart2.png = dbpart2.png
 		function.png = function.png
 		grandparent.png = grandparent.png
 		infant.png = infant.png
 		keyvault.png = keyvault.png
+		linkedservice-connections.png = linkedservice-connections.png
+		linkedservice.png = linkedservice.png
 		overview.png = overview.png
 		parent.png = parent.png
 		powerbi.png = powerbi.png
