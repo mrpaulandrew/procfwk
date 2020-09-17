@@ -1,10 +1,10 @@
-# ADF.procfwk
+# Orchestrate.procfwk
 
 [ ![](https://mrpaulandrew.github.io/procfwk/overview.png) ](https://mrpaulandrew.github.io/procfwk/overview.png)
 
 ## Documentation
 
-For complete documentation on this solution see [ADFprocfwk.com](http://procfwk.com/).
+For complete documentation on this solution see [procfwk.com](http://procfwk.com/).
 
 ## Framework Capabilities
 
