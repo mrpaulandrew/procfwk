@@ -1,11 +1,11 @@
 # Properties
 
 ___
-[<< Contents](/ADF.procfwk/contents) / [Database](/ADF.procfwk/database)
+[<< Contents](/procfwk/contents) / [Database](/procfwk/database)
 
 ___
 
-The properties table within the metadata database controls configuration to support different framework processing behaviour. The table supports value history and should be updated using the [stored procedure](/ADF.procfwk/storedprocedures) __[procfwkHelpers].[AddProperty]__.
+The properties table within the metadata database controls configuration to support different framework processing behaviour. The table supports value history and should be updated using the [stored procedure](/procfwk/storedprocedures) __[procfwkHelpers].[AddProperty]__.
 
 
 ## Properties:
@@ -15,7 +15,7 @@ ___
 
 __Default Value:__ 0	
 
-__Role:__ Should processing not be restarted from the point of failure or should a new execution will be created regardless. 1 = Start New, 0 = Restart. See [framework restarts](/ADF.procfwk/frameworkrestart).
+__Role:__ Should processing not be restarted from the point of failure or should a new execution will be created regardless. 1 = Start New, 0 = Restart. See [framework restarts](/procfwk/frameworkrestart).
 
 ___
 
@@ -23,7 +23,7 @@ ___
 
 __Default Value:__ 30	
 
-__Role:__ Duration applied to the Wait activity within the Infant [pipeline](/ADF.procfwk/pipelines) Until iterations.
+__Role:__ Duration applied to the Wait activity within the Infant [pipeline](/procfwk/pipelines) Until iterations.
 
 ___
 
@@ -68,7 +68,7 @@ __Default Value:__
 <hr/>	
 ```
 
-__Role:__ Basic HTML template of execution information used as the eventual body in [email alerts](/ADF.procfwk/emailalerting) sent.
+__Role:__ Basic HTML template of execution information used as the eventual body in [email alerts](/procfwk/emailalerting) sent.
 
 ___
 
@@ -76,7 +76,7 @@ ___
 
 __Accepted Values:__ None, Simple, DependencyChain
 
-__Role:__ Controls processing bahaviour in the event of Worker failures. See [failure handling](/ADF.procfwk/failurehandling).
+__Role:__ Controls processing bahaviour in the event of Worker failures. See [failure handling](/procfwk/failurehandling).
 
 ___
 
@@ -84,7 +84,7 @@ ___
 
 __Accepted Values:__ StoreInDatabase, StoreInKeyVault. 
 
-__Role:__ Controls how service principal values are stored within the framework. See [SPN Handling](/ADF.procfwk/spnhandling).
+__Role:__ Controls how service principal values are stored within the framework. See [SPN Handling](/procfwk/spnhandling).
 
 ___
 
@@ -92,6 +92,6 @@ ___
 
 __Example Value:__ [dbo].[ExampleCustomExecutionPrecursor]	
 
-__Role:__ This procedure will be called first in the parent [pipeline](/ADF.procfwk/pipelines) and can be used to perform/update any required custom behaviour in the framework execution. For example, enable/disable Worker pipelines given a certain run time/day. Invalid proc name values will be ignored.
+__Role:__ This procedure will be called first in the parent [pipeline](/procfwk/pipelines) and can be used to perform/update any required custom behaviour in the framework execution. For example, enable/disable Worker pipelines given a certain run time/day. Invalid proc name values will be ignored.
 
 ___

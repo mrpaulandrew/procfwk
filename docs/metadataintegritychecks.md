@@ -1,7 +1,7 @@
 # Metdata Integrity Checks
 
 ___
-[<< Contents](/ADF.procfwk/contents) 
+[<< Contents](/procfwk/contents) 
 
 ___
 

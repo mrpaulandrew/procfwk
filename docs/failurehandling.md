@@ -1,7 +1,7 @@
 # Failure Handling
 
 ___
-[<< Contents](/ADF.procfwk/contents) 
+[<< Contents](/procfwk/contents) 
 
 ___
 
@@ -9,7 +9,7 @@ https://mrpaulandrew.com/2020/07/01/adf-procfwk-v1-8-complete-pipeline-dependenc
 
 
 
-In the event of a worker pipeline does not complete successfully the processing framework can take several actions and behaviour in different ways according to the configuration of the [properties](/ADF.procfwk/properties). At runtime the framework uses the set property values in various locations to establish what to do next, the following outlines each should situation and how the framework could behave.
+In the event of a worker pipeline does not complete successfully the processing framework can take several actions and behaviour in different ways according to the configuration of the [properties](/procfwk/properties). At runtime the framework uses the set property values in various locations to establish what to do next, the following outlines each should situation and how the framework could behave.
 
 In the event of a worker pipeline failure...
 
@@ -22,7 +22,7 @@ In the event of a worker pipeline failure...
 ## Allow Processing to Continue and Only Block Affected Downstream Dependant Worker Pipelines
 
 
-These behaviours are also repeated using the following configured [properties](/ADF.procfwk/properties) where values are set to '1', meaning true.
+These behaviours are also repeated using the following configured [properties](/procfwk/properties) where values are set to '1', meaning true.
 
 * UnknownWorkerResultBlocks
 * CancelledWorkerResultBlocks

@@ -1,14 +1,14 @@
 # Tables
 
 ___
-[<< Contents](/ADF.procfwk/contents) / [Database](/ADF.procfwk/database)
+[<< Contents](/procfwk/contents) / [Database](/procfwk/database)
 
 ___
 
 ## AlertOutcomes
 __Schema:__ procfwk
 
-__Definition:__ Used to provide a static list of available pipeline status outcomes that can be compared to email recipient requirements for event alerts at runtime. These status values are used in the context of a bitmask potition when the framework performs any [email alerting](/ADF.procfwk/emailalerting). The position means an email recipient can subscribe to any combination of pipeline outcomes.
+__Definition:__ Used to provide a static list of available pipeline status outcomes that can be compared to email recipient requirements for event alerts at runtime. These status values are used in the context of a bitmask potition when the framework performs any [email alerting](/procfwk/emailalerting). The position means an email recipient can subscribe to any combination of pipeline outcomes.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -44,7 +44,7 @@ __Definition:__ For a given execution run this table will be used to handle all 
 ## DataFactorys
 __Schema:__ procfwk
 
-__Definition:__ To support the [decoupling](/ADF.procfwk/workerdecoupling) of worker [pipelines](/ADF.procfwk/pipelines) from the orchestration [pipelines](/ADF.procfwk/pipelines) this table houses information about the Data Factory resources used by the framework when executing workers. It does not need to contain data about the Data Factory where the orchestration [pipelines](/ADF.procfwk/pipelines) are running from.
+__Definition:__ To support the [decoupling](/procfwk/workerdecoupling) of worker [pipelines](/procfwk/pipelines) from the orchestration [pipelines](/procfwk/pipelines) this table houses information about the Data Factory resources used by the framework when executing workers. It does not need to contain data about the Data Factory where the orchestration [pipelines](/procfwk/pipelines) are running from.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -98,7 +98,7 @@ __Definition:__ This table is used as a long term store from the current executi
 ## PipelineAlertLink
 __Schema:__ procfwk
 
-__Definition:__ This table provides a many to many connection between the email recipients and the [pipelines](/ADF.procfwk/pipelines) they wish to subscribe to for email alerts.
+__Definition:__ This table provides a many to many connection between the email recipients and the [pipelines](/procfwk/pipelines) they wish to subscribe to for email alerts.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -112,7 +112,7 @@ __Definition:__ This table provides a many to many connection between the email 
 ## PipelineAuthLink
 __Schema:__ procfwk
 
-__Definition:__ For the purposes of granular sercurity when providing service principal details that can be used to execute worker [pipelines](/ADF.procfwk/pipelines) this table provides that many to many link and has further referential integrity checks against the Data Factory as well.
+__Definition:__ For the purposes of granular sercurity when providing service principal details that can be used to execute worker [pipelines](/procfwk/pipelines) this table provides that many to many link and has further referential integrity checks against the Data Factory as well.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -125,7 +125,7 @@ __Definition:__ For the purposes of granular sercurity when providing service pr
 ## PipelineDependencies
 __Schema:__ procfwk
 
-__Definition:__ When using the failure handling [property](/ADF.procfwk/properties) this table is used to establish the links for worker [pipelines](/ADF.procfwk/pipelines) across the [execution stages](/ADF.procfwk/executionstages).
+__Definition:__ When using the failure handling [property](/procfwk/properties) this table is used to establish the links for worker [pipelines](/procfwk/pipelines) across the [execution stages](/procfwk/executionstages).
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -150,7 +150,7 @@ __Definition:__ Worker pipeline parameters are sorted in this table as metadata 
 ## Pipelines
 __Schema:__ procfwk
 
-__Definition:__ This core table in the framework houses all worker [pipelines](/ADF.procfwk/pipelines) that the framework is expected to call per [execution stage](/ADF.procfwk/executionstage) and for a given worker Data Factory.
+__Definition:__ This core table in the framework houses all worker [pipelines](/procfwk/pipelines) that the framework is expected to call per [execution stage](/procfwk/executionstage) and for a given worker Data Factory.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -165,7 +165,7 @@ __Definition:__ This core table in the framework houses all worker [pipelines](/
 ## Properties
 __Schema:__ procfwk
 
-__Definition:__ [Properties](/ADF.procfwk/properties) and values housed in this table provide runtime configuration information for the framework to influence behaviour and setup.
+__Definition:__ [Properties](/procfwk/properties) and values housed in this table provide runtime configuration information for the framework to influence behaviour and setup.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -181,7 +181,7 @@ __Definition:__ [Properties](/ADF.procfwk/properties) and values housed in this 
 ## Recipients
 __Schema:__ procfwk
 
-__Definition:__ Named people and email addresses are stored in this table for the purposes of providing [email alerting](/ADF.procfwk/emailalerting) when worker [pipelines](/ADF.procfwk/pipelines) are executed by the framework.
+__Definition:__ Named people and email addresses are stored in this table for the purposes of providing [email alerting](/procfwk/emailalerting) when worker [pipelines](/procfwk/pipelines) are executed by the framework.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -195,7 +195,7 @@ __Definition:__ Named people and email addresses are stored in this table for th
 ## ServicePrincipals
 __Schema:__ dbo
 
-__Definition:__ At runtime a worker [pipeline](/ADF.procfwk/pipelines) will be executed by the framework [functions](/ADF.procfwk/functions). The function will authenticate against the target worker data factory using SPN details sorted in this table directly, or referenced by this tableto Azure Key Vault.
+__Definition:__ At runtime a worker [pipeline](/procfwk/pipelines) will be executed by the framework [functions](/procfwk/functions). The function will authenticate against the target worker data factory using SPN details sorted in this table directly, or referenced by this tableto Azure Key Vault.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -210,7 +210,7 @@ __Definition:__ At runtime a worker [pipeline](/ADF.procfwk/pipelines) will be e
 ## Stages
 __Schema:__ procfwk
 
-__Definition:__ This core table in the framework houses details of all the sequential [execution stages](/ADF.procfwk/executionstages) that need to process by the framework in order based on the stage Id.
+__Definition:__ This core table in the framework houses details of all the sequential [execution stages](/procfwk/executionstages) that need to process by the framework in order based on the stage Id.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -222,7 +222,7 @@ __Definition:__ This core table in the framework houses details of all the seque
 ## Subscriptions
 __Schema:__ procfwk
 
-__Definition:__ To support the [decoupling](/ADF.procfwk/workerdecoupling) of pipelines and [Data Factory's](/ADF.procfwk/datafactory) this table houses details of Azure Subscriptions that are connected with 1 or many worker Data Factory instances.
+__Definition:__ To support the [decoupling](/procfwk/workerdecoupling) of pipelines and [Data Factory's](/procfwk/datafactory) this table houses details of Azure Subscriptions that are connected with 1 or many worker Data Factory instances.
 
 At least 1 subscription must exist within the metadata.
 
@@ -237,7 +237,7 @@ At least 1 subscription must exist within the metadata.
 ## Tenants
 __Schema:__ procfwk
 
-__Definition:__ To support the [decoupling](/ADF.procfwk/workerdecoupling) of pipelines within [Data Factory's](/ADF.procfwk/datafactory) at this final level tenant details are sorted within this table and connected to 1 or many Azure Subscriptions.
+__Definition:__ To support the [decoupling](/procfwk/workerdecoupling) of pipelines within [Data Factory's](/procfwk/datafactory) at this final level tenant details are sorted within this table and connected to 1 or many Azure Subscriptions.
 
 At least 1 tenant must exist within the metadata.
 

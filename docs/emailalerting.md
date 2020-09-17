@@ -1,7 +1,7 @@
 # Email Alerting
 
 ___
-[<< Contents](/ADF.procfwk/contents) 
+[<< Contents](/procfwk/contents) 
 
 ___
 
@@ -9,20 +9,20 @@ Email alerting is delivered within the existing processing framework and using e
 
 That said, the following statements have been met in terms of alerting capabilities and design:
 
-* Email alerting is a completely optional feature that can be turned on/off via the main database [properties](/ADF.procfwk/propertis) table.
-* Recipient email addresses are stored as metadata within the framework [database](/ADF.procfwk/database).
+* Email alerting is a completely optional feature that can be turned on/off via the main database [properties](/procfwk/propertis) table.
+* Recipient email addresses are stored as metadata within the framework [database](/procfwk/database).
 * Recipients can be enabled/disabled as required.
-* Recipients can subscribe to one or many worker [pipelines](/ADF.procfwk/pipelines) to receive alerts.
+* Recipients can subscribe to one or many worker [pipelines](/procfwk/pipelines) to receive alerts.
 * Recipients can optionally be included in the email message as the main receiver (__To__), copied (__CC__) or blind copied (__BCC__).
-* Pipeline alert subscriptions (links) can be enabled/disabled as required within the metadata [table](/ADF.procfwk/tables).
+* Pipeline alert subscriptions (links) can be enabled/disabled as required within the metadata [table](/procfwk/tables).
 * Pipeline alert subscriptions (links) can be setup for all or one particular worker pipelines outcome using the pipeline result status from the current execution table. For example; Success, Failed, Cancelled etc.
-* Alerting content can be customised using a generic email body configured in the [properties](/ADF.procfwk/propertis) that has the details like the Data Factory and Pipeline name injected into the underlying HTML message at runtime.
+* Alerting content can be customised using a generic email body configured in the [properties](/procfwk/propertis) that has the details like the Data Factory and Pipeline name injected into the underlying HTML message at runtime.
 * SMTP details are configured via the Azure Function 'SendEmail' application settings.
 * Email traffic is reduced to only a single message sent per worker pipeline. Not one message per recipient.
 
 ## Enabling & Disabling Email Alerting
 
-Using email alerting in as part of the processing framework is set by the [property](/ADF.procfwk/properties) __UseFrameworkEmailAlerting__.
+Using email alerting in as part of the processing framework is set by the [property](/procfwk/properties) __UseFrameworkEmailAlerting__.
 
 As stated above, the alerting features of the framework are completely optional. You may already have a different way of producing alerts for your Data Factory pipelines. If so, simply set this property value to '0' and alerting will be disabled for your processing framework.
 
@@ -54,4 +54,4 @@ EXEC [procfwkHelpers].[AddRecipientPipelineAlerts]
 
 ## Sending Emails
 
-Once the metadata has been returned from the [database](/ADF.procfwk/database) to the [Data Factory](/ADF.procfwk/datafactory) infant [pipeline](/ADF.procfwk/pipelines) emails are sent by the framework using the [Send Email](/ADF.procfwk/sendemail) Azure [Function](/ADF.procfwk/functions).
+Once the metadata has been returned from the [database](/procfwk/database) to the [Data Factory](/procfwk/datafactory) infant [pipeline](/procfwk/pipelines) emails are sent by the framework using the [Send Email](/procfwk/sendemail) Azure [Function](/procfwk/functions).

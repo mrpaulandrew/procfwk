@@ -1,7 +1,7 @@
 # Send Email
 
 ___
-[<< Contents](/ADF.procfwk/contents) / [Functions](/ADF.procfwk/functions)
+[<< Contents](/procfwk/contents) / [Functions](/procfwk/functions)
 
 ___
 

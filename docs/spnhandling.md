@@ -1,7 +1,7 @@
 ## SPN Handling (Database vs Key Vault)
 
 ___
-[<< Contents](/ADF.procfwk/contents) 
+[<< Contents](/procfwk/contents) 
 
 ___
 

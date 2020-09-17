@@ -1,7 +1,7 @@
 # Helpers
 
 ___
-[<< Contents](/ADF.procfwk/contents) / [Functions](/ADF.procfwk/functions)
+[<< Contents](/procfwk/contents) / [Functions](/procfwk/functions)
 
 ___
 
@@ -64,7 +64,7 @@ Methods:
 
 __Returns:__ value
 
-__Role:__ if the functions app needs to get a secret value from Azure Key Vault this methods wraps up the call to the respective key vault resource using the URL provided and authenticating against key vault using the [Function App MSI](/ADF.procfwk/functions).
+__Role:__ if the functions app needs to get a secret value from Azure Key Vault this methods wraps up the call to the respective key vault resource using the URL provided and authenticating against key vault using the [Function App MSI](/procfwk/functions).
 
 __Example Use:__
 ```csharp
@@ -81,7 +81,7 @@ Methods:
 
 __Returns:__ System.Net.Mail.SmtpClient
 
-__Role:__ creates a means of sending emails to an SMTP mailing service from the framework [send email](/ADF.procfwk/sendemail) function. The client wraps up the authentication details and host information so the public function can focus on constructing the email/content to be sent.
+__Role:__ creates a means of sending emails to an SMTP mailing service from the framework [send email](/procfwk/sendemail) function. The client wraps up the authentication details and host information so the public function can focus on constructing the email/content to be sent.
 
 __Example Use:__
 ```csharp

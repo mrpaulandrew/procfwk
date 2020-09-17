@@ -2,7 +2,7 @@
 
 This site provides details on the latest version of the processing framework code project as a single source of all information needed to implement this solution in your Azure data platform environment.
 
-Please use the [Contents](/ADF.procfwk/contents) page, also available in the side bar, to navigate.
+Please use the [Contents](/procfwk/contents) page, also available in the side bar, to navigate.
 
 ## Code Project Overview
 
@@ -10,7 +10,7 @@ This open source code project delivers a simple metadata driven processing frame
 
 The framework is designed to integrate with any existing Data Factory solution by making the lowest level executor a stand alone worker pipeline that is wrapped in a higher level of controlled (sequential) dependencies. This level of abstraction means operationally nothing about the monitoring of the orchestration processes is hidden in multiple levels of dynamic activity calls. Instead, everything from the processing pipeline doing the work (the Worker) can be inspected using out-of-the-box ADF features.
 
-[ ![](/ADF.procfwk/overview.png) ](/ADF.procfwk/overview.png)
+[ ![](/procfwk/overview.png) ](/procfwk/overview.png)
 
 This framework can also be used in any Azure Tenant and allows the creation of complex control flows across multiple Data Factory resources and even across Azure Tenant/Subscriptions as well by connecting Service Principal details through metadata to targeted Tenants > Subscriptions > Resource Groups > Data Factory and Pipelines, this offers very granular administration over any data processing components in a given environment from a single point of orchestration.
 
@@ -38,4 +38,4 @@ If you're not convinced please watch my [YouTube video](https://www.youtube.com/
 
 ## Complete Data Factory Activity Chain
 
-[ ![](/ADF.procfwk/activitychain-full.png) ](/ADF.procfwk/activitychain-full.png)
+[ ![](/procfwk/activitychain-full.png) ](/procfwk/activitychain-full.png)
