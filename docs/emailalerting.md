@@ -5,9 +5,11 @@ ___
 
 ___
 
-Email alerting is delivered within the existing processing framework and using existing metadata to drive behaviour and deliver an easy to control, flexible and granular way or anyone to subscribe to the status of a given worker pipelines outcome. 
+Email alerting can be delivered within the processing framework and using existing metadata to drive behaviour offering easy control, flexible and granular ways to subscribe to the status of a given worker pipeline outcome. 
 
-That said, the following statements have been met in terms of alerting capabilities and design:
+[ ![](/procfwk/iconwithalerting.png) ](/procfwk/iconwithalerting.png)
+
+The following statements have been met in terms of alerting capabilities and design:
 
 * Email alerting is a completely optional feature that can be turned on/off via the main database [properties](/procfwk/propertis) table.
 * Recipient email addresses are stored as metadata within the framework [database](/procfwk/database).

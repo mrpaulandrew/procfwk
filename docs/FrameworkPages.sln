@@ -72,6 +72,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C836
 		activitychain-infant.png = activitychain-infant.png
 		activitychain-parent.png = activitychain-parent.png
 		child.png = child.png
+		crosstenantauth.png = crosstenantauth.png
 		csharpdotnetcore.png = csharpdotnetcore.png
 		datafactory.png = datafactory.png
 		dataset.png = dataset.png
@@ -79,6 +80,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C836
 		dbpart2.png = dbpart2.png
 		function.png = function.png
 		grandparent.png = grandparent.png
+		iconwithalerting.png = iconwithalerting.png
 		infant.png = infant.png
 		keyvault.png = keyvault.png
 		linkedservice-connections.png = linkedservice-connections.png
@@ -91,6 +93,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C836
 		synapse.png = synapse.png
 		thumbnail.png = thumbnail.png
 		worker.png = worker.png
+		youtubeheader.png = youtubeheader.png
+		youtubeicon.png = youtubeicon.png
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Capabilities", "Capabilities", "{7BD21269-6F71-4ED1-8DB6-73734A01F8C2}"
