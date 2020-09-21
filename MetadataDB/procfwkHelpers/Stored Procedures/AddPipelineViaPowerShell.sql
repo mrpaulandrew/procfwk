@@ -26,13 +26,15 @@ BEGIN
 				(
 				[DataFactoryName],
 				[ResourceGroupName],
-				[Description]
+				[Description],
+				[SubscriptionId]
 				)
 			VALUES
 				(
 				@DataFactoryName,
 				@ResourceGroup,
-				'Added via PowerShell.'
+				'Added via PowerShell.',
+				'12345678-1234-1234-1234-012345678910'
 				)
 
 			SELECT
