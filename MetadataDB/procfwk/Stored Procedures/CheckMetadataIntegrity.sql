@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [procfwk].[CheckMetadataIntegrity]
+CREATE PROCEDURE [procfwk].[CheckMetadataIntegrity]
 	(
 	@DebugMode BIT = 0
 	)
@@ -369,6 +369,23 @@ BEGIN
 			RETURN 0;
 		END;
 
+	--report issues when in debug mode
+	IF @DebugMode = 1
+	BEGIN
+		IF NOT EXISTS
+			(
+			SELECT * FROM @MetadataIntegrityIssues
+			)
+			BEGIN
+				PRINT 'No data integrity issues found in metadata.'
+				RETURN 0;
+			END
+		ELSE		
+			BEGIN
+				SELECT * FROM @MetadataIntegrityIssues;
+			END;
+	END;
+
 	/*
 	Previous Exeuction Checks:
 	*/
@@ -410,20 +427,4 @@ BEGIN
 			WHERE
 				1 = 2; --ensure no results
 		END;
-
-	--report issues when in debug mode
-	IF @DebugMode = 1
-	BEGIN
-		IF NOT EXISTS
-			(
-			SELECT * FROM @MetadataIntegrityIssues
-			)
-			BEGIN
-				PRINT 'No data integrity issues found in metadata.'
-			END
-		ELSE		
-			BEGIN
-				SELECT * FROM @MetadataIntegrityIssues;
-			END;
-	END;
 END;
