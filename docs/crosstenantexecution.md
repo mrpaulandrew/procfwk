@@ -15,7 +15,7 @@ During execution of the processing framework worker [pipelines](/procfwk/pipelin
 
 To further clarify, within the metadata [database](/procfwk/database) these authentication details are connected to a worker pipeline. Meaning, granular authentication to a worker pipeline wherever it is deployed.
 
-[ ![](/procfwk/crosstenantauth.png) ](/procfwk/crosstenantauth.png)
+[ ![](/procfwk/crosstenantauth.png) ](/procfwk/crosstenantauth.png){:target="_blank"}
 
 For example, the processing framework could be setup in the following ways depending on your requirements:
 
@@ -35,4 +35,4 @@ These are just example scenarios, any other combination of Tenant/Subscription/D
 
 A demonstration of using cross tenant worker pipelines is available on YouTube here:
 
-[![YouTube Demo Video](youtubeheader.png)](http://www.youtube.com/watch?v=XdYvJVUWeU4 "Cross Tenant Worker Demo")
+[![YouTube Demo Video](youtubeheader.png)](http://www.youtube.com/watch?v=XdYvJVUWeU4 "Cross Tenant Worker Demo"){:target="_blank"}
