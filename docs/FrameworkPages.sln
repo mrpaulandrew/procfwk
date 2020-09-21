@@ -9,7 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pages", "Pages", "{2BB4EF83
 		contents.md = contents.md
 		deployprocfwk.md = deployprocfwk.md
 		index.md = index.md
-		resources.md = resources.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{0261DDC1-17FF-4054-B280-711E91A30B3E}"
@@ -59,6 +58,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{8DB1
 	ProjectSection(SolutionItems) = preProject
 		contributors.md = contributors.md
 		glossary.md = glossary.md
+		resources.md = resources.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Synapse", "Synapse", "{33C75DB2-77DF-4C9E-8760-06DCFAFA5D5F}"
@@ -79,6 +79,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C836
 		dataset.png = dataset.png
 		dbpart1.png = dbpart1.png
 		dbpart2.png = dbpart2.png
+		failhandling-chain.png = failhandling-chain.png
+		failhandling-none.png = failhandling-none.png
+		failhandling-simple.png = failhandling-simple.png
 		function.png = function.png
 		grandparent.png = grandparent.png
 		iconwithalerting.png = iconwithalerting.png

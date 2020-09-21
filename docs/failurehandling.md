@@ -5,21 +5,47 @@ ___
 
 ___
 
-https://mrpaulandrew.com/2020/07/01/adf-procfwk-v1-8-complete-pipeline-dependency-chains-for-failure-handling/
+If a worker pipeline does not complete successfully the processing framework can take several different action. This behaviour is configurable via the database [properties](/procfwk/properties). At runtime the framework uses these property values in various locations when updating the current execution table to indicate to the processing framework what to do next. The following outlines a set of options that can be supported.
 
+The primary property that influences this behaviour is called __FailureHandling__. In the event of a worker pipeline is failure...
 
+___
 
-In the event of a worker pipeline does not complete successfully the processing framework can take several actions and behaviour in different ways according to the configuration of the [properties](/procfwk/properties). At runtime the framework uses the set property values in various locations to establish what to do next, the following outlines each should situation and how the framework could behave.
+## Property Value: None
 
-In the event of a worker pipeline failure...
+* Do nothing.
 
-## Do Nothing
+The pipeline status is updated to 'Failed' in the current execution [table](/procfwk/tables) and the framework carries on regardless.
 
+Visually, the pipeline processing could be represented as follows:
 
-## Stop Processing and Block All Downstream Execution Stages
+![None](/procfwk/failhandling-none.png)
 
+___
 
-## Allow Processing to Continue and Only Block Affected Downstream Dependant Worker Pipelines
+## Property Value: Simple
+
+* Stop processing and block all downstream [execution stages](/procfwk/executionstages).
+
+The pipeline status is updated to 'Failed' in the current execution [table](/procfwk/tables). Then all downstream execution stages are marked as 'Blocked' and the processing framework is stopped after the stage where the failure occurred has completed any remaining Workers.
+
+Visually, the pipeline processing could be represented as follows:
+
+![None](/procfwk/failhandling-simple.png)
+
+___
+
+## Property Value: DependencyChain
+
+* Allow processing to continue and only block affected downstream dependant worker pipelines.
+
+The pipeline status is updated to 'Failed' in the current execution [table](/procfwk/tables). Then only downstream pipelines are marked as 'Blocked' (using the [DependantPipelineId] attribute in the PipelineDependencies table). Once done, processing is then allowed to continue. When the next execution stage starts only pipelines not blocked will get a status of 'Preparing' and be allowed to run. Finally, the [stored procedure](/procfwk/storedprocedures) [procfwk].[CheckForBlockedPipelines] will look ahead to the next execution stage and mark any further downstream dependant pipelines as 'Blocked', continuing the chain.
+
+Visually, the pipeline processing could be represented as follows:
+
+![None](/procfwk/failhandling-chain.png)
+
+___
 
 
 These behaviours are also repeated using the following configured [properties](/procfwk/properties) where values are set to '1', meaning true.
@@ -29,4 +55,4 @@ These behaviours are also repeated using the following configured [properties](/
 
 In this context, an unknown worker pipeline status and a cancelled worker pipeline status are also treated as failures.
 
-If these other pipeline status values are set to '0', meaning false the framework will simply accept the outcome and carry on. Then once all execution stages are complete the overall framework run will be accessed as successfully (all workers succeeded) or failed.
+If these other pipeline status values have a property value set to '0', meaning false the framework will simply accept the outcome and carry on. Then once all execution stages are complete the overall framework run will be accessed as successfully (all workers succeeded) or failed.
