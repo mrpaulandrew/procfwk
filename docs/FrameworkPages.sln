@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pages", "Pages", "{2BB4EF83
 	ProjectSection(SolutionItems) = preProject
 		404.md = 404.md
 		contents.md = contents.md
+		deployprocfwk.md = deployprocfwk.md
 		index.md = index.md
 		resources.md = resources.md
 	EndProjectSection

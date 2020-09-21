@@ -1,16 +1,18 @@
 
 # Framework Components
 
-## [Data Factory](/procfwk/datafactory)
+* [Deploying ProcFwk](/procfwk/deployprocfwk)
+
+### [Data Factory](/procfwk/datafactory)
 * [Linked Services](/procfwk/linkedservices)
 * [Datasets](/procfwk/datasets)
 * [Pipelines](/procfwk/pipelines)
 * [Activities](/procfwk/activities)
 
-## [Synapse](/procfwk/synapse)
+### [Synapse](/procfwk/synapse)
 * [Current Support & Limitations](https://mrpaulandrew.com/2020/06/03/adf-procfwk-and-azure-synapse-orchestrate-preview-and-limitations/)
 
-## [Database](/procfwk/database)
+### [Database](/procfwk/database)
 * [Properties](/procfwk/properties)
 * [Schemas](/procfwk/schemas)
 * [Tables](/procfwk/tables)
@@ -19,7 +21,7 @@
 * [Synonyms](/procfwk/synonyms)
 * [Stored Procedures](/procfwk/storedprocedures)
 
-## [Functions](/procfwk/functions)
+### [Functions](/procfwk/functions)
 * [Helpers](/procfwk/helpers)
 * [Execute Pipeline](/procfwk/executepipeline)
 * [Check Pipeline Status](/procfwk/checkpipelinestatus)
@@ -49,4 +51,4 @@
 * [Glossary](/procfwk/glossary)
 * [Contributors](/procfwk/contributors)
 * [Resources](/procfwk/resources)
-* [Release Details (Read Me)](https://github.com/mrpaulandrew/procfwk/blob/master/README.md)
+* [Release Details (Read Me)](https://github.com/mrpaulandrew/procfwk/blob/master/README.md){:target="_blank"}
