@@ -1,6 +1,6 @@
 # Read Me - Orchestrate.[procfwk](http://procfwk.com/)
 
-[ ![](https://mrpaulandrew.github.io/procfwk/overview.png) ](https://mrpaulandrew.github.io/procfwk/overview.png){:target="_blank"}
+[ ![](https://mrpaulandrew.github.io/procfwk/overview.png) ](https://mrpaulandrew.github.io/procfwk/overview.png)
 
 ## Documentation
 
@@ -28,18 +28,18 @@ For complete documentation on this solution see [procfwk.com](http://procfwk.com
 
 ## Complete Data Factory Activity Chain
 
-[ ![](https://mrpaulandrew.github.io/procfwk/activitychain-full.png) ](https://mrpaulandrew.github.io/procfwk/activitychain-full.png){:target="_blank"}
+[ ![](https://mrpaulandrew.github.io/procfwk/activitychain-full.png) ](https://mrpaulandrew.github.io/procfwk/activitychain-full.png)
 
 ## Issues
 
 If you've found a bug or have a new feature request please log the details using the repository issues.
 
-Go to... [Issues](https://github.com/mrpaulandrew/ADF.procfwk/issues){:target="_blank"}
+Go to... [Issues](https://github.com/mrpaulandrew/ADF.procfwk/issues)
 
 ## Projects
-Go to... [External Requests](https://github.com/mrpaulandrew/ADF.procfwk/projects/2){:target="_blank"}
+Go to... [External Requests](https://github.com/mrpaulandrew/ADF.procfwk/projects/2)
 
-Go to... [Internal Backlog](https://github.com/mrpaulandrew/ADF.procfwk/projects/1){:target="_blank"}
+Go to... [Internal Backlog](https://github.com/mrpaulandrew/ADF.procfwk/projects/1)
 
 ## Release Details
 
