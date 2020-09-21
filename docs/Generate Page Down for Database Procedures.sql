@@ -74,7 +74,7 @@ BEGIN
 
 	INSERT INTO @Page (Markdown)
 	SELECT ''
-	UNION ALL SELECT '__Definition:__ Does stuff.'
+	UNION ALL SELECT '__Role:__ Does stuff.'
 	UNION ALL SELECT ''
 	UNION ALL SELECT '___'
 	UNION ALL SELECT ''

@@ -4,19 +4,27 @@ ___
 [<< Contents](/procfwk/contents) / [Database](/procfwk/database)
 
 ___
-## CheckForBlockedPipelines
+
+The following stored procedures are ordered by database [schema](/procfwk/schemas) then name.
+
+## Schema: procfwk
+
+___
+
+### CheckForBlockedPipelines
 
 __Schema:__ procfwk
 
 |Parameter Name|Data Type|
 |---|:---:|
+|@ExecutionId|uniqueidentifier
 |@StageId|int
 
 __Role:__ Used within parent [pipeline](/procfwk/pipelines) as part of the sequential foreach activity this procedure establishes if any worker pipelines in the next execution stage are blocked. Then depending on the configured [failure handing](/procfwk/failurehandling) updates the current execution [table](/procfwk/tables) before proceeding.
 
 ___
 
-## CheckForEmailAlerts
+### CheckForEmailAlerts
 
 __Schema:__ procfwk
 
@@ -28,7 +36,7 @@ __Role:__ Assuming [email alerting](/procfwk/eamilalerting) is enabled this proc
 
 ___
 
-## CheckMetadataIntegrity
+### CheckMetadataIntegrity
 
 __Schema:__ procfwk
 
@@ -38,11 +46,11 @@ __Schema:__ procfwk
 
 __Role:__ Called early on in the parent [pipeline](/procfwk/pipelines) this procedure serves two purposes. Firstly, to perform a series on basic checks against the database metadata ensuring key conditions are met before Data Factory starts a new execution. See [metadata integrity checks](/procfwk/metadataintegritychecks) for more details. 
 
-Secondly, in the event of an external platform failure where the framework is left in an unexecpted state. This procedure queries the current execution [table](/procfwk/tables) and returns values to Data Factory so a [clean up](/procfwk/prevruncleanup) routine can take place as part of the parent [pipeline](/procfwk/pipelines) execution.
+Secondly, in the event of an external platform failure where the framework is left in an unexpected state. This procedure queries the current execution [table](/procfwk/tables) and returns values to Data Factory so a [clean up](/procfwk/prevruncleanup) routine can take place as part of the parent [pipeline](/procfwk/pipelines) execution.
 
 ___
 
-## CreateNewExecution
+### CreateNewExecution
 
 __Schema:__ procfwk
 
@@ -54,15 +62,15 @@ __Role:__ Once the parent [pipeline](/procfwk/pipelines) has completed all pre-e
 
 ___
 
-## ExecutePrecursorProcedure
+### ExecutePrecursorProcedure
 
 __Schema:__ procfwk
 
-__Role:__ See [Execution Precursor](/procfwk/executionprecursor) for details.
+__Role:__ See [Execution Precursor](/procfwk/executionprecursor) for details on this feature.
 
 ___
 
-## ExecutionWrapper
+### ExecutionWrapper
 
 __Schema:__ procfwk
 
@@ -70,11 +78,11 @@ __Schema:__ procfwk
 |---|:---:|
 |@CallingDataFactory|nvarchar
 
-__Role:__ This procedure establishs what the framework should do with the current execution table when the parent pipeline is triggered. Depending on the configured [properties](/procfwk/properties) this will then create a new execution run or restart the previous run if a failure has occured.
+__Role:__ This procedure establishes what the framework should do with the current execution table when the parent pipeline is triggered. Depending on the configured [properties](/procfwk/properties) this will then create a new execution run or restart the previous run if a failure has occurred.
 
 ___
 
-## GetEmailAlertParts
+### GetEmailAlertParts
 
 __Schema:__ procfwk
 
@@ -86,7 +94,7 @@ __Role:__ When an [email alert](/procfwk/emailalerting) is going to be sent by t
 
 ___
 
-## GetPipelineParameters
+### GetPipelineParameters
 
 __Schema:__ procfwk
 
@@ -98,19 +106,20 @@ __Role:__ Within the child pipeline foreach activity this procedure queries the 
 
 ___
 
-## GetPipelinesInStage
+### GetPipelinesInStage
 
 __Schema:__ procfwk
 
 |Parameter Name|Data Type|
 |---|:---:|
+|@ExecutionId|uniqueidentifier
 |@StageId|int
 
 __Role:__ Called from the child [pipeline](/procfwk/pipeline) this procedure returns a simple list of all worker pipelines to be executed within a given [execution stage](/procfwk/executionstage). Filtering ensures only worker pipelines that haven't already completed successfully or workers that aren't blocked are returned.
 
 ___
 
-## GetPropertyValue
+### GetPropertyValue
 
 __Schema:__ procfwk
 
@@ -122,20 +131,7 @@ __Role:__ This procedure is used by [Data Factory](/procfwk/datafactory) through
 
 ___
 
-## GetServicePrincipal
-
-__Schema:__ procfwk
-
-|Parameter Name|Data Type|
-|---|:---:|
-|@DataFactory|nvarchar
-|@PipelineName|nvarchar
-
-__Role:__ Depending on the configured [properties](/procfwk/properties) this procedure queries the service principal table and returns credentials that [Data Factory](/procfwk/datafactory) can use when executing a worker pipeline. See [worker SPN storage](/procfwk/spnhandling) for more details.
-
-___
-
-## GetStages
+### GetStages
 
 __Schema:__ procfwk
 
@@ -143,19 +139,56 @@ __Schema:__ procfwk
 |---|:---:|
 |@ExecutionId|uniqueidentifier
 
-__Role:__ Does stuff.
+__Role:__ Returns a distinct list of all enabled [execution stages](/procfwk/executionstages) from the metadata to be used in the parent pipeline squential iterations.
 
 ___
 
-## ResetExecution
+### GetWorkerAuthDetails
 
 __Schema:__ procfwk
 
-__Role:__ Does stuff.
+|Parameter Name|Data Type|
+|---|:---:|
+|@ExecutionId|uniqueidentifier
+|@StageId|int
+|@PipelineId|int
+
+__Role:__ For a given worker pipeline during an execution run of the processing framework, return the following:
+
+* Tenant Id
+* Subscription Id
+* Service Principal Name (depending on configured [SPN Handling](/procfwk/spnhandling))
+* Service Principal Secret (depending on configured [SPN Handling](/procfwk/spnhandling))
 
 ___
 
-## SetErrorLogDetails
+### GetWorkerPipelineDetails
+
+__Schema:__ procfwk
+
+|Parameter Name|Data Type|
+|---|:---:|
+|@ExecutionId|uniqueidentifier
+|@StageId|int
+|@PipelineId|int
+
+__Role:__ For a given worker pipeline during an execution run of the processing framework, return the following:
+
+* Resource Group Name
+* Data Factory Name
+* Worker Pipeline Name
+
+___
+
+### ResetExecution
+
+__Schema:__ procfwk
+
+__Role:__ In the event of a processing [framework restart](/procfwk/frameworkrestart) this procedure archives off any unwanted records from the current execution table and updates the pipeline status attribute for any workers than didn't complete successfully during the previous execution.
+
+___
+
+### SetErrorLogDetails
 
 __Schema:__ procfwk
 
@@ -164,11 +197,11 @@ __Schema:__ procfwk
 |@LocalExecutionId|uniqueidentifier
 |@JsonErrorDetails|varchar
 
-__Role:__ Does stuff.
+__Role:__ For a failed worker pipeline the error message details will be passed to this procedure in there raw JSON form. Then parsed and inserted into the database error log table. See [error details](/procfwk/errordetails) for more information on this feature.
 
 ___
 
-## SetExecutionBlockDependants
+### SetExecutionBlockDependants
 
 __Schema:__ procfwk
 
@@ -177,11 +210,11 @@ __Schema:__ procfwk
 |@ExecutionId|uniqueidentifier
 |@PipelineId|int
 
-__Role:__ Does stuff.
+__Role:__ When using the [dependency chain](/procfwk/dependencychains) feature for [failure handling](/procfwk/failurehandling) this procedure queries the metadata and applies a 'blocked' status to any downstream (dependant) worker pipelines in the current execution table.
 
 ___
 
-## SetLogActivityFailed
+### SetLogActivityFailed
 
 __Schema:__ procfwk
 
@@ -192,11 +225,26 @@ __Schema:__ procfwk
 |@PipelineId|int
 |@CallingActivity|varchar
 
-__Role:__ Does stuff.
+__Role:__ In the event of a wider Azure platform failure where a [pipeline](/procfwk/pipeline) activity failures for unexpected reasons this procedure attempts to update and leave the current execution table with an informational status. This status will typically be the activity that has resulted in the failure outcome. I common use for this procedure is when hitting external resources like the Azure Functions activities within the infant pipeline.
 
 ___
 
-## SetLogPipelineCancelled
+### SetLogPipelineCancelled
+
+__Schema:__ procfwk
+
+|Parameter Name|Data Type|
+|---|:---:|
+|@ExecutionId|uniqueidentifier
+|@StageId|int
+|@PipelineId|int
+|@CleanUpRun|bit
+
+__Role:__ Updates the current execution table setting the pipeline status attribute to cancelled for the provided worker Id. Also blocks downstream pipelines depending on the configured [failure handling](/procfwk/failurehandling) behaviour.
+
+___
+
+### SetLogPipelineChecking
 
 __Schema:__ procfwk
 
@@ -206,54 +254,11 @@ __Schema:__ procfwk
 |@StageId|int
 |@PipelineId|int
 
-__Role:__ Does stuff.
+__Role:__ During the parent pipeline clean up process. Updates the current execution table setting the pipeline status attribute to checking for the provided worker Id.
 
 ___
 
-## SetLogPipelineChecking
-
-__Schema:__ procfwk
-
-|Parameter Name|Data Type|
-|---|:---:|
-|@ExecutionId|uniqueidentifier
-|@StageId|int
-|@PipelineId|int
-
-__Role:__ Does stuff.
-
-___
-
-## SetLogPipelineFailed
-
-__Schema:__ procfwk
-
-|Parameter Name|Data Type|
-|---|:---:|
-|@ExecutionId|uniqueidentifier
-|@StageId|int
-|@PipelineId|int
-|@RunId|uniqueidentifier
-
-__Role:__ Does stuff.
-
-___
-
-## SetLogPipelineLastStatusCheck
-
-__Schema:__ procfwk
-
-|Parameter Name|Data Type|
-|---|:---:|
-|@ExecutionId|uniqueidentifier
-|@StageId|int
-|@PipelineId|int
-
-__Role:__ Does stuff.
-
-___
-
-## SetLogPipelineRunId
+### SetLogPipelineFailed
 
 __Schema:__ procfwk
 
@@ -264,11 +269,11 @@ __Schema:__ procfwk
 |@PipelineId|int
 |@RunId|uniqueidentifier
 
-__Role:__ Does stuff.
+__Role:__ Updates the current execution table setting the pipeline status attribute to failed for the provided worker Id. Also blocks downstream pipelines depending on the configured [failure handling](/procfwk/failurehandling) behaviour.
 
 ___
 
-## SetLogPipelineRunning
+### SetLogPipelineLastStatusCheck
 
 __Schema:__ procfwk
 
@@ -278,11 +283,26 @@ __Schema:__ procfwk
 |@StageId|int
 |@PipelineId|int
 
-__Role:__ Does stuff.
+__Role:__ During the infant [pipeline](/procfwk/pipelines) Until activity upon each iteration this procedure updates the current execution table with the current date/time in the last check attribute. This offers some visability on how many wait iterations have occurred for a given worker pipeline execution.
 
 ___
 
-## SetLogPipelineSuccess
+### SetLogPipelineRunId
+
+__Schema:__ procfwk
+
+|Parameter Name|Data Type|
+|---|:---:|
+|@ExecutionId|uniqueidentifier
+|@StageId|int
+|@PipelineId|int
+|@RunId|uniqueidentifier
+
+__Role:__ Once a given worker pipeline is in progress the Data Factory run Id will be returned from the Azure Function and added to the current execution table using this stored procedure.
+
+___
+
+### SetLogPipelineRunning
 
 __Schema:__ procfwk
 
@@ -292,11 +312,11 @@ __Schema:__ procfwk
 |@StageId|int
 |@PipelineId|int
 
-__Role:__ Does stuff.
+__Role:__ Updates the current execution table setting the pipeline status attribute to running for the provided worker Id.
 
 ___
 
-## SetLogPipelineUnknown
+### SetLogPipelineSuccess
 
 __Schema:__ procfwk
 
@@ -306,11 +326,26 @@ __Schema:__ procfwk
 |@StageId|int
 |@PipelineId|int
 
-__Role:__ Does stuff.
+__Role:__ Updates the current execution table setting the pipeline status attribute to success for the provided worker Id.
 
 ___
 
-## SetLogStagePreparing
+### SetLogPipelineUnknown
+
+__Schema:__ procfwk
+
+|Parameter Name|Data Type|
+|---|:---:|
+|@ExecutionId|uniqueidentifier
+|@StageId|int
+|@PipelineId|int
+|@CleanUpRun|bit
+
+__Role:__ Updates the current execution table setting the pipeline status attribute to unknown for the provided worker Id. Also blocks downstream pipelines depending on the configured [failure handling](/procfwk/failurehandling) behaviour.
+
+___
+
+### SetLogStagePreparing
 
 __Schema:__ procfwk
 
@@ -319,11 +354,11 @@ __Schema:__ procfwk
 |@ExecutionId|uniqueidentifier
 |@StageId|int
 
-__Role:__ Does stuff.
+__Role:__ Updates the current execution table setting the pipeline status attribute to preparing for all worker pipelines in the provided [execution stage](/procfwk/executionstage) Id.
 
 ___
 
-## UpdateExecutionLog
+### UpdateExecutionLog
 
 __Schema:__ procfwk
 
@@ -331,11 +366,15 @@ __Schema:__ procfwk
 |---|:---:|
 |@PerformErrorCheck|bit
 
-__Role:__ Does stuff.
+__Role:__ Called at the end of the parent pipeline as the last thing the processing framework does in the metadata database this procedure validates the contents of the current execution table. If all workers were successful the data will be archived off to the execution log table. Otherwise and exception will be raised.
 
 ___
 
-## AddPipelineDependant
+## Schema: procfwkHelpers
+
+___
+
+### AddPipelineDependant
 
 __Schema:__ procfwkHelpers
 
@@ -344,11 +383,11 @@ __Schema:__ procfwkHelpers
 |@PipelineName|nvarchar
 |@DependantPipelineName|nvarchar
 
-__Role:__ Does stuff.
+__Role:__ Applies a relationship between an upstream and downstream worker pipeline while conforming to metadata integrity constraints.
 
 ___
 
-## AddPipelineViaPowerShell
+### AddPipelineViaPowerShell
 
 __Schema:__ procfwkHelpers
 
@@ -358,11 +397,11 @@ __Schema:__ procfwkHelpers
 |@DataFactoryName|nvarchar
 |@PipelineName|nvarchar
 
-__Role:__ Does stuff.
+__Role:__ Is used by PowerShell when populating the metadata database with a set of worker pipelines from an existing Data Factory instance. For more details on this feature see how to [Apply ProcFwk To An Existing Data Factory](/procfwk/applytoexistingadfs).
 
 ___
 
-## AddProperty
+### AddProperty
 
 __Schema:__ procfwkHelpers
 
@@ -372,11 +411,11 @@ __Schema:__ procfwkHelpers
 |@PropertyValue|nvarchar
 |@Description|nvarchar
 
-__Role:__ Does stuff.
+__Role:__ Performs an upsert to the database [properties](/procfwk/properties) when a new or existing processing framework property is provided. Internally, a merge statement applies the change to the table.
 
 ___
 
-## AddRecipientPipelineAlerts
+### AddRecipientPipelineAlerts
 
 __Schema:__ procfwkHelpers
 
@@ -386,11 +425,13 @@ __Schema:__ procfwkHelpers
 |@PipelineName|nvarchar
 |@AlertForStatus|nvarchar
 
-__Role:__ Does stuff.
+__Role:__ Assuming the reciptient already exists in the metadata this procedure adds the required link for a given worker pipeline and the requested status values.
+
+The 'AlertForStatus' parameter can be a comma separated list if multiple status values are required.
 
 ___
 
-## AddServicePrincipal
+### AddServicePrincipal
 
 __Schema:__ procfwkHelpers
 
@@ -402,11 +443,11 @@ __Schema:__ procfwkHelpers
 |@SpecificPipelineName|nvarchar
 |@PrincipalName|nvarchar
 
-__Role:__ Does stuff.
+__Role:__ If the database [property](/procfwk/properties) for storing service principals is set to use insert them into the database, this procedure encrypts the parameter values provided and adds them to the database while conforming to metadata integrity constraints.
 
 ___
 
-## AddServicePrincipalUrls
+### AddServicePrincipalUrls
 
 __Schema:__ procfwkHelpers
 
@@ -418,11 +459,10 @@ __Schema:__ procfwkHelpers
 |@SpecificPipelineName|nvarchar
 |@PrincipalName|nvarchar
 
-__Role:__ Does stuff.
-
+__Role:__ If the database [property](/procfwk/properties) for storing service principals is set to use Azure Key Vault, this procedure attempts to validate the parameter values provided and adds them to the database while conforming to metadata integrity constraints.
 ___
 
-## AddServicePrincipalWrapper
+### AddServicePrincipalWrapper
 
 __Schema:__ procfwkHelpers
 
@@ -434,35 +474,37 @@ __Schema:__ procfwkHelpers
 |@SpecificPipelineName|nvarchar
 |@PrincipalName|nvarchar
 
-__Role:__ Does stuff.
+__Role:__ Depending on the configuration of the [SPN handling](/procfwk/spnhandling) this procedure passes off parameter values to one of the following stored procedures:
+* AddServicePrincipal
+* AddServicePrincipalUrls
 
 ___
 
-## CheckStageAndPiplineIntegrity
+### CheckStageAndPiplineIntegrity
 
 __Schema:__ procfwkHelpers
 
-__Role:__ Does stuff.
+__Role:__ This procedures uses the optional attribute 'LogicalPredecessorId' within the pipelines table to review and suggest updates to the structure of the worker pipeline metadata considering execution stages and upstream/downstream dependants. The output of the procedure is purely for information.
 
 ___
 
-## DeleteMetadataWithIntegrity
+### DeleteMetadataWithIntegrity
 
 __Schema:__ procfwkHelpers
 
-__Role:__ Does stuff.
+__Role:__ Performs an ordered delete of all metadata from the database while conforming to metadata integrity rules.
 
 ___
 
-## DeleteMetadataWithoutIntegrity
+### DeleteMetadataWithoutIntegrity
 
 __Schema:__ procfwkHelpers
 
-__Role:__ Does stuff.
+__Role:__ Performs a blanket delete of all database contents for tables in the procfwk [schemas](/procfwk/schemas).
 
 ___
 
-## DeleteRecipientAlerts
+### DeleteRecipientAlerts
 
 __Schema:__ procfwkHelpers
 
@@ -471,11 +513,11 @@ __Schema:__ procfwkHelpers
 |@EmailAddress|nvarchar
 |@SoftDeleteOnly|bit
 
-__Role:__ Does stuff.
+__Role:__ Removes or disables a given email recipient from the metadata tables while conforming to metadata integrity rules.
 
 ___
 
-## DeleteServicePrincipal
+### DeleteServicePrincipal
 
 __Schema:__ procfwkHelpers
 
@@ -485,11 +527,11 @@ __Schema:__ procfwkHelpers
 |@PrincipalIdValue|nvarchar
 |@SpecificPipelineName|nvarchar
 
-__Role:__ Does stuff.
+__Role:__ Removes a given service principal from the metadata tables while conforming to metadata integrity rules.
 
 ___
 
-## GetExecutionDetails
+### GetExecutionDetails
 
 __Schema:__ procfwkHelpers
 
@@ -497,107 +539,133 @@ __Schema:__ procfwkHelpers
 |---|:---:|
 |@LocalExecutionId|uniqueidentifier
 
-__Role:__ Does stuff.
+__Role:__ Used as runtime helper offered more details about the current execution run with additional table joins and summary information.
 
 ___
 
-## SetDefaultAlertOutcomes
+### GetServicePrincipal
 
 __Schema:__ procfwkHelpers
 
-__Role:__ Does stuff.
+|Parameter Name|Data Type|
+|---|:---:|
+|@DataFactory|nvarchar
+|@PipelineName|nvarchar
+
+__Role:__ Depending on the configured [properties](/procfwk/properties) this procedure queries the service principal table and returns credentials that [Data Factory](/procfwk/datafactory) can use when executing a worker pipeline. See [worker SPN storage](/procfwk/spnhandling) for more details.
 
 ___
 
-## SetDefaultDataFactorys
+### SetDefaultAlertOutcomes
 
 __Schema:__ procfwkHelpers
 
-__Role:__ Does stuff.
+__Role:__ Adds the default email alerting outcome values to the metadata [table](/procfwk/table) used as part of the processing framework development environment.
 
 ___
 
-## SetDefaultPipelineDependant
+### SetDefaultDataFactorys
 
 __Schema:__ procfwkHelpers
 
-__Role:__ Does stuff.
+__Role:__ Adds a set of default Data Factory values to the metadata [table](/procfwk/table) used as part of the processing framework development environment.
 
 ___
 
-## SetDefaultPipelineDependants
+
+### SetDefaultPipelineDependants
 
 __Schema:__ procfwkHelpers
 
-__Role:__ Does stuff.
+__Role:__ Adds a simple set of default pipeline dependencies to the metadata [table](/procfwk/table) used as part of the processing framework development environment.
 
 ___
 
-## SetDefaultPipelineParameters
+### SetDefaultPipelineParameters
 
 __Schema:__ procfwkHelpers
 
-__Role:__ Does stuff.
+__Role:__ Adds a set of default pipeline parameter values to the metadata [table](/procfwk/table) used as part of the processing framework development environment.
 
 ___
 
-## SetDefaultPipelines
+### SetDefaultPipelines
 
 __Schema:__ procfwkHelpers
 
-__Role:__ Does stuff.
+__Role:__ Adds a set of default pipeline values to the metadata [table](/procfwk/table) used as part of the processing framework development environment.
 
 ___
 
-## SetDefaultProperties
+### SetDefaultProperties
 
 __Schema:__ procfwkHelpers
 
-__Role:__ Does stuff.
+__Role:__ Adds all default framework [property](/procfwk/properties) values to the metadata [table](/procfwk/table) used as part of the processing framework development environment.
 
 ___
 
-## SetDefaultRecipientPipelineAlerts
+### SetDefaultRecipientPipelineAlerts
 
 __Schema:__ procfwkHelpers
 
-__Role:__ Does stuff.
+__Role:__ Adds a set of default alerting relationship values to the metadata [table](/procfwk/table) used as part of the processing framework development environment.
 
 ___
 
-## SetDefaultRecipients
+### SetDefaultRecipients
 
 __Schema:__ procfwkHelpers
 
-__Role:__ Does stuff.
+__Role:__ Adds several default recipient values to the metadata [table](/procfwk/table) used as part of the processing framework development environment.
 
 ___
 
-## SetDefaultStages
+### SetDefaultStages
 
 __Schema:__ procfwkHelpers
 
-__Role:__ Does stuff.
+__Role:__ Adds a set of default execution stage values to the metadata [table](/procfwk/table) used as part of the processing framework development environment.
 
 ___
 
-## Add300WorkerPipelines
+### SetDefaultSubscription
+
+__Schema:__ procfwkHelpers
+
+__Role:__ Adds a default subscription value to the metadata [table](/procfwk/table) used as part of the processing framework development environment.
+
+___
+
+### SetDefaultTenant
+
+__Schema:__ procfwkHelpers
+
+__Role:__ Adds a default tenant value to the metadata [table](/procfwk/table) used as part of the processing framework development environment.
+
+___
+
+## Schema: procfwkTesting
+
+___
+
+### Add300WorkerPipelines
 
 __Schema:__ procfwkTesting
 
-__Role:__ Does stuff.
+__Role:__ Applies a set of 300 worker pipelines with parameters and SPN details to the metadata database as part of the setup for an integration run stress test.
 
 ___
 
-## CleanUpMetadata
+### CleanUpMetadata
 
 __Schema:__ procfwkTesting
 
-__Role:__ Does stuff.
+__Role:__ Used as a wrapper for the helper stored procedures __DeleteMetadataWith***__ to add a empty all metadata from the database. Typically called as part of integration test one time tear downs. See [testing](/procfwk/testing) for more details on this feature.
 
 ___
 
-## GetRunIdWhenAvailable
+### GetRunIdWhenAvailable
 
 __Schema:__ procfwkTesting
 
@@ -605,14 +673,14 @@ __Schema:__ procfwkTesting
 |---|:---:|
 |@PipelineName|nvarchar
 
-__Role:__ Does stuff.
+__Role:__ During the integration tests to cancel a running worker pipeline this procedure queries the current execution table waiting for a Run Id value to become available. Once found, the wait iteration breaks and provides the first value found.
 
 ___
 
-## ResetMetadata
+### ResetMetadata
 
 __Schema:__ procfwkTesting
 
-__Role:__ Does stuff.
+__Role:__ Used as a wrapper for the helper stored procedures __SetDefault***__ to add a complete set of default metadata to the database. Typically called as part integration test one time setups. See [testing](/procfwk/testing) for more details on this feature.
 
 ___

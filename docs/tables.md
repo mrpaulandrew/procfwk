@@ -16,7 +16,6 @@ __Definition:__ Used to provide a static list of available pipeline status outco
 |2|PipelineOutcomeStatus|nvarchar|400|No
 |3|BitValue|int|4|Yes
 
-___
 
 ## CurrentExecution
 __Schema:__ procfwk

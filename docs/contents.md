@@ -1,5 +1,8 @@
+# Contents
 
-# Framework Components
+___
+
+## Framework Components
 
 * [Deploying ProcFwk](/procfwk/deployprocfwk)
 
@@ -28,7 +31,10 @@
 * [Get Error Details](/procfwk/geterrordetails)
 * [Send Email](/procfwk/sendemail)
 
-# Framework Capabilities
+___
+
+## Framework Capabilities
+
 * [Execution Stages](/procfwk/executionstages)
 * [Scale Out Processing](/procfwk/scaleoutprocessing)
 * [Restarting Executions](/procfwk/frameworkrestart)
@@ -47,7 +53,9 @@
 * [Reporting](/procfwk/reporting)
 * [Testing](/procfwk/testing)
 
-# Framework Support
+___
+
+## Framework Support
 * [Glossary](/procfwk/glossary)
 * [Contributors](/procfwk/contributors)
 * [Resources](/procfwk/resources)

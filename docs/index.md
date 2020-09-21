@@ -4,6 +4,8 @@ This site provides details on the latest version of the processing framework (pr
 
 Please use the [Contents](/procfwk/contents) page, also available in the side bar, to navigate.
 
+___
+
 ## Code Project Overview
 
 ### What is procfwk?
@@ -19,6 +21,8 @@ This framework can also be used in any Azure Tenant and allows the creation of c
 ### Why use procfwk?
 
 If you're not convinced please watch my [YouTube video](https://www.youtube.com/watch?v=rVlc-GBpNnc){:target="_blank"} on why you need a metadata driven processing framework.
+
+___
 
 ## Framework Capabilities
 
@@ -40,10 +44,18 @@ If you're not convinced please watch my [YouTube video](https://www.youtube.com/
  * Automated testing.
  * Azure Key Vault integration.
 
+___
+
 ## Deployment Steps
 
 For details on how to deploy the processing framework to your Azure Tenant see [Deploying ProcFwk](/procfwk/deployprocfwk).
 
+___
+
 ## Complete Data Factory Activity Chain
 
+The following offers a view of all pipeline activities at every level within the processing framework if flattened out.
+
 [ ![](/procfwk/activitychain-full.png) ](/procfwk/activitychain-full.png){:target="_blank"}
+
+___
