@@ -14,7 +14,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Markdown", "Markdown", "{C7
 		.github\ISSUE_TEMPLATE\bug-found.md = .github\ISSUE_TEMPLATE\bug-found.md
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
 		CONTRIBUTING.md = CONTRIBUTING.md
-		DeploymentTools\Deployment Steps.md = DeploymentTools\Deployment Steps.md
 		.github\ISSUE_TEMPLATE\feature-request.md = .github\ISSUE_TEMPLATE\feature-request.md
 		LICENSE = LICENSE
 		README.md = README.md
@@ -66,10 +65,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{16E32C
 		Images\ADFprocfwk Icon - No Background.png = Images\ADFprocfwk Icon - No Background.png
 		Images\ADFprocfwk Icon.png = Images\ADFprocfwk Icon.png
 		Images\All ADF Activities.pptx = Images\All ADF Activities.pptx
-		Images\Authentication Flow.png = Images\Authentication Flow.png
 		Images\Database Diagram.png = Images\Database Diagram.png
-		Images\Pipeline Type Key.png = Images\Pipeline Type Key.png
 		Images\Repo Image.png = Images\Repo Image.png
+		Images\Repo Social Media Image.png = Images\Repo Social Media Image.png
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notebooks", "Notebooks", "{19F99FD2-9170-42DA-B4FE-A52A358B5473}"
@@ -94,6 +92,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataFactory", "DataFactory"
 		ARM Templates\Data Factory\v1.8.3 Export.json = ARM Templates\Data Factory\v1.8.3 Export.json
 		ARM Templates\Data Factory\v1.8.5 Export.json = ARM Templates\Data Factory\v1.8.5 Export.json
 		ARM Templates\Data Factory\v1.8.6 Export.json = ARM Templates\Data Factory\v1.8.6 Export.json
+		ARM Templates\Data Factory\v1.9 Export.json = ARM Templates\Data Factory\v1.9 Export.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "trigger", "trigger", "{FC7877EF-110F-4AD7-B203-EEECE6F08A86}"
