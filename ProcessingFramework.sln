@@ -62,11 +62,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{16E32C
 	ProjectSection(SolutionItems) = preProject
 		Images\Activity Chain.png = Images\Activity Chain.png
 		Images\ADFprocfwk Designs.vsdx = Images\ADFprocfwk Designs.vsdx
-		Images\ADFprocfwk Icon - No Background.png = Images\ADFprocfwk Icon - No Background.png
-		Images\ADFprocfwk Icon.png = Images\ADFprocfwk Icon.png
 		Images\All ADF Activities.pptx = Images\All ADF Activities.pptx
 		Images\Database Diagram.png = Images\Database Diagram.png
-		Images\Repo Image.png = Images\Repo Image.png
 		Images\Repo Social Media Image.png = Images\Repo Social Media Image.png
 	EndProjectSection
 EndProject
