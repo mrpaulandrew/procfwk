@@ -56,6 +56,9 @@ ___
 ___
 
 ## Framework Support
+* Feedback
+  * [Raise a Bug](https://github.com/mrpaulandrew/procfwk/issues/new?labels=bug&template=bug-found.md&title=){:target="_blank"}
+  * [Request a New Feature](https://github.com/mrpaulandrew/procfwk/issues/new?labels=enhancement&template=feature-request.md&title=){:target="_blank"}
 * [Glossary](/procfwk/glossary)
 * [Contributors](/procfwk/contributors)
 * [Resources](/procfwk/resources)

@@ -5,6 +5,8 @@ ___
 
 ___
 
+A huge thank you to the people that make this open source code project possible.
+
 | Who | Details |
 |------------|-------------|
 |Paul Andrew |[@mrpaulandrew](https://twitter.com/mrpaulandrew)<br/>[mrpaulandrew.tech](https://mrpaulandrew.tech)|

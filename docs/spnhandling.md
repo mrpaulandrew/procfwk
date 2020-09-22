@@ -1,9 +1,57 @@
-## SPN Handling (Database vs Key Vault)
+# Service Principal Handling (Database vs Key Vault)
 
 ___
 [<< Contents](/procfwk/contents) 
 
 ___
+
+## Azure Key Vault Roles
+
+![Key Vault Icon](/procfwk/keyvault.png){:style="float: right;margin-left: 15px;margin-bottom: 10px;"}Before detailing the different approaches within this code project for handling service principal values its important to define how the processing frameworking can optionally use Azure Key Vault. Specifically Key Vault can be used for the following two reasons:
+
+1. Handling credentials used by [Data Factory](/procfwk/datafactory) to authenticate against the [SQL database](/procfwk/database) and [Functions Apps](/procfwk/functions) required by the processing framework for normal operations. This is done as part of the [Linked Service](/procfwk/linkedservices) connections.
+
+2. Storing the service principal credentials (Application Id and Secret) required to interact with a given worker [pipeline(s)](/procfwk/pipeline) and target Data Factory instance.
+
+The following content within this page only focuses on the second use case (role) for Azure Key Vault within the context of the processing framework and calling worker pipelines.
+
+___
+
+## Worker Authentication 
+
+The processing framework supports the ability to use a different set of credentials for the execution of every single worker pipeline. This also includes the ability to call worker pipelines in different [tenants and subscriptions](/procfwk/crosstenantexecution), as well as different Data Factory instances. 
+
+To make this possible each Azure [Function](/procfwk/functions) used within the framework execution is given a set of service principal (SPN) details at runtime and is responsbile for instantiating and authenticating with its own Data Factory client [helper](/procfwk/helpers). Once the management client connection is made using the .Net SDK the pipeline classes/methods are called to interact with the worker pipelines.
+
+Given this understanding in the orchestration pipelines, the authentication details required by a given worker pipeline are returned from the metadata database using the infant pipeline [activities](/procfwk/activities). In each case, the database [table](/procfwk/tables) [dbo].[ServicePrincipals] is used to store the SPN information and joined to the worker pipeline information via a link table.
+
+Depending on the framework configuration the [dbo].[ServicePrincipals] will contain either:
+
+* Encrypted sets of SPN details, stored in the database directly.
+  * The Application Id available in clear text.
+  * The Appliction Secret as a VARBINARY value.
+* A set of Key Vault URL's where the SPN details can be returned from as Key Vault secrets.
+
+The different methods of handling service principal (SPN) details within the processing framework is configured using the database [properties](/procfwk/properties) table. The property used is called __SPNHandlingMethod__ and can have one of the following values. These values corrospond 
+
+### StoreInDatabase
+
+
+
+
+[ ![](/procfwk/spn-in-database.png) ](/procfwk/spn-in-database.png){:style="float: right;margin-left: 15px;margin-bottom: 10px; width: 250px;"}
+
+
+### StoreInKeyVault
+
+[ ![](/procfwk/spn-in-keyvault.png) ](/procfwk/spn-in-keyvault.png){:style="float: right;margin-left: 15px;margin-bottom: 10px; width: 250px;"}The database provides authentication details to the Azure Functions. However, the App Id and App Secret are Key Vault URL's rather than the actual decryted values.
+
+The function recongises a URL has been provided in the request body using the internal helper methods, instantiates its own Key Vault client authenticating using the Function App Managed Service Identity. Then queries Key Vault using the URL to return the secret value.
+
+Once done the Data Factory client is established.
+
+___
+
 
 Way back in v1.1 of the processing framework I added SPN details to the database metadata. This was and still is to enable the Azure Functions to authenticate against Data Factory when executing, checking and returning error information for our Worker pipelines. 
 
