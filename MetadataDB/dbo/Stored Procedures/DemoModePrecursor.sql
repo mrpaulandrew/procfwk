@@ -52,6 +52,20 @@ BEGIN
 				p.[PipelineName] = 'Intentional Error'
 				AND pp.[ParameterName] = 'RaiseErrors';
 		END;
+		ELSE
+		BEGIN
+			UPDATE
+				pp
+			SET
+				pp.[ParameterValue] = 'false'
+			FROM
+				[procfwk].[PipelineParameters] pp
+				INNER JOIN [procfwk].[Pipelines] p
+					ON pp.[PipelineId] = p.[PipelineId]
+			WHERE
+				p.[PipelineName] = 'Intentional Error'
+				AND pp.[ParameterName] = 'RaiseErrors';
+		END;
 
 	--dependency chain failure handling
 	IF ([procfwk].[GetPropertyValueInternal]('FailureHandling')) <> 'DependencyChain'
