@@ -200,6 +200,7 @@
     <Build Include="procfwkHelpers\Stored Procedures\SetDefaultSubscription.sql" />
     <Build Include="procfwkHelpers\Stored Procedures\SetDefaultTenant.sql" />
     <Build Include="procfwkHelpers\Stored Procedures\GetServicePrincipal.sql" />
+    <Build Include="dbo\Stored Procedures\DemoModePrecursor.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
