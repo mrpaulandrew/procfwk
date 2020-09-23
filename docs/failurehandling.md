@@ -56,3 +56,9 @@ These behaviours are also repeated using the following configured [properties](/
 In this context, an unknown worker pipeline status and a cancelled worker pipeline status are also treated as failures.
 
 If these other pipeline status values have a property value set to '0', meaning false, the framework will simply accept the outcome and carry on. Then once all execution stages are complete the overall framework run will be accessed as successfully (all workers succeeded) or failed.
+
+___
+
+For demonstration of this behaviour please view the following YouTube video.
+
+[![YouTube Demo Video](youtubeheader.png)](https://www.youtube.com/watch?v=G4G7tIdAMHQ "Alt Text"){:target="_blank"}
