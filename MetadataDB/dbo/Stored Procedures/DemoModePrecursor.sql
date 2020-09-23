@@ -2,7 +2,7 @@
 AS
 BEGIN
 
-	--lazy..
+	--quick win
 	IF ([procfwk].[GetPropertyValueInternal]('ExecutionPrecursorProc')) <> '[dbo].[DemoModePrecursor]'
 	BEGIN
 		EXEC [procfwkHelpers].[AddProperty]
@@ -54,14 +54,19 @@ BEGIN
 		END;
 
 	--dependency chain failure handling
-	EXEC [procfwkHelpers].[AddProperty]
-		@PropertyName = N'FailureHandling',
-		@PropertyValue = N'DependencyChain';
+	IF ([procfwk].[GetPropertyValueInternal]('FailureHandling')) <> 'DependencyChain'
+	BEGIN
+		EXEC [procfwkHelpers].[AddProperty]
+			@PropertyName = N'FailureHandling',
+			@PropertyValue = N'DependencyChain';
+	END;
 
 
 	--short infant iterations
-	EXEC [procfwkHelpers].[AddProperty]
-		@PropertyName = N'PipelineStatusCheckDuration',
-		@PropertyValue = N'5';
-
+	IF ([procfwk].[GetPropertyValueInternal]('PipelineStatusCheckDuration')) <> '5'
+	BEGIN
+		EXEC [procfwkHelpers].[AddProperty]
+			@PropertyName = N'PipelineStatusCheckDuration',
+			@PropertyValue = N'5';
+		END;
 END;
