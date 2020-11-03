@@ -8,7 +8,7 @@ ___
 ## AlertOutcomes
 __Schema:__ procfwk
 
-__Definition:__ Used to provide a static list of available pipeline status outcomes that can be compared to email recipient requirements for event alerts at runtime. These status values are used in the context of a bitmask potition when the framework performs any [email alerting](/procfwk/emailalerting). The position means an email recipient can subscribe to any combination of pipeline outcomes.
+__Definition:__ Used to provide a static list of available pipeline status outcomes that can be compared to email recipient requirements for event alerts at runtime. These status values are used in the context of a bitmask position when the framework performs any [email alerting](/procfwk/emailalerting). The position means an email recipient can subscribe to any combination of pipeline outcomes.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
