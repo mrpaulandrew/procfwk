@@ -68,7 +68,7 @@ EXEC [procfwkHelpers].[SetDefaultProperties];
 * Add at least one Tenant ID to the metadata database table.
 * Add at least one Subscription ID to the metadata database table and connected to the correct Tenant ID.
 * Add a target Data Factory where your worker pipelines exist, this can be the same Data Factory instance as the framework pipelines. Ensure the Data Factory is connected to the correct Subscription ID.
-* Add your worker pipeline(s) and [execution stage(s)](/procfwk/executionstages) metadata as required. See how to [pre-populate metadata](/procfwk/applytoexistingadfs) from can existing Data Factory if required.
+* Add your worker pipeline(s) and [execution stage(s)](/procfwk/executionstages) metadata as required. See how to [pre-populate metadata](/procfwk/applytoexistingadfs) from an existing Data Factory if required.
 * Set the database [property](/procfwk/properties) 'SPNHandlingMethod' to your preferred method of handling. Via the metadata database directly or using Azure Key Vault, see [SPN Handling](/procfwk/spnhandling) for more details.
 * Add your SPN details used to execute worker pipelines to your metadata. Use the following example code snippet.
 ```sql
