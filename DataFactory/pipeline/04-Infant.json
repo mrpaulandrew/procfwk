@@ -401,7 +401,7 @@
 								"timeout": "7.00:00:00",
 								"retry": 0,
 								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
+								"secureOutput": true,
 								"secureInput": false
 							},
 							"userProperties": [],
@@ -444,7 +444,7 @@
 								"retry": 0,
 								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
-								"secureInput": false
+								"secureInput": true
 							},
 							"userProperties": [],
 							"typeProperties": {
