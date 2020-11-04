@@ -46,7 +46,7 @@ EXEC [procfwkHelpers].[AddServicePrincipalWrapper]
 
 ### StoreInDatabase
 
-[ ![](/procfwk/spn-in-database.png) ](/procfwk/spn-in-database.png){:style="float: right;margin-left: 15px;margin-bottom: 10px; width: 250px;"}The database provides authentication details to the Azure Functions when the infant [pipline](/procfwk/pipelines) activity gets the worker authentication information, this includes the tenant and subscription Id values. Where applicable these values are deycrypted by the stored procedure __[procfwk].[GetWorkerAuthDetails]__ at runtime and added to the various function request bodys via a pipeline variable.
+[ ![](/procfwk/spn-in-database.png) ](/procfwk/spn-in-database.png){:style="float: right;margin-left: 15px;margin-bottom: 10px; width: 250px;"}The database provides authentication details to the Azure Functions when the infant [pipeline](/procfwk/pipelines) activity gets the worker authentication information, this includes the tenant and subscription Id values. Where applicable these values are deycrypted by the stored procedure __[procfwk].[GetWorkerAuthDetails]__ at runtime and added to the various function request bodys via a pipeline variable.
 
 The worker pipeline authentication details are requested and returned from the database once per infant pipeline.
 
@@ -57,7 +57,7 @@ ___
 
 [ ![](/procfwk/spn-in-keyvault.png) ](/procfwk/spn-in-keyvault.png){:style="float: right;margin-left: 15px;margin-bottom: 10px; width: 250px;"}The database provides authentication details to the Azure Functions when the infant [pipline](/procfwk/pipelines) activity gets the worker authentication information. However, the App Id and App Secret are Key Vault URL's rather than the actual decryted values.
 
-The function recongises a URL has been provided in the request body using the internal helper methods, instantiates its own Key Vault client authenticating using the Function App Managed Service Identity (MSI). Then queries Key Vault using the URL to return the secret values.
+The function recognises a URL has been provided in the request body using the internal helper methods, instantiates its own Key Vault client authenticating using the Function App Managed Service Identity (MSI). Then queries Key Vault using the URL to return the secret values.
 
 Once the Key Vault URL's have been resolved to values, the Data Factory client is established.
 

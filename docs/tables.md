@@ -111,7 +111,7 @@ __Definition:__ This table provides a many to many connection between the email 
 ## PipelineAuthLink
 __Schema:__ procfwk
 
-__Definition:__ For the purposes of granular sercurity when providing service principal details that can be used to execute worker [pipelines](/procfwk/pipelines) this table provides that many to many link and has further referential integrity checks against the Data Factory as well.
+__Definition:__ For the purposes of granular security when providing service principal details that can be used to execute worker [pipelines](/procfwk/pipelines) this table provides that many to many link and has further referential integrity checks against the Data Factory as well.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -194,7 +194,7 @@ __Definition:__ Named people and email addresses are stored in this table for th
 ## ServicePrincipals
 __Schema:__ dbo
 
-__Definition:__ At runtime a worker [pipeline](/procfwk/pipelines) will be executed by the framework [functions](/procfwk/functions). The function will authenticate against the target worker data factory using SPN details sorted in this table directly, or referenced by this tableto Azure Key Vault.
+__Definition:__ At runtime a worker [pipeline](/procfwk/pipelines) will be executed by the framework [functions](/procfwk/functions). The function will authenticate against the target worker data factory using SPN details sorted in this table directly, or referenced by this table to Azure Key Vault.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|

@@ -1,4 +1,4 @@
-# Metdata Integrity Checks
+# Metadata Integrity Checks
 
 ___
 [<< Contents](/procfwk/contents) 
