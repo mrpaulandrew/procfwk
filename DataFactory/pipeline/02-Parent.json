@@ -837,6 +837,7 @@
 			},
 			{
 				"name": "Execute Precursor",
+				"description": "Uses the database property value ExecutionPrecursorProc to run any custom logic against the metadata database before the execution run starts.",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [],
 				"policy": {
