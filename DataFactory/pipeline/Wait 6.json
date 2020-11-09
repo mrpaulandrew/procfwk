@@ -5,6 +5,7 @@
 		"activities": [
 			{
 				"name": "Wait6",
+				"description": "Framework development worker simulator.",
 				"type": "Wait",
 				"dependsOn": [],
 				"userProperties": [],
