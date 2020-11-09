@@ -15,6 +15,7 @@
 				},
 				"secretName": "FrameworkFunctionsKey"
 			}
-		}
+		},
+		"description": "Interact with the Azure Functions App used as middle ware when making requests to Worker pipelines. Authentication done at the Function App level."
 	}
 }

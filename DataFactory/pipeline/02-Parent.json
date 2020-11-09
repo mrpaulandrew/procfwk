@@ -16,9 +16,9 @@
 					}
 				],
 				"policy": {
-					"timeout": "7.00:00:00",
+					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 30,
+					"retryIntervalInSeconds": 0,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -110,9 +110,9 @@
 								}
 							],
 							"policy": {
-								"timeout": "7.00:00:00",
+								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 30,
+								"retryIntervalInSeconds": 0,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -147,9 +147,9 @@
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
 							"policy": {
-								"timeout": "7.00:00:00",
+								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 30,
+								"retryIntervalInSeconds": 0,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -194,9 +194,9 @@
 					}
 				],
 				"policy": {
-					"timeout": "7.00:00:00",
+					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 30,
+					"retryIntervalInSeconds": 0,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -236,9 +236,9 @@
 					}
 				],
 				"policy": {
-					"timeout": "7.00:00:00",
+					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 30,
+					"retryIntervalInSeconds": 0,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -273,9 +273,9 @@
 					}
 				],
 				"policy": {
-					"timeout": "7.00:00:00",
+					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 30,
+					"retryIntervalInSeconds": 0,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -319,16 +319,16 @@
 						"type": "Expression"
 					},
 					"isSequential": false,
-					"batchCount": 20,
+					"batchCount": 50,
 					"activities": [
 						{
 							"name": "Get SPN Details",
 							"type": "Lookup",
 							"dependsOn": [],
 							"policy": {
-								"timeout": "7.00:00:00",
+								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 30,
+								"retryIntervalInSeconds": 0,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -374,9 +374,9 @@
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
 							"policy": {
-								"timeout": "7.00:00:00",
+								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 30,
+								"retryIntervalInSeconds": 0,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -430,11 +430,11 @@
 								}
 							],
 							"policy": {
-								"timeout": "7.00:00:00",
+								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 30,
+								"retryIntervalInSeconds": 0,
 								"secureOutput": false,
-								"secureInput": false
+								"secureInput": true
 							},
 							"userProperties": [],
 							"typeProperties": {
@@ -478,9 +478,9 @@
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
-													"timeout": "7.00:00:00",
+													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 30,
+													"retryIntervalInSeconds": 0,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -531,9 +531,9 @@
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
-													"timeout": "7.00:00:00",
+													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 30,
+													"retryIntervalInSeconds": 0,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -580,9 +580,9 @@
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
-													"timeout": "7.00:00:00",
+													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 30,
+													"retryIntervalInSeconds": 0,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -629,9 +629,9 @@
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
-													"timeout": "7.00:00:00",
+													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 30,
+													"retryIntervalInSeconds": 0,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -678,9 +678,9 @@
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
-													"timeout": "7.00:00:00",
+													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 30,
+													"retryIntervalInSeconds": 0,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -733,9 +733,9 @@
 										"type": "SqlServerStoredProcedure",
 										"dependsOn": [],
 										"policy": {
-											"timeout": "7.00:00:00",
+											"timeout": "0.00:10:00",
 											"retry": 0,
-											"retryIntervalInSeconds": 30,
+											"retryIntervalInSeconds": 0,
 											"secureOutput": false,
 											"secureInput": false
 										},
@@ -794,9 +794,9 @@
 								}
 							],
 							"policy": {
-								"timeout": "7.00:00:00",
+								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 30,
+								"retryIntervalInSeconds": 0,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -837,12 +837,13 @@
 			},
 			{
 				"name": "Execute Precursor",
+				"description": "Uses the database property value ExecutionPrecursorProc to run any custom logic against the metadata database before the execution run starts.",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [],
 				"policy": {
-					"timeout": "7.00:00:00",
+					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 30,
+					"retryIntervalInSeconds": 0,
 					"secureOutput": false,
 					"secureInput": false
 				},

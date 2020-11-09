@@ -6,6 +6,9 @@
 			"referenceName": "SupportDatabase",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "_ProcFwk"
+		},
 		"annotations": [
 			"ADF.procfwk"
 		],
