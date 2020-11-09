@@ -319,7 +319,7 @@
 						"type": "Expression"
 					},
 					"isSequential": false,
-					"batchCount": 20,
+					"batchCount": 50,
 					"activities": [
 						{
 							"name": "Get SPN Details",
