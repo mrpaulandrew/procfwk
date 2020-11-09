@@ -32,7 +32,7 @@ __Schema:__ procfwk
 |---|:---:|
 |@PipelineId|int
 
-__Role:__ Assuming [email alerting](/procfwk/eamilalerting) is enabled this procedure inspects the metadata [tables](/procfwk/tables) and returns a simple true or false (bit value) depending on what alerts are required for a given worker [pipeline](/procfwk/pipelines) Id. This checks is used within the infant pipeline before any effort is spent constructing email content to be sent.
+__Role:__ Assuming [email alerting](/procfwk/eamilalerting) is enabled this procedure inspects the metadata [tables](/procfwk/tables) and returns a simple true or false (bit value) depending on what alerts are required for a given worker [pipeline](/procfwk/pipelines) Id. This check is used within the infant pipeline before any effort is spent constructing email content to be sent.
 
 ___
 
@@ -139,7 +139,7 @@ __Schema:__ procfwk
 |---|:---:|
 |@ExecutionId|uniqueidentifier
 
-__Role:__ Returns a distinct list of all enabled [execution stages](/procfwk/executionstages) from the metadata to be used in the parent pipeline squential iterations.
+__Role:__ Returns a distinct list of all enabled [execution stages](/procfwk/executionstages) from the metadata to be used in the parent pipeline sequential iterations.
 
 ___
 
@@ -197,7 +197,7 @@ __Schema:__ procfwk
 |@LocalExecutionId|uniqueidentifier
 |@JsonErrorDetails|varchar
 
-__Role:__ For a failed worker pipeline the error message details will be passed to this procedure in there raw JSON form. Then parsed and inserted into the database error log table. See [error details](/procfwk/errordetails) for more information on this feature.
+__Role:__ For a failed worker pipeline the error message details will be passed to this procedure in raw JSON form. Then parsed and inserted into the database error log table. See [error details](/procfwk/errordetails) for more information on this feature.
 
 ___
 
@@ -225,7 +225,7 @@ __Schema:__ procfwk
 |@PipelineId|int
 |@CallingActivity|varchar
 
-__Role:__ In the event of a wider Azure platform failure where a [pipeline](/procfwk/pipeline) activity failures for unexpected reasons this procedure attempts to update and leave the current execution table with an informational status. This status will typically be the activity that has resulted in the failure outcome. I common use for this procedure is when hitting external resources like the Azure Functions activities within the infant pipeline.
+__Role:__ In the event of a wider Azure platform failure where a [pipeline](/procfwk/pipeline) activity failures for unexpected reasons this procedure attempts to update and leave the current execution table with an informational status. This status will typically be the activity that has resulted in the failure outcome. A common use for this procedure is when hitting external resources like the Azure Functions activities within the infant pipeline.
 
 ___
 
@@ -366,7 +366,7 @@ __Schema:__ procfwk
 |---|:---:|
 |@PerformErrorCheck|bit
 
-__Role:__ Called at the end of the parent pipeline as the last thing the processing framework does in the metadata database this procedure validates the contents of the current execution table. If all workers were successful the data will be archived off to the execution log table. Otherwise and exception will be raised.
+__Role:__ Called at the end of the parent pipeline as the last thing the processing framework does in the metadata database this procedure validates the contents of the current execution table. If all workers were successful the data will be archived off to the execution log table. Otherwise an exception will be raised.
 
 ___
 
@@ -425,7 +425,7 @@ __Schema:__ procfwkHelpers
 |@PipelineName|nvarchar
 |@AlertForStatus|nvarchar
 
-__Role:__ Assuming the reciptient already exists in the metadata this procedure adds the required link for a given worker pipeline and the requested status values.
+__Role:__ Assuming the recipient already exists in the metadata this procedure adds the required link for a given worker pipeline and the requested status values.
 
 The 'AlertForStatus' parameter can be a comma separated list if multiple status values are required.
 
