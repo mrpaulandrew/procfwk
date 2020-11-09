@@ -5,6 +5,7 @@
 		"activities": [
 			{
 				"name": "Framework Processing",
+				"description": "Call procfwk",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
