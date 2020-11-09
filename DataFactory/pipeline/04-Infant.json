@@ -1054,6 +1054,7 @@
 			},
 			{
 				"name": "Set Run Id",
+				"description": "Set local variable from activity output once for value reuse in downstream activities.",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
