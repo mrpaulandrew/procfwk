@@ -49,6 +49,15 @@ BEGIN
 	--no restart considerations, just create new execution
 	ELSE
 		BEGIN
+			IF EXISTS --edge case, if all current workers succeeded, or some other not understood situation, archive records
+				(
+				SELECT * FROM [procfwk].[CurrentExecution]
+				)
+				BEGIN
+					EXEC [procfwk].[UpdateExecutionLog]
+						@PerformErrorCheck = 0;
+				END
+
 			EXEC [procfwk].[CreateNewExecution] 
 				@CallingDataFactoryName = @CallingDataFactory
 		END
