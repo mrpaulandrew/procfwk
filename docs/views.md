@@ -58,7 +58,7 @@ __Role:__ Used to aggregate [execution stage](/procfwk/executionstages) which is
 ## CompleteExecutionErrorLog
 __Schema:__ procfwkReporting
 
-__Role:__ De-normalizes several execution tables into a convinient list of values for a given set of failed Worker [pipelines](/procfwk/[pipelines).
+__Role:__ De-normalizes several execution tables into a convenient list of values for a given set of failed Worker [pipelines](/procfwk/[pipelines).
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -102,7 +102,7 @@ __Role:__ De-normalizes and aggregates several execution tables into a convenien
 ## CurrentExecutionSummary
 __Schema:__ procfwkReporting
 
-__Role:__ Provides a simple count of worker pipelines by there pipeline status to view a summary of the current framework run.
+__Role:__ Provides a simple count of worker pipelines by their pipeline status to view a summary of the current framework run.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
