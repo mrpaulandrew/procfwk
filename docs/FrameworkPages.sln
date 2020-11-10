@@ -105,6 +105,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C836
 		stage-chain.png = stage-chain.png
 		synapse.png = synapse.png
 		thumbnail.png = thumbnail.png
+		worker-decoupling.png = worker-decoupling.png
 		worker.png = worker.png
 		youtubeheader.png = youtubeheader.png
 		youtubeicon.png = youtubeicon.png
