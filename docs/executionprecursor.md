@@ -5,8 +5,6 @@ ___
 
 ___
 
-https://mrpaulandrew.com/2020/08/17/adf-procfwk-v1-8-5-execution-precursor/
-
 The execution precursor allows for custom code/control over the metadata database as part of an execution run. This is done to help environments that, for example, require worker [pipelines](/procfwk/pipelines) to be executed at different intervals/frequencies. The precursor can help you control this by enabling/disabling Worker pipelines using some custom logic. Or do anything to the metadata at runtime using your custom [database](/procfwk/database) objects.
 
 The precursor works by calling the following [stored procedure](/procfwk/storedprocedures) in an activity at the very beginning of the parent [pipeline](/procfwk/pipelines).

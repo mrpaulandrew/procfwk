@@ -18,8 +18,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{0261DD
 		All Designs.vsdx = All Designs.vsdx
 		favicon.ico = favicon.ico
 		Gemfile = Gemfile
+		Generate Markdown for Database Procedures.sql = Generate Markdown for Database Procedures.sql
 		Generate Markdown for Database Tables.sql = Generate Markdown for Database Tables.sql
-		Generate Page Down for Database Procedures.sql = Generate Page Down for Database Procedures.sql
+		Generate Markdown for Database Views.sql = Generate Markdown for Database Views.sql
 		Images.pptx = Images.pptx
 	EndProjectSection
 EndProject
@@ -89,6 +90,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C836
 		keyvault.png = keyvault.png
 		linkedservice-connections.png = linkedservice-connections.png
 		linkedservice.png = linkedservice.png
+		msi.png = msi.png
 		overview.png = overview.png
 		parent.png = parent.png
 		pipeline-key.png = pipeline-key.png
