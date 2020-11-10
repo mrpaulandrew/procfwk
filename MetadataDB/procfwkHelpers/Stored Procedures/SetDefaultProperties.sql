@@ -54,4 +54,10 @@ BEGIN
 		@PropertyName = N'ExecutionPrecursorProc',
 		@PropertyValue = N'[dbo].[ExampleCustomExecutionPrecursor]',
 		@Description = N'This procedure will be called first in the parent pipeline and can be used to perform/update any required custom behaviour in the framework execution. For example, enable/disable Worker pipelines given a certain run time/day. Invalid proc name values will be ignored.'
+
+	EXEC [procfwkHelpers].[AddProperty]
+		@PropertyName = N'UseExecutionBatches',
+		@PropertyValue = N'0',
+		@Description = N'';
+
 END;
