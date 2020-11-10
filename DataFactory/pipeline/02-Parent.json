@@ -18,7 +18,7 @@
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -112,7 +112,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -149,7 +149,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -196,7 +196,7 @@
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -238,7 +238,7 @@
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -275,7 +275,7 @@
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -328,7 +328,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -376,7 +376,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -432,7 +432,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": true
 							},
@@ -480,7 +480,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -533,7 +533,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -582,7 +582,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -631,7 +631,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -680,7 +680,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -735,7 +735,7 @@
 										"policy": {
 											"timeout": "0.00:10:00",
 											"retry": 0,
-											"retryIntervalInSeconds": 0,
+											"retryIntervalInSeconds": 30,
 											"secureOutput": false,
 											"secureInput": false
 										},
@@ -796,7 +796,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -843,7 +843,7 @@
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -878,6 +878,11 @@
 				}
 			}
 		],
+		"parameters": {
+			"BatchName": {
+				"type": "string"
+			}
+		},
 		"variables": {
 			"ExecutionId": {
 				"type": "String"
