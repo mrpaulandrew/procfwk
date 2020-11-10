@@ -6,7 +6,7 @@ ___
 ___
 
 
-The complete activity chain can be viewed via the Visio design file in the solution code repository in GitHub [here](https://github.com/mrpaulandrew/procfwk/blob/master/Images/ADFprocfwk%20Designs.vsdx). Otherwise this page offer a simple overview of the key activities in each level of the processing framework.
+The complete activity chain can be viewed via the Visio design file in the solution code repository in GitHub [here](https://github.com/mrpaulandrew/procfwk/blob/master/Images/ADFprocfwk%20Designs.vsdx). Otherwise this page offers a simple overview of the key activities in each level of the processing framework.
 
 The processing framework chain of operations uses the __Execute Pipeline__ activity to enter into the next lower level pipeline; grandparent > parent > child > infant. This is the only ocasion where the execution pipeline activity is used and can be considered a good marker to separate the generational levels of the framework activities.
 
@@ -30,6 +30,7 @@ ___
 * Execute (worker) Pipelines (ForEach), parallel execution, allows the call to worker pipelines to run using [scaled out](/procfwk/scaleoutprocessing) behaviour through the infant [pipeline](/procfwk/pipelines).
 
 As the child pipeline is very small in terms of operations and purpose there aren't any other noteworthy activities to call out.
+
 ___
 
 ## Infant Pipeline:

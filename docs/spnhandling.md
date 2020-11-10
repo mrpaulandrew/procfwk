@@ -68,3 +68,15 @@ If using this approach for handling SPN details the Function App MSI needs addin
 ___
 
 Currently the processing framework only supports one type of SPN handling for all worker pipelines. If hybrid SPN handling is required where by some values use a Key Vault and some workers have values stored directly in the database please raise a [new feature request](https://github.com/mrpaulandrew/procfwk/issues/new?labels=enhancement&template=feature-request.md&title=){:target="_blank"}. 
+
+___
+
+### Activity Secure Inputs/Outputs
+
+Regardless of the choosen method for handling SPN values when used within the asociated framework pipeline activities, the Data Factory feature for secure activity inputs and outputs is enabled. This means at runtime and in operational logs the plain text SPN values aren't visable.
+
+![secureinput](/procfwk/activity-secureinput.png)
+
+The above screen snippet shows the affect of this when inspecting the input of the [Execute Pipeline](/procfwk/executepipeline) function activity as part of a framework debug run.
+
+If troubleshooting a worker pipeline authentication issue this feature will need to be manually disabled for a given activity.
