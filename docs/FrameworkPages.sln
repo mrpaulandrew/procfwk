@@ -97,6 +97,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C836
 		parent.png = parent.png
 		pipeline-key.png = pipeline-key.png
 		powerbi.png = powerbi.png
+		sidebar-small.png = sidebar-small.png
 		sidebar.png = sidebar.png
 		spn-in-database.png = spn-in-database.png
 		spn-in-keyvault.png = spn-in-keyvault.png
