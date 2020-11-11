@@ -6,18 +6,6 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "FrameworkFactory"
-		},
-		"FrameworkFunctions_properties_typeProperties_functionAppUrl": {
-			"type": "string",
-			"defaultValue": "https://frameworksupportfunctions.azurewebsites.net"
-		},
-		"Keys_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://FrameworkKeys.vault.azure.net/"
-		},
-		"SupportDatabase_properties_typeProperties_connectionString_secretName": {
-			"type": "string",
-			"defaultValue": "FrameworkMetadataDev"
 		}
 	},
 	"variables": {
@@ -42,8 +30,7 @@
 								"referenceName": "02-Parent",
 								"type": "PipelineReference"
 							},
-							"waitOnCompletion": true,
-							"parameters": {}
+							"waitOnCompletion": true
 						}
 					}
 				],
@@ -104,8 +91,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -290,8 +276,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						}
 					},
@@ -381,8 +366,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -452,8 +436,7 @@
 										},
 										"dataset": {
 											"referenceName": "GetSetMetadata",
-											"type": "DatasetReference",
-											"parameters": {}
+											"type": "DatasetReference"
 										}
 									}
 								},
@@ -528,7 +511,6 @@
 									"typeProperties": {
 										"functionName": "CheckPipelineStatus",
 										"method": "POST",
-										"headers": {},
 										"body": {
 											"value": "@concat('\n{\n    \"tenantId\": \"',activity('Get SPN Details').output.firstRow.TenantId,'\",\n    \"applicationId\": \"',activity('Get SPN Details').output.firstRow.AppId,'\",\n    \"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.AppSecret,'\",\n    \"subscriptionId\": \"',activity('Get SPN Details').output.firstRow.SubscriptionId,'\",\n    \"resourceGroup\": \"',item().ResourceGroupName,'\",\n    \"factoryName\": \"',item().DataFactoryName,'\",\n    \"pipelineName\": \"',item().PipelineName,'\",\n    \"runId\": \"',item().AdfPipelineRunId,'\"\n}')",
 											"type": "Expression"
@@ -988,7 +970,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
-				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]",
 				"[concat(variables('factoryId'), '/pipelines/03-Child')]",
 				"[concat(variables('factoryId'), '/linkedServices/FrameworkFunctions')]"
 			]
@@ -1038,8 +1019,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": false
 						}
@@ -1196,7 +1176,6 @@
 						"typeProperties": {
 							"functionName": "ExecutePipeline",
 							"method": "POST",
-							"headers": {},
 							"body": {
 								"value": "@concat('\n{\n\t\"tenantId\": \"',variables('WorkerTenantId'),'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n\t\"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n\t\"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n\t\"pipelineName\": \"',variables('WorkerPipelineName'),'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
 								"type": "Expression"
@@ -1238,8 +1217,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						}
 					},
@@ -1332,8 +1310,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						}
 					},
@@ -1494,8 +1471,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"firstRowOnly": true
 						}
@@ -1549,8 +1525,7 @@
 										},
 										"dataset": {
 											"referenceName": "GetSetMetadata",
-											"type": "DatasetReference",
-											"parameters": {}
+											"type": "DatasetReference"
 										},
 										"firstRowOnly": true
 									}
@@ -1577,7 +1552,6 @@
 									"typeProperties": {
 										"functionName": "SendEmail",
 										"method": "POST",
-										"headers": {},
 										"body": {
 											"value": "@activity('Get Email Parts').output.firstRow",
 											"type": "Expression"
@@ -1638,7 +1612,6 @@
 									"typeProperties": {
 										"functionName": "CheckPipelineStatus",
 										"method": "POST",
-										"headers": {},
 										"body": {
 											"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerTenantId'),'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n    \"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n    \"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n    \"pipelineName\": \"',variables('WorkerPipelineName'),'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 											"type": "Expression"
@@ -1953,7 +1926,6 @@
 											"typeProperties": {
 												"functionName": "GetActivityErrors",
 												"method": "POST",
-												"headers": {},
 												"body": {
 													"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerTenantId'),'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n    \"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n    \"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n    \"pipelineName\": \"',variables('WorkerPipelineName'),'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 													"type": "Expression"
@@ -2136,8 +2108,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						}
 					},
@@ -2249,8 +2220,7 @@
 							},
 							"dataset": {
 								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						}
 					},
@@ -2410,8 +2380,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/FrameworkFunctions')]",
-				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
-				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
+				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]"
 			]
 		},
 		{
@@ -2503,9 +2472,7 @@
 					"Worker"
 				]
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Wait 1')]",
@@ -2884,12 +2851,9 @@
 					"ADF.procfwk"
 				],
 				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {}
+				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/FrameworkFunctions')]",
@@ -2902,7 +2866,7 @@
 				],
 				"type": "AzureFunction",
 				"typeProperties": {
-					"functionAppUrl": "[parameters('FrameworkFunctions_properties_typeProperties_functionAppUrl')]",
+					"functionAppUrl": "https://frameworksupportfunctions.azurewebsites.net",
 					"functionKey": {
 						"type": "AzureKeyVaultSecret",
 						"store": {
@@ -2913,83 +2877,7 @@
 					}
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Keys')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Keys')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Connection to Key Vault for all other ADF linked service credentials required to run the processing framework.",
-				"annotations": [
-					"ADF.procfwk"
-				],
-				"type": "AzureKeyVault",
-				"typeProperties": {
-					"baseUrl": "[parameters('Keys_properties_typeProperties_baseUrl')]"
-				}
-			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SupportDatabase')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Connection between ADF and processing framework metadata SQLDB.",
-				"annotations": [
-					"ADF.procfwk"
-				],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "Keys",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "[parameters('SupportDatabase_properties_typeProperties_connectionString_secretName')]"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Keys')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FunctionalTestingTrigger')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Used for functional testing of the framework in a dedicated environment.",
-				"annotations": [
-					"ADF.procfwk"
-				],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "01-Grandparent",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Hour",
-						"interval": 2,
-						"startTime": "2020-04-06T15:00:00Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/01-Grandparent')]"
-			]
 		}
 	]
 }

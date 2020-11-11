@@ -33,6 +33,7 @@
 				"activities": [
 					{
 						"name": "Wait1",
+						"description": "Framework development worker simulator.",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
@@ -68,6 +69,7 @@
 				"activities": [
 					{
 						"name": "Wait10",
+						"description": "Framework development worker simulator.",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
@@ -103,6 +105,7 @@
 				"activities": [
 					{
 						"name": "Wait2",
+						"description": "Framework development worker simulator.",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
@@ -138,6 +141,7 @@
 				"activities": [
 					{
 						"name": "Wait3",
+						"description": "Framework development worker simulator.",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
@@ -173,6 +177,7 @@
 				"activities": [
 					{
 						"name": "Wait4",
+						"description": "Framework development worker simulator.",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
@@ -208,6 +213,7 @@
 				"activities": [
 					{
 						"name": "Wait5",
+						"description": "Framework development worker simulator.",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
@@ -243,6 +249,7 @@
 				"activities": [
 					{
 						"name": "Wait6",
+						"description": "Framework development worker simulator.",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
@@ -278,6 +285,7 @@
 				"activities": [
 					{
 						"name": "Wait7",
+						"description": "Framework development worker simulator.",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
@@ -313,6 +321,7 @@
 				"activities": [
 					{
 						"name": "Wait8",
+						"description": "Framework development worker simulator.",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
@@ -348,6 +357,7 @@
 				"activities": [
 					{
 						"name": "Wait9",
+						"description": "Framework development worker simulator.",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
@@ -395,6 +405,7 @@
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"description": "Interact with the Azure Functions App used as middle ware when making requests to Worker pipelines. Authentication done at the Function App level.",
 				"annotations": [
 					"ADF.procfwk"
 				],
@@ -449,6 +460,7 @@
 				"activities": [
 					{
 						"name": "Wait1",
+						"description": "Framework development worker simulator.",
 						"type": "Wait",
 						"dependsOn": [],
 						"userProperties": [],
@@ -461,6 +473,7 @@
 					},
 					{
 						"name": "Raise Errors or Not",
+						"description": "Framework development worker simulator.",
 						"type": "IfCondition",
 						"dependsOn": [
 							{
@@ -482,7 +495,7 @@
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
-										"timeout": "7.00:00:00",
+										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
@@ -536,9 +549,13 @@
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"description": "Single generic dataset used to get and set all database metadata.",
 				"linkedServiceName": {
 					"referenceName": "SupportDatabase",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "_ProcFwk"
 				},
 				"annotations": [
 					"ADF.procfwk"
@@ -619,11 +636,11 @@
 							}
 						],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
-							"secureInput": false
+							"secureInput": true
 						},
 						"userProperties": [],
 						"typeProperties": {
@@ -646,7 +663,7 @@
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -682,7 +699,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -726,10 +743,10 @@
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
+							"secureOutput": true,
 							"secureInput": false
 						},
 						"userProperties": [],
@@ -783,7 +800,7 @@
 							}
 						],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -838,7 +855,7 @@
 							}
 						],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -902,7 +919,7 @@
 							}
 						],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -957,10 +974,10 @@
 									"type": "Lookup",
 									"dependsOn": [],
 									"policy": {
-										"timeout": "7.00:00:00",
+										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
+										"secureOutput": true,
 										"secureInput": false
 									},
 									"userProperties": [],
@@ -1000,11 +1017,11 @@
 										}
 									],
 									"policy": {
-										"timeout": "7.00:00:00",
+										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
-										"secureInput": false
+										"secureInput": true
 									},
 									"userProperties": [],
 									"typeProperties": {
@@ -1061,11 +1078,11 @@
 									"type": "AzureFunctionActivity",
 									"dependsOn": [],
 									"policy": {
-										"timeout": "7.00:00:00",
+										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
-										"secureInput": false
+										"secureInput": true
 									},
 									"userProperties": [],
 									"typeProperties": {
@@ -1130,7 +1147,7 @@
 										}
 									],
 									"policy": {
-										"timeout": "7.00:00:00",
+										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
@@ -1181,7 +1198,7 @@
 										}
 									],
 									"policy": {
-										"timeout": "7.00:00:00",
+										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
@@ -1245,7 +1262,7 @@
 									}
 								}
 							],
-							"timeout": "7.00:00:00"
+							"timeout": "0.00:10:00"
 						}
 					},
 					{
@@ -1276,7 +1293,7 @@
 											"type": "SqlServerStoredProcedure",
 											"dependsOn": [],
 											"policy": {
-												"timeout": "7.00:00:00",
+												"timeout": "0.00:10:00",
 												"retry": 0,
 												"retryIntervalInSeconds": 30,
 												"secureOutput": false,
@@ -1325,7 +1342,7 @@
 											"type": "SqlServerStoredProcedure",
 											"dependsOn": [],
 											"policy": {
-												"timeout": "7.00:00:00",
+												"timeout": "0.00:10:00",
 												"retry": 0,
 												"retryIntervalInSeconds": 30,
 												"secureOutput": false,
@@ -1376,11 +1393,11 @@
 											"type": "AzureFunctionActivity",
 											"dependsOn": [],
 											"policy": {
-												"timeout": "7.00:00:00",
+												"timeout": "0.00:10:00",
 												"retry": 0,
 												"retryIntervalInSeconds": 30,
 												"secureOutput": false,
-												"secureInput": false
+												"secureInput": true
 											},
 											"userProperties": [],
 											"typeProperties": {
@@ -1410,7 +1427,7 @@
 												}
 											],
 											"policy": {
-												"timeout": "7.00:00:00",
+												"timeout": "0.00:10:00",
 												"retry": 0,
 												"retryIntervalInSeconds": 30,
 												"secureOutput": false,
@@ -1452,7 +1469,7 @@
 											"type": "SqlServerStoredProcedure",
 											"dependsOn": [],
 											"policy": {
-												"timeout": "7.00:00:00",
+												"timeout": "0.00:10:00",
 												"retry": 0,
 												"retryIntervalInSeconds": 30,
 												"secureOutput": false,
@@ -1500,7 +1517,7 @@
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
-										"timeout": "7.00:00:00",
+										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
@@ -1547,7 +1564,7 @@
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -1576,6 +1593,7 @@
 					},
 					{
 						"name": "Set App Id",
+						"description": "Set local variable from activity output once for value reuse in downstream activities.",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1596,6 +1614,7 @@
 					},
 					{
 						"name": "Set App Secret",
+						"description": "Set local variable from activity output once for value reuse in downstream activities.",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1616,6 +1635,7 @@
 					},
 					{
 						"name": "Set Run Id",
+						"description": "Set local variable from activity output once for value reuse in downstream activities.",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1636,13 +1656,14 @@
 					},
 					{
 						"name": "Get Worker Pipeline Details",
+						"description": "Return none sensitive worker pipeline information for metadata database. Including target data factory, pipeline name and resource group.",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
+							"secureOutput": true,
 							"secureInput": false
 						},
 						"userProperties": [],
@@ -1685,6 +1706,7 @@
 					},
 					{
 						"name": "Set Tenant Id",
+						"description": "Set local variable from activity output once for value reuse in downstream activities.",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1705,6 +1727,7 @@
 					},
 					{
 						"name": "Set Subscription Id",
+						"description": "Set local variable from activity output once for value reuse in downstream activities.",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1725,6 +1748,7 @@
 					},
 					{
 						"name": "Set Pipeline Name",
+						"description": "Set local variable from activity output once for value reuse in downstream activities.",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1745,6 +1769,7 @@
 					},
 					{
 						"name": "Set Data Factory Name",
+						"description": "Set local variable from activity output once for value reuse in downstream activities.",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1765,6 +1790,7 @@
 					},
 					{
 						"name": "Set Resource Group",
+						"description": "Set local variable from activity output once for value reuse in downstream activities.",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -1851,7 +1877,7 @@
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -1983,7 +2009,7 @@
 							}
 						],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -2078,7 +2104,7 @@
 										}
 									],
 									"policy": {
-										"timeout": "7.00:00:00",
+										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
@@ -2115,7 +2141,7 @@
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
-										"timeout": "7.00:00:00",
+										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
@@ -2162,7 +2188,7 @@
 							}
 						],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -2178,6 +2204,13 @@
 										"type": "String",
 										"value": {
 											"value": "@pipeline().DataFactory",
+											"type": "Expression"
+										}
+									},
+									"BatchName": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().parameters.BatchName",
 											"type": "Expression"
 										}
 									}
@@ -2205,7 +2238,7 @@
 							}
 						],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -2221,6 +2254,13 @@
 										"type": "Expression"
 									},
 									"type": "Boolean"
+								},
+								"ExecutionId": {
+									"value": {
+										"value": "@variables('ExecutionId')",
+										"type": "Expression"
+									},
+									"type": "Guid"
 								}
 							}
 						},
@@ -2242,7 +2282,7 @@
 							}
 						],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -2257,6 +2297,13 @@
 									"DebugMode": {
 										"type": "Boolean",
 										"value": "false"
+									},
+									"BatchName": {
+										"type": "String",
+										"value": {
+											"value": "@pipeline().parameters.BatchName",
+											"type": "Expression"
+										}
 									}
 								},
 								"queryTimeout": "02:00:00",
@@ -2289,14 +2336,14 @@
 								"type": "Expression"
 							},
 							"isSequential": false,
-							"batchCount": 20,
+							"batchCount": 50,
 							"activities": [
 								{
 									"name": "Get SPN Details",
 									"type": "Lookup",
 									"dependsOn": [],
 									"policy": {
-										"timeout": "7.00:00:00",
+										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
@@ -2345,7 +2392,7 @@
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
-										"timeout": "7.00:00:00",
+										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
@@ -2401,11 +2448,11 @@
 										}
 									],
 									"policy": {
-										"timeout": "7.00:00:00",
+										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
-										"secureInput": false
+										"secureInput": true
 									},
 									"userProperties": [],
 									"typeProperties": {
@@ -2450,7 +2497,7 @@
 														"type": "SqlServerStoredProcedure",
 														"dependsOn": [],
 														"policy": {
-															"timeout": "7.00:00:00",
+															"timeout": "0.00:10:00",
 															"retry": 0,
 															"retryIntervalInSeconds": 30,
 															"secureOutput": false,
@@ -2503,7 +2550,7 @@
 														"type": "SqlServerStoredProcedure",
 														"dependsOn": [],
 														"policy": {
-															"timeout": "7.00:00:00",
+															"timeout": "0.00:10:00",
 															"retry": 0,
 															"retryIntervalInSeconds": 30,
 															"secureOutput": false,
@@ -2552,7 +2599,7 @@
 														"type": "SqlServerStoredProcedure",
 														"dependsOn": [],
 														"policy": {
-															"timeout": "7.00:00:00",
+															"timeout": "0.00:10:00",
 															"retry": 0,
 															"retryIntervalInSeconds": 30,
 															"secureOutput": false,
@@ -2601,7 +2648,7 @@
 														"type": "SqlServerStoredProcedure",
 														"dependsOn": [],
 														"policy": {
-															"timeout": "7.00:00:00",
+															"timeout": "0.00:10:00",
 															"retry": 0,
 															"retryIntervalInSeconds": 30,
 															"secureOutput": false,
@@ -2650,7 +2697,7 @@
 														"type": "SqlServerStoredProcedure",
 														"dependsOn": [],
 														"policy": {
-															"timeout": "7.00:00:00",
+															"timeout": "0.00:10:00",
 															"retry": 0,
 															"retryIntervalInSeconds": 30,
 															"secureOutput": false,
@@ -2705,7 +2752,7 @@
 												"type": "SqlServerStoredProcedure",
 												"dependsOn": [],
 												"policy": {
-													"timeout": "7.00:00:00",
+													"timeout": "0.00:10:00",
 													"retry": 0,
 													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
@@ -2766,7 +2813,7 @@
 										}
 									],
 									"policy": {
-										"timeout": "7.00:00:00",
+										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
@@ -2809,10 +2856,11 @@
 					},
 					{
 						"name": "Execute Precursor",
+						"description": "Uses the database property value ExecutionPrecursorProc to run any custom logic against the metadata database before the execution run starts.",
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -2849,6 +2897,12 @@
 						}
 					}
 				],
+				"parameters": {
+					"BatchName": {
+						"type": "string",
+						"defaultValue": "NotUsed"
+					}
+				},
 				"variables": {
 					"ExecutionId": {
 						"type": "String"
@@ -2878,6 +2932,7 @@
 				"activities": [
 					{
 						"name": "Framework Processing",
+						"description": "Call procfwk",
 						"type": "ExecutePipeline",
 						"dependsOn": [],
 						"userProperties": [],
@@ -2927,7 +2982,7 @@
 					"recurrence": {
 						"frequency": "Hour",
 						"interval": 2,
-						"startTime": "2020-04-06T15:00:00.000Z",
+						"startTime": "2020-04-06T15:00:00Z",
 						"timeZone": "UTC"
 					}
 				}
