@@ -89,7 +89,7 @@ BEGIN
 						UPDATE
 							[procfwk].[BatchExecution]
 						SET
-							[BatchStatus] = 'Stopped'
+							[BatchStatus] = 'Stopping'
 						WHERE
 							[ExecutionId] = @ExecutionId
 							AND [BatchStatus] = 'Running';
