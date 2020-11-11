@@ -212,6 +212,13 @@
 									"value": "@pipeline().DataFactory",
 									"type": "Expression"
 								}
+							},
+							"BatchName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.BatchName",
+									"type": "Expression"
+								}
 							}
 						},
 						"queryTimeout": "02:00:00",
@@ -288,6 +295,13 @@
 							"DebugMode": {
 								"type": "Boolean",
 								"value": "false"
+							},
+							"BatchName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.BatchName",
+									"type": "Expression"
+								}
 							}
 						},
 						"queryTimeout": "02:00:00",
