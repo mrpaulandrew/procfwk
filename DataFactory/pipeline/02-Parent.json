@@ -18,7 +18,7 @@
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -112,7 +112,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -149,7 +149,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -196,7 +196,7 @@
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -210,6 +210,13 @@
 								"type": "String",
 								"value": {
 									"value": "@pipeline().DataFactory",
+									"type": "Expression"
+								}
+							},
+							"BatchName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.BatchName",
 									"type": "Expression"
 								}
 							}
@@ -238,7 +245,7 @@
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -252,6 +259,13 @@
 								"type": "Expression"
 							},
 							"type": "Boolean"
+						},
+						"ExecutionId": {
+							"value": {
+								"value": "@variables('ExecutionId')",
+								"type": "Expression"
+							},
+							"type": "Guid"
 						}
 					}
 				},
@@ -275,7 +289,7 @@
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -288,6 +302,13 @@
 							"DebugMode": {
 								"type": "Boolean",
 								"value": "false"
+							},
+							"BatchName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.BatchName",
+									"type": "Expression"
+								}
 							}
 						},
 						"queryTimeout": "02:00:00",
@@ -328,7 +349,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -376,7 +397,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -432,7 +453,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": true
 							},
@@ -480,7 +501,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -533,7 +554,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -582,7 +603,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -631,7 +652,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -680,7 +701,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -735,7 +756,7 @@
 										"policy": {
 											"timeout": "0.00:10:00",
 											"retry": 0,
-											"retryIntervalInSeconds": 0,
+											"retryIntervalInSeconds": 30,
 											"secureOutput": false,
 											"secureInput": false
 										},
@@ -796,7 +817,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -843,7 +864,7 @@
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -878,6 +899,12 @@
 				}
 			}
 		],
+		"parameters": {
+			"BatchName": {
+				"type": "string",
+				"defaultValue": "NotUsed"
+			}
+		},
 		"variables": {
 			"ExecutionId": {
 				"type": "String"

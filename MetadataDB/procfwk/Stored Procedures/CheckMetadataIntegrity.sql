@@ -1,6 +1,7 @@
 CREATE PROCEDURE [procfwk].[CheckMetadataIntegrity]
 	(
-	@DebugMode BIT = 0
+	@DebugMode BIT = 0,
+	@BatchName VARCHAR(255) = NULL
 	)
 AS
 BEGIN
@@ -25,10 +26,15 @@ BEGIN
 	Check 16 - When using DependencyChain failure handling, are there any dependants in the same execution stage of the predecessor?
 	Check 17 - Does the SPNHandlingMethod property have a valid value?
 	Check 18 - Does the Service Principal table contain both types of SPN handling for a single credential?
+	Check 19 - Is there a current UseExecutionBatches property available?
+	Check 20 - If using batch executions, is the requested batch name enabled?
+	Check 21 - If using batch executions, does the requested batch have links to execution stages?
 	---------------------------------------------------------------------------------------------------------------------------------
 	Check A: - Are there any Running pipelines that need to be cleaned up?
 	*/
 
+	DECLARE @BatchId UNIQUEIDENTIFIER
+	DECLARE @LocalExecutionId UNIQUEIDENTIFIER
 	DECLARE @ErrorDetails VARCHAR(500)
 	DECLARE @MetadataIntegrityIssues TABLE
 		(
@@ -351,6 +357,65 @@ BEGIN
 				'The table [dbo].[ServicePrincipals] can only have one method of SPN details sorted per credential ID.'
 				)	
 		END;
+	
+	--Check 19:
+	IF NOT EXISTS
+		(
+		SELECT * FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'UseExecutionBatches'
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				19,
+				'A current UseExecutionBatches value is missing from the properties table.'
+				)		
+		END;
+
+	--batch checks
+	IF ([procfwk].[GetPropertyValueInternal]('UseExecutionBatches')) = '1'
+		BEGIN			
+			IF @BatchName IS NULL
+				BEGIN
+					RAISERROR('A NULL batch name cannot be passed when the UseExecutionBatches property is set to 1 (true).',16,1);
+					RETURN 0;
+				END
+
+			SELECT 
+				@BatchId = [BatchId]
+			FROM
+				[procfwk].[Batches]
+			WHERE
+				[BatchName] = @BatchName;
+
+			--Check 20:
+			IF EXISTS
+				(
+				SELECT 1 FROM [procfwk].[Batches] WHERE [BatchId] = @BatchId AND [Enabled] = 0
+				)
+				BEGIN
+					INSERT INTO @MetadataIntegrityIssues
+					VALUES
+						( 
+						20,
+						'The requested execution batch is currently disabled. Enable the batch before proceeding.'
+						)
+				END;
+
+			--Check 21:
+			IF NOT EXISTS
+				(
+				SELECT 1 FROM [procfwk].[BatchStageLink] WHERE [BatchId] = @BatchId
+				)
+				BEGIN
+					INSERT INTO @MetadataIntegrityIssues
+					VALUES
+						( 
+						21,
+						'The requested execution batch does not have any linked execution stages. See table [procfwk].[BatchStageLink] for details.'
+						)
+				END;
+		END; --end batch checks
 
 	/*
 	Integrity Checks Outcome:
@@ -391,40 +456,91 @@ BEGIN
 	*/
 	
 	--Check A:
-	IF EXISTS
-		(
-		SELECT [LocalExecutionId] FROM [procfwk].[CurrentExecution] WHERE [PipelineStatus] NOT IN ('Success','Failed','Blocked', 'Cancelled') AND [AdfPipelineRunId] IS NOT NULL
-		)
+	IF ([procfwk].[GetPropertyValueInternal]('UseExecutionBatches')) = '0'
 		BEGIN
-			--return pipelines details that require a clean up
-			SELECT 
-				[ResourceGroupName],
-				[DataFactoryName],
-				[PipelineName],
-				[AdfPipelineRunId],
-				[LocalExecutionId],
-				[StageId],
-				[PipelineId]
-			FROM 
-				[procfwk].[CurrentExecution]
-			WHERE 
-				[PipelineStatus] NOT IN ('Success','Failed','Blocked','Cancelled') 
-				AND [AdfPipelineRunId] IS NOT NULL
-		END;
-	ELSE
+			IF EXISTS
+				(
+				SELECT 
+					1 
+				FROM 
+					[procfwk].[CurrentExecution] 
+				WHERE 
+					[PipelineStatus] NOT IN ('Success','Failed','Blocked', 'Cancelled') 
+					AND [AdfPipelineRunId] IS NOT NULL
+				)
+				BEGIN
+					--return pipelines details that require a clean up
+					SELECT 
+						[ResourceGroupName],
+						[DataFactoryName],
+						[PipelineName],
+						[AdfPipelineRunId],
+						[LocalExecutionId],
+						[StageId],
+						[PipelineId]
+					FROM 
+						[procfwk].[CurrentExecution]
+					WHERE 
+						[PipelineStatus] NOT IN ('Success','Failed','Blocked','Cancelled') 
+						AND [AdfPipelineRunId] IS NOT NULL
+				END;
+			ELSE
+				GOTO LookUpReturnEmptyResult;
+		END
+	ELSE IF ([procfwk].[GetPropertyValueInternal]('UseExecutionBatches')) = '1'
 		BEGIN
-			--lookup activity must return something, even if just an empty dataset
-			SELECT 
-				NULL AS ResourceGroupName,
-				NULL AS DataFactoryName,
-				NULL AS PipelineName,
-				NULL AS AdfPipelineRunId,
-				NULL AS LocalExecutionId,
-				NULL AS StageId,
-				NULL AS PipelineId
+			SELECT
+				@LocalExecutionId = [ExecutionId]
 			FROM
-				[procfwk].[CurrentExecution]
+				[procfwk].[BatchExecution]
 			WHERE
-				1 = 2; --ensure no results
-		END;
+				[BatchId] = @BatchId
+				AND [BatchStatus] = 'Running';
+			
+			IF EXISTS
+				(
+				SELECT 
+					1 
+				FROM 
+					[procfwk].[CurrentExecution] 
+				WHERE 
+					[LocalExecutionId] = @LocalExecutionId
+					AND [PipelineStatus] NOT IN ('Success','Failed','Blocked', 'Cancelled') 
+					AND [AdfPipelineRunId] IS NOT NULL
+				)
+				BEGIN
+					--return pipelines details that require a clean up
+					SELECT 
+						[ResourceGroupName],
+						[DataFactoryName],
+						[PipelineName],
+						[AdfPipelineRunId],
+						[LocalExecutionId],
+						[StageId],
+						[PipelineId]
+					FROM 
+						[procfwk].[CurrentExecution]
+					WHERE 
+						[LocalExecutionId] = @LocalExecutionId
+						AND [PipelineStatus] NOT IN ('Success','Failed','Blocked','Cancelled') 
+						AND [AdfPipelineRunId] IS NOT NULL
+				END;
+			ELSE
+				GOTO LookUpReturnEmptyResult;
+		END
+	
+	LookUpReturnEmptyResult:
+	--lookup activity must return something, even if just an empty dataset
+	SELECT 
+		NULL AS ResourceGroupName,
+		NULL AS DataFactoryName,
+		NULL AS PipelineName,
+		NULL AS AdfPipelineRunId,
+		NULL AS LocalExecutionId,
+		NULL AS StageId,
+		NULL AS PipelineId
+	FROM
+		[procfwk].[CurrentExecution]
+	WHERE
+		1 = 2; --ensure no results
 END;

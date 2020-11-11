@@ -82,6 +82,14 @@ BEGIN
 					[LocalExecutionId] = @ExecutionId
 					AND [StageId] > @StageId
 
+				UPDATE
+					[procfwk].[BatchExecution]
+				SET
+					[BatchStatus] = 'Stopping'
+				WHERE
+					[ExecutionId] = @ExecutionId
+					AND [BatchStatus] = 'Running';
+
 				SET @ErrorDetail = 'Pipeline execution has an unknown status. Blocking downstream stages as a precaution.'
 
 				RAISERROR(@ErrorDetail,16,1);

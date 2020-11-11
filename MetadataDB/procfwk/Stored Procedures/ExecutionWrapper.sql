@@ -1,12 +1,15 @@
 ﻿CREATE PROCEDURE [procfwk].[ExecutionWrapper]
 	(
-	@CallingDataFactory NVARCHAR(200)
+	@CallingDataFactory NVARCHAR(200) = NULL,
+	@BatchName VARCHAR(255) = NULL
 	)
 AS
 BEGIN
 	SET NOCOUNT ON;
 
 	DECLARE @RestartStatus BIT
+	DECLARE @BatchId UNIQUEIDENTIFIER
+	DECLARE @BLocalExecutionId UNIQUEIDENTIFIER --declared here for batches
 
 	IF @CallingDataFactory IS NULL
 		SET @CallingDataFactory = 'Unknown';
@@ -14,51 +17,116 @@ BEGIN
 	--get restart overide property	
 	SELECT @RestartStatus = [procfwk].[GetPropertyValueInternal]('OverideRestart')
 
-	--check for running execution
-	IF EXISTS
-		(
-		SELECT * FROM [procfwk].[CurrentExecution] WHERE ISNULL([PipelineStatus],'') = 'Running'
-		)
+	IF([procfwk].[GetPropertyValueInternal]('UseExecutionBatches')) = '0'
 		BEGIN
-			RAISERROR('There is already an execution run in progress. Stop this via Data Factory before restarting.',16,1);
-			RETURN 0;
-		END;	
+			SET @BatchId = NULL;
 
-	--reset and restart execution
-	IF EXISTS
-		(
-		SELECT * FROM [procfwk].[CurrentExecution] WHERE ISNULL([PipelineStatus],'') <> 'Success'
-		) 
-		AND @RestartStatus = 0
-		BEGIN
-			EXEC [procfwk].[ResetExecution]
-		END
-	--capture failed execution and run new anyway
-	ELSE IF EXISTS
-		(
-		SELECT * FROM [procfwk].[CurrentExecution]
-		)
-		AND @RestartStatus = 1
-		BEGIN
-			EXEC [procfwk].[UpdateExecutionLog]
-				@PerformErrorCheck = 0; --Special case when OverideRestart = 1;
-
-			EXEC [procfwk].[CreateNewExecution] 
-				@CallingDataFactoryName = @CallingDataFactory
-		END
-	--no restart considerations, just create new execution
-	ELSE
-		BEGIN
-			IF EXISTS --edge case, if all current workers succeeded, or some other not understood situation, archive records
+			--check for running execution
+			IF EXISTS
 				(
-				SELECT * FROM [procfwk].[CurrentExecution]
+				SELECT * FROM [procfwk].[CurrentExecution] WHERE ISNULL([PipelineStatus],'') = 'Running'
 				)
 				BEGIN
-					EXEC [procfwk].[UpdateExecutionLog]
-						@PerformErrorCheck = 0;
-				END
+					RAISERROR('There is already an execution run in progress. Stop this via Data Factory before restarting.',16,1);
+					RETURN 0;
+				END;	
 
-			EXEC [procfwk].[CreateNewExecution] 
-				@CallingDataFactoryName = @CallingDataFactory
+			--reset and restart execution
+			IF EXISTS
+				(
+				SELECT 1 FROM [procfwk].[CurrentExecution] WHERE ISNULL([PipelineStatus],'') <> 'Success'
+				) 
+				AND @RestartStatus = 0
+				BEGIN
+					EXEC [procfwk].[ResetExecution]
+				END
+			--capture failed execution and run new anyway
+			ELSE IF EXISTS
+				(
+				SELECT 1 FROM [procfwk].[CurrentExecution]
+				)
+				AND @RestartStatus = 1
+				BEGIN
+					EXEC [procfwk].[UpdateExecutionLog]
+						@PerformErrorCheck = 0; --Special case when OverideRestart = 1;
+
+					EXEC [procfwk].[CreateNewExecution] 
+						@CallingDataFactoryName = @CallingDataFactory
+				END
+			--no restart considerations, just create new execution
+			ELSE
+				BEGIN
+					EXEC [procfwk].[CreateNewExecution] 
+						@CallingDataFactoryName = @CallingDataFactory
+				END
+		END
+	ELSE IF ([procfwk].[GetPropertyValueInternal]('UseExecutionBatches')) = '1'
+		BEGIN						
+			IF @BatchName IS NULL
+				BEGIN
+					RAISERROR('A NULL batch name cannot be passed when the UseExecutionBatches property is set to 1 (true).',16,1);
+					RETURN 0;
+				END
+			
+			SELECT 
+				@BatchId = [BatchId]
+			FROM
+				[procfwk].[Batches]
+			WHERE
+				[BatchName] = @BatchName;
+			
+			--create local execution id now for the batch
+			EXEC [procfwk].[BatchWrapper]
+				@BatchId = @BatchId,
+				@LocalExecutionId = @BLocalExecutionId OUTPUT;
+				
+			--reset and restart execution
+			IF EXISTS
+				(
+				SELECT 1 
+				FROM 
+					[procfwk].[CurrentExecution] 
+				WHERE 
+					[LocalExecutionId] = @BLocalExecutionId 
+					AND ISNULL([PipelineStatus],'') <> 'Success'
+				) 
+				AND @RestartStatus = 0
+				BEGIN
+					EXEC [procfwk].[ResetExecution]
+						@LocalExecutionId = @BLocalExecutionId;
+				END
+			--capture failed execution and run new anyway
+			ELSE IF EXISTS
+				(
+				SELECT 1 
+				FROM 
+					[procfwk].[CurrentExecution]
+				WHERE
+					[LocalExecutionId] = @BLocalExecutionId 
+				)
+				AND @RestartStatus = 1
+				BEGIN
+					EXEC [procfwk].[UpdateExecutionLog]
+						@PerformErrorCheck = 0, --Special case when OverideRestart = 1;
+						@LocalExecutionId = @BLocalExecutionId;
+
+					EXEC [procfwk].[CreateNewExecution]
+						@CallingDataFactoryName = @CallingDataFactory,
+						@LocalExecutionId = @BLocalExecutionId;
+				END
+			--no restart considerations, just create new execution
+			ELSE
+				BEGIN
+					EXEC [procfwk].[CreateNewExecution] 
+						@CallingDataFactoryName = @CallingDataFactory,
+						@LocalExecutionId = @BLocalExecutionId;
+				END
+			
+		END
+	ELSE
+		BEGIN
+			--metadata integrity checks should mean this condition is never hit
+			RAISERROR('Unknown batch handling configuration. Update properties with UseExecutionBatches value and try again.',16,1);
+			RETURN 0;
 		END
 END;
