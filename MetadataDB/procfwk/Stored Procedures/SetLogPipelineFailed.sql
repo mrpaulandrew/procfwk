@@ -53,7 +53,8 @@ BEGIN
 	FROM
 		[procfwk].[CurrentExecution]
 	WHERE
-		[PipelineStatus] = 'Failed'
+		[LocalExecutionId] = @ExecutionId
+		AND [PipelineStatus] = 'Failed'
 		AND [StageId] = @StageId
 		AND [PipelineId] = @PipelineId;
 	
@@ -85,8 +86,19 @@ BEGIN
 					SET @ErrorDetail = 'Pipeline execution failed. See ADF monitoring for details.'
 				END;
 
+			--update batch if applicable
+			IF ([procfwk].[GetPropertyValueInternal]('UseExecutionBatches')) = '1'
+				BEGIN
+					UPDATE
+						[procfwk].[BatchExecution]
+					SET
+						[BatchStatus] = 'Stopped'
+					WHERE
+						[ExecutionId] = @ExecutionId
+						AND [BatchStatus] = 'Running';
+				END;
+
 			RAISERROR(@ErrorDetail,16,1);
-		
 			RETURN 0;
 		END;
 	

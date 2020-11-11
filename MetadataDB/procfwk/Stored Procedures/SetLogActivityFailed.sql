@@ -52,7 +52,8 @@ BEGIN
 	FROM
 		[procfwk].[CurrentExecution]
 	WHERE
-		[PipelineStatus] = @CallingActivity + 'Error'
+		[LocalExecutionId] = @ExecutionId
+		AND [PipelineStatus] = @CallingActivity + 'Error'
 		AND [StageId] = @StageId
 		AND [PipelineId] = @PipelineId
 	
@@ -74,6 +75,18 @@ BEGIN
 			WHERE
 				[LocalExecutionId] = @ExecutionId
 				AND [StageId] > @StageId;
+
+			--update batch if applicable
+			IF ([procfwk].[GetPropertyValueInternal]('UseExecutionBatches')) = '1'
+				BEGIN
+					UPDATE
+						[procfwk].[BatchExecution]
+					SET
+						[BatchStatus] = 'Stopped'
+					WHERE
+						[ExecutionId] = @ExecutionId
+						AND [BatchStatus] = 'Running';
+				END;			
 		END;
 	
 	ELSE IF ([procfwk].[GetPropertyValueInternal]('FailureHandling')) = 'DependencyChain'

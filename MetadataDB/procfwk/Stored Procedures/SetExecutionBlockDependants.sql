@@ -5,9 +5,6 @@
 	)
 AS
 BEGIN
-	--assume current execution if value not provided
-	IF @ExecutionId IS NULL SELECT TOP 1 @ExecutionId = [LocalExecutionId] FROM [procfwk].[CurrentExecution];
-	
 	--update dependents status
 	UPDATE
 		ce
