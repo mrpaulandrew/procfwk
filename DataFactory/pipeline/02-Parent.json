@@ -259,6 +259,13 @@
 								"type": "Expression"
 							},
 							"type": "Boolean"
+						},
+						"ExecutionId": {
+							"value": {
+								"value": "@variables('ExecutionId')",
+								"type": "Expression"
+							},
+							"type": "Guid"
 						}
 					}
 				},
