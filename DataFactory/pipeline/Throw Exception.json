@@ -1,0 +1,45 @@
+{
+	"name": "Throw Exception",
+	"properties": {
+		"activities": [
+			{
+				"name": "Raise Error",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "RAISERROR('@{pipeline().parameters.Message}',16,1);",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"parameters": {
+			"Message": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "_ProcFwk/_ProcFwkUtils"
+		},
+		"annotations": []
+	}
+}
