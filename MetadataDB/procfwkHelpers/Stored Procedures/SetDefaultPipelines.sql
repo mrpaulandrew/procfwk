@@ -29,17 +29,22 @@ BEGIN
 		(1,2	,'Wait 7'				,NULL		,1),
 		(1,3	,'Wait 8'				,1			,1),
 		(1,3	,'Wait 9'				,6			,1),
-		(1,4	,'Wait 10'				,9			,1);
+		(1,4	,'Wait 10'				,9			,1),
+		--speed
+		(1,5	,'Wait 1'				,NULL		,1),
+		(1,5	,'Wait 2'				,NULL		,1),
+		(1,5	,'Wait 3'				,NULL		,1),
+		(1,5	,'Wait 4'				,NULL		,1);
 
 	MERGE INTO [procfwk].[Pipelines] AS tgt
 	USING 
 		@Pipelines AS src
 			ON tgt.[PipelineName] = src.[PipelineName]
+				AND tgt.[StageId] = src.[StageId]
 	WHEN MATCHED THEN
 		UPDATE
 		SET
 			tgt.[DataFactoryId] = src.[DataFactoryId],
-			tgt.[StageId] = src.[StageId],
 			tgt.[LogicalPredecessorId] = src.[LogicalPredecessorId],
 			tgt.[Enabled] = src.[Enabled]
 	WHEN NOT MATCHED BY TARGET THEN

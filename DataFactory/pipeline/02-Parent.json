@@ -275,8 +275,8 @@
 				}
 			},
 			{
-				"name": "Metadata Integrity Checks",
-				"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
+				"name": "Check Previous Execution",
+				"description": "",
 				"type": "Lookup",
 				"dependsOn": [
 					{
@@ -297,12 +297,8 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[procfwk].[CheckMetadataIntegrity]",
+						"sqlReaderStoredProcedureName": "[procfwk].[CheckPreviousExeuction]",
 						"storedProcedureParameters": {
-							"DebugMode": {
-								"type": "Boolean",
-								"value": "false"
-							},
 							"BatchName": {
 								"type": "String",
 								"value": {
@@ -327,7 +323,13 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Metadata Integrity Checks",
+						"activity": "Check Previous Execution",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Check Metadata Integrity",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -336,7 +338,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Metadata Integrity Checks').output.value",
+						"value": "@activity('Check Previous Execution').output.value",
 						"type": "Expression"
 					},
 					"isSequential": false,
@@ -860,7 +862,14 @@
 				"name": "Execute Precursor",
 				"description": "Uses the database property value ExecutionPrecursorProc to run any custom logic against the metadata database before the execution run starts.",
 				"type": "SqlServerStoredProcedure",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Is Parent Already Running",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
@@ -896,6 +905,73 @@
 						"value": "@activity('Execution Wrapper').output.firstRow.ExecutionId",
 						"type": "Expression"
 					}
+				}
+			},
+			{
+				"name": "Is Parent Already Running",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Check For Running Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"BatchName": {
+							"value": "@pipeline().parameters.BatchName",
+							"type": "Expression"
+						},
+						"PipelineName": {
+							"value": "@pipeline().Pipeline",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Check Metadata Integrity",
+				"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Execute Precursor",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[procfwk].[CheckMetadataIntegrity]",
+					"storedProcedureParameters": {
+						"BatchName": {
+							"value": {
+								"value": "@pipeline().parameters.BatchName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"DebugMode": {
+							"value": {
+								"value": "@bool(0)",
+								"type": "Expression"
+							},
+							"type": "Boolean"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "SupportDatabase",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],

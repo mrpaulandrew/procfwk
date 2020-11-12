@@ -5,7 +5,9 @@ BEGIN
 	EXEC [procfwkHelpers].[SetDefaultTenant];
 	EXEC [procfwkHelpers].[SetDefaultSubscription];
 	EXEC [procfwkHelpers].[SetDefaultDataFactorys];
+	EXEC [procfwkHelpers].[SetDefaultBatches];
 	EXEC [procfwkHelpers].[SetDefaultStages];
+	EXEC [procfwkHelpers].[SetDefaultBatchStageLink];
 	EXEC [procfwkHelpers].[SetDefaultPipelines];
 	EXEC [procfwkHelpers].[SetDefaultPipelineParameters];
 	EXEC [procfwkHelpers].[SetDefaultPipelineDependants];
