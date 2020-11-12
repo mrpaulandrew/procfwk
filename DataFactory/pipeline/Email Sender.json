@@ -18,7 +18,7 @@
 					"functionName": "SendEmail",
 					"method": "POST",
 					"body": {
-						"value": "{\n@{pipeline().parameters.Recipients},\n@{pipeline().parameters.CcRecipients},\n@{pipeline().parameters.BccRecipients},\n@{pipeline().parameters.Subject},\n@{pipeline().parameters.Body},\n@{pipeline().parameters.Importance}\n}",
+						"value": "{\n\"emailRecipients\": \"@{pipeline().parameters.Recipients}\",\n\"emailCcRecipients\": \"@{pipeline().parameters.CcRecipients}\",\n\"emailBccRecipients\": \"@{pipeline().parameters.BccRecipients}\",\n\"emailSubject\": \"@{pipeline().parameters.Subject}\",\n\"emailBody\": \"@{pipeline().parameters.Body}\",\n\"emailImportance\": \"@{pipeline().parameters.Importance}\"\n}",
 						"type": "Expression"
 					}
 				},
