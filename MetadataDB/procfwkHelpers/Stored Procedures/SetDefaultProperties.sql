@@ -58,6 +58,15 @@ BEGIN
 	EXEC [procfwkHelpers].[AddProperty]
 		@PropertyName = N'UseExecutionBatches',
 		@PropertyValue = N'0',
-		@Description = N'';
+		@Description = N'Establishes if execution batches are used as a level above execution stages within the framework.';
 
+	EXEC [procfwkHelpers].[AddProperty]
+		@PropertyName = N'FrameworkFactoryResourceGroup',
+		@PropertyValue = N'ADF.procfwk',
+		@Description = N'Supports various queries where the framework factory is inspecting itself and the resource group cant be inferred.';
+
+	EXEC [procfwkHelpers].[AddProperty]
+		@PropertyName = N'PreviousPipelineRunsQueryRange',
+		@PropertyValue = N'-10',
+		@Description = N'Used as a date range, today +- this value, when checking for if an execution for a given pipeline is already running.';
 END;
