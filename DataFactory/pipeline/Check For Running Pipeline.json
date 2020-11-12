@@ -206,7 +206,7 @@
 								"waitOnCompletion": true,
 								"parameters": {
 									"Message": {
-										"value": "@concat('Provided pipeline name: ',pipeline().parameters.PipelineName,' still has a run in progress or queued given the query window parameters set in the properties table.')",
+										"value": "@concat('Provided pipeline name (',pipeline().parameters.PipelineName,') still has a run in progress or queued given the query range parameters set in the properties table.')",
 										"type": "Expression"
 									}
 								}
