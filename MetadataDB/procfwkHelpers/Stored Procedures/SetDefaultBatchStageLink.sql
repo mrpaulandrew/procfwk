@@ -13,7 +13,8 @@ BEGIN
 		s.[StageId]
 	FROM
 		[procfwk].[Batches] b
-		CROSS JOIN [procfwk].[Stages] s
+		INNER JOIN [procfwk].[Stages] s
+			ON s.[StageName] <> 'Speed'
 	WHERE
 		b.[BatchName] = 'Daily'
 

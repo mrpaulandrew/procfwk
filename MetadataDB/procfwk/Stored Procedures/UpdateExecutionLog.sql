@@ -85,7 +85,7 @@ BEGIN
 							[procfwk].[BatchExecution]
 						SET
 							[BatchStatus] = 'Stopped',
-							[EndDateTime] = GETDATE()
+							[EndDateTime] = GETUTCDATE()
 						WHERE
 							[ExecutionId] = @ExecutionId;
 						
@@ -98,7 +98,7 @@ BEGIN
 				[procfwk].[BatchExecution]
 			SET
 				[BatchStatus] = 'Complete',
-				[EndDateTime] = GETDATE()
+				[EndDateTime] = GETUTCDATE()
 			WHERE
 				[ExecutionId] = @ExecutionId;
 
