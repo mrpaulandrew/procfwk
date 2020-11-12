@@ -48,7 +48,15 @@ BEGIN
 					--add extra braces to make JSON string valid in logs
 					[PipelineParamsUsed] = '{ ' + RIGHT(@Json,LEN(@Json)-1) + ' }'
 				WHERE
-				[PipelineId] = @PipelineId;
+					[PipelineId] = @PipelineId;
+
+				--set last values values
+				UPDATE
+					[procfwk].[PipelineParameters]
+				SET
+					[ParameterValueLastUsed] = [ParameterValue]
+				WHERE
+					[PipelineId] = @PipelineId;
 			END;
 		END;
 
