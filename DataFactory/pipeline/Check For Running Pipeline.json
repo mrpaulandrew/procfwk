@@ -91,7 +91,7 @@
 				}
 			},
 			{
-				"name": "Filter In Progress Runs",
+				"name": "Filter Running Pipelines",
 				"type": "Filter",
 				"dependsOn": [
 					{
@@ -108,7 +108,7 @@
 						"type": "Expression"
 					},
 					"condition": {
-						"value": "@equals(item().status,'InProgress')",
+						"value": "@or(equals(item().status,'InProgress'),equals(item().status,'Queued'))",
 						"type": "Expression"
 					}
 				}
@@ -247,7 +247,7 @@
 						]
 					},
 					{
-						"activity": "Filter In Progress Runs",
+						"activity": "Filter Running Pipelines",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -268,7 +268,7 @@
 							"typeProperties": {
 								"variableName": "RunCount",
 								"value": {
-									"value": "@string(activity('Filter In Progress Runs').output.FilteredItemsCount)",
+									"value": "@string(activity('Filter Running Pipelines').output.FilteredItemsCount)",
 									"type": "Expression"
 								}
 							}
@@ -282,7 +282,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"items": {
-									"value": "@activity('Filter In Progress Runs').output.value",
+									"value": "@activity('Filter Running Pipelines').output.value",
 									"type": "Expression"
 								},
 								"condition": {
