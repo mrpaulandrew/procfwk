@@ -206,6 +206,8 @@
     <Build Include="procfwk\Tables\BatchExecution.sql" />
     <Build Include="procfwkHelpers\Stored Procedures\SetDefaultBatches.sql" />
     <Build Include="procfwk\Tables\BatchStageLink.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\SetDefaultBatchStageLink.sql" />
+    <Build Include="procfwk\Stored Procedures\CheckPreviousExeuction.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

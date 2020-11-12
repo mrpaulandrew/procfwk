@@ -44,15 +44,19 @@ BEGIN
 				(
 				[BatchId],
 				[ExecutionId],
+				[BatchName],
 				[BatchStatus],
 				[StartDateTime]
 				)
-			VALUES
-				(
-				@BatchId,
+			SELECT
+				[BatchId],
 				@LocalExecutionId,
+				[BatchName],
 				'Running',
-				GETDATE()
-				)
+				GETUTCDATE()
+			FROM
+				[procfwk].[Batches]
+			WHERE
+				[BatchId] = @BatchId;
 		END;
 END;

@@ -5,6 +5,12 @@ BEGIN
 	DELETE ORDER IMPORTANT FOR REFERENTIAL INTEGRITY
 	*/
 
+	--BatchExecution
+	IF OBJECT_ID(N'[procfwk].[BatchExecution]') IS NOT NULL 
+		BEGIN
+			TRUNCATE TABLE [procfwk].[BatchExecution];
+		END;
+
 	--CurrentExecution
 	IF OBJECT_ID(N'[procfwk].[CurrentExecution]') IS NOT NULL 
 		BEGIN
@@ -22,6 +28,18 @@ BEGIN
 		BEGIN
 			TRUNCATE TABLE [procfwk].[ErrorLog];
 		END
+
+	--BatchStageLink
+	IF OBJECT_ID(N'[procfwk].[BatchStageLink]') IS NOT NULL 
+		BEGIN
+			DELETE FROM [procfwk].[BatchStageLink];
+		END;
+
+	--Batches
+	IF OBJECT_ID(N'[procfwk].[Batches]') IS NOT NULL 
+		BEGIN
+			DELETE FROM [procfwk].[Batches];
+		END;
 
 	--PipelineDependencies
 	IF OBJECT_ID(N'[procfwk].[PipelineDependencies]') IS NOT NULL 
