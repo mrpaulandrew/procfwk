@@ -114,7 +114,7 @@
 						"type": "Expression"
 					},
 					"condition": {
-						"value": "@or(equals(item().status,'InProgress'),equals(item().status,'Queued'))",
+						"value": "@and(not(equals(item().runId,pipeline().parameters.ThisRunId)),or(equals(item().status,'InProgress'),equals(item().status,'Queued')))",
 						"type": "Expression"
 					}
 				}
@@ -374,8 +374,10 @@
 				"defaultValue": "NotUsed"
 			},
 			"PipelineName": {
-				"type": "string",
-				"defaultValue": "02-Parent"
+				"type": "string"
+			},
+			"ThisRunId": {
+				"type": "string"
 			}
 		},
 		"variables": {
