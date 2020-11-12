@@ -340,8 +340,8 @@
 						}
 					},
 					{
-						"name": "Metadata Integrity Checks",
-						"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
+						"name": "Check Previous Execution",
+						"description": "",
 						"type": "Lookup",
 						"dependsOn": [
 							{
@@ -362,12 +362,8 @@
 						"typeProperties": {
 							"source": {
 								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[procfwk].[CheckMetadataIntegrity]",
+								"sqlReaderStoredProcedureName": "[[procfwk].[CheckPreviousExeuction]",
 								"storedProcedureParameters": {
-									"DebugMode": {
-										"type": "Boolean",
-										"value": "false"
-									},
 									"BatchName": {
 										"type": "String",
 										"value": {
@@ -393,7 +389,13 @@
 						"type": "ForEach",
 						"dependsOn": [
 							{
-								"activity": "Metadata Integrity Checks",
+								"activity": "Check Previous Execution",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Check Metadata Integrity",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -402,7 +404,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"items": {
-								"value": "@activity('Metadata Integrity Checks').output.value",
+								"value": "@activity('Check Previous Execution').output.value",
 								"type": "Expression"
 							},
 							"isSequential": false,
@@ -928,7 +930,14 @@
 						"name": "Execute Precursor",
 						"description": "Uses the database property value ExecutionPrecursorProc to run any custom logic against the metadata database before the execution run starts.",
 						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Is Parent Already Running",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.00:10:00",
 							"retry": 0,
@@ -965,6 +974,73 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "Is Parent Already Running",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Check For Running Pipeline",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"BatchName": {
+									"value": "@pipeline().parameters.BatchName",
+									"type": "Expression"
+								},
+								"PipelineName": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Check Metadata Integrity",
+						"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Execute Precursor",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[procfwk].[CheckMetadataIntegrity]",
+							"storedProcedureParameters": {
+								"BatchName": {
+									"value": {
+										"value": "@pipeline().parameters.BatchName",
+										"type": "Expression"
+									},
+									"type": "String"
+								},
+								"DebugMode": {
+									"value": {
+										"value": "@bool(0)",
+										"type": "Expression"
+									},
+									"type": "Boolean"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SupportDatabase",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"parameters": {
@@ -989,6 +1065,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
 				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]",
+				"[concat(variables('factoryId'), '/pipelines/Check For Running Pipeline')]",
 				"[concat(variables('factoryId'), '/pipelines/03-Child')]",
 				"[concat(variables('factoryId'), '/linkedServices/FrameworkFunctions')]"
 			]
@@ -2415,6 +2492,474 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Check For Running Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Subscription",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://management.azure.com/subscriptions?api-version=2020-01-01",
+							"method": "GET",
+							"headers": {},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://management.core.windows.net/"
+							}
+						}
+					},
+					{
+						"name": "Get Pipeline Runs",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Set Parsed Subscription",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Get Resource Group",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Get Query Run Days Value",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Check for Valid Pipeline Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{activity('Get Resource Group').output.firstRow.PropertyValue}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/queryPipelineRuns?api-version=2018-06-01",
+								"type": "Expression"
+							},
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"value": "{\n  \"lastUpdatedAfter\": \"@{adddays(utcnow(),int(activity('Get Query Run Days Value').output.firstRow.PropertyValue))}\",\n  \"lastUpdatedBefore\": \"@{utcnow()}\",\n  \"filters\": [\n    {\n      \"operand\": \"PipelineName\",\n      \"operator\": \"Equals\",\n      \"values\": [\n        \"@{pipeline().parameters.PipelineName}\"\n      ]\n    }\n  ]\n}",
+								"type": "Expression"
+							},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://management.core.windows.net/"
+							}
+						}
+					},
+					{
+						"name": "Set Parsed Subscription",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Subscription",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "SubscriptionId",
+							"value": {
+								"value": "@replace(activity('Get Subscription').output.value[0].id,'/subscriptions/','')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Filter Running Pipelines",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "Get Pipeline Runs",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Pipeline Runs').output.value",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@or(equals(item().status,'InProgress'),equals(item().status,'Queued'))",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Get Resource Group",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[procfwk].[GetPropertyValue]",
+								"storedProcedureParameters": {
+									"PropertyName": {
+										"type": "String",
+										"value": "FrameworkFactoryResourceGroup"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "GetSetMetadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Get Query Run Days Value",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[procfwk].[GetPropertyValue]",
+								"storedProcedureParameters": {
+									"PropertyName": {
+										"type": "String",
+										"value": "PreviousPipelineRunsQueryRange"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "GetSetMetadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "If Pipeline Is Running",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "If Using Batch Executions",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@greaterOrEquals(int(variables('RunCount')),1)",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Throw Error Pipeline Running",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Throw Exception",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"Message": {
+												"value": "@concat('Provided pipeline name (',pipeline().parameters.PipelineName,') still has a run in progress or queued given the query range parameters set in the properties table.')",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Get Execution Batch Status",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[procfwk].[GetPropertyValue]",
+								"storedProcedureParameters": {
+									"PropertyName": {
+										"type": "String",
+										"value": "UseExecutionBatches"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "GetSetMetadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "If Using Batch Executions",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Get Execution Batch Status",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Filter Running Pipelines",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(activity('Get Execution Batch Status').output.firstRow.PropertyValue,string(1))",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Set Run Count Without Batch",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "RunCount",
+										"value": {
+											"value": "@string(activity('Filter Running Pipelines').output.FilteredItemsCount)",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "Filter for Batch Name",
+									"type": "Filter",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"items": {
+											"value": "@activity('Filter Running Pipelines').output.value",
+											"type": "Expression"
+										},
+										"condition": {
+											"value": "@equals(item().parameters.BatchName,pipeline().parameters.BatchName)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set Run Count for Batch",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Filter for Batch Name",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "RunCount",
+										"value": {
+											"value": "@string(activity('Filter for Batch Name').output.FilteredItemsCount)",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Check for Valid Pipeline Name",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Set Parsed Subscription",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Get Resource Group",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{activity('Get Resource Group').output.firstRow.PropertyValue}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/pipelines/@{pipeline().parameters.PipelineName}?api-version=2018-06-01",
+								"type": "Expression"
+							},
+							"method": "GET",
+							"headers": {},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://management.core.windows.net/"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"BatchName": {
+						"type": "string",
+						"defaultValue": "NotUsed"
+					},
+					"PipelineName": {
+						"type": "string",
+						"defaultValue": "02-Parent"
+					}
+				},
+				"variables": {
+					"SubscriptionId": {
+						"type": "String"
+					},
+					"RunCount": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "_ProcFwk/_ProcFwkUtils"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
+				"[concat(variables('factoryId'), '/pipelines/Throw Exception')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Email Sender')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Send Email",
+						"type": "AzureFunctionActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"functionName": "SendEmail",
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"value": "{\n\"emailRecipients\": \"@{pipeline().parameters.Recipients}\",\n\"emailCcRecipients\": \"@{pipeline().parameters.CcRecipients}\",\n\"emailBccRecipients\": \"@{pipeline().parameters.BccRecipients}\",\n\"emailSubject\": \"@{pipeline().parameters.Subject}\",\n\"emailBody\": \"@{pipeline().parameters.Body}\",\n\"emailImportance\": \"@{pipeline().parameters.Importance}\"\n}",
+								"type": "Expression"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "FrameworkFunctions",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"parameters": {
+					"Recipients": {
+						"type": "string"
+					},
+					"CcRecipients": {
+						"type": "string"
+					},
+					"BccRecipients": {
+						"type": "string"
+					},
+					"Subject": {
+						"type": "string"
+					},
+					"Body": {
+						"type": "string"
+					},
+					"Importance": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "_ProcFwk/_ProcFwkUtils"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/FrameworkFunctions')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Intentional Error')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -2505,6 +3050,57 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Throw Exception')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Raise Error",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "RAISERROR('@{pipeline().parameters.Message}',16,1);",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "GetSetMetadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					}
+				],
+				"parameters": {
+					"Message": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "_ProcFwk/_ProcFwkUtils"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]"
 			]
 		},
 		{
