@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "Check For Running Pipeline",
 	"properties": {
 		"activities": [
 			{
@@ -318,7 +318,7 @@
 		"parameters": {
 			"BatchName": {
 				"type": "string",
-				"defaultValue": "Hourly"
+				"defaultValue": "NotUsed"
 			},
 			"PipelineName": {
 				"type": "string",
@@ -332,6 +332,9 @@
 			"RunCount": {
 				"type": "String"
 			}
+		},
+		"folder": {
+			"name": "_ProcFwk/_ProcFwkUtils"
 		},
 		"annotations": []
 	}
