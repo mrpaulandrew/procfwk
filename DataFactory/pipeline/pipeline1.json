@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Web1",
+				"name": "Get Subscription",
 				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
@@ -24,11 +24,23 @@
 				}
 			},
 			{
-				"name": "Web2",
+				"name": "Get Pipeline Runs",
 				"type": "WebActivity",
 				"dependsOn": [
 					{
-						"activity": "Set variable1",
+						"activity": "Set Parsed Subscription",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Get Resource Group",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Get Query Run Days Value",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -44,11 +56,14 @@
 				"userProperties": [],
 				"typeProperties": {
 					"url": {
-						"value": "@https://management.azure.com/subscriptions/@{variables('Subscription')}/resourceGroups/@{pipeline().parameters.ResourceGroup}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/queryPipelineRuns?api-version=2018-06-01",
+						"value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{activity('Get Resource Group').output.firstRow.PropertyValue}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/queryPipelineRuns?api-version=2018-06-01",
 						"type": "Expression"
 					},
 					"method": "POST",
-					"body": "''",
+					"body": {
+						"value": "{\n  \"lastUpdatedAfter\": \"@{adddays(utcnow(),int(activity('Get Query Run Days Value').output.firstRow.PropertyValue))}\",\n  \"lastUpdatedBefore\": \"@{utcnow()}\",\n  \"filters\": [\n    {\n      \"operand\": \"PipelineName\",\n      \"operator\": \"Equals\",\n      \"values\": [\n        \"@{pipeline().parameters.PipelineName}\"\n      ]\n    }\n  ]\n}",
+						"type": "Expression"
+					},
 					"authentication": {
 						"type": "MSI",
 						"resource": "https://management.core.windows.net/"
@@ -56,11 +71,11 @@
 				}
 			},
 			{
-				"name": "Set variable1",
+				"name": "Set Parsed Subscription",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Web1",
+						"activity": "Get Subscription",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -68,22 +83,253 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "Subscription",
+					"variableName": "SubscriptionId",
 					"value": {
-						"value": "@replace(activity('Web1').output.value[0].id,'/subscriptions/','')",
+						"value": "@replace(activity('Get Subscription').output.value[0].id,'/subscriptions/','')",
 						"type": "Expression"
 					}
+				}
+			},
+			{
+				"name": "Filter In Progress Runs",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "Get Pipeline Runs",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Pipeline Runs').output.value",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals(item().status,'InProgress')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Get Resource Group",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetPropertyValue]",
+						"storedProcedureParameters": {
+							"PropertyName": {
+								"type": "String",
+								"value": "FrameworkFactoryResourceGroup"
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Get Query Run Days Value",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetPropertyValue]",
+						"storedProcedureParameters": {
+							"PropertyName": {
+								"type": "String",
+								"value": "PreviousPipelineRunsQueryRange"
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "If Pipeline Is Running",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "If Using Batch Executions",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@greaterOrEquals(int(variables('RunCount')),1)",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "STUFF RUNNING",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Get Execution Batch Status",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetPropertyValue]",
+						"storedProcedureParameters": {
+							"PropertyName": {
+								"type": "String",
+								"value": "UseExecutionBatches"
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "If Using Batch Executions",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Get Execution Batch Status",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Filter In Progress Runs",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('Get Execution Batch Status').output.firstRow.PropertyValue,string(1))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Set Run Count Without Batch",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "RunCount",
+								"value": {
+									"value": "@string(activity('Filter In Progress Runs').output.FilteredItemsCount)",
+									"type": "Expression"
+								}
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Filter for Batch Name",
+							"type": "Filter",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"items": {
+									"value": "@activity('Filter In Progress Runs').output.value",
+									"type": "Expression"
+								},
+								"condition": {
+									"value": "@equals(item().parameters.BatchName,pipeline().parameters.BatchName)",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set Run Count for Batch",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Filter for Batch Name",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "RunCount",
+								"value": {
+									"value": "@string(activity('Filter for Batch Name').output.FilteredItemsCount)",
+									"type": "Expression"
+								}
+							}
+						}
+					]
 				}
 			}
 		],
 		"parameters": {
-			"ResourceGroup": {
+			"BatchName": {
 				"type": "string",
-				"defaultValue": "ADF.procfwk"
+				"defaultValue": "Hourly"
+			},
+			"PipelineName": {
+				"type": "string",
+				"defaultValue": "02-Parent"
 			}
 		},
 		"variables": {
-			"Subscription": {
+			"SubscriptionId": {
+				"type": "String"
+			},
+			"RunCount": {
 				"type": "String"
 			}
 		},
