@@ -29,6 +29,8 @@ BEGIN
 	Check 19 - Is there a current UseExecutionBatches property available?
 	Check 20 - If using batch executions, is the requested batch name enabled?
 	Check 21 - If using batch executions, does the requested batch have links to execution stages?
+	Check 22 - Is there a current FrameworkFactoryResourceGroup property available?
+	Check 23 - Is there a current PreviousPipelineRunsQueryRange property available?
 	*/
 
 	DECLARE @BatchId UNIQUEIDENTIFIER
@@ -413,6 +415,34 @@ BEGIN
 						)
 				END;
 		END; --end batch checks
+
+	--Check 22:
+	IF NOT EXISTS
+		(
+		SELECT * FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'FrameworkFactoryResourceGroup'
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				22,
+				'A current FrameworkFactoryResourceGroup value is missing from the properties table.'
+				)		
+		END;
+
+	--Check 23:
+	IF NOT EXISTS
+		(
+		SELECT * FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'PreviousPipelineRunsQueryRange'
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				23,
+				'A current PreviousPipelineRunsQueryRange value is missing from the properties table.'
+				)		
+		END;
 
 	/*
 	Integrity Checks Outcome:
