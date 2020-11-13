@@ -200,7 +200,7 @@
 					},
 					"ifTrueActivities": [
 						{
-							"name": "Throw Error Pipeline Running",
+							"name": "Throw Exceptiion - Pipeline Running",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
 							"userProperties": [],
