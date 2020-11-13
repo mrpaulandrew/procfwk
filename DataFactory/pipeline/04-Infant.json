@@ -13,6 +13,18 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
+					},
+					{
+						"activity": "Log Pipeline Running",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Get Pipeline Params",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
 				"policy": {
@@ -75,7 +87,14 @@
 				"name": "Log Pipeline Running",
 				"description": "Sets the current pipeline with a status of running within the current execution database table.",
 				"type": "SqlServerStoredProcedure",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Target Worker Pipeline Exists",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
@@ -1191,18 +1210,6 @@
 					},
 					{
 						"activity": "Set Data Factory Name",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Log Pipeline Running",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Get Pipeline Params",
 						"dependencyConditions": [
 							"Succeeded"
 						]
