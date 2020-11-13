@@ -53,6 +53,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{
 		geterrordetails.md = geterrordetails.md
 		helpers.md = helpers.md
 		sendemail.md = sendemail.md
+		validatepipeline.md = validatepipeline.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{8DB1ED23-8248-4CC1-889B-87D6A8180094}"
@@ -70,6 +71,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C83634-3A1B-43AA-87C4-D97D3BDD3D31}"
 	ProjectSection(SolutionItems) = preProject
 		activity-secureinput.png = activity-secureinput.png
+		activitychain-checkingforrunning.png = activitychain-checkingforrunning.png
 		activitychain-child.png = activitychain-child.png
 		activitychain-full.png = activitychain-full.png
 		activitychain-infant.png = activitychain-infant.png
@@ -119,11 +121,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Capabilities", "Capabilitie
 		dependencychains.md = dependencychains.md
 		emailalerting.md = emailalerting.md
 		errordetails.md = errordetails.md
+		executionbatches.md = executionbatches.md
 		executionprecursor.md = executionprecursor.md
 		executionstages.md = executionstages.md
 		failurehandling.md = failurehandling.md
 		frameworkrestart.md = frameworkrestart.md
 		metadataintegritychecks.md = metadataintegritychecks.md
+		pipelinealreadyrunning.md = pipelinealreadyrunning.md
 		poshdeployingadfparts.md = poshdeployingadfparts.md
 		prevruncleanup.md = prevruncleanup.md
 		reporting.md = reporting.md
