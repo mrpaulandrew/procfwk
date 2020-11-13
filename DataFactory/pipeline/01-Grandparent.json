@@ -4,8 +4,8 @@
 		"description": "ADF.procfwk grandparent pipeline used optionally to bootstrap any wider processes in your Data Factory that then calls the processing framework.",
 		"activities": [
 			{
-				"name": "Framework Processing",
-				"description": "Call procfwk",
+				"name": "procfwk - Hourly Batch",
+				"description": "Call procfwk - for hourly batch load.",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
@@ -14,7 +14,27 @@
 						"referenceName": "02-Parent",
 						"type": "PipelineReference"
 					},
-					"waitOnCompletion": true
+					"waitOnCompletion": true,
+					"parameters": {
+						"BatchName": "Hourly"
+					}
+				}
+			},
+			{
+				"name": "procfwk - Daily Batch",
+				"description": "Call procfwk - for daily batch load.",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "02-Parent",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"BatchName": "Daily"
+					}
 				}
 			}
 		],
