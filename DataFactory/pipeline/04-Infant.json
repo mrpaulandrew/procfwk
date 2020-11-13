@@ -1285,7 +1285,7 @@
 					},
 					"ifFalseActivities": [
 						{
-							"name": "Throw Exception Stopping Infant",
+							"name": "Throw Exception - Invalid Infant",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
 							"userProperties": [],
@@ -1304,7 +1304,7 @@
 							}
 						},
 						{
-							"name": "Update Execution Log with Invalid Worker",
+							"name": "Update Execution With Invalid Worker",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
 							"policy": {
