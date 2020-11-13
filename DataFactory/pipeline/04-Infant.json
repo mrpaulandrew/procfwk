@@ -9,7 +9,13 @@
 				"type": "AzureFunctionActivity",
 				"dependsOn": [
 					{
-						"activity": "Target Worker Pipeline Exists",
+						"activity": "Log Pipeline Running",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Get Pipeline Params",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -75,7 +81,14 @@
 				"name": "Log Pipeline Running",
 				"description": "Sets the current pipeline with a status of running within the current execution database table.",
 				"type": "SqlServerStoredProcedure",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Is Target Worker Validate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
@@ -1196,18 +1209,6 @@
 						]
 					},
 					{
-						"activity": "Log Pipeline Running",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Get Pipeline Params",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
 						"activity": "Set Subscription Id",
 						"dependencyConditions": [
 							"Succeeded"
@@ -1236,6 +1237,12 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
+					},
+					{
+						"activity": "Log Pipeline Validating",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
 				"policy": {
@@ -1260,7 +1267,7 @@
 				}
 			},
 			{
-				"name": "Target Worker Pipeline Exists",
+				"name": "Is Target Worker Validate",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
@@ -1278,7 +1285,7 @@
 					},
 					"ifFalseActivities": [
 						{
-							"name": "Throw Exception Stopping Infant",
+							"name": "Throw Exception - Invalid Infant",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
 							"userProperties": [],
@@ -1297,7 +1304,7 @@
 							}
 						},
 						{
-							"name": "Update Execution Log with Invalid Worker",
+							"name": "Update Execution With Invalid Worker",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
 							"policy": {
@@ -1393,6 +1400,50 @@
 						"CallingActivity": {
 							"value": "ValidatePipeline",
 							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "SupportDatabase",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Pipeline Validating",
+				"description": "Sets the current pipeline with a status of validating within the current execution database table.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[procfwk].[SetLogPipelineValidating]",
+					"storedProcedureParameters": {
+						"ExecutionId": {
+							"value": {
+								"value": "@pipeline().parameters.ExecutionId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"PipelineId": {
+							"value": {
+								"value": "@pipeline().parameters.pipelineId",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"StageId": {
+							"value": {
+								"value": "@pipeline().parameters.StageId",
+								"type": "Expression"
+							},
+							"type": "Int32"
 						}
 					}
 				},
