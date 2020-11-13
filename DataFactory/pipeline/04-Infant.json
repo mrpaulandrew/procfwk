@@ -83,7 +83,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "Target Worker Pipeline Exists",
+						"activity": "Is Target Worker Validate",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -1267,7 +1267,7 @@
 				}
 			},
 			{
-				"name": "Target Worker Pipeline Exists",
+				"name": "Is Target Worker Validate",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
