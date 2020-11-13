@@ -82,7 +82,7 @@ BEGIN
 					UPDATE
 						[procfwk].[BatchExecution]
 					SET
-						[BatchStatus] = 'Stopping'
+						[BatchStatus] = 'Stopped' --special case when its an activity failure to call stop ready for restart
 					WHERE
 						[ExecutionId] = @ExecutionId
 						AND [BatchStatus] = 'Running';

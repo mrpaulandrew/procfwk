@@ -66,7 +66,7 @@ BEGIN
 				BEGIN
 					RAISERROR('A NULL batch name cannot be passed when the UseExecutionBatches property is set to 1 (true).',16,1);
 					RETURN 0;
-				END
+				END;
 			
 			SELECT 
 				@BatchId = [BatchId]
@@ -108,7 +108,7 @@ BEGIN
 				BEGIN
 					EXEC [procfwk].[UpdateExecutionLog]
 						@PerformErrorCheck = 0, --Special case when OverideRestart = 1;
-						@LocalExecutionId = @BLocalExecutionId;
+						@ExecutionId = @BLocalExecutionId;
 
 					EXEC [procfwk].[CreateNewExecution]
 						@CallingDataFactoryName = @CallingDataFactory,

@@ -33,7 +33,10 @@ BEGIN
 			FROM
 				[procfwk].[BatchExecution]
 			WHERE
-				[BatchId] = @BatchId;
+				[BatchId] = @BatchId
+				AND ISNULL([BatchStatus],'') = 'Stopped';
+
+			RETURN 0;
 		END
 	ELSE
 		BEGIN
