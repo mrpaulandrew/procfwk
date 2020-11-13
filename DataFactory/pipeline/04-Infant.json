@@ -1237,6 +1237,12 @@
 						"dependencyConditions": [
 							"Succeeded"
 						]
+					},
+					{
+						"activity": "Log Pipeline Validating",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
 				"policy": {
@@ -1394,6 +1400,50 @@
 						"CallingActivity": {
 							"value": "ValidatePipeline",
 							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "SupportDatabase",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Log Pipeline Validating",
+				"description": "Sets the current pipeline with a status of validating within the current execution database table.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[procfwk].[SetLogPipelineValidating]",
+					"storedProcedureParameters": {
+						"ExecutionId": {
+							"value": {
+								"value": "@pipeline().parameters.ExecutionId",
+								"type": "Expression"
+							},
+							"type": "Guid"
+						},
+						"PipelineId": {
+							"value": {
+								"value": "@pipeline().parameters.pipelineId",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"StageId": {
+							"value": {
+								"value": "@pipeline().parameters.StageId",
+								"type": "Expression"
+							},
+							"type": "Int32"
 						}
 					}
 				},
