@@ -1250,7 +1250,7 @@
 					"retry": 0,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
-					"secureInput": false
+					"secureInput": true
 				},
 				"userProperties": [],
 				"typeProperties": {
