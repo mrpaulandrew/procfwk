@@ -5,6 +5,7 @@
 		"activities": [
 			{
 				"name": "Get Subscription",
+				"description": "Use the Azure Management API to return the current subscription.",
 				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
@@ -26,6 +27,7 @@
 			},
 			{
 				"name": "Get Pipeline Runs",
+				"description": "Use the Azure Management API to return a list of pipeline runs within the given time window.",
 				"type": "WebActivity",
 				"dependsOn": [
 					{
@@ -67,6 +69,7 @@
 			},
 			{
 				"name": "Set Parsed Subscription",
+				"description": "Parse the subscription string value to return just the subscription ID.",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
@@ -87,6 +90,7 @@
 			},
 			{
 				"name": "Filter Running Pipelines",
+				"description": "Filter the pipeline runs results for pipelines that exclude the current triggered run and that are currently running (in progress or queued).",
 				"type": "Filter",
 				"dependsOn": [
 					{
@@ -110,6 +114,7 @@
 			},
 			{
 				"name": "Get Resource Group",
+				"description": "Using the metadata properties table return the framework factory resource group name.",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -141,6 +146,7 @@
 			},
 			{
 				"name": "Get Query Run Days Value",
+				"description": "Using the metadata properties table return the run days value to provide the API request with a date range for pipeline executions.",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -172,6 +178,7 @@
 			},
 			{
 				"name": "If Pipeline Is Running",
+				"description": "If the running pipeline count is greater than or equal to one.\nTrue = raise an exception.",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
@@ -190,6 +197,7 @@
 					"ifTrueActivities": [
 						{
 							"name": "Throw Exceptiion - Pipeline Running",
+							"description": "Using the utils pipeline raise an exception to stop the new trigger while a run is already in progress.",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
 							"userProperties": [],
@@ -212,6 +220,7 @@
 			},
 			{
 				"name": "Get Execution Batch Status",
+				"description": "Using the metadata properties table return the flag to indicate if batch execution setting are enabled or disabled.",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -243,6 +252,7 @@
 			},
 			{
 				"name": "If Using Batch Executions",
+				"description": "True = batch executions are enabled.\nFalse = batch execution are disabled.",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
@@ -267,6 +277,7 @@
 					"ifFalseActivities": [
 						{
 							"name": "Set Run Count Without Batch",
+							"description": "Set the pipelines running count variable to be tested later.",
 							"type": "SetVariable",
 							"dependsOn": [],
 							"userProperties": [],
@@ -282,6 +293,7 @@
 					"ifTrueActivities": [
 						{
 							"name": "Filter for Batch Name",
+							"description": "Further filter the return pipeline runs for any running pipelines with the same batch name value.",
 							"type": "Filter",
 							"dependsOn": [],
 							"userProperties": [],
@@ -298,6 +310,7 @@
 						},
 						{
 							"name": "Set Run Count for Batch",
+							"description": "Set the resulting pipeline running count variable to be tested later.",
 							"type": "SetVariable",
 							"dependsOn": [
 								{
@@ -321,6 +334,7 @@
 			},
 			{
 				"name": "Check for Valid Pipeline Name",
+				"description": "Use the Azure Management API to return and establish if the framework pipeline exists in the target Data Factory, including being deployed.",
 				"type": "WebActivity",
 				"dependsOn": [
 					{
