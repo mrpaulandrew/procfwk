@@ -360,6 +360,7 @@
 					"ifTrueActivities": [
 						{
 							"name": "Get Email Parts",
+							"description": "Return all required content from the metadata database to send an email alerting using the procfwk. The lookup returns the exact content for the function body request.",
 							"type": "Lookup",
 							"dependsOn": [],
 							"policy": {
@@ -395,6 +396,7 @@
 						},
 						{
 							"name": "Send Email",
+							"description": "Use an Azure Function to perform an SMTP client email send operation.",
 							"type": "AzureFunctionActivity",
 							"dependsOn": [
 								{
