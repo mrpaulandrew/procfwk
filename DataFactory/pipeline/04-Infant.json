@@ -9,12 +9,6 @@
 				"type": "AzureFunctionActivity",
 				"dependsOn": [
 					{
-						"activity": "Target Worker Pipeline Exists",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
 						"activity": "Log Pipeline Running",
 						"dependencyConditions": [
 							"Succeeded"
