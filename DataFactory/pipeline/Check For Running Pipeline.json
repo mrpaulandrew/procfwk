@@ -28,18 +28,6 @@
 				"type": "WebActivity",
 				"dependsOn": [
 					{
-						"activity": "Set Parsed Subscription",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Get Resource Group",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
 						"activity": "Get Query Run Days Value",
 						"dependencyConditions": [
 							"Succeeded"
