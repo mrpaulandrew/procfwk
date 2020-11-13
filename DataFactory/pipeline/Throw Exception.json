@@ -1,6 +1,7 @@
 {
 	"name": "Throw Exception",
 	"properties": {
+		"description": "Provide a simple way of throwing an exception within Data Factory using TSQL error handling.",
 		"activities": [
 			{
 				"name": "Raise Error",
@@ -40,6 +41,9 @@
 		"folder": {
 			"name": "_ProcFwk/_ProcFwkUtils"
 		},
-		"annotations": []
+		"annotations": [
+			"procfwk",
+			"Utils"
+		]
 	}
 }

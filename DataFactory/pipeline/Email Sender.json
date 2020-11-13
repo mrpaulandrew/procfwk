@@ -1,6 +1,7 @@
 {
 	"name": "Email Sender",
 	"properties": {
+		"description": "Provide a simple abstract over the send email function with request body item exposed as pipeline parameters.",
 		"activities": [
 			{
 				"name": "Send Email",
@@ -51,6 +52,9 @@
 		"folder": {
 			"name": "_ProcFwk/_ProcFwkUtils"
 		},
-		"annotations": []
+		"annotations": [
+			"procfwk",
+			"Utils"
+		]
 	}
 }

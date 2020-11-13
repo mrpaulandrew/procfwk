@@ -1,6 +1,7 @@
 {
 	"name": "Check For Running Pipeline",
 	"properties": {
+		"description": "For a given pipeline and optional batch name establish if a pipeline run is already in progress. Throw an exception if it it.",
 		"activities": [
 			{
 				"name": "Get Subscription",
@@ -379,6 +380,9 @@
 		"folder": {
 			"name": "_ProcFwk/_ProcFwkUtils"
 		},
-		"annotations": []
+		"annotations": [
+			"procfwk",
+			"Utils"
+		]
 	}
 }

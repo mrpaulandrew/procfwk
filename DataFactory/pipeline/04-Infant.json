@@ -1501,7 +1501,7 @@
 			"name": "_ProcFwk"
 		},
 		"annotations": [
-			"ADF.procfwk",
+			"procfwk",
 			"Infant"
 		]
 	}
