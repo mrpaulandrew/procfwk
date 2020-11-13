@@ -97,7 +97,7 @@ BEGIN
 			UPDATE
 				[procfwk].[BatchExecution]
 			SET
-				[BatchStatus] = 'Complete',
+				[BatchStatus] = 'Success',
 				[EndDateTime] = GETUTCDATE()
 			WHERE
 				[ExecutionId] = @ExecutionId;

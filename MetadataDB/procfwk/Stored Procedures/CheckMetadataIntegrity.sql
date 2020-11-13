@@ -27,10 +27,15 @@ BEGIN
 	Check 17 - Does the SPNHandlingMethod property have a valid value?
 	Check 18 - Does the Service Principal table contain both types of SPN handling for a single credential?
 	Check 19 - Is there a current UseExecutionBatches property available?
-	Check 20 - If using batch executions, is the requested batch name enabled?
-	Check 21 - If using batch executions, does the requested batch have links to execution stages?
-	Check 22 - Is there a current FrameworkFactoryResourceGroup property available?
-	Check 23 - Is there a current PreviousPipelineRunsQueryRange property available?
+	Check 20 - Is there a current FrameworkFactoryResourceGroup property available?
+	Check 21 - Is there a current PreviousPipelineRunsQueryRange property available?
+	
+	--Batch execution checks:
+	Check 22 - If using batch executions, is the requested batch name enabled?
+	Check 23 - If using batch executions, does the requested batch have links to execution stages?
+	Check 24 - Have batch executions been enabled after a none batch execution run?
+
+	Check 25 - Has the execution failed due to an invalid pipeline name? If so, attend to update this before the next run.
 	*/
 
 	DECLARE @BatchId UNIQUEIDENTIFIER
@@ -371,7 +376,35 @@ BEGIN
 				)		
 		END;
 
-	--batch checks
+	--Check 20:
+	IF NOT EXISTS
+		(
+		SELECT * FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'FrameworkFactoryResourceGroup'
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				20,
+				'A current FrameworkFactoryResourceGroup value is missing from the properties table.'
+				)		
+		END;
+
+	--Check 21:
+	IF NOT EXISTS
+		(
+		SELECT * FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'PreviousPipelineRunsQueryRange'
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				21,
+				'A current PreviousPipelineRunsQueryRange value is missing from the properties table.'
+				)		
+		END;
+
+	--batch execution checks
 	IF ([procfwk].[GetPropertyValueInternal]('UseExecutionBatches')) = '1'
 		BEGIN			
 			IF @BatchName IS NULL
@@ -387,7 +420,7 @@ BEGIN
 			WHERE
 				[BatchName] = @BatchName;
 
-			--Check 20:
+			--Check 22:
 			IF EXISTS
 				(
 				SELECT 1 FROM [procfwk].[Batches] WHERE [BatchId] = @BatchId AND [Enabled] = 0
@@ -396,12 +429,12 @@ BEGIN
 					INSERT INTO @MetadataIntegrityIssues
 					VALUES
 						( 
-						20,
+						22,
 						'The requested execution batch is currently disabled. Enable the batch before proceeding.'
 						)
 				END;
 
-			--Check 21:
+			--Check 23:
 			IF NOT EXISTS
 				(
 				SELECT 1 FROM [procfwk].[BatchStageLink] WHERE [BatchId] = @BatchId
@@ -410,39 +443,52 @@ BEGIN
 					INSERT INTO @MetadataIntegrityIssues
 					VALUES
 						( 
-						21,
+						23,
 						'The requested execution batch does not have any linked execution stages. See table [procfwk].[BatchStageLink] for details.'
 						)
 				END;
+
+			--Check 24:
+			IF EXISTS
+				(
+				SELECT
+					*
+				FROM
+					[procfwk].[CurrentExecution] c
+					LEFT OUTER JOIN [procfwk].[BatchExecution] b
+						ON c.[LocalExecutionId] = b.[ExecutionId]
+				WHERE
+					b.[ExecutionId] IS NULL
+				)
+				BEGIN
+					INSERT INTO @MetadataIntegrityIssues
+					VALUES
+						( 
+						24,
+						'Execution records exist in the [procfwk].[CurrentExecution] table that do not have a record in [procfwk].[BatchExecution] table. Has batch excutions been enabed after an incomplete none batch run?'
+						)
+				END;			
 		END; --end batch checks
-
-	--Check 22:
-	IF NOT EXISTS
+	
+	--Check 25: 
+	IF EXISTS
 		(
-		SELECT * FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'FrameworkFactoryResourceGroup'
+		SELECT 1 FROM [procfwk].[CurrentExecution] WHERE [PipelineStatus] = 'InvalidPipelineNameError'
 		)
 		BEGIN
-			INSERT INTO @MetadataIntegrityIssues
-			VALUES
-				( 
-				22,
-				'A current FrameworkFactoryResourceGroup value is missing from the properties table.'
-				)		
+			UPDATE
+				ce
+			SET
+				ce.[PipelineName] = p.[PipelineName]
+			FROM
+				[procfwk].[CurrentExecution] ce
+				INNER JOIN [procfwk].[Pipelines] p
+					ON ce.[PipelineId] = p.[PipelineId]
+						AND ce.[StageId] = p.[StageId]
+			WHERE
+				ce.[PipelineStatus] = 'InvalidPipelineNameError'
 		END;
 
-	--Check 23:
-	IF NOT EXISTS
-		(
-		SELECT * FROM [procfwk].[CurrentProperties] WHERE [PropertyName] = 'PreviousPipelineRunsQueryRange'
-		)
-		BEGIN
-			INSERT INTO @MetadataIntegrityIssues
-			VALUES
-				( 
-				23,
-				'A current PreviousPipelineRunsQueryRange value is missing from the properties table.'
-				)		
-		END;
 
 	/*
 	Integrity Checks Outcome:
