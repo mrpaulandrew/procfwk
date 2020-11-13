@@ -208,6 +208,7 @@
     <Build Include="procfwk\Tables\BatchStageLink.sql" />
     <Build Include="procfwkHelpers\Stored Procedures\SetDefaultBatchStageLink.sql" />
     <Build Include="procfwk\Stored Procedures\CheckPreviousExeuction.sql" />
+    <Build Include="procfwk\Stored Procedures\SetLogPipelineValidating.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
