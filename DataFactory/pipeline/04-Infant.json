@@ -1194,6 +1194,7 @@
 			},
 			{
 				"name": "Validate Pipeline",
+				"description": "Query the target data factory and establish if the provided worker pipeline name is valid.",
 				"type": "AzureFunctionActivity",
 				"dependsOn": [
 					{
@@ -1268,6 +1269,7 @@
 			},
 			{
 				"name": "Is Target Worker Validate",
+				"description": "True = the worker pipeline name is valid.\nFalse = the worker pipeline name is invalid. Raise an exception.",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
@@ -1286,6 +1288,7 @@
 					"ifFalseActivities": [
 						{
 							"name": "Throw Exception - Invalid Infant",
+							"description": "Throw an exception with details about the invalid worker pipeline name.",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
 							"userProperties": [],
@@ -1305,6 +1308,7 @@
 						},
 						{
 							"name": "Update Execution With Invalid Worker",
+							"description": "Update the current execution table with an informed status for the worker pipeline that couldn't be executed.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
 							"policy": {
