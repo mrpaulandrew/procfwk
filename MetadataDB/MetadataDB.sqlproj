@@ -230,6 +230,7 @@
     <None Include="Scripts\Metadata\RecipientAlertsLink.sql" />
     <None Include="Scripts\Metadata\AlertOutcomes.sql" />
     <None Include="Scripts\Metadata\TransferReportingObjects.sql" />
+    <None Include="Scripts\Alter Database Scale.sql" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="Scripts\Script.PreDeployment.sql" />
