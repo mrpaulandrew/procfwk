@@ -45,3 +45,7 @@ Using the central property table value to establish if the batch execution featu
 - If batch execution handling is enabled.
   - Get parent pipeline runs.
     - If a parent is running **and** the batch names are the same. Throw exception.
+
+## Management API Limit
+
+The GET pipeline runs result set is limited to 100 records, therefore if you've called the parent pipeline more than 100 times in a 24 hour period the check filtering will not be able to detect the concurrent execution. This will instead be caught by the exection wrapper stored procedure.

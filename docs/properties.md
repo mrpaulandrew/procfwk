@@ -114,7 +114,7 @@ ___
 
 ### PreviousPipelineRunsQueryRange
 
-__Example Value:__ -10
+__Example Value:__ -1
 
 __Role:__ Used as a date range, today +- this value, when checking for if an execution for a given pipeline is already running. The primary use for the property is within the utility pipeline to [check if the parent is already running](/procfwk/pipelinealreadyrunning). Here the value is wrapped in the following Data Factory expression as a request body passed to the Azure Management API:
 
