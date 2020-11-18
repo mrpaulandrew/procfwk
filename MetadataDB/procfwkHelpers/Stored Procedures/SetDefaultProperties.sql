@@ -67,6 +67,6 @@ BEGIN
 
 	EXEC [procfwkHelpers].[AddProperty]
 		@PropertyName = N'PreviousPipelineRunsQueryRange',
-		@PropertyValue = N'-10',
+		@PropertyValue = N'-1',
 		@Description = N'Used as a date range, today +- this value, when checking for if an execution for a given pipeline is already running.';
 END;

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FactoryTesting.Pipelines.Parent
 {
-    class GivenOneExecutionStage
+    public class GivenDisabledBatches
     {
         private ParentHelper _helper;
 
@@ -17,18 +17,17 @@ namespace FactoryTesting.Pipelines.Parent
                 .WithTenantAndSubscriptionIds()
                 .WithSPNInDatabase("FrameworkFactory")
                 .WithEmptyExecutionTables()
-                .WithoutSimulatedError()
-                .WithFailureHandling("Simple")
-                .WithSingleExecutionStage();
+                .WithBatchExecutionHandling()
+                .WithBatchesDisabled();
             await _helper.RunPipeline();
         }
 
         #region Integration tests
 
         [Test]
-        public void ThenPipelineOutcomeIsSucceeded()
+        public void ThenPipelineOutcomeIsFailed()
         {
-            _helper.RunOutcome.Should().Be("Succeeded");
+            _helper.RunOutcome.Should().Be("Failed");
         }
 
         #endregion

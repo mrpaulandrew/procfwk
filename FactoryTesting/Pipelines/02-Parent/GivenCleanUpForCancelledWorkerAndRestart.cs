@@ -45,7 +45,7 @@ namespace FactoryTesting.Pipelines.Parent
         [Test]
         public async Task ThenActivityShouldReturnOneRowForCleanUp()
         {
-            var count = await _helperRestartRun.GetActivityOutput("Metadata Integrity Checks", "$.count");
+            var count = await _helperRestartRun.GetActivityOutput("Check Previous Execution", "$.count");
             int.Parse(count).Should().Be(1);
         }
 

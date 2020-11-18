@@ -15,6 +15,26 @@ BEGIN
 
 			TRUNCATE TABLE [procfwk].[CurrentExecution];
 
+			--defensive check
+			IF NOT EXISTS
+				(
+				SELECT
+					1
+				FROM
+					[procfwk].[Pipelines] p
+					INNER JOIN [procfwk].[Stages] s
+						ON p.[StageId] = s.[StageId]
+					INNER JOIN [procfwk].[DataFactorys] d
+						ON p.[DataFactoryId] = d.[DataFactoryId]
+				WHERE
+					p.[Enabled] = 1
+					AND s.[Enabled] = 1
+				)
+				BEGIN
+					RAISERROR('Requested execution run does not contain any enabled stages/pipelines.',16,1);
+					RETURN 0;
+				END;
+
 			INSERT INTO [procfwk].[CurrentExecution]
 				(
 				[LocalExecutionId],
@@ -59,6 +79,29 @@ BEGIN
 				[procfwk].[BatchExecution]
 			WHERE
 				[ExecutionId] = @LocalExecutionId;
+			
+			--defensive check
+			IF NOT EXISTS
+				(
+				SELECT
+					1
+				FROM
+					[procfwk].[Pipelines] p
+					INNER JOIN [procfwk].[Stages] s
+						ON p.[StageId] = s.[StageId]
+					INNER JOIN [procfwk].[DataFactorys] d
+						ON p.[DataFactoryId] = d.[DataFactoryId]
+					INNER JOIN [procfwk].[BatchStageLink] b
+						ON b.[StageId] = s.[StageId]
+				WHERE
+					b.[BatchId] = @BatchId
+					AND p.[Enabled] = 1
+					AND s.[Enabled] = 1
+				)
+				BEGIN
+					RAISERROR('Requested execution run does not contain any enabled stages/pipelines.',16,1);
+					RETURN 0;
+				END;
 
 			INSERT INTO [procfwk].[CurrentExecution]
 				(
