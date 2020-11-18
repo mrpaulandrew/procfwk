@@ -51,7 +51,18 @@ BEGIN
 		)
 		AND @RestartStatus = 1
 		BEGIN
-			SET @LocalExecutionId = NEWID();
+			--clean up current execution table and abandon batch
+			SELECT
+				@LocalExecutionId = [ExecutionId]
+			FROM
+				[procfwk].[BatchExecution]
+			WHERE
+				[BatchId] = @BatchId
+				AND ISNULL([BatchStatus],'') = 'Stopped';
+			
+			EXEC [procfwk].[UpdateExecutionLog]
+				@PerformErrorCheck = 0, --Special case when OverideRestart = 1;
+				@ExecutionId = @LocalExecutionId;
 			
 			--abandon previous batch execution
 			UPDATE
@@ -61,6 +72,8 @@ BEGIN
 			WHERE
 				[BatchId] = @BatchId 
 				AND ISNULL([BatchStatus],'') = 'Stopped';
+	
+			SET @LocalExecutionId = NEWID();
 
 			--create new batch run record
 			INSERT INTO [procfwk].[BatchExecution]
