@@ -25,6 +25,7 @@ Depending on your experience with Azure some of the below might be obvious. Howe
 | Trigger |A component of Azure Data Factory used to perform execution of Pipelines at defined points or schedules. |
 | ForEach |A concept used to represent an iterative process but also a named Activity within Azure Data Factory with special features that mean all iteration instants can be called either in parallel or sequentially. |
 | Until |A concept used to represent an iterative process that will continue until a logical condition is met. Until is also a named Activity within Azure Data Factory delivering the same capability as its intended concept. |
+| Batch |A complete set of data processing operations to be completed end to end. For example; hourly, daily, weekly. Batches can be executed concurrently by the processing framework.  |
 | Stage |A set of or just one process that needs to be executed by the metadata driven framework. When multiple stages are defined, they will be executed sequentially and it is expected that stages will form a chain of upstream and downstream dependencies.  |
 | Worker |A pipeline created in ADF to house custom code and activities doing whatever you require for your solution. The Worker pipeline is then registered in the metadata for a processing stage that tells the Child pipeline what it needs to go and call. |
 | Grandparent |The pipeline used within Azure Data Factory to optionally bootstrap any wider processes before calling the main processing framework pipeline. |

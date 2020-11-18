@@ -11,6 +11,19 @@ The following stored procedures are ordered by database [schema](/procfwk/schema
 
 ___
 
+## BatchWrapper
+
+__Schema:__ procfwk
+
+|Parameter Name|Data Type|
+|---|:---:|
+|@BatchId|uniqueidentifier
+|@LocalExecutionId|uniqueidentifier
+
+__Role:__ When using the [batch executions](/procfwk/executionbatches) concept within the processing framework, this procedure establishes if a new or existing batch is required. If a batch is in a stopped state, its execution ID will be returned ready for a restart. If not, a new execution ID will be generated.
+
+___
+
 ### CheckForBlockedPipelines
 
 __Schema:__ procfwk
@@ -46,7 +59,17 @@ __Schema:__ procfwk
 
 __Role:__ Called early on in the parent [pipeline](/procfwk/pipelines) this procedure serves two purposes. Firstly, to perform a series on basic checks against the database metadata ensuring key conditions are met before Data Factory starts a new execution. See [metadata integrity checks](/procfwk/metadataintegritychecks) for more details. 
 
-Secondly, in the event of an external platform failure where the framework is left in an unexpected state. This procedure queries the current execution [table](/procfwk/tables) and returns values to Data Factory so a [clean up](/procfwk/prevruncleanup) routine can take place as part of the parent [pipeline](/procfwk/pipelines) execution.
+___
+
+## CheckPreviousExeuction
+
+__Schema:__ procfwk
+
+|Parameter Name|Data Type|
+|---|:---:|
+|@BatchName|varchar
+
+__Role:__ Inspects the current execution [table](/procfwk/tables) for running worker pipeline as well as other unexpected record states and if found provides an output for the framework [previous run clean up](/procfwk/prevruncleanup) process. Otherwise, returns an empty dataset as is required by a Data Factory lookup activity. The routine takes place as part of the parent [pipeline](/procfwk/pipelines) execution.
 
 ___
 
@@ -57,8 +80,11 @@ __Schema:__ procfwk
 |Parameter Name|Data Type|
 |---|:---:|
 |@CallingDataFactoryName|nvarchar
+|@LocalExecutionId|uniqueidentifier
 
-__Role:__ Once the parent [pipeline](/procfwk/pipelines) has completed all pre-execution operations this procedure is used to set a new local execution Id (GUID) value and update the current execution table. For runtime perform an index re-build is also done by this procedure.
+__Role:__ Once the parent [pipeline](/procfwk/pipelines) has completed all pre-execution operations this procedure is used to set a new local execution Id (GUID) value and update the current execution table. For runtime performance an index re-build is also done by this procedure.
+
+If using [batch executions](/procfwk/executionbatches), instead of the procedure creating the execution ID it will be provided with it from the [BatchWrapper] stored procedure.
 
 ___
 
@@ -77,8 +103,11 @@ __Schema:__ procfwk
 |Parameter Name|Data Type|
 |---|:---:|
 |@CallingDataFactory|nvarchar
+|@BatchName|varchar
 
 __Role:__ This procedure establishes what the framework should do with the current execution table when the parent pipeline is triggered. Depending on the configured [properties](/procfwk/properties) this will then create a new execution run or restart the previous run if a failure has occurred.
+
+If using [batch executions](/procfwk/executionbatches) the batch name should also be provided by the parent pipeline.
 
 ___
 
@@ -184,7 +213,13 @@ ___
 
 __Schema:__ procfwk
 
+|Parameter Name|Data Type|
+|---|:---:|
+|@LocalExecutionId|uniqueidentifier
+
 __Role:__ In the event of a processing [framework restart](/procfwk/frameworkrestart) this procedure archives off any unwanted records from the current execution table and updates the pipeline status attribute for any workers than didn't complete successfully during the previous execution.
+
+If using [batch executions](/procfwk/executionbatches) the procedure will also update the batch execution table using the execution ID provided.
 
 ___
 
@@ -345,6 +380,22 @@ __Role:__ Updates the current execution table setting the pipeline status attrib
 
 ___
 
+
+## SetLogPipelineValidating
+
+__Schema:__ procfwk
+
+|Parameter Name|Data Type|
+|---|:---:|
+|@ExecutionId|uniqueidentifier
+|@StageId|int
+|@PipelineId|int
+
+__Role:__ Updates the current execution table setting the pipeline status attribute to validating for the provided worker Id.
+
+___
+
+
 ### SetLogStagePreparing
 
 __Schema:__ procfwk
@@ -365,8 +416,22 @@ __Schema:__ procfwk
 |Parameter Name|Data Type|
 |---|:---:|
 |@PerformErrorCheck|bit
+|@LocalExecutionId|uniqueidentifier
 
 __Role:__ Called at the end of the parent pipeline as the last thing the processing framework does in the metadata database this procedure validates the contents of the current execution table. If all workers were successful the data will be archived off to the execution log table. Otherwise an exception will be raised.
+
+If using [batch executions](/procfwk/executionbatches) the procedure will also update the batch execution table and delete from the current execution table rather than truncating.
+
+```sql
+IF([procfwk].[GetPropertyValueInternal]('UseExecutionBatches')) = '0'
+BEGIN
+	TRUNCATE TABLE [procfwk].[CurrentExecution];
+END
+ELSE IF ([procfwk].[GetPropertyValueInternal]('UseExecutionBatches')) = '1'
+BEGIN
+	DELETE FROM [procfwk].[CurrentExecution] WHERE [LocalExecutionId] = @ExecutionId;
+END
+```
 
 ___
 

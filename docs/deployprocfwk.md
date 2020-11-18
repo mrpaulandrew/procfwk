@@ -15,6 +15,7 @@ ___
 
 ### Azure Resources
 * Deploy an [Azure Data Factory](/procfwk/datafactory) instance and connect it to source control - recommended, but not essential.
+  * Grant Data Factory's MSI access to itself to support the framework pipeline [already running checks](/procfwk/pipelinealreadyrunning).
 * Create a [SQL database](/procfwk/database).
 * Create an [Azure Functions App](/procfwk/functions), a Consumption App Service Plan is fine for the processing framework.
 * Optionally create an Azure Key Vault.

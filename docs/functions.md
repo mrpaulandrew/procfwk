@@ -6,6 +6,7 @@ ___
 * [Helpers](/procfwk/helpers)
 * [Execute Pipeline](/procfwk/executepipeline)
 * [Check Pipeline Status](/procfwk/checkpipelinestatus)
+* [Validate Pipeline](/procfwk/validatepipeline)
 * [Get Error Details](/procfwk/geterrordetails)
 * [Send Email](/procfwk/sendemail)
 

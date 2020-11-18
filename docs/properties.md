@@ -95,3 +95,43 @@ __Example Value:__ [dbo].[ExampleCustomExecutionPrecursor]
 __Role:__ This procedure will be called first in the parent [pipeline](/procfwk/pipelines) and can be used to perform/update any required custom behaviour in the framework execution. For example, enable/disable Worker pipelines given a certain run time/day. Invalid proc name values will be ignored.
 
 ___
+
+### UseExecutionBatches
+
+__Example Values:__ 0/1
+
+__Role:__ Establishes if [execution batches](/procfwk/executionbatches) are used as a level above execution stages within the framework processing.
+
+___
+
+### FrameworkFactoryResourceGroup
+
+__Example Value:__ ADF.procfwk
+
+__Role:__ Supports various queries where the framework factory pipeline are inspecting themselves and the resource group can't easily be inferred. The primary use for the property is within the utility pipeline to [check if the parent is already running](/procfwk/pipelinealreadyrunning).
+
+___
+
+### PreviousPipelineRunsQueryRange
+
+__Example Value:__ -10
+
+__Role:__ Used as a date range, today +- this value, when checking for if an execution for a given pipeline is already running. The primary use for the property is within the utility pipeline to [check if the parent is already running](/procfwk/pipelinealreadyrunning). Here the value is wrapped in the following Data Factory expression as a request body passed to the Azure Management API:
+
+```json
+{
+  "lastUpdatedAfter": "@{adddays(utcnow(),int(activity('Get Query Run Days Value').output.firstRow.PropertyValue))}",
+  "lastUpdatedBefore": "@{utcnow()}",
+  "filters": [
+    {
+      "operand": "PipelineName",
+      "operator": "Equals",
+      "values": [
+        "@{pipeline().parameters.PipelineName}"
+      ]
+    }
+  ]
+}
+```
+
+___

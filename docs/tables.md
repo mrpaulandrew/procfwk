@@ -17,6 +17,45 @@ __Definition:__ Used to provide a static list of available pipeline status outco
 |3|BitValue|int|4|Yes
 
 
+## Batches
+__Schema:__ procfwk
+
+__Definition:__ Base metadata information used in the running of [batch executions](/procfwk/executionbatches). For a given execution values from this table are inspected and taken into the [BatchExecution] table. 
+
+|Id|Attribute|Data Type|Length|Nullable
+|:---:|---|---|:---:|:---:|
+|1|BatchId|uniqueidentifier|16|No
+|2|BatchName|varchar|255|No
+|3|BatchDescription|varchar|4000|Yes
+|4|Enabled|bit|1|No
+
+
+## BatchExecution
+__Schema:__ procfwk
+
+__Definition:__ For new and previous executions of the processing framework using the [batch executions](/procfwk/executionbatches) concept this table will house details of when the batch started/finished and its status. Either; Running, Stopping, Stopped or Succeeded.
+
+|Id|Attribute|Data Type|Length|Nullable
+|:---:|---|---|:---:|:---:|
+|1|BatchId|uniqueidentifier|16|No
+|2|ExecutionId|uniqueidentifier|16|No
+|3|BatchName|varchar|255|No
+|4|BatchStatus|nvarchar|400|No
+|5|StartDateTime|datetime|8|No
+|6|EndDateTime|datetime|8|Yes
+
+
+## BatchStageLink
+__Schema:__ procfwk
+
+__Definition:__ Provides a link between the [batch execution](/procfwk/executionbatches) table and the execution stages. It is expected that a defined batch will have one or many [execution stages](/procfwk/executionstages), these can also be reused with the same stage belonging to different batches. Both attributes within the table form the primary key.
+
+|Id|Attribute|Data Type|Length|Nullable
+|:---:|---|---|:---:|:---:|
+|1|BatchId|uniqueidentifier|16|No
+|2|StageId|int|4|No
+
+
 ## CurrentExecution
 __Schema:__ procfwk
 
@@ -136,7 +175,7 @@ __Definition:__ When using the failure handling [property](/procfwk/properties) 
 ## PipelineParameters
 __Schema:__ procfwk
 
-__Definition:__ Worker pipeline parameters are sorted in this table as metadata and provided to the worker at runtime by the framework. A given worker can have none or many parameters limited only by the underlying resources in terms of amount and size.
+__Definition:__ Worker pipeline parameters are stored in this table as metadata and provided to the worker at runtime by the framework infant [pipeline](/procfwk/pipelines). A given worker can have none or many parameters limited only by the underlying resources in terms of amount and data value size. In addition, a parameter value used will get persisted to the last value used attribute, this is then over written every time the worker requests its parameters.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -144,6 +183,7 @@ __Definition:__ Worker pipeline parameters are sorted in this table as metadata 
 |2|PipelineId|int|4|No
 |3|ParameterName|varchar|128|No
 |4|ParameterValue|nvarchar|max|Yes
+|5|ParameterValueLastUsed|nvarchar|max|Yes
 
 
 ## Pipelines

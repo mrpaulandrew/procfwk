@@ -28,6 +28,7 @@ ___
 * [Helpers](/procfwk/helpers)
 * [Execute Pipeline](/procfwk/executepipeline)
 * [Check Pipeline Status](/procfwk/checkpipelinestatus)
+* [Validate Pipeline](/procfwk/validatepipeline)
 * [Get Error Details](/procfwk/geterrordetails)
 * [Send Email](/procfwk/sendemail)
 
@@ -35,6 +36,7 @@ ___
 
 ## Framework Capabilities
 
+* [Execution Batches](/procfwk/executionbatches)
 * [Execution Stages](/procfwk/executionstages)
 * [Scale Out Processing](/procfwk/scaleoutprocessing)
 * [Restarting Executions](/procfwk/frameworkrestart)
@@ -52,6 +54,7 @@ ___
 * [Email Alerting](/procfwk/emailalerting)
 * [Reporting](/procfwk/reporting)
 * [Testing](/procfwk/testing)
+* [Pipeline Running Check](/procfwk/pipelinealreadyrunning)
 
 ___
 

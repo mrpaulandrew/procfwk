@@ -27,6 +27,13 @@ This procedure is intended as a set pass/fail checks to prevent any runtime fail
 - When using DependencyChain failure handling, are there any dependants in the same execution stage of the predecessor?
 - Does the SPNHandlingMethod property have a valid value?
 - Does the Service Principal table contain both types of SPN handling for a single credential?
+- Is there a current UseExecutionBatches property available?
+- Is there a current FrameworkFactoryResourceGroup property available?
+- Is there a current PreviousPipelineRunsQueryRange property available?
+- If using batch executions, is the requested batch name enabled?
+- If using batch executions, does the requested batch have links to execution stages?
+- Have batch executions been enabled after a none batch execution run?
+- Has the execution failed due to an invalid pipeline name? If so, attend to update this before the next run.
 
 In the event any check fails an exception will be raised stopping the parent pipeline and framework execution run from proceeding.
 
@@ -35,8 +42,12 @@ If an exception is thrown, the stored procedure can be used in debug mode, seen 
 ```sql
 EXEC [procfwk].[CheckMetadataIntegrity] 
     @DebugMode = 1;
-```
 
+--OR, with batch executions enabled:
+
+EXEC [procfwk].[CheckMetadataIntegrity] 
+    @BatchName = 'Daily',
+    @DebugMode = 1;
+```
 ___
 
-In addition to checking existing metadata integrity, the [stored procedure](/procfwk/storedprocedures) establishes if an execution run [clean up](/procfwk/prevruncleanup) is required. This secondary output is done here for convenience using a lookup activity within the parent [pipeline](/procfwk/pipelines) activity chain.

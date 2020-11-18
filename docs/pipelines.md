@@ -13,7 +13,7 @@ The grandparent level within the processing framework solution is completely opt
 
 ___
 
-## Parent - Framework Executor
+## Parent - Framework/Batch Executor
 ![Parent Pipeline](/procfwk/parent.png){:style="float: right;margin-left: 15px;margin-bottom: 10px; width: 150px;"}
 __Role:__ Execution run wrapper and execution stage iterator.
 
@@ -54,3 +54,24 @@ __Role:__ Anything specific to the process needing to be performed.
 Worker pipeline internals fall outside the remit of the processing framework. They exist only as items registered within the metadata plus associated parameters (if required). Worker pipelines are expected to contain whatever activities are required for a given process and should not use content from the processing framework metadata database other than the pipeline level parameters provided at runtime.
 
 By design [worker pipelines can be decoupled](/procfwk/workerdecoupling) from the main orchestration pipelines above and live in separate Data Factory resources.
+
+____
+
+## Utilities
+
+Utility pipelines are small reusable packages within the processing framework that support the above generational pipelines. These sit within the framework Data Factory instance in the sub folder '_ProcFwkUtils'
+
+### Throw Exception
+
+This utility provide a simple way of throwing an exception within Data Factory using a T-SQL raise error to throw an exception when required as part of the wider control flow activities. The T-SQL raise rrror message information is then exposed as a pipeline parameter, shown below.
+```sql
+RAISERROR('@{pipeline().parameters.Message}',16,1);
+```
+
+### Email Sender
+
+This pipeline provides a simple abstract over the [send email](/procfwk/sendemail) function with request body items exposed as easy to use pipeline parameters.
+
+### Check For Running Pipeline
+
+See [Pipeline Already Running](/procfwk/pipelinealreadyrunning) for more details.
