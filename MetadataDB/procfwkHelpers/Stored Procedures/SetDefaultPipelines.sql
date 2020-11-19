@@ -31,10 +31,10 @@ BEGIN
 		(1,3	,'Wait 9'				,6			,1),
 		(1,4	,'Wait 10'				,9			,1),
 		--speed
-		(1,5	,'Wait 1'				,NULL		,1),
-		(1,5	,'Wait 2'				,NULL		,1),
-		(1,5	,'Wait 3'				,NULL		,1),
-		(1,5	,'Wait 4'				,NULL		,1);
+		(1,5	,'Wait 1'				,NULL		,0),
+		(1,5	,'Wait 2'				,NULL		,0),
+		(1,5	,'Wait 3'				,NULL		,0),
+		(1,5	,'Wait 4'				,NULL		,0);
 
 	MERGE INTO [procfwk].[Pipelines] AS tgt
 	USING 

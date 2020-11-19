@@ -15,7 +15,6 @@ BEGIN
 		[Enabled]
 		) 
 	VALUES 
-		('NotUsed', N'Batch Executions Not Implemented.', 1),
 		('Daily', N'Daily Worker Pipelines.', 1),
 		('Hourly', N'Hourly Worker Pipelines.', 1);	
 

@@ -19,7 +19,7 @@ namespace FactoryTesting.Pipelines.Parent
                 .WithEmptyExecutionTables()
                 .WithoutSimulatedError()
                 .WithFailureHandling("Simple")
-                .WithSingleExecutionStage(); 
+                .WithSingleExecutionStage();
             await _helper.RunPipeline();
         }
 

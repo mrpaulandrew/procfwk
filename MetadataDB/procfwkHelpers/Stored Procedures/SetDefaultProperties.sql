@@ -23,7 +23,7 @@ BEGIN
 
 	EXEC [procfwkHelpers].[AddProperty]
 		@PropertyName = N'UseFrameworkEmailAlerting',
-		@PropertyValue = N'1',
+		@PropertyValue = N'0',
 		@Description = N'Do you want the framework to handle pipeline email alerts via the database metadata? 1 = Yes, 0 = No.';
 
 	EXEC [procfwkHelpers].[AddProperty]
@@ -58,7 +58,7 @@ BEGIN
 	EXEC [procfwkHelpers].[AddProperty]
 		@PropertyName = N'UseExecutionBatches',
 		@PropertyValue = N'0',
-		@Description = N'Establishes if execution batches are used as a level above execution stages within the framework.';
+		@Description = N'Establishes if execution batches are used as a level above execution stages within the framework. 1 = True, 0 = False.';
 
 	EXEC [procfwkHelpers].[AddProperty]
 		@PropertyName = N'FrameworkFactoryResourceGroup',
@@ -67,6 +67,6 @@ BEGIN
 
 	EXEC [procfwkHelpers].[AddProperty]
 		@PropertyName = N'PreviousPipelineRunsQueryRange',
-		@PropertyValue = N'-10',
-		@Description = N'Used as a date range, today +- this value, when checking for if an execution for a given pipeline is already running.';
+		@PropertyValue = N'-1',
+		@Description = N'Used as a date range, today +- this value, when checking for if an execution for a given pipeline is already running. Must include +- symbol in value.';
 END;

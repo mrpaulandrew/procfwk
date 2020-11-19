@@ -360,6 +360,7 @@
 					"ifTrueActivities": [
 						{
 							"name": "Get Email Parts",
+							"description": "Return all required content from the metadata database to send an email alerting using the procfwk. The lookup returns the exact content for the function body request.",
 							"type": "Lookup",
 							"dependsOn": [],
 							"policy": {
@@ -395,6 +396,7 @@
 						},
 						{
 							"name": "Send Email",
+							"description": "Use an Azure Function to perform an SMTP client email send operation.",
 							"type": "AzureFunctionActivity",
 							"dependsOn": [
 								{
@@ -1194,6 +1196,7 @@
 			},
 			{
 				"name": "Validate Pipeline",
+				"description": "Query the target data factory and establish if the provided worker pipeline name is valid.",
 				"type": "AzureFunctionActivity",
 				"dependsOn": [
 					{
@@ -1246,11 +1249,11 @@
 					}
 				],
 				"policy": {
-					"timeout": "7.00:00:00",
+					"timeout": "0.00:10:00",
 					"retry": 0,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
-					"secureInput": false
+					"secureInput": true
 				},
 				"userProperties": [],
 				"typeProperties": {
@@ -1268,6 +1271,7 @@
 			},
 			{
 				"name": "Is Target Worker Validate",
+				"description": "True = the worker pipeline name is valid.\nFalse = the worker pipeline name is invalid. Raise an exception.",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
@@ -1286,6 +1290,7 @@
 					"ifFalseActivities": [
 						{
 							"name": "Throw Exception - Invalid Infant",
+							"description": "Throw an exception with details about the invalid worker pipeline name.",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
 							"userProperties": [],
@@ -1305,6 +1310,7 @@
 						},
 						{
 							"name": "Update Execution With Invalid Worker",
+							"description": "Update the current execution table with an informed status for the worker pipeline that couldn't be executed.",
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
 							"policy": {
@@ -1497,7 +1503,7 @@
 			"name": "_ProcFwk"
 		},
 		"annotations": [
-			"ADF.procfwk",
+			"procfwk",
 			"Infant"
 		]
 	}

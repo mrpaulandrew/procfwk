@@ -34,7 +34,7 @@
 			"name": "_ProcFwk"
 		},
 		"annotations": [
-			"ADF.procfwk",
+			"procfwk",
 			"Grandparent"
 		]
 	}

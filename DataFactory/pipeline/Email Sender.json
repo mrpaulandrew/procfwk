@@ -1,13 +1,15 @@
 {
 	"name": "Email Sender",
 	"properties": {
+		"description": "Provide a simple abstract over the send email function with request body item exposed as pipeline parameters.",
 		"activities": [
 			{
 				"name": "Send Email",
+				"description": "Use an Azure Function to perform an SMTP client email send operation.",
 				"type": "AzureFunctionActivity",
 				"dependsOn": [],
 				"policy": {
-					"timeout": "7.00:00:00",
+					"timeout": "0.00:10:00",
 					"retry": 0,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
@@ -51,6 +53,9 @@
 		"folder": {
 			"name": "_ProcFwk/_ProcFwkUtils"
 		},
-		"annotations": []
+		"annotations": [
+			"procfwk",
+			"Utils"
+		]
 	}
 }

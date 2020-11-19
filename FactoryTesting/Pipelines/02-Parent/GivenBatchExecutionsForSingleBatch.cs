@@ -1,11 +1,11 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using System.Threading.Tasks;
 
 namespace FactoryTesting.Pipelines.Parent
 {
-    public class GivenNoErrorsAndSPNStoredInDatabase
+    public class GivenBatchExecutionsForSingleBatch
     {
         private ParentHelper _helper;
 
@@ -17,22 +17,20 @@ namespace FactoryTesting.Pipelines.Parent
                 .WithTenantAndSubscriptionIds()
                 .WithSPNInDatabase("FrameworkFactory")
                 .WithEmptyExecutionTables()
-                .WithoutSimulatedError()
-                .WithFailureHandling("Simple");
+                .WithBatchExecutionHandling()
+                .WithStagesEnabled()
+                .WithPipelinesEnabled()
+                .WithParameter("BatchName", "Hourly");
             await _helper.RunPipeline();
         }
 
-        #region Integration tests
+        #region Functional tests
 
         [Test]
         public void ThenPipelineOutcomeIsSucceeded()
         {
             _helper.RunOutcome.Should().Be("Succeeded");
         }
-
-        #endregion
-
-        #region Functional tests
 
         [Test]
         public void ThenCurrentExecutionTableIsEmpty()
@@ -41,11 +39,16 @@ namespace FactoryTesting.Pipelines.Parent
         }
 
         [Test]
-        public void ThenElevenExecutionLogRecords()
+        public void ThenFourExecutionLogSuccessRecords()
         {
-            _helper.RowCount("procfwk.ExecutionLog").Should().Be(11);
+            _helper.RowCount("procfwk.ExecutionLog", where: "PipelineStatus", equals: "Success").Should().Be(4);
         }
 
+        [Test]
+        public void ThenOneBatchExecutionSuccessRecord()
+        {
+            _helper.RowCount("procfwk.BatchExecution", where: "BatchStatus", equals: "Success").Should().Be(1);
+        }
         #endregion
 
         [OneTimeTearDown]

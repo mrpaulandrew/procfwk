@@ -92,15 +92,17 @@ BEGIN
 						RAISERROR('Framework execution complete for batch but not all Worker pipelines succeeded. See the [procfwk].[CurrentExecution] table for details',16,1);
 						RETURN 0;
 					END;
-			END;
-
-			UPDATE
-				[procfwk].[BatchExecution]
-			SET
-				[BatchStatus] = 'Success',
-				[EndDateTime] = GETUTCDATE()
-			WHERE
-				[ExecutionId] = @ExecutionId;
+				ELSE
+					BEGIN
+						UPDATE
+							[procfwk].[BatchExecution]
+						SET
+							[BatchStatus] = 'Success',
+							[EndDateTime] = GETUTCDATE()
+						WHERE
+							[ExecutionId] = @ExecutionId;
+					END;
+			END; --end check
 
 			--Do this if no error raised and when called by the execution wrapper (OverideRestart = 1).
 			INSERT INTO [procfwk].[ExecutionLog]

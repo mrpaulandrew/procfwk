@@ -1,11 +1,11 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using System.Threading.Tasks;
 
 namespace FactoryTesting.Pipelines.Parent
 {
-    public class GivenNoErrorsAndSPNStoredInDatabase
+    public class GivenDisabledBatches
     {
         private ParentHelper _helper;
 
@@ -17,33 +17,17 @@ namespace FactoryTesting.Pipelines.Parent
                 .WithTenantAndSubscriptionIds()
                 .WithSPNInDatabase("FrameworkFactory")
                 .WithEmptyExecutionTables()
-                .WithoutSimulatedError()
-                .WithFailureHandling("Simple");
+                .WithBatchExecutionHandling()
+                .WithBatchesDisabled();
             await _helper.RunPipeline();
         }
 
         #region Integration tests
 
         [Test]
-        public void ThenPipelineOutcomeIsSucceeded()
+        public void ThenPipelineOutcomeIsFailed()
         {
-            _helper.RunOutcome.Should().Be("Succeeded");
-        }
-
-        #endregion
-
-        #region Functional tests
-
-        [Test]
-        public void ThenCurrentExecutionTableIsEmpty()
-        {
-            _helper.RowCount("procfwk.CurrentExecution").Should().Be(0);
-        }
-
-        [Test]
-        public void ThenElevenExecutionLogRecords()
-        {
-            _helper.RowCount("procfwk.ExecutionLog").Should().Be(11);
+            _helper.RunOutcome.Should().Be("Failed");
         }
 
         #endregion

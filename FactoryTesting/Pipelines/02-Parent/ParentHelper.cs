@@ -1,6 +1,7 @@
 ﻿using FactoryTesting.Helpers;
 using System;
 using System.Data.SqlClient;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -10,6 +11,11 @@ namespace FactoryTesting.Pipelines.Parent
     {
         public async Task RunPipeline()
         {
+            await RunPipeline("02-Parent");
+        }
+        public async Task RunPipeline(int fakeDelayMilliseconds)
+        {
+            Thread.Sleep(fakeDelayMilliseconds);
             await RunPipeline("02-Parent");
         }
 
@@ -76,12 +82,18 @@ namespace FactoryTesting.Pipelines.Parent
             return this;
         }
 
+        public ParentHelper WithBatchesDisabled()
+        {
+            EnableDisableMetadata("Batches", false);
+            return this;
+        }
+
         public ParentHelper WithStagesDisabled()
         {
             EnableDisableMetadata("Stages", false);
             return this;
         }
-        
+
         public ParentHelper WithStagesEnabled()
         {
             EnableDisableMetadata("Stages", true);
@@ -93,6 +105,7 @@ namespace FactoryTesting.Pipelines.Parent
             EnableDisableMetadata("Stages", false, "StageId", "2");
             EnableDisableMetadata("Stages", false, "StageId", "3");
             EnableDisableMetadata("Stages", false, "StageId", "4");
+            EnableDisableMetadata("Stages", false, "StageId", "5");
             return this;
         }
 
@@ -111,6 +124,23 @@ namespace FactoryTesting.Pipelines.Parent
             SetParameterValue("120", "ParameterName", "WaitTime");
             return this;
         }
+
+        public ParentHelper WithBatchExecutionHandling()
+        {
+            ExecuteNonQuery(@$"UPDATE [procfwk].[Properties] 
+SET [PropertyValue] = '1' 
+WHERE [PropertyName] = 'UseExecutionBatches'");
+            return this;
+        }
+
+        public ParentHelper WithoutBatchExecutionHandling()
+        {
+            ExecuteNonQuery(@$"UPDATE [procfwk].[Properties] 
+SET [PropertyValue] = '0' 
+WHERE [PropertyName] = 'UseExecutionBatches'");
+            return this;
+        }
+
         public ParentHelper WithFailureHandling(string mode)
         {
             ExecuteNonQuery(@$"UPDATE [procfwk].[Properties] 
