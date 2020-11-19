@@ -46,3 +46,7 @@ To use execution batches the following four updates should be made to processing
 2. Add batch information to the table [procfwk].[Batches].
 3. Add links between the execution batch and execution stages using the table [procfwk].[BatchStageLink].
 4. Trigger the parent pipeline providing the new batch name value as a pipeline parameter.
+
+Please check out a demostration of this feature on my YouTube channel:
+
+[![YouTube Demo Video](youtubeheader.png)](https://www.youtube.com/watch?v=V2R6AmFJrsA "Alt Text"){:target="_blank"}
