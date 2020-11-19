@@ -1,8 +1,9 @@
 ﻿CREATE PROCEDURE [procfwkTesting].[Add300WorkerPipelines]
 AS
 BEGIN
+	SET NOCOUNT ON;
 
-	--clear the decks from dev metadata
+	--clear default metadata
 	DELETE FROM [procfwk].[PipelineDependencies];
 	DBCC CHECKIDENT ('[procfwk].[PipelineDependencies]', RESEED, 0);
 
@@ -38,7 +39,7 @@ BEGIN
 	;WITH cte AS
 		(
 		SELECT TOP 300
-			ROW_NUMBER() OVER (ORDER BY s1.[object_id]) AS 'Number'
+			ROW_NUMBER() OVER (ORDER BY s1.[object_id]) AS Number
 		FROM 
 			sys.all_columns AS s1
 			CROSS JOIN sys.all_columns AS s2

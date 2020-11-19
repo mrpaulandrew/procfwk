@@ -24,7 +24,7 @@ namespace FactoryTesting.Pipelines.Parent
 
         #region Integration tests
 
-        [Test, Order(1)]
+        [Test]
         public void ThenPipelineOutcomeIsSucceeded()
         {
             _helper.RunOutcome.Should().Be("Succeeded");
@@ -34,13 +34,13 @@ namespace FactoryTesting.Pipelines.Parent
 
         #region Functional tests
 
-        [Test, Order(2)]
+        [Test]
         public void ThenCurrentExecutionTableIsEmpty()
         {
             _helper.RowCount("procfwk.CurrentExecution").Should().Be(0);
         }
 
-        [Test, Order(3)]
+        [Test]
         public void ThenElevenExecutionLogRecords()
         {
             _helper.RowCount("procfwk.ExecutionLog").Should().Be(11);

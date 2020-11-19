@@ -41,7 +41,7 @@ namespace FactoryTesting.Pipelines.Parent
             _helperRestartRun.RowCount("procfwk.ExecutionLog", where: "PipelineStatus", equals: "Failed").Should().Be(2);
         }
         [Test]
-        public void ThenElevenExecutionLogSuccessRecord()
+        public void ThenFourthteenExecutionLogSuccessRecord()
         {
             _helperRestartRun.RowCount("procfwk.ExecutionLog", where: "PipelineStatus", equals: "Success").Should().Be(14);
         }

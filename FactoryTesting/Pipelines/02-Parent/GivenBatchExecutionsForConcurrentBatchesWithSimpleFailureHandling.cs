@@ -91,6 +91,12 @@ namespace FactoryTesting.Pipelines.Parent
             _helperSecondBatch.RowCount("procfwk.ExecutionLog", where: "PipelineStatus", equals: "Failed").Should().Be(1);
         }
 
+        [Test]
+        public void ThenTwoErrorLogRecords()
+        {
+            _helperSecondBatch.RowCount("procfwk.ErrorLog").Should().Be(2);
+        }
+
         #endregion
 
         [OneTimeTearDown]
