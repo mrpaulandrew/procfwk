@@ -16,11 +16,20 @@
 					},
 					"waitOnCompletion": true,
 					"parameters": {
-						"BatchName": ""
+						"BatchName": {
+							"value": "@pipeline().parameters.BatchName",
+							"type": "Expression"
+						}
 					}
 				}
 			}
 		],
+		"parameters": {
+			"BatchName": {
+				"type": "string",
+				"defaultValue": "NotUsed"
+			}
+		},
 		"folder": {
 			"name": "_ProcFwk"
 		},
