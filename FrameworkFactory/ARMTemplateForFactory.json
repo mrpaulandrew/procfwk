@@ -32,8 +32,8 @@
 				"description": "ADF.procfwk grandparent pipeline used optionally to bootstrap any wider processes in your Data Factory that then calls the processing framework.",
 				"activities": [
 					{
-						"name": "procfwk - Hourly Batch",
-						"description": "Call procfwk - for hourly batch load.",
+						"name": "procfwk",
+						"description": "Call procfwk",
 						"type": "ExecutePipeline",
 						"dependsOn": [],
 						"userProperties": [],
@@ -44,24 +44,7 @@
 							},
 							"waitOnCompletion": true,
 							"parameters": {
-								"BatchName": "Hourly"
-							}
-						}
-					},
-					{
-						"name": "procfwk - Daily Batch",
-						"description": "Call procfwk - for daily batch load.",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "02-Parent",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"BatchName": "Daily"
+								"BatchName": ""
 							}
 						}
 					}
@@ -1307,7 +1290,7 @@
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [
 							{
-								"activity": "Target Worker Pipeline Exists",
+								"activity": "Is Target Worker Validate",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -2500,7 +2483,7 @@
 						}
 					},
 					{
-						"name": "Target Worker Pipeline Exists",
+						"name": "Is Target Worker Validate",
 						"type": "IfCondition",
 						"dependsOn": [
 							{
@@ -2518,7 +2501,7 @@
 							},
 							"ifFalseActivities": [
 								{
-									"name": "Throw Exception Stopping Infant",
+									"name": "Throw Exception - Invalid Infant",
 									"type": "ExecutePipeline",
 									"dependsOn": [],
 									"userProperties": [],
@@ -2537,7 +2520,7 @@
 									}
 								},
 								{
-									"name": "Update Execution Log with Invalid Worker",
+									"name": "Update Execution With Invalid Worker",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
@@ -2774,18 +2757,6 @@
 						"type": "WebActivity",
 						"dependsOn": [
 							{
-								"activity": "Set Parsed Subscription",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Get Resource Group",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
 								"activity": "Get Query Run Days Value",
 								"dependencyConditions": [
 									"Succeeded"
@@ -2949,7 +2920,7 @@
 							},
 							"ifTrueActivities": [
 								{
-									"name": "Throw Error Pipeline Running",
+									"name": "Throw Exceptiion - Pipeline Running",
 									"type": "ExecutePipeline",
 									"dependsOn": [],
 									"userProperties": [],
