@@ -10,6 +10,8 @@ SELECT * FROM [procfwk].[Batches]
 
 SELECT * FROM [procfwk].[BatchStageLink]
 
+SELECT * FROM [procfwk].[DataFactorys]
+
 SELECT * FROM [procfwk].[Stages]
 
 SELECT * FROM [procfwk].[Pipelines]
