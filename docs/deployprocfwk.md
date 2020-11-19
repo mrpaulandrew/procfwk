@@ -7,7 +7,9 @@ ___
 
 ## ProcFwk Deployment Steps
 
-Below are the basic steps you'll need to take to deploy the processing framework to your environment. Currently these steps assume a new deployment is being done, rather than an upgrade from a previous version of the framework. In addition a reasonable working knowledge of using the Microsoft Azure platform is assumed when completing these action points.
+Below are the basic steps you'll need to take to deploy the processing framework to your environment. Currently these steps assume a new deployment is being done, rather than an upgrade from a previous version of the framework. In addition, a reasonable working knowledge of using the Microsoft Azure platform is assumed when completing these action points.
+
+Please see [Service Tiers](/procfwk/servicetiers) for details on the recommended minimum levels of compute to deploy.
 
 Note; in the case of most deployment steps, things can be tailored to your specific environment requirements. For example, using an existing SQL database or Key Vault.
 
@@ -17,7 +19,7 @@ ___
 * Deploy an [Azure Data Factory](/procfwk/datafactory) instance and connect it to source control - recommended, but not essential.
   * Grant Data Factory's MSI access to itself to support the framework pipeline [already running checks](/procfwk/pipelinealreadyrunning).
 * Create a [SQL database](/procfwk/database).
-* Create an [Azure Functions App](/procfwk/functions), a Consumption App Service Plan is fine for the processing framework.
+* Create an [Azure Functions App](/procfwk/functions), a Consumption App Service Plan is fine for the processing framework, see [service tiers](/procfwk/servicetiers) for more details.
 * Optionally create an Azure Key Vault.
 	* Used for Data Factory [Linked Service](/procfwk/linkedservices) connection authentication.
 	* Used to house [SPN details](/procfwk/spnhandling) when authenticating against worker [pipelines](/procfwk/pipelines).

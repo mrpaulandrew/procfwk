@@ -62,6 +62,7 @@ ___
 * Feedback
   * [Raise a Bug](https://github.com/mrpaulandrew/procfwk/issues/new?labels=bug&template=bug-found.md&title=){:target="_blank"}
   * [Request a New Feature](https://github.com/mrpaulandrew/procfwk/issues/new?labels=enhancement&template=feature-request.md&title=){:target="_blank"}
+* [Azure Service Tiers](/procfwk/servicetiers)
 * [Glossary](/procfwk/glossary)
 * [Contributors](/procfwk/contributors)
 * [Resources](/procfwk/resources)
