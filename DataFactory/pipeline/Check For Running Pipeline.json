@@ -196,7 +196,7 @@
 					},
 					"ifTrueActivities": [
 						{
-							"name": "Throw Exceptiion - Pipeline Running",
+							"name": "Throw Exception - Pipeline Running",
 							"description": "Using the utils pipeline raise an exception to stop the new trigger while a run is already in progress.",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
