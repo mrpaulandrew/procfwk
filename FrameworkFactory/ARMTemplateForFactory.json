@@ -62,7 +62,7 @@
 					"name": "_ProcFwk"
 				},
 				"annotations": [
-					"ADF.procfwk",
+					"procfwk",
 					"Grandparent"
 				]
 			},
@@ -352,7 +352,7 @@
 					},
 					{
 						"name": "Check Previous Execution",
-						"description": "",
+						"description": "Query the current execution table for worker pipelines that require a clean up from the previous execution run.",
 						"type": "Lookup",
 						"dependsOn": [
 							{
@@ -429,7 +429,7 @@
 										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
+										"secureOutput": true,
 										"secureInput": false
 									},
 									"userProperties": [],
@@ -988,6 +988,7 @@
 					},
 					{
 						"name": "Is Parent Already Running",
+						"description": "Establish before anything else if the parent pipeline is already running. Batch execution aware.",
 						"type": "ExecutePipeline",
 						"dependsOn": [],
 						"userProperties": [],
@@ -1026,7 +1027,7 @@
 							}
 						],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -1073,7 +1074,7 @@
 					"name": "_ProcFwk"
 				},
 				"annotations": [
-					"ADF.procfwk",
+					"procfwk",
 					"Parent"
 				]
 			},
@@ -1201,7 +1202,7 @@
 					"name": "_ProcFwk"
 				},
 				"annotations": [
-					"ADF.procfwk",
+					"procfwk",
 					"Child"
 				]
 			},
@@ -1578,6 +1579,7 @@
 							"ifTrueActivities": [
 								{
 									"name": "Get Email Parts",
+									"description": "Return all required content from the metadata database to send an email alerting using the procfwk. The lookup returns the exact content for the function body request.",
 									"type": "Lookup",
 									"dependsOn": [],
 									"policy": {
@@ -1614,6 +1616,7 @@
 								},
 								{
 									"name": "Send Email",
+									"description": "Use an Azure Function to perform an SMTP client email send operation.",
 									"type": "AzureFunctionActivity",
 									"dependsOn": [
 										{
@@ -2418,6 +2421,7 @@
 					},
 					{
 						"name": "Validate Pipeline",
+						"description": "Query the target data factory and establish if the provided worker pipeline name is valid.",
 						"type": "AzureFunctionActivity",
 						"dependsOn": [
 							{
@@ -2470,11 +2474,11 @@
 							}
 						],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
-							"secureInput": false
+							"secureInput": true
 						},
 						"userProperties": [],
 						"typeProperties": {
@@ -2493,6 +2497,7 @@
 					},
 					{
 						"name": "Is Target Worker Validate",
+						"description": "True = the worker pipeline name is valid.\nFalse = the worker pipeline name is invalid. Raise an exception.",
 						"type": "IfCondition",
 						"dependsOn": [
 							{
@@ -2511,6 +2516,7 @@
 							"ifFalseActivities": [
 								{
 									"name": "Throw Exception - Invalid Infant",
+									"description": "Throw an exception with details about the invalid worker pipeline name.",
 									"type": "ExecutePipeline",
 									"dependsOn": [],
 									"userProperties": [],
@@ -2530,6 +2536,7 @@
 								},
 								{
 									"name": "Update Execution With Invalid Worker",
+									"description": "Update the current execution table with an informed status for the worker pipeline that couldn't be executed.",
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
@@ -2722,7 +2729,7 @@
 					"name": "_ProcFwk"
 				},
 				"annotations": [
-					"ADF.procfwk",
+					"procfwk",
 					"Infant"
 				]
 			},
@@ -2738,13 +2745,15 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"description": "For a given pipeline and optional batch name establish if a pipeline run is already in progress. Throw an exception if it it.",
 				"activities": [
 					{
 						"name": "Get Subscription",
+						"description": "Use the Azure Management API to return the current subscription.",
 						"type": "WebActivity",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -2763,6 +2772,7 @@
 					},
 					{
 						"name": "Get Pipeline Runs",
+						"description": "Use the Azure Management API to return a list of pipeline runs within the given time window.",
 						"type": "WebActivity",
 						"dependsOn": [
 							{
@@ -2779,7 +2789,7 @@
 							}
 						],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -2805,6 +2815,7 @@
 					},
 					{
 						"name": "Set Parsed Subscription",
+						"description": "Parse the subscription string value to return just the subscription ID.",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -2825,6 +2836,7 @@
 					},
 					{
 						"name": "Filter Running Pipelines",
+						"description": "Filter the pipeline runs results for pipelines that exclude the current triggered run and that are currently running (in progress or queued).",
 						"type": "Filter",
 						"dependsOn": [
 							{
@@ -2848,10 +2860,11 @@
 					},
 					{
 						"name": "Get Resource Group",
+						"description": "Using the metadata properties table return the framework factory resource group name.",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -2880,10 +2893,11 @@
 					},
 					{
 						"name": "Get Query Run Days Value",
+						"description": "Using the metadata properties table return the run days value to provide the API request with a date range for pipeline executions.",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -2912,6 +2926,7 @@
 					},
 					{
 						"name": "If Pipeline Is Running",
+						"description": "If the running pipeline count is greater than or equal to one.\nTrue = raise an exception.",
 						"type": "IfCondition",
 						"dependsOn": [
 							{
@@ -2929,7 +2944,8 @@
 							},
 							"ifTrueActivities": [
 								{
-									"name": "Throw Exceptiion - Pipeline Running",
+									"name": "Throw Exception - Pipeline Running",
+									"description": "Using the utils pipeline raise an exception to stop the new trigger while a run is already in progress.",
 									"type": "ExecutePipeline",
 									"dependsOn": [],
 									"userProperties": [],
@@ -2952,10 +2968,11 @@
 					},
 					{
 						"name": "Get Execution Batch Status",
+						"description": "Using the metadata properties table return the flag to indicate if batch execution setting are enabled or disabled.",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -2984,6 +3001,7 @@
 					},
 					{
 						"name": "If Using Batch Executions",
+						"description": "True = batch executions are enabled.\nFalse = batch execution are disabled.",
 						"type": "IfCondition",
 						"dependsOn": [
 							{
@@ -3008,6 +3026,7 @@
 							"ifFalseActivities": [
 								{
 									"name": "Set Run Count Without Batch",
+									"description": "Set the pipelines running count variable to be tested later.",
 									"type": "SetVariable",
 									"dependsOn": [],
 									"userProperties": [],
@@ -3023,6 +3042,7 @@
 							"ifTrueActivities": [
 								{
 									"name": "Filter for Batch Name",
+									"description": "Further filter the return pipeline runs for any running pipelines with the same batch name value.",
 									"type": "Filter",
 									"dependsOn": [],
 									"userProperties": [],
@@ -3039,6 +3059,7 @@
 								},
 								{
 									"name": "Set Run Count for Batch",
+									"description": "Set the resulting pipeline running count variable to be tested later.",
 									"type": "SetVariable",
 									"dependsOn": [
 										{
@@ -3062,6 +3083,7 @@
 					},
 					{
 						"name": "Check for Valid Pipeline Name",
+						"description": "Use the Azure Management API to return and establish if the framework pipeline exists in the target Data Factory, including being deployed.",
 						"type": "WebActivity",
 						"dependsOn": [
 							{
@@ -3078,7 +3100,7 @@
 							}
 						],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -3122,7 +3144,10 @@
 				"folder": {
 					"name": "_ProcFwk/_ProcFwkUtils"
 				},
-				"annotations": []
+				"annotations": [
+					"procfwk",
+					"Utils"
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
@@ -3134,13 +3159,15 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"description": "Provide a simple abstract over the send email function with request body item exposed as pipeline parameters.",
 				"activities": [
 					{
 						"name": "Send Email",
+						"description": "Use an Azure Function to perform an SMTP client email send operation.",
 						"type": "AzureFunctionActivity",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -3185,7 +3212,10 @@
 				"folder": {
 					"name": "_ProcFwk/_ProcFwkUtils"
 				},
-				"annotations": []
+				"annotations": [
+					"procfwk",
+					"Utils"
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/FrameworkFunctions')]"
@@ -3289,13 +3319,15 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"description": "Provide a simple way of throwing an exception within Data Factory using TSQL error handling.",
 				"activities": [
 					{
 						"name": "Raise Error",
+						"description": "Using a SQL database to raise an error/exception but wrapped up as a data factory pipeline. Error message information exposed as a pipeline parameter.",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -3329,7 +3361,10 @@
 				"folder": {
 					"name": "_ProcFwk/_ProcFwkUtils"
 				},
-				"annotations": []
+				"annotations": [
+					"procfwk",
+					"Utils"
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]"

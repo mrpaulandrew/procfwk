@@ -294,7 +294,7 @@
 					},
 					{
 						"name": "Check Previous Execution",
-						"description": "",
+						"description": "Query the current execution table for worker pipelines that require a clean up from the previous execution run.",
 						"type": "Lookup",
 						"dependsOn": [
 							{
@@ -371,7 +371,7 @@
 										"timeout": "0.00:10:00",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
+										"secureOutput": true,
 										"secureInput": false
 									},
 									"userProperties": [],
@@ -930,6 +930,7 @@
 					},
 					{
 						"name": "Is Parent Already Running",
+						"description": "Establish before anything else if the parent pipeline is already running. Batch execution aware.",
 						"type": "ExecutePipeline",
 						"dependsOn": [],
 						"userProperties": [],
@@ -968,7 +969,7 @@
 							}
 						],
 						"policy": {
-							"timeout": "7.00:00:00",
+							"timeout": "0.00:10:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -1015,7 +1016,7 @@
 					"name": "_ProcFwk"
 				},
 				"annotations": [
-					"ADF.procfwk",
+					"procfwk",
 					"Parent"
 				]
 			},
@@ -1059,7 +1060,7 @@
 					"name": "_ProcFwk"
 				},
 				"annotations": [
-					"ADF.procfwk",
+					"procfwk",
 					"Grandparent"
 				]
 			},
