@@ -187,6 +187,12 @@ WHERE [PropertyName] = 'ExecutionPrecursorProc'");
             return this;
         }
 
+        public ParentHelper WithCustom()
+        {
+            ExecuteStoredProcedure("[dbo].[PaulTemp]", null);
+
+            return this;
+        }
         private ParentHelper SetFalsePipelineStatus(string falseStatus, string where, string equals)
         {
             ExecuteNonQuery($"UPDATE [procfwk].[CurrentExecution] SET [PipelineStatus] = '{falseStatus}' WHERE {where} = '{equals.Replace("'", "''")}'");

@@ -70,6 +70,20 @@ WHERE [PropertyName] = 'UseExecutionBatches'");
             return this;
         }
 
+        public GrandparentHelper With20BatchesFor1000WorkersEnabled()
+        {
+            ExecuteStoredProcedure("[procfwkTesting].[Add20BatchesFor1000Workers]", null);
+
+            return this;
+        }
+
+        public GrandparentHelper WithCustom()
+        {
+            ExecuteStoredProcedure("[dbo].[PaulTemp]", null);
+
+            return this;
+        }
+
         public GrandparentHelper With300WorkerPipelineBatches()
         {
             ExecuteStoredProcedure("[procfwkTesting].[Add300WorkerPipelineBatches]", null);

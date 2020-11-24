@@ -210,6 +210,7 @@
     <Build Include="procfwk\Stored Procedures\CheckPreviousExeuction.sql" />
     <Build Include="procfwk\Stored Procedures\SetLogPipelineValidating.sql" />
     <Build Include="procfwkTesting\Stored Procedures\Add300WorkerPipelineBatches.sql" />
+    <Build Include="procfwkTesting\Stored Procedures\Add20BatchesFor1000Workers.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<RunSettings>
+    <TestRunParameters>
+        <Parameter name="KeyVaultUrl" value="https://frameworkkeys.vault.azure.net/" />
+        <Parameter name="DataFactoryResourceGroup" value="ADF.procfwk" />
+        <Parameter name="DataFactoryName" value="FrameworkFactoryDev" />
+        <Parameter name="WorkersDataFactoryName" value="WorkerPipelinesFactory" />
+        <Parameter name="MetadataDbConnectionStringSecretName" value="FrameworkMetadataDev" />
+        <Parameter name="ReportTestCoverage" value="false" />
+    </TestRunParameters>
+</RunSettings>
