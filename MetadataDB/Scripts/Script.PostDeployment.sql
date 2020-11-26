@@ -27,3 +27,6 @@ Post-Deployment Script Template
 --object transfers
 :r .\Metadata\TransferHelperObjects.sql
 :r .\Metadata\TransferReportingObjects.sql
+
+--replace old objects
+:r .\Metadata\ReplaceDataFactorys.sql

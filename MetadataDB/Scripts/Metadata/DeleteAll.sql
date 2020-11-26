@@ -97,6 +97,23 @@
 		END;
 
 	--Orchestrators
+	IF EXISTS 
+		(
+		SELECT
+			* 
+		FROM
+			sys.objects o
+			INNER JOIN sys.schemas s
+				ON o.[schema_id] = s.[schema_id]
+		WHERE
+			o.[name] = 'DataFactorys'
+			AND s.[name] = 'procfwk'
+			AND o.[type] = 'U' --Check for tables as created synonyms to support backwards compatability
+		)
+		BEGIN
+			DELETE FROM [procfwk].[DataFactorys];
+		END;
+
 	IF OBJECT_ID(N'[procfwk].[Orchestrators]') IS NOT NULL 
 		BEGIN
 			DELETE FROM [procfwk].[Orchestrators];

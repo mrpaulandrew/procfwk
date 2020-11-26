@@ -78,6 +78,4 @@ IF EXISTS
 	)
 	BEGIN
 		SELECT * INTO [dbo].[zz_DataFactorys] FROM [procfwk].[DataFactorys];
-		
-		DROP TABLE [procfwk].[DataFactorys];
 	END;
