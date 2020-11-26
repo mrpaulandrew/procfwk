@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ADFprocfwk.Helpers;
+using procfwk.Helpers;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System.Linq;
 
-namespace ADFprocfwk
+namespace procfwk
 {
     public static class SendEmail
     {

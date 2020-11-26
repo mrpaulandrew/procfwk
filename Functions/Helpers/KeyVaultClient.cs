@@ -6,7 +6,7 @@ using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Identity.Client;
 
-namespace ADFprocfwk.Helpers
+namespace procfwk.Helpers
 {
     internal class KeyVaultClient
     {

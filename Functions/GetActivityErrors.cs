@@ -8,11 +8,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Microsoft.Azure.Management.DataFactory;
-using Microsoft.Azure.Management.DataFactory.Models;
-using ADFprocfwk.Helpers;
+using procfwk.Helpers;
 
-namespace ADFprocfwk
+using Microsoft.Azure.Management.DataFactory;
+using Microsoft.Azure.Management.Synapse;
+
+using adf = Microsoft.Azure.Management.DataFactory.Models;
+using syn = Azure.Analytics.Synapse.Artifacts.Models;
+
+namespace procfwk
 {
     public static class GetActivityErrors
     {
@@ -23,92 +27,68 @@ namespace ADFprocfwk
         {
             log.LogInformation("GetActivityErrors Function triggered by HTTP request.");
 
-            #region ParseRequestBody
-            log.LogInformation("Parsing body from request.");
+            string outputString = string.Empty;
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic inputData = JsonConvert.DeserializeObject(requestBody);
+            log.LogInformation("Parsing request body and validating content.");
+            RequestHelper requestHelper = new RequestHelper
+                (
+                "GetActivityErrors",
+                await new StreamReader(req.Body).ReadToEndAsync()
+                );
 
-            string tenantId = inputData?.tenantId;
-            string applicationId = inputData?.applicationId;
-            string authenticationKey = inputData?.authenticationKey;
-            string subscriptionId = inputData?.subscriptionId;
-            string resourceGroup = inputData?.resourceGroup;
-            string factoryName = inputData?.factoryName;
-            string pipelineName = inputData?.pipelineName;
-            string runId = inputData?.runId;
-
-            //Check body for values
-            if (
-                tenantId == null ||
-                applicationId == null ||
-                authenticationKey == null ||
-                subscriptionId == null ||
-                resourceGroup == null ||
-                factoryName == null ||
-                pipelineName == null ||
-                runId == null
-                )
-            {
-                log.LogInformation("Invalid body.");
-                return new BadRequestObjectResult("Invalid request body, value(s) missing.");
-            }
-
-            #endregion
-
-            #region ResolveKeyVaultValues
-
-            if (!RequestHelper.CheckGuid(applicationId) && RequestHelper.CheckUri(applicationId))
-            {
-                log.LogInformation("Getting applicationId from Key Vault");
-                applicationId = KeyVaultClient.GetSecretFromUri(applicationId);
-            }
-
-            if (RequestHelper.CheckUri(authenticationKey))
-            {
-                log.LogInformation("Getting authenticationKey from Key Vault");
-                authenticationKey = KeyVaultClient.GetSecretFromUri(authenticationKey);
-            }
-            #endregion
+            #region GetActivityRun
 
             //Query and output support variables
-            int daysOfRuns = 7; //max duration for mandatory RunFilterParameters
+            int daysOfRuns = 1; //max duration for mandatory RunFilterParameters
             DateTime today = DateTime.Now;
             DateTime lastWeek = DateTime.Now.AddDays(-daysOfRuns);
             dynamic outputBlock = new JObject();
             dynamic outputBlockInner;
 
-            //Create a data factory management client
-            log.LogInformation("Creating ADF connectivity client.");
-
-            using (var client = DataFactoryClient.CreateDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
+            if (requestHelper.OrchestratorType == "ADF")
             {
-                #region SetPipelineRunDetails
+                //Create a data factory management client
+                log.LogInformation("Creating ADF connectivity client.");
+
+                using var adfClient = DataFactoryClient.CreateDataFactoryClient
+                      (
+                      requestHelper.TenantId,
+                      requestHelper.ApplicationId,
+                      requestHelper.AuthenticationKey,
+                      requestHelper.SubscriptionId
+                      );
 
                 //Get pipeline details
-                PipelineRun pipelineRun;
-                pipelineRun = client.PipelineRuns.Get(resourceGroup, factoryName, runId);
+                adf.PipelineRun pipelineRun;
+                pipelineRun = adfClient.PipelineRuns.Get
+                    (
+                    requestHelper.ResourceGroupName,
+                    requestHelper.OrchestratorName,
+                    requestHelper.RunId
+                    );
 
                 log.LogInformation("Querying ADF pipeline for Activity Runs.");
 
-                RunFilterParameters filterParams = new RunFilterParameters(lastWeek, today);
-                ActivityRunsQueryResponse queryResponse = client.ActivityRuns.QueryByPipelineRun(resourceGroup, factoryName, runId, filterParams);
+                adf.RunFilterParameters filterParams = new adf.RunFilterParameters(lastWeek, today);
+                adf.ActivityRunsQueryResponse queryResponse = adfClient.ActivityRuns.QueryByPipelineRun
+                    (
+                     requestHelper.ResourceGroupName,
+                     requestHelper.OrchestratorName,
+                     requestHelper.RunId,
+                     filterParams
+                     );
 
                 //Create initial output content
-                outputBlock.PipelineName = pipelineName;
+                outputBlock.PipelineName = requestHelper.PipelineName;
                 outputBlock.PipelineStatus = pipelineRun.Status;
-                outputBlock.RunId = runId;
+                outputBlock.RunId = requestHelper.RunId;
                 outputBlock.ResponseCount = queryResponse.Value.Count;
                 outputBlock.ResponseErrorCount = 0;
                 outputBlock.Errors = new JArray();
                 JObject errorDetails;
 
-                #endregion
-
                 log.LogInformation("Pipeline status: " + pipelineRun.Status);
                 log.LogInformation("Activities found in pipeline response: " + queryResponse.Value.Count.ToString());
-
-                #region GetActivityDetails
 
                 //Loop over activities in pipeline run
                 foreach (var activity in queryResponse.Value)
@@ -147,8 +127,44 @@ namespace ADFprocfwk
                         outputBlock.Errors.Add(errorDetails);
                     }
                 }
-                #endregion
             }
+            else if(requestHelper.OrchestratorType == "SYN")
+            {
+                log.LogInformation("Creating SYN connectivity client.");
+
+                var synClient = SynapseClients.CreatePipelineRunClient
+                    (
+                    requestHelper.TenantId,
+                    requestHelper.OrchestratorName,
+                    requestHelper.ApplicationId,
+                    requestHelper.AuthenticationKey
+                    );
+
+                syn.PipelineRun pipelineRun;
+                pipelineRun = synClient.GetPipelineRun
+                    (
+                    requestHelper.RunId
+                    );
+
+                log.LogInformation("Querying SYN pipeline for Activity Runs.");
+
+                syn.RunFilterParameters filterParams = new syn.RunFilterParameters(lastWeek, today);
+                syn.ActivityRunsQueryResponse queryResponse = synClient.QueryActivityRuns
+                    (
+                     requestHelper.PipelineName,
+                     requestHelper.RunId,
+                     filterParams
+                     );
+
+                log.LogInformation("Pipeline status: " + pipelineRun.Status);
+                log.LogInformation("Activities found in pipeline response: " + queryResponse.Value.Count.ToString());
+            }   
+            else
+            {
+                log.LogError("Invalid orchestrator type provided.");
+                return new BadRequestObjectResult("Invalid orchestrator type provided. Expected ADF or SYN.");
+            }
+            #endregion
             log.LogInformation("GetActivityErrors Function complete.");
 
             return new OkObjectResult(outputBlock);

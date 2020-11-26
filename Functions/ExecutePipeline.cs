@@ -6,14 +6,16 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Microsoft.Azure.Management.DataFactory;
-using Microsoft.Azure.Management.DataFactory.Models;
-using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-using ADFprocfwk.Helpers;
+using procfwk.Helpers;
 
-namespace ADFprocfwk
+using Microsoft.Azure.Management.DataFactory;
+using Microsoft.Azure.Management.Synapse;
+
+using adf = Microsoft.Azure.Management.DataFactory.Models;
+using syn = Azure.Analytics.Synapse.Artifacts.Models;
+
+namespace procfwk
 {
     public static class ExecutePipeline
     {
@@ -24,81 +26,55 @@ namespace ADFprocfwk
         {
             log.LogInformation("ExecutePipeline Function triggered by HTTP request.");
 
-            #region ParseRequestBody
-            log.LogInformation("Parsing body from request.");
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-
-            string tenantId = data?.tenantId;
-            string applicationId = data?.applicationId;
-            string authenticationKey = data?.authenticationKey;
-            string subscriptionId = data?.subscriptionId;
-            string resourceGroup = data?.resourceGroup;
-            string factoryName = data?.factoryName;
-            string pipelineName = data?.pipelineName;
-
-            //Check body for values
-            if (
-                tenantId == null ||
-                applicationId == null ||
-                authenticationKey == null ||
-                subscriptionId == null ||
-                resourceGroup == null ||
-                factoryName == null ||
-                pipelineName == null
-                )
-            {
-                log.LogInformation("Invalid body.");
-                return new BadRequestObjectResult("Invalid request body, value missing.");
-            }
-
-            #endregion
-
-            #region ResolveKeyVaultValues
-
-            if (!RequestHelper.CheckGuid(applicationId) && RequestHelper.CheckUri(applicationId))
-            {
-                log.LogInformation("Getting applicationId from Key Vault");
-                applicationId = KeyVaultClient.GetSecretFromUri(applicationId);
-            }
-
-            if (RequestHelper.CheckUri(authenticationKey))
-            {
-                log.LogInformation("Getting authenticationKey from Key Vault");
-                authenticationKey = KeyVaultClient.GetSecretFromUri(authenticationKey);
-            }
-            #endregion
+            string outputString = string.Empty;
+            
+            log.LogInformation("Parsing request body and validating content.");
+            RequestHelper requestHelper = new RequestHelper
+                (
+                "ExecutePipeline",
+                await new StreamReader(req.Body).ReadToEndAsync()
+                );
 
             #region CreatePipelineRun
-            //Create a data factory management client
-            log.LogInformation("Creating ADF connectivity client.");
-            string outputString = string.Empty;
-
-            using (var client = DataFactoryClient.CreateDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
+            if (requestHelper.OrchestratorType == "ADF")
             {
+                //Create a data factory management client
+                log.LogInformation("Creating ADF connectivity client.");
+
+                using var adfClient = DataFactoryClient.CreateDataFactoryClient
+                    (
+                    requestHelper.TenantId,
+                    requestHelper.ApplicationId,
+                    requestHelper.AuthenticationKey,
+                    requestHelper.SubscriptionId
+                    );
+                
                 //Run pipeline
-                CreateRunResponse runResponse;
-                PipelineRun pipelineRun;
+                adf.CreateRunResponse runResponse;
+                adf.PipelineRun pipelineRun;
 
-                if (data?.pipelineParameters == null)
-                {
-                    log.LogInformation("Called pipeline without parameters.");
-
-                    runResponse = client.Pipelines.CreateRunWithHttpMessagesAsync(
-                        resourceGroup, factoryName, pipelineName).Result.Body;
-                }
-                else
+                if (requestHelper.PipelineParametersProvided)
                 {
                     log.LogInformation("Called pipeline with parameters.");
 
-                    JObject jObj = JObject.Parse(requestBody);
-                    Dictionary<string, object> parameters = jObj["pipelineParameters"].ToObject<Dictionary<string, object>>();
+                    runResponse = adfClient.Pipelines.CreateRunWithHttpMessagesAsync
+                         (
+                         requestHelper.ResourceGroupName,
+                         requestHelper.OrchestratorName,
+                         requestHelper.PipelineName,
+                         parameters: requestHelper.PipelineParameters
+                         ).Result.Body;
+                }
+                else
+                {
+                    log.LogInformation("Called pipeline without parameters.");
 
-                    log.LogInformation("Number of parameters provided: " + jObj.Count.ToString());
-
-                    runResponse = client.Pipelines.CreateRunWithHttpMessagesAsync(
-                        resourceGroup, factoryName, pipelineName, parameters: parameters).Result.Body;
+                    runResponse = adfClient.Pipelines.CreateRunWithHttpMessagesAsync
+                        (
+                        requestHelper.ResourceGroupName,
+                        requestHelper.OrchestratorName,
+                        requestHelper.PipelineName
+                        ).Result.Body;
                 }
 
                 log.LogInformation("Pipeline run ID: " + runResponse.RunId);
@@ -107,8 +83,12 @@ namespace ADFprocfwk
                 log.LogInformation("Checking ADF pipeline status.");
                 while (true)
                 {
-                    pipelineRun = client.PipelineRuns.Get(
-                        resourceGroup, factoryName, runResponse.RunId);
+                    pipelineRun = adfClient.PipelineRuns.Get
+                        (
+                        requestHelper.ResourceGroupName,
+                        requestHelper.OrchestratorName,
+                        runResponse.RunId
+                        );
 
                     log.LogInformation("ADF pipeline status: " + pipelineRun.Status);
 
@@ -118,21 +98,64 @@ namespace ADFprocfwk
                         break;
                 }
 
-                //Final return detail
-                outputString = "{ \"PipelineName\": \"" + pipelineName +
-                                        "\", \"RunId\": \"" + pipelineRun.RunId +
-                                        "\", \"Status\": \"" + pipelineRun.Status +
-                                        "\" }";
-
-
+                //Create return detail
+                outputString = CreateOutputString(requestHelper.PipelineName, runResponse.RunId, pipelineRun.Status);
             }
+            else if (requestHelper.OrchestratorType == "SYN")
+            {
+                log.LogInformation("Creating SYN connectivity client.");
+                
+                var synClient = SynapseClients.CreatePipelineClient
+                    (
+                    requestHelper.TenantId, 
+                    requestHelper.OrchestratorName, 
+                    requestHelper.ApplicationId,
+                    requestHelper.AuthenticationKey
+                    );
 
+                //Run pipeline
+                syn.CreateRunResponse runResponse;
+                if (requestHelper.PipelineParametersProvided)
+                {
+                    log.LogInformation("Calling pipeline with parameters.");
+                    runResponse = synClient.CreatePipelineRun
+                        (
+                        requestHelper.PipelineName,
+                        parameters: requestHelper.PipelineParameters
+                        );
+                }
+                else
+                {
+                    log.LogInformation("Calling pipeline without parameters.");
+                    runResponse = synClient.CreatePipelineRun
+                        (
+                        requestHelper.PipelineName                        
+                        );
+                }
+
+                //Create return detail
+                outputString = CreateOutputString(requestHelper.PipelineName, runResponse.RunId);
+            }
+            else
+            {
+                log.LogError("Invalid orchestrator type provided.");
+                return new BadRequestObjectResult("Invalid orchestrator type provided. Expected ADF or SYN.");
+            }
             #endregion
-
+            
             JObject outputJson = JObject.Parse(outputString);
 
             log.LogInformation("ExecutePipeline Function complete.");
             return new OkObjectResult(outputJson);
+        }
+
+        private static string CreateOutputString(string pipelineName, string runId, string pipelineStatus = "Unknown")
+        {
+            string jsonOutputString = "{ \"PipelineName\": \"" + pipelineName +
+                                            "\", \"RunId\": \"" + runId +
+                                            "\", \"Status\": \"" + pipelineStatus +
+                                            "\" }";
+            return jsonOutputString;
         }
     }
 }

@@ -6,14 +6,16 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Microsoft.Azure.Management.DataFactory;
-using Microsoft.Azure.Management.DataFactory.Models;
 using Newtonsoft.Json.Linq;
-using ADFprocfwk.Helpers;
+using procfwk.Helpers;
 
+using Microsoft.Azure.Management.DataFactory;
+using Microsoft.Azure.Management.Synapse;
 
-namespace ADFprocfwk
+using adf = Microsoft.Azure.Management.DataFactory.Models;
+using syn = Azure.Analytics.Synapse.Artifacts.Models;
+
+namespace procfwk
 {
     public static class ValidatePipeline
     {
@@ -24,84 +26,88 @@ namespace ADFprocfwk
         {
             log.LogInformation("ValidatePipeline Function triggered by HTTP request.");
 
-            #region ParseRequestBody
-            log.LogInformation("Parsing body from request.");
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
             string outputString = string.Empty;
 
-            string tenantId = data?.tenantId;
-            string applicationId = data?.applicationId;
-            string authenticationKey = data?.authenticationKey;
-            string subscriptionId = data?.subscriptionId;
-            string resourceGroup = data?.resourceGroup;
-            string factoryName = data?.factoryName;
-            string pipelineName = data?.pipelineName;
-
-            //Check body for values
-            if (
-                tenantId == null ||
-                applicationId == null ||
-                authenticationKey == null ||
-                subscriptionId == null ||
-                resourceGroup == null ||
-                factoryName == null ||
-                pipelineName == null
-                )
-            {
-                log.LogInformation("Invalid body.");
-                return new BadRequestObjectResult("Invalid request body, value(s) missing.");
-            }
-            #endregion
-
-            #region ResolveKeyVaultValues
-
-            log.LogInformation(RequestHelper.CheckGuid(applicationId).ToString());
-
-            if (!RequestHelper.CheckGuid(applicationId) && RequestHelper.CheckUri(applicationId))
-            {
-                log.LogInformation("Getting applicationId from Key Vault");
-                applicationId = KeyVaultClient.GetSecretFromUri(applicationId);
-            }
-
-            if (RequestHelper.CheckUri(authenticationKey))
-            {
-                log.LogInformation("Getting authenticationKey from Key Vault");
-                authenticationKey = KeyVaultClient.GetSecretFromUri(authenticationKey);
-            }
-            #endregion
+            log.LogInformation("Parsing request body and validating content.");
+            RequestHelper requestHelper = new RequestHelper
+                (
+                "ValidatePipeline",
+                await new StreamReader(req.Body).ReadToEndAsync()
+                );
 
             #region ValidatePipeline
-            //Create a data factory management client
-            log.LogInformation("Creating ADF connectivity client.");
-
-            using (var adfClient = DataFactoryClient.CreateDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
+            if (requestHelper.OrchestratorType == "ADF")
             {
-                PipelineResource pipelineResource;
+                //Create a data factory management client
+                log.LogInformation("Creating ADF connectivity client.");
+
+                using var adfClient = DataFactoryClient.CreateDataFactoryClient
+                     (
+                     requestHelper.TenantId,
+                     requestHelper.ApplicationId,
+                     requestHelper.AuthenticationKey,
+                     requestHelper.SubscriptionId
+                     );
+
+                adf.PipelineResource pipelineResource;
 
                 try
                 {
-                    pipelineResource = adfClient.Pipelines.Get(resourceGroup, factoryName, pipelineName);
+                    log.LogInformation("Validating ADF pipeline.");
 
-                    log.LogInformation(pipelineResource.Id.ToString());
-                    log.LogInformation(pipelineResource.Name.ToString());
+                    pipelineResource = adfClient.Pipelines.Get
+                        (
+                        requestHelper.ResourceGroupName,
+                        requestHelper.OrchestratorName,
+                        requestHelper.PipelineName
+                        );
 
-                    outputString = "{ \"PipelineExists\": \"" + true.ToString() +
-                                "\", \"PipelineName\": \"" + pipelineResource.Name.ToString() +
-                                "\", \"PipelineId\": \"" + pipelineResource.Id.ToString() +
-                                "\", \"PipelineType\": \"" + pipelineResource.Type.ToString() +
-                                "\", \"ActivityCount\": \"" + pipelineResource.Activities.Count.ToString() +
-                                "\" }";
+                    outputString = CreateOutputString(true, pipelineResource.Name, pipelineResource.Id, pipelineResource.Type, pipelineResource.Activities.Count);
                 }
                 catch (Exception ex)
                 {
-                    outputString = "{ \"PipelineExists\": \"" + false.ToString() +
-                                "\", \"ProvidedPipelineName\": \"" + pipelineName +
-                                "\" }";
+                    outputString = CreateOutputString(false, requestHelper.PipelineName);
 
                     log.LogInformation(ex.Message);
                 }
+                
+            }
+            else if (requestHelper.OrchestratorType == "SYN")
+            {
+                log.LogInformation("Creating SYN connectivity client.");
+
+                var synClient = SynapseClients.CreatePipelineClient
+                    (
+                    requestHelper.TenantId,
+                    requestHelper.OrchestratorName,
+                    requestHelper.ApplicationId,
+                    requestHelper.AuthenticationKey
+                    );
+
+                syn.PipelineResource pipelineResource;
+
+                try
+                {
+                    log.LogInformation("Validating SYN pipeline.");
+
+                    pipelineResource = synClient.GetPipeline
+                        (
+                        requestHelper.PipelineName
+                        );
+
+                    outputString = CreateOutputString(true, pipelineResource.Name, pipelineResource.Id, pipelineResource.Type, pipelineResource.Activities.Count);
+                }
+                catch (Exception ex)
+                {
+                    outputString = CreateOutputString(false, requestHelper.PipelineName);
+
+                    log.LogError(ex.Message);
+                }
+            }
+            else
+            {
+                log.LogError("Invalid orchestrator type provided.");
+                return new BadRequestObjectResult("Invalid orchestrator type provided. Expected ADF or SYN.");
             }
             #endregion
 
@@ -111,6 +117,28 @@ namespace ADFprocfwk
 
             //return false positive so PipelineExists result can be evaluated by Data Factory
             return new OkObjectResult(outputJson);
+        }
+
+        private static string CreateOutputString(bool pipelineValid, string pipelineName, string resourceId = null, string resourceType = null, int activityCount = 0)
+        {
+            string jsonOutputString;
+
+            if (pipelineValid)
+            {
+                jsonOutputString = "{ \"PipelineExists\": \"" + pipelineValid.ToString() +
+                                "\", \"PipelineName\": \"" + pipelineName +
+                                "\", \"PipelineId\": \"" + resourceId +
+                                "\", \"PipelineType\": \"" + resourceType +
+                                "\", \"ActivityCount\": \"" + activityCount.ToString() +
+                                "\" }";
+            }
+            else
+            {
+                jsonOutputString = "{ \"PipelineExists\": \"" + pipelineValid.ToString() +
+                                "\", \"ProvidedPipelineName\": \"" + pipelineName +
+                                "\" }";
+            }
+            return jsonOutputString;
         }
     }
 }

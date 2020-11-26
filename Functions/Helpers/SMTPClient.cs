@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Mail;
 
-namespace ADFprocfwk.Helpers
+namespace procfwk.Helpers
 {
     internal class SMTPClient
     {

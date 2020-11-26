@@ -6,13 +6,16 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Microsoft.Azure.Management.DataFactory;
-using Microsoft.Azure.Management.DataFactory.Models;
 using Newtonsoft.Json.Linq;
-using ADFprocfwk.Helpers;
+using procfwk.Helpers;
 
-namespace ADFprocfwk
+using Microsoft.Azure.Management.DataFactory;
+using Microsoft.Azure.Management.Synapse;
+
+using adf = Microsoft.Azure.Management.DataFactory.Models;
+using syn = Azure.Analytics.Synapse.Artifacts.Models;
+
+namespace procfwk
 {
     public static class CancelPipeline
     {
@@ -23,79 +26,51 @@ namespace ADFprocfwk
         {
             log.LogInformation("CancelPipeline Function triggered by HTTP request.");
 
-            #region ParseRequestBody
-            log.LogInformation("Parsing body from request.");
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
             string outputString = string.Empty;
 
-            string tenantId = data?.tenantId;
-            string applicationId = data?.applicationId;
-            string authenticationKey = data?.authenticationKey;
-            string subscriptionId = data?.subscriptionId;
-            string resourceGroup = data?.resourceGroup;
-            string factoryName = data?.factoryName;
-            string pipelineName = data?.pipelineName;
-            string runId = data?.runId;
-            string recursiveCancel = data?.recursiveCancel;
-
-            //Check body for values
-            if (
-                tenantId == null ||
-                applicationId == null ||
-                authenticationKey == null ||
-                subscriptionId == null ||
-                resourceGroup == null ||
-                factoryName == null ||
-                pipelineName == null ||
-                runId == null
-                )
-            {
-                log.LogInformation("Invalid body.");
-                return new BadRequestObjectResult("Invalid request body, value(s) missing.");
-            }
-            #endregion
-
-            #region ResolveKeyVaultValues
-            log.LogInformation(RequestHelper.CheckGuid(applicationId).ToString());
-
-            if (!RequestHelper.CheckGuid(applicationId) && RequestHelper.CheckUri(applicationId))
-            {
-                log.LogInformation("Getting applicationId from Key Vault");
-                applicationId = KeyVaultClient.GetSecretFromUri(applicationId);
-            }
-
-            if (RequestHelper.CheckUri(authenticationKey))
-            {
-                log.LogInformation("Getting authenticationKey from Key Vault");
-                authenticationKey = KeyVaultClient.GetSecretFromUri(authenticationKey);
-            }
-            #endregion
+            log.LogInformation("Parsing request body and validating content.");
+            RequestHelper requestHelper = new RequestHelper
+                (
+                "CancelPipeline",
+                await new StreamReader(req.Body).ReadToEndAsync()
+                );
 
             #region CancelPipeline
-            //Create a data factory management client
-            log.LogInformation("Creating ADF connectivity client.");
-            using (var adfClient = DataFactoryClient.CreateDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
+            if (requestHelper.OrchestratorType == "ADF")
             {
-                //Cancelling pipeline                
-                bool recursive;
-                if (!String.IsNullOrEmpty(recursiveCancel))
-                {
-                    recursive = bool.Parse(recursiveCancel);
-                }
-                else
-                {
-                    recursive = true;
-                }
+                //Create a data factory management client
+                log.LogInformation("Creating ADF connectivity client.");
+
+                using var adfClient = DataFactoryClient.CreateDataFactoryClient
+                    (
+                    requestHelper.TenantId,
+                    requestHelper.ApplicationId,
+                    requestHelper.AuthenticationKey,
+                    requestHelper.SubscriptionId
+                    );
+
+                log.LogInformation("Getting ADF pipeline current status.");
 
                 //Get pipeline status with provided run id
-                PipelineRun pipelineRun;
-                pipelineRun = adfClient.PipelineRuns.Get(resourceGroup, factoryName, runId);
+                adf.PipelineRun pipelineRun;
+                pipelineRun = adfClient.PipelineRuns.Get
+                    (
+                    requestHelper.ResourceGroupName,
+                    requestHelper.OrchestratorName,
+                    requestHelper.RunId
+                    );
 
                 if (pipelineRun.Status == "InProgress" || pipelineRun.Status == "Queued")
                 {
-                    adfClient.PipelineRuns.Cancel(resourceGroup, factoryName, runId, recursive);
+                    log.LogInformation("Attempting to cancel ADF pipeline.");
+
+                    adfClient.PipelineRuns.Cancel
+                        (
+                        requestHelper.ResourceGroupName,
+                        requestHelper.OrchestratorName,
+                        requestHelper.RunId,
+                        isRecursive : requestHelper.RecursivePipelineCancel
+                        );
                 }
                 else
                 {
@@ -106,22 +81,55 @@ namespace ADFprocfwk
                 //Wait until cancellation state is confirmed
                 while (true)
                 {
-                    pipelineRun = adfClient.PipelineRuns.Get(resourceGroup, factoryName, runId);
+                    pipelineRun = adfClient.PipelineRuns.Get
+                        (
+                        requestHelper.ResourceGroupName,
+                        requestHelper.OrchestratorName,
+                        requestHelper.RunId
+                        );
 
-                    log.LogInformation("ADF pipeline status: " + pipelineRun.Status);
+                    log.LogInformation("ADF pipeline status post cancel request: " + pipelineRun.Status);
 
                     if (pipelineRun.Status == "Cancelling" || pipelineRun.Status == "Canceling") //microsoft typo
                         System.Threading.Thread.Sleep(10000);
                     else
                         break;
                 }
-                pipelineRun = adfClient.PipelineRuns.Get(resourceGroup, factoryName, runId);
+                pipelineRun = adfClient.PipelineRuns.Get
+                    (
+                    requestHelper.ResourceGroupName,
+                    requestHelper.OrchestratorName,
+                    requestHelper.RunId
+                    );
 
-                //Final return detail
-                outputString = "{ \"PipelineName\": \"" + pipelineName +
-                                        "\", \"RunId\": \"" + pipelineRun.RunId +
-                                        "\", \"Status\": \"" + pipelineRun.Status +
-                                        "\" }";
+                //Create return detail
+                outputString = CreateOutputString(requestHelper.PipelineName, requestHelper.RunId, pipelineRun.Status);
+            }
+            else if (requestHelper.OrchestratorType == "SYN")
+            {
+                log.LogInformation("Creating SYN connectivity client.");
+
+                var synClient = SynapseClients.CreatePipelineRunClient
+                    (
+                    requestHelper.TenantId,
+                    requestHelper.OrchestratorName,
+                    requestHelper.ApplicationId,
+                    requestHelper.AuthenticationKey
+                    );
+
+                synClient.CancelPipelineRun
+                    (
+                    requestHelper.RunId,
+                    isRecursive : requestHelper.RecursivePipelineCancel
+                    );
+                
+                //Create return detail
+                outputString = CreateOutputString(requestHelper.PipelineName, requestHelper.RunId);
+            }
+            else
+            {
+                log.LogError("Invalid orchestrator type provided.");
+                return new BadRequestObjectResult("Invalid orchestrator type provided. Expected ADF or SYN.");
             }
             #endregion
 
@@ -129,6 +137,15 @@ namespace ADFprocfwk
 
             log.LogInformation("CancelPipeline Function complete.");
             return new OkObjectResult(outputJson);
+        }
+
+        private static string CreateOutputString(string pipelineName, string runId, string pipelineStatus = "Unknown")
+        {
+            string jsonOutputString = "{ \"PipelineName\": \"" + pipelineName +
+                                            "\", \"RunId\": \"" + runId +
+                                            "\", \"Status\": \"" + pipelineStatus +
+                                            "\" }";
+            return jsonOutputString;
         }
     }
 }
