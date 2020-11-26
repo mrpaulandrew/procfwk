@@ -11,7 +11,9 @@
     "/pipeline/04-Infant.json",
     "/pipeline/03-Child.json",
     "/pipeline/02-Parent.json",
-    "/pipeline/01-Grandparent.json"
+    "/pipeline/01-Grandparent.json",
+    "/pipeline/Throw Exception.json",
+    "/pipeline/Check For Running Pipeline.json"
   ],
   "triggers": [
     "/trigger/FunctionalTestingTrigger.json"
