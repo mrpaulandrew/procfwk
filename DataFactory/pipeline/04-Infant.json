@@ -1166,9 +1166,9 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "WorkerOrchestratorType",
+					"variableName": "WorkerOrchestratorName",
 					"value": {
-						"value": "@activity('Get Worker Pipeline Details').output.firstRow.DataFactoryName",
+						"value": "@activity('Get Worker Pipeline Details').output.firstRow.OrchestratorName",
 						"type": "Expression"
 					}
 				}
