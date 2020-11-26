@@ -58,7 +58,7 @@ BEGIN
 		SELECT [OrchestratorName] FROM [procfwk].[Orchestrators] WHERE [OrchestratorName] = @OrchestratorName AND [OrchestratorType] = @OrchestratorType
 		)
 		BEGIN
-			SET @ErrorDetails = 'Invalid Data Factory name. Please ensure the Data Factory metadata exists.'
+			SET @ErrorDetails = 'Invalid Orchestrator name. Please ensure the Orchestrator metadata exists.'
 			RAISERROR(@ErrorDetails, 16, 1);
 			RETURN 0;
 		END

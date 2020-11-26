@@ -221,7 +221,7 @@
     <None Include="Scripts\Metadata\Pipelines.sql" />
     <None Include="Scripts\Metadata\PipelineParams.sql" />
     <None Include="MetadataDB.publish.xml" />
-    <None Include="Scripts\Metadata\DataFactorys.sql" />
+    <None Include="Scripts\Metadata\Orchestrators.sql" />
     <None Include="Scripts\Metadata\Properties.sql" />
     <None Include="Scripts\Metadata\DeleteAll.sql" />
     <None Include="Scripts\Metadata\DropLegacyTables.sql" />

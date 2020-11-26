@@ -1,31 +1,34 @@
-﻿CREATE PROCEDURE [procfwkHelpers].[SetDefaultDataFactorys]
+﻿CREATE PROCEDURE [procfwkHelpers].[SetDefaultOrchestrators]
 AS
 BEGIN
-	DECLARE @DataFactorys TABLE 
+	DECLARE @Orchestrators TABLE 
 		(
-		[DataFactoryName] [NVARCHAR](200) NOT NULL,
-		[ResourceGroupName] [NVARCHAR](200) NOT NULL,
+		[OrchestratorName] NVARCHAR(200) NOT NULL,
+		[OrchestratorType] CHAR(3) NOT NULL,
+		[ResourceGroupName] NVARCHAR(200) NOT NULL,
 		[SubscriptionId] UNIQUEIDENTIFIER NOT NULL,
-		[Description] [NVARCHAR](MAX) NULL
+		[Description] NVARCHAR(MAX) NULL
 		)
 	
-	INSERT INTO @DataFactorys
+	INSERT INTO @Orchestrators
 		(
-		[DataFactoryName],
+		[OrchestratorName],
+		[OrchestratorType],
 		[Description],
 		[ResourceGroupName],
 		[SubscriptionId]
 		)
 	VALUES
-		('FrameworkFactory','Example Data Factory used for development.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
-		('FrameworkFactoryDev','Example Data Factory used for development deployments.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
-		('FrameworkFactoryTest','Example Data Factory used for testing.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
-		('WorkersFactory','Example Data Factory used to house worker pipelines.','ADF.procfwk','12345678-1234-1234-1234-012345678910');
+		('FrameworkFactory','ADF','Example Data Factory used for development.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
+		('FrameworkFactoryDev','ADF','Example Data Factory used for development deployments.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
+		('FrameworkFactoryTest','ADF','Example Data Factory used for testing.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
+		('WorkersFactory','ADF','Example Data Factory used to house worker pipelines.','ADF.procfwk','12345678-1234-1234-1234-012345678910');
 
-	MERGE INTO [procfwk].[DataFactorys] AS tgt
+	MERGE INTO [procfwk].[Orchestrators] AS tgt
 	USING 
-		@DataFactorys AS src
-			ON tgt.[DataFactoryName] = src.[DataFactoryName]
+		@Orchestrators AS src
+			ON tgt.[OrchestratorName] = src.[OrchestratorName]
+				AND tgt.[OrchestratorType] = src.[OrchestratorType]
 	WHEN MATCHED THEN
 		UPDATE
 		SET
@@ -35,14 +38,16 @@ BEGIN
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT
 			(
-			[DataFactoryName],
+			[OrchestratorName],
+			[OrchestratorType],
 			[Description],
 			[ResourceGroupName],
 			[SubscriptionId]
 			)
 		VALUES
 			(
-			src.[DataFactoryName],
+			src.[OrchestratorName],
+			src.[OrchestratorType],
 			src.[Description],
 			src.[ResourceGroupName],
 			src.[SubscriptionId]

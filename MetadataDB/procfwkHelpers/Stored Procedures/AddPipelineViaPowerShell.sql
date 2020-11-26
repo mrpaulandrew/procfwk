@@ -13,7 +13,7 @@ BEGIN
 	DECLARE @StageId INT
 	DECLARE @StageName VARCHAR(255) = 'PoShAdded'
 
-	--get/set data factory
+	--get/set orchestrator
 	IF EXISTS
 		(
 		SELECT * FROM [procfwk].[Orchestrators] WHERE [OrchestratorName] = @OrchestratorName AND [ResourceGroupName] = @ResourceGroup AND [OrchestratorType] = @OrchestratorType

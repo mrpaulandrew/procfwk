@@ -32,7 +32,7 @@ BEGIN
 		SELECT [OrchestratorName] FROM [procfwk].[Orchestrators] WHERE [OrchestratorName] = @OrchestratorName AND [OrchestratorType] = @OrchestratorType
 		)
 		BEGIN
-			SET @ErrorDetails = 'Invalid Data Factory name. Please ensure the Data Factory metadata exists before trying to add authentication for it.'
+			SET @ErrorDetails = 'Invalid Orchestrator name. Please ensure the Orchestrator metadata exists before trying to add authentication for it.'
 			RAISERROR(@ErrorDetails, 16, 1);
 			RETURN 0;
 		END
@@ -53,7 +53,7 @@ BEGIN
 			AND PP.[PipelineName] = @SpecificPipelineName
 		)
 		BEGIN
-			SET @ErrorDetails = 'The provided Pipeline or Data Factory combination already have a Service Principal. Delete the existing record using the procedure [procfwk].[DeleteServicePrincipal].'
+			SET @ErrorDetails = 'The provided Pipeline or Orchestrator combination already have a Service Principal. Delete the existing record using the procedure [procfwk].[DeleteServicePrincipal].'
 			RAISERROR(@ErrorDetails, 16, 1);
 			RETURN 0;
 		END
@@ -118,7 +118,7 @@ BEGIN
 				AND D.[OrchestratorName] = @OrchestratorName;
 		END
 	ELSE
-		--add SPN for all pipelines in data factory
+		--add SPN for all pipelines in Orchestrator
 		BEGIN
 			--add service principal
 			INSERT INTO [dbo].[ServicePrincipals]

@@ -96,11 +96,11 @@
 			DBCC CHECKIDENT ('[procfwk].[Pipelines]', RESEED, 0);
 		END;
 
-	--DataFactorys
-	IF OBJECT_ID(N'[procfwk].[DataFactorys]') IS NOT NULL 
+	--Orchestrators
+	IF OBJECT_ID(N'[procfwk].[Orchestrators]') IS NOT NULL 
 		BEGIN
-			DELETE FROM [procfwk].[DataFactorys];
-			DBCC CHECKIDENT ('[procfwk].[DataFactorys]', RESEED, 0);
+			DELETE FROM [procfwk].[Orchestrators];
+			DBCC CHECKIDENT ('[procfwk].[Orchestrators]', RESEED, 0);
 		END;
 
 	--Stages

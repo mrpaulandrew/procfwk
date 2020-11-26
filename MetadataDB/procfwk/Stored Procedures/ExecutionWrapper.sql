@@ -27,7 +27,7 @@ BEGIN
 				SELECT * FROM [procfwk].[CurrentExecution] WHERE ISNULL([PipelineStatus],'') = 'Running'
 				)
 				BEGIN
-					RAISERROR('There is already an execution run in progress. Stop this via Data Factory before restarting.',16,1);
+					RAISERROR('There is already an execution run in progress. Stop this via the Orchestrator before restarting.',16,1);
 					RETURN 0;
 				END;	
 
