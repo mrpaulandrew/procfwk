@@ -1,10 +1,16 @@
-﻿Param(
+﻿function Publish-procfwkadf 
+{
+Param(
     [Parameter(Mandatory)]
     [string]$resourceGroupName,
     [Parameter(Mandatory)]
     [string]$dataFactoryName,
     [Parameter(Mandatory)]
-    [string]$region
+    [string]$region,
+    [Parameter(Mandatory)]
+    [string]$adfPath,
+    [Parameter(Mandatory)]
+    [string]$scriptPath
 )
 
 #SPN for deploying ADF:
@@ -33,14 +39,10 @@ if ($spId) {
 }
 Get-AzContext
 
-#$VerbosePreference = 'Continue'
-$ErrorActionPreference = 'Stop'
-
 # Get Deployment Objects and Params files
-$scriptPath = Join-Path -Path (Get-Location) -ChildPath "\DeploymentTools\DataFactory"
 $deploymentFilePath = Join-Path -Path $scriptPath -ChildPath "ProcFwkComponents.json"
 $configFilePath = Join-Path -Path $scriptPath -ChildPath "config-all.csv"
-$Env:SQLDatabase = "<secretKeyToDbConnectionString>"
+$Env:SQLDatabase = "secretKeyToDbConnectionString"
 
 $opt = New-AdfPublishOption
 $deploymentObject = (Get-Content $deploymentFilePath) | ConvertFrom-Json 
@@ -51,15 +53,28 @@ $objectsToInclude | ForEach-Object {
 }
 
 # Deployment of ADF
-$AdfPath = Join-Path -Path (Get-Location) -ChildPath "DataFactory"
 $opt.CreateNewInstance = $true
 $opt.DeleteNotInSource = $false
 $opt.StopStartTriggers = $true
-Publish-AdfV2FromJson -RootFolder $AdfPath `
+Publish-AdfV2FromJson -RootFolder $adfPath `
     -ResourceGroupName $resourceGroupName `
     -DataFactoryName $dataFactoryName `
     -Location $region `
     -Option $opt `
     -Stage $configFilePath
+
+}
+
+
+# Run function
+$VerbosePreference = 'Continue'
+$ErrorActionPreference = 'Stop'
+
+$scriptPath = Join-Path -Path (Get-Location) -ChildPath "\DeploymentTools\DataFactory"
+$AdfPath = Join-Path -Path (Get-Location) -ChildPath "DataFactory"
+
+Publish-procfwkadf  -resourceGroupName 'rg-pademo' -dataFactoryName 'adf-metadata-driven-proc' -region 'uksouth' `
+    -adfPath "$AdfPath" -scriptPath "$scriptPath"
+
 
 
