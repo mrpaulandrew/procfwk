@@ -10,7 +10,7 @@ BEGIN
 	INSERT INTO [procfwk].[ErrorLog]
 		(
 		[LocalExecutionId],
-		[AdfPipelineRunId],
+		[PipelineRunId],
 		[ActivityRunId],
 		[ActivityName],
 		[ActivityType],

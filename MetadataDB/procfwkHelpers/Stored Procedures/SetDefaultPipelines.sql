@@ -3,7 +3,7 @@ AS
 BEGIN
 	DECLARE @Pipelines TABLE
 		(
-		[DataFactoryId] [INT] NOT NULL,
+		[OrchestratorId] [INT] NOT NULL,
 		[StageId] [INT] NOT NULL,
 		[PipelineName] [NVARCHAR](200) NOT NULL,
 		[LogicalPredecessorId] [INT] NULL,
@@ -12,7 +12,7 @@ BEGIN
 
 	INSERT @Pipelines
 		(
-		[DataFactoryId],
+		[OrchestratorId],
 		[StageId],
 		[PipelineName], 
 		[LogicalPredecessorId],
@@ -44,13 +44,13 @@ BEGIN
 	WHEN MATCHED THEN
 		UPDATE
 		SET
-			tgt.[DataFactoryId] = src.[DataFactoryId],
+			tgt.[OrchestratorId] = src.[OrchestratorId],
 			tgt.[LogicalPredecessorId] = src.[LogicalPredecessorId],
 			tgt.[Enabled] = src.[Enabled]
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT
 			(
-			[DataFactoryId],
+			[OrchestratorId],
 			[StageId],
 			[PipelineName], 
 			[LogicalPredecessorId],
@@ -58,7 +58,7 @@ BEGIN
 			)
 		VALUES
 			(
-			src.[DataFactoryId],
+			src.[OrchestratorId],
 			src.[StageId],
 			src.[PipelineName], 
 			src.[LogicalPredecessorId],

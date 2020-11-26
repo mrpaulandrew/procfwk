@@ -102,7 +102,6 @@
     <Build Include="procfwk\Tables\Properties.sql" />
     <Build Include="procfwk\Stored Procedures\GetPropertyValue.sql" />
     <Build Include="dbo\Tables\ServicePrincipals.sql" />
-    <Build Include="procfwk\Tables\DataFactorys.sql" />
     <Build Include="procfwk\Tables\PipelineAuthLink.sql" />
     <Build Include="Security\adf_procfwkuser.sql" />
     <Build Include="dbo\Stored Procedures\FailProcedure.sql" />
@@ -211,6 +210,8 @@
     <Build Include="procfwk\Stored Procedures\SetLogPipelineValidating.sql" />
     <Build Include="procfwkTesting\Stored Procedures\Add300WorkerPipelineBatches.sql" />
     <Build Include="procfwkTesting\Stored Procedures\Add20BatchesFor1000Workers.sql" />
+    <Build Include="procfwk\Tables\Orchestrators.sql" />
+    <Build Include="procfwk\Views\DataFactorys.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
@@ -244,5 +245,8 @@
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="MetadataDB.refactorlog" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [procfwkHelpers].[DeleteServicePrincipal]
 	(
-	@DataFactory NVARCHAR(200),
+	@OrchestratorName NVARCHAR(200),
+	@OrchestratorType CHAR(3),
 	@PrincipalIdValue NVARCHAR(256),
 	@SpecificPipelineName NVARCHAR(200) = NULL
 	)
@@ -54,7 +55,7 @@ BEGIN
 	--secondary defensive checks
 	IF NOT EXISTS
 		(
-		SELECT [DataFactoryName] FROM [procfwk].[DataFactorys] WHERE [DataFactoryName] = @DataFactory
+		SELECT [OrchestratorName] FROM [procfwk].[Orchestrators] WHERE [OrchestratorName] = @OrchestratorName AND [OrchestratorType] = @OrchestratorType
 		)
 		BEGIN
 			SET @ErrorDetails = 'Invalid Data Factory name. Please ensure the Data Factory metadata exists.'
@@ -89,14 +90,15 @@ BEGIN
 				[procfwk].[PipelineAuthLink] L
 				INNER JOIN [procfwk].[Pipelines] P
 					ON L.[PipelineId] = P.[PipelineId]
-				INNER JOIN [procfwk].[DataFactorys] D
-					ON P.[DataFactoryId] = D.[DataFactoryId]
-						AND L.[DataFactoryId] = D.[DataFactoryId]
+				INNER JOIN [procfwk].[Orchestrators] D
+					ON P.[OrchestratorId] = D.[OrchestratorId]
+						AND L.[OrchestratorId] = D.[OrchestratorId]
 				INNER JOIN [dbo].[ServicePrincipals] S
 					ON L.[CredentialId] = S.[CredentialId]
 			WHERE
 				P.[PipelineName] = @SpecificPipelineName
-				AND D.[DataFactoryName] = @DataFactory
+				AND D.[OrchestratorName] = @OrchestratorName
+				AND D.[OrchestratorType] = @OrchestratorType
 				AND S.[CredentialId] = @CredentialId;
 		END
 	ELSE
@@ -106,13 +108,13 @@ BEGIN
 				L
 			FROM
 				[procfwk].[PipelineAuthLink] L
-				INNER JOIN [procfwk].[DataFactorys] D
-					ON L.[DataFactoryId] = D.[DataFactoryId]
-						AND L.[DataFactoryId] = D.[DataFactoryId]
+				INNER JOIN [procfwk].[Orchestrators] D
+					ON L.[OrchestratorId] = D.[OrchestratorId]
 				INNER JOIN [dbo].[ServicePrincipals] S
 					ON L.[CredentialId] = S.[CredentialId]
 			WHERE
-				D.[DataFactoryName] = @DataFactory
+				D.[OrchestratorName] = @OrchestratorName
+				AND D.[OrchestratorType] = @OrchestratorType
 				AND S.[CredentialId] = @CredentialId;
 		END
 

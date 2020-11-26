@@ -27,28 +27,30 @@ BEGIN
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
-		[CallingDataFactoryName],
+		[CallingOrchestratorName],
 		[ResourceGroupName],
-		[DataFactoryName],
+		[OrchestratorType],
+		[OrchestratorName],
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
 		[EndDateTime],
-		[AdfPipelineRunId],
+		[PipelineRunId],
 		[PipelineParamsUsed]
 		)
 	SELECT
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
-		[CallingDataFactoryName],
+		[CallingOrchestratorName],
 		[ResourceGroupName],
-		[DataFactoryName],
+		[OrchestratorType],
+		[OrchestratorName],
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
 		[EndDateTime],
-		[AdfPipelineRunId],
+		[PipelineRunId],
 		[PipelineParamsUsed]
 	FROM
 		[procfwk].[CurrentExecution]

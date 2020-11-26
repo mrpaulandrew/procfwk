@@ -12,8 +12,9 @@ For complete documentation on this solution see [procfwk.com](http://procfwk.com
  * Metadata integrity checking.
  * Global properties.
  * Complete pipeline dependency chains.
+ * Concurrent batch executions (hourly/daily/monthly).
  * Execution restart-ability.
- * Parallel execution.
+ * Parallel pipeline execution.
  * Full execution and error logs.
  * Operational dashboards.
  * Low cost orchestration.
@@ -25,6 +26,7 @@ For complete documentation on this solution see [procfwk.com](http://procfwk.com
  * Email alerting.
  * Automated testing.
  * Azure Key Vault integration.
+ * Is pipeline already running checks.
 
 ## Complete Data Factory Activity Chain
 

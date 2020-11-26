@@ -6,7 +6,7 @@ BEGIN
 	DECLARE @TempCheckStageAndPiplineIntegrity TABLE
 		(
 		[ResourceGroupName] NVARCHAR(200) NOT NULL,
-		[DataFactoryName] NVARCHAR(200) NOT NULL,
+		[OrchestratorName] NVARCHAR(200) NOT NULL,
 		[StageId] INT NOT NULL,
 		[StageName] VARCHAR(225) NOT NULL,
 		[PipelineId] INT NOT NULL,
@@ -31,7 +31,7 @@ BEGIN
 	INSERT INTO @TempCheckStageAndPiplineIntegrity
 	SELECT
 		adf.[ResourceGroupName],
-		adf.[DataFactoryName],	
+		adf.[OrchestratorName],	
 		base.[StageId],
 		baseStage.[StageName],
 		base.[PipelineId],
@@ -52,8 +52,8 @@ BEGIN
 	FROM 
 		--get base pipeline details
 		[procfwk].[Pipelines] base
-		INNER JOIN [procfwk].[DataFactorys] adf
-			ON base.[DataFactoryId] = adf.[DataFactoryId]
+		INNER JOIN [procfwk].[Orchestrators] adf
+			ON base.[OrchestratorId] = adf.[OrchestratorId]
 		INNER JOIN [procfwk].[Stages] baseStage
 			ON base.[StageId] = baseStage.[StageId]	
 		--get successor details

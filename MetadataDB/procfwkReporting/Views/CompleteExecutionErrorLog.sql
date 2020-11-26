@@ -2,13 +2,14 @@
 AS
 
 SELECT
-	exeLog.[LogId] AS 'ExecutionLogId',
-	errLog.[LogId] AS 'ErrorLogId',
+	exeLog.[LogId] AS ExecutionLogId,
+	errLog.[LogId] AS ErrorLogId,
 	exeLog.[LocalExecutionId],
-	exeLog.[StartDateTime] AS 'ProcessingDateTime',
-	exeLog.[CallingDataFactoryName],
-	exeLog.[DataFactoryName] AS 'WorkerDataFactory',
-	exeLog.[PipelineName] AS 'WorkerPipelineName',
+	exeLog.[StartDateTime] AS ProcessingDateTime,
+	exeLog.[CallingOrchestratorName],
+	exeLog.[OrchestratorType] AS WorkerOrchestartorType,
+	exeLog.[OrchestratorName] AS WorkerOrchestrator,
+	exeLog.[PipelineName] AS WorkerPipelineName,
 	exeLog.[PipelineStatus],
 	errLog.[ActivityRunId],
 	errLog.[ActivityName],
@@ -20,7 +21,7 @@ FROM
 	[procfwk].[ExecutionLog] exeLog
 	INNER JOIN [procfwk].[ErrorLog] errLog
 		ON exeLog.[LocalExecutionId] = errLog.[LocalExecutionId]
-			AND exeLog.[AdfPipelineRunId] = errLog.[AdfPipelineRunId]
+			AND exeLog.[PipelineRunId] = errLog.[PipelineRunId]
 	INNER JOIN [procfwk].[Stages] stgs
 		ON exeLog.[StageId] = stgs.[StageId]
 ;

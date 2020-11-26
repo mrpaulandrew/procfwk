@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [procfwk].[CreateNewExecution]
 	(
-	@CallingDataFactoryName NVARCHAR(200),
+	@CallingOrchestratorName NVARCHAR(200),
 	@LocalExecutionId UNIQUEIDENTIFIER = NULL
 	)
 AS
@@ -24,8 +24,8 @@ BEGIN
 					[procfwk].[Pipelines] p
 					INNER JOIN [procfwk].[Stages] s
 						ON p.[StageId] = s.[StageId]
-					INNER JOIN [procfwk].[DataFactorys] d
-						ON p.[DataFactoryId] = d.[DataFactoryId]
+					INNER JOIN [procfwk].[Orchestrators] d
+						ON p.[OrchestratorId] = d.[OrchestratorId]
 				WHERE
 					p.[Enabled] = 1
 					AND s.[Enabled] = 1
@@ -40,25 +40,27 @@ BEGIN
 				[LocalExecutionId],
 				[StageId],
 				[PipelineId],
-				[CallingDataFactoryName],
+				[CallingOrchestratorName],
 				[ResourceGroupName],
-				[DataFactoryName],
+				[OrchestratorType],
+				[OrchestratorName],
 				[PipelineName]
 				)
 			SELECT
 				@LocalExecutionId,
 				p.[StageId],
 				p.[PipelineId],
-				@CallingDataFactoryName,
+				@CallingOrchestratorName,
 				d.[ResourceGroupName],
-				d.[DataFactoryName],
+				d.[OrchestratorType],
+				d.[OrchestratorName],
 				p.[PipelineName]
 			FROM
 				[procfwk].[Pipelines] p
 				INNER JOIN [procfwk].[Stages] s
 					ON p.[StageId] = s.[StageId]
-				INNER JOIN [procfwk].[DataFactorys] d
-					ON p.[DataFactoryId] = d.[DataFactoryId]
+				INNER JOIN [procfwk].[Orchestrators] d
+					ON p.[OrchestratorId] = d.[OrchestratorId]
 			WHERE
 				p.[Enabled] = 1
 				AND s.[Enabled] = 1;
@@ -89,8 +91,8 @@ BEGIN
 					[procfwk].[Pipelines] p
 					INNER JOIN [procfwk].[Stages] s
 						ON p.[StageId] = s.[StageId]
-					INNER JOIN [procfwk].[DataFactorys] d
-						ON p.[DataFactoryId] = d.[DataFactoryId]
+					INNER JOIN [procfwk].[Orchestrators] d
+						ON p.[OrchestratorId] = d.[OrchestratorId]
 					INNER JOIN [procfwk].[BatchStageLink] b
 						ON b.[StageId] = s.[StageId]
 				WHERE
@@ -108,25 +110,27 @@ BEGIN
 				[LocalExecutionId],
 				[StageId],
 				[PipelineId],
-				[CallingDataFactoryName],
+				[CallingOrchestratorName],
 				[ResourceGroupName],
-				[DataFactoryName],
+				[OrchestratorType],
+				[OrchestratorName],
 				[PipelineName]
 				)
 			SELECT
 				@LocalExecutionId,
 				p.[StageId],
 				p.[PipelineId],
-				@CallingDataFactoryName,
+				@CallingOrchestratorName,
 				d.[ResourceGroupName],
-				d.[DataFactoryName],
+				d.[OrchestratorType],
+				d.[OrchestratorName],
 				p.[PipelineName]
 			FROM
 				[procfwk].[Pipelines] p
 				INNER JOIN [procfwk].[Stages] s
 					ON p.[StageId] = s.[StageId]
-				INNER JOIN [procfwk].[DataFactorys] d
-					ON p.[DataFactoryId] = d.[DataFactoryId]
+				INNER JOIN [procfwk].[Orchestrators] d
+					ON p.[OrchestratorId] = d.[OrchestratorId]
 				INNER JOIN [procfwk].[BatchStageLink] b
 					ON b.[StageId] = s.[StageId]
 			WHERE

@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [procfwkHelpers].[AddServicePrincipal]
 	(
-	@DataFactory NVARCHAR(200),
+	@OrchestratorName NVARCHAR(200),
+	@OrchestratorType CHAR(3),
 	@PrincipalId NVARCHAR(256),
 	@PrincipalSecret NVARCHAR(MAX),
 	@SpecificPipelineName NVARCHAR(200) = NULL,
@@ -28,7 +29,7 @@ BEGIN
 
 	IF NOT EXISTS
 		(
-		SELECT [DataFactoryName] FROM [procfwk].[DataFactorys] WHERE [DataFactoryName] = @DataFactory
+		SELECT [OrchestratorName] FROM [procfwk].[Orchestrators] WHERE [OrchestratorName] = @OrchestratorName AND [OrchestratorType] = @OrchestratorType
 		)
 		BEGIN
 			SET @ErrorDetails = 'Invalid Data Factory name. Please ensure the Data Factory metadata exists before trying to add authentication for it.'
@@ -42,12 +43,13 @@ BEGIN
 			*
 		FROM
 			[procfwk].[PipelineAuthLink] AL
-			INNER JOIN [procfwk].[DataFactorys] DF
-				ON AL.[DataFactoryId] = DF.[DataFactoryId]
+			INNER JOIN [procfwk].[Orchestrators] DF
+				ON AL.[OrchestratorId] = DF.[OrchestratorId]
 			INNER JOIN [procfwk].[Pipelines] PP
 				ON AL.[PipelineId] = PP.[PipelineId]
 		WHERE
-			DF.[DataFactoryName] = @DataFactory
+			DF.[OrchestratorName] = @OrchestratorName
+			AND DF.[OrchestratorType] = @OrchestratorType
 			AND PP.[PipelineName] = @SpecificPipelineName
 		)
 		BEGIN
@@ -86,7 +88,7 @@ BEGIN
 					SELECT
 						ISNULL(@PrincipalName, 'Unknown'),
 						@PrincipalId,
-						ENCRYPTBYPASSPHRASE(CONCAT(@DataFactory, @SpecificPipelineName), @PrincipalSecret)
+						ENCRYPTBYPASSPHRASE(CONCAT(@OrchestratorName, @OrchestratorType, @SpecificPipelineName), @PrincipalSecret)
 
 					SET @CredentialId = SCOPE_IDENTITY()
 				END
@@ -99,20 +101,21 @@ BEGIN
 			INSERT INTO [procfwk].[PipelineAuthLink]
 				(
 				[PipelineId],
-				[DataFactoryId],
+				[OrchestratorId],
 				[CredentialId]
 				)
 			SELECT
 				P.[PipelineId],
-				D.[DataFactoryId],
+				D.[OrchestratorId],
 				@CredentialId
 			FROM
 				[procfwk].[Pipelines] P
-				INNER JOIN [procfwk].[DataFactorys] D
-					ON P.[DataFactoryId] = D.[DataFactoryId]
+				INNER JOIN [procfwk].[Orchestrators] D
+					ON P.[OrchestratorId] = D.[OrchestratorId]
 			WHERE
 				P.[PipelineName] = @SpecificPipelineName
-				AND D.[DataFactoryName] = @DataFactory;
+				AND D.[OrchestratorType] = @OrchestratorType
+				AND D.[OrchestratorName] = @OrchestratorName;
 		END
 	ELSE
 		--add SPN for all pipelines in data factory
@@ -127,7 +130,7 @@ BEGIN
 			SELECT
 				ISNULL(@PrincipalName, 'Unknown'),
 				@PrincipalId,
-				ENCRYPTBYPASSPHRASE(@DataFactory, @PrincipalSecret)
+				ENCRYPTBYPASSPHRASE(CONCAT(@OrchestratorName, @OrchestratorType), @PrincipalSecret)
 
 			SET @CredentialId = SCOPE_IDENTITY()
 
@@ -135,21 +138,22 @@ BEGIN
 			INSERT INTO [procfwk].[PipelineAuthLink]
 				(
 				[PipelineId],
-				[DataFactoryId],
+				[OrchestratorId],
 				[CredentialId]
 				)
 			SELECT
 				P.[PipelineId],
-				D.[DataFactoryId],
+				D.[OrchestratorId],
 				@CredentialId
 			FROM
 				[procfwk].[Pipelines] P
-				INNER JOIN [procfwk].[DataFactorys] D
-					ON P.[DataFactoryId] = D.[DataFactoryId]
+				INNER JOIN [procfwk].[Orchestrators] D
+					ON P.[OrchestratorId] = D.[OrchestratorId]
 				LEFT OUTER JOIN [procfwk].[PipelineAuthLink] L
 					ON P.[PipelineId] = L.[PipelineId]
 			WHERE
-				D.[DataFactoryName] = @DataFactory
+				D.[OrchestratorName] = @OrchestratorName
+				AND D.[OrchestratorType] = @OrchestratorType
 				AND L.[PipelineId] IS NULL;
 		END
 END;

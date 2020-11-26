@@ -12,7 +12,7 @@ BEGIN
 	UPDATE
 		[procfwk].[CurrentExecution]
 	SET
-		[AdfPipelineRunId] = LOWER(@RunId)
+		[PipelineRunId] = LOWER(@RunId)
 	WHERE
 		[LocalExecutionId] = @ExecutionId
 		AND [StageId] = @StageId
