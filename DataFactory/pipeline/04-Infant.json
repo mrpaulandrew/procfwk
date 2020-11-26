@@ -1302,7 +1302,7 @@
 								"waitOnCompletion": true,
 								"parameters": {
 									"Message": {
-										"value": "@concat('Worker pipeline [',variables('WorkerPipelineName'),'] is not valid in target Data Factory [',variables('WorkerDataFactoryName'),']')",
+										"value": "@concat('Worker pipeline [',variables('WorkerPipelineName'),'] is not valid in target Orchestrator [',variables('WorkerOrchestratorName'),']')",
 										"type": "Expression"
 									}
 								}
