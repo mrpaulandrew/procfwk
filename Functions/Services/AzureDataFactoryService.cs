@@ -1,12 +1,12 @@
-﻿using mrpaulandrew.azure.procfwk.Helpers;
-using Microsoft.Azure.Management.DataFactory;
-using Microsoft.Azure.Management.DataFactory.Models;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+﻿using System;
+using System.Threading;
 using Microsoft.Rest;
 using Newtonsoft.Json;
-using System;
-using System.Threading;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Azure.Management.DataFactory;
+using Microsoft.Azure.Management.DataFactory.Models;
+using mrpaulandrew.azure.procfwk.Helpers;
 
 namespace mrpaulandrew.azure.procfwk.Services
 {

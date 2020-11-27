@@ -11,6 +11,9 @@ namespace mrpaulandrew.azure.procfwk.Services
             if (pr.OrchestratorType == PipelineServiceType.ADF)
                 return new AzureDataFactoryService(pr, logger);
 
+            if (pr.OrchestratorType == PipelineServiceType.SYN)
+                return new AzureSynapseService(pr, logger);
+
             throw new InvalidRequestException ("Unsupported orchestrator type: " + (pr.OrchestratorType?.ToString() ?? "<null>"));
         }
 
