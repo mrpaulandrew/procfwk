@@ -10,7 +10,7 @@ namespace mrpaulandrew.azure.procfwk.Helpers
         public string ApplicationId { get; set; }
         public string AuthenticationKey { get; set; }
         public string SubscriptionId { get; set; }
-        public string ResourceGroup { get; set; }
+        public string ResourceGroupName { get; set; }
         public string OrchestratorName { get; set; }
         public string PipelineName { get; set; }
         public PipelineServiceType? OrchestratorType { get; set; }
@@ -25,7 +25,7 @@ namespace mrpaulandrew.azure.procfwk.Helpers
               ApplicationId == null ||
               AuthenticationKey == null ||
               SubscriptionId == null ||
-              ResourceGroup == null ||
+              ResourceGroupName == null ||
               OrchestratorType == null ||
               OrchestratorName == null ||
               PipelineName == null

@@ -6,6 +6,8 @@ namespace mrpaulandrew.azure.procfwk.Services
 {
     public abstract class PipelineService : IDisposable
     {
+        public const int internalWaitDuration = 5000; //ms
+
         public static PipelineService GetServiceForRequest(PipelineRequest pr, ILogger logger)
         {
             if (pr.OrchestratorType == PipelineServiceType.ADF)

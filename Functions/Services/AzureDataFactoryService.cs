@@ -40,7 +40,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             {
                 var pipelineResource = _adfManagementClient.Pipelines.Get
                     (
-                    request.ResourceGroup, 
+                    request.ResourceGroupName, 
                     request.OrchestratorName, 
                     request.PipelineName
                     );
@@ -77,7 +77,7 @@ namespace mrpaulandrew.azure.procfwk.Services
 
             var runResponse = _adfManagementClient.Pipelines.CreateRunWithHttpMessagesAsync
                 (
-                request.ResourceGroup, 
+                request.ResourceGroupName, 
                 request.OrchestratorName, 
                 request.PipelineName, 
                 parameters: request.ParametersAsObjects
@@ -92,7 +92,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             {
                 pipelineRun = _adfManagementClient.PipelineRuns.Get
                     (
-                    request.ResourceGroup, 
+                    request.ResourceGroupName, 
                     request.OrchestratorName,
                     runResponse.RunId
                     );
@@ -101,14 +101,15 @@ namespace mrpaulandrew.azure.procfwk.Services
 
                 if (pipelineRun.Status != "Queued")
                     break;
-                Thread.Sleep(15000);
+                Thread.Sleep(internalWaitDuration);
             }
 
             return new PipelineRunStatus()
             {
                 PipelineName = request.PipelineName,
                 RunId = runResponse.RunId,
-                Status = pipelineRun.Status
+                SimpleStatus = ConvertPipelineStatus(pipelineRun.Status),
+                ActualStatus = pipelineRun.Status
             };
         }
 
@@ -119,7 +120,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             PipelineRun pipelineRun;
             pipelineRun = _adfManagementClient.PipelineRuns.Get
                 (
-                request.ResourceGroup,
+                request.ResourceGroupName,
                 request.OrchestratorName,
                 request.RunId
                 );
@@ -128,7 +129,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             {
                 _adfManagementClient.PipelineRuns.Cancel
                     (
-                    request.ResourceGroup,
+                    request.ResourceGroupName,
                     request.OrchestratorName,
                     request.RunId,
                     isRecursive : request.RecursivePipelineCancel
@@ -146,7 +147,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             {
                 pipelineRun = _adfManagementClient.PipelineRuns.Get
                     (
-                    request.ResourceGroup,
+                    request.ResourceGroupName,
                     request.OrchestratorName,
                     request.RunId
                     );
@@ -155,7 +156,7 @@ namespace mrpaulandrew.azure.procfwk.Services
 
                 if (pipelineRun.Status == "Cancelling" || pipelineRun.Status == "Canceling") //microsoft typo
                     break;
-                Thread.Sleep(15000);
+                Thread.Sleep(internalWaitDuration);
             }
 
             //Final return detail
@@ -163,7 +164,8 @@ namespace mrpaulandrew.azure.procfwk.Services
             {
                 PipelineName = request.PipelineName,
                 RunId = request.RunId,
-                Status = pipelineRun.Status
+                SimpleStatus = ConvertPipelineStatus(pipelineRun.Status),
+                ActualStatus = pipelineRun.Status.Replace("Canceling", "Cancelling") //microsoft typo
             };
         }
 
@@ -174,7 +176,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             //Get pipeline status with provided run id
             var pipelineRun = _adfManagementClient.PipelineRuns.Get
                 (
-                request.ResourceGroup, 
+                request.ResourceGroupName, 
                 request.OrchestratorName, 
                 request.RunId
                 );
@@ -187,7 +189,7 @@ namespace mrpaulandrew.azure.procfwk.Services
                 PipelineName = request.PipelineName,
                 RunId = pipelineRun.RunId,
                 SimpleStatus = ConvertPipelineStatus(pipelineRun.Status),
-                Status = pipelineRun.Status.Replace("Canceling", "Cancelling") //microsoft typo
+                ActualStatus = pipelineRun.Status.Replace("Canceling", "Cancelling") //microsoft typo
             };
         }
 
@@ -195,41 +197,33 @@ namespace mrpaulandrew.azure.procfwk.Services
         {
             var pipelineRun = _adfManagementClient.PipelineRuns.Get
                 (
-                request.ResourceGroup, 
+                request.ResourceGroupName, 
                 request.OrchestratorName, 
                 request.RunId
                 );
 
             _logger.LogInformation("Create pipeline Activity Runs query filters.");
-            RunQueryFilter failedStatusFilter = new RunQueryFilter
-                (
-                RunQueryFilterOperand.Status,
-                RunQueryFilterOperator.Equals,
-                new List<string>() { "Failed" }
-                );
-
             RunFilterParameters filterParams = new RunFilterParameters
                 (
                 request.ActivityQueryStart, 
                 request.ActivityQueryEnd
                 );
 
-            filterParams.Filters.Add(failedStatusFilter);
-
             _logger.LogInformation("Querying ADF pipeline for Activity Runs.");
             ActivityRunsQueryResponse queryResponse = _adfManagementClient.ActivityRuns.QueryByPipelineRun
                 (
-                request.ResourceGroup, 
+                request.ResourceGroupName, 
                 request.OrchestratorName, 
                 request.RunId, 
                 filterParams
                 );
 
             //Create initial output content
-            var output = new PipelineRunStatus()
+            var output = new PipelineFailStatus()
             {
                 PipelineName = request.PipelineName,
-                PipelineStatus = pipelineRun.Status,
+                SimpleStatus = ConvertPipelineStatus(pipelineRun.Status),
+                ActualStatus = pipelineRun.Status,
                 RunId = request.RunId,
                 ResponseCount = queryResponse.Value.Count
             };

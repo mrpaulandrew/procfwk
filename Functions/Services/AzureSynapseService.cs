@@ -108,7 +108,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             {
                 PipelineName = request.PipelineName,
                 RunId = runResponse.RunId,
-                Status = "Unknown" //replace with actual value
+                ActualStatus = "Unknown" //replace with actual value
             };
         }
 
@@ -131,7 +131,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             {
                 PipelineName = request.PipelineName,
                 RunId = request.RunId,
-                Status = "Unknown" //replace with actual value
+                ActualStatus = "Unknown" //replace with actual value
             };
         }
 
@@ -153,7 +153,7 @@ namespace mrpaulandrew.azure.procfwk.Services
                 PipelineName = request.PipelineName,
                 RunId = pipelineRun.RunId,
                 SimpleStatus = ConvertPipelineStatus(pipelineRun.Status),
-                Status = pipelineRun.Status.Replace("Canceling", "Cancelling") //microsoft typo
+                ActualStatus = pipelineRun.Status.Replace("Canceling", "Cancelling") //microsoft typo
             };
         }
 

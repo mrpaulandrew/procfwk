@@ -9,8 +9,8 @@ namespace mrpaulandrew.azure.procfwk.Helpers
 
         public bool RecursivePipelineCancel = true; //might provide this as part of the request later
 
-        public DateTime ActivityQueryStart = DateTime.Now;
-        public DateTime ActivityQueryEnd = DateTime.Now.AddDays(-7); //max duration for eventual RunFilterParameters
+        public DateTime ActivityQueryStart = DateTime.Now.AddDays(-7); //max duration for eventual RunFilterParameters
+        public DateTime ActivityQueryEnd = DateTime.Now;
 
         public override void Validate(ILogger logger)
         {
