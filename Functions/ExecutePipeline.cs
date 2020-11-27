@@ -7,10 +7,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Microsoft.Azure.Management.DataFactory;
-using Microsoft.Azure.Management.DataFactory.Models;
-using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 using ADFprocfwk.Helpers;
 using ADFprocfwk.Services;
 

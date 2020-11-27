@@ -11,22 +11,23 @@ namespace ADFprocfwk.Helpers
         public string AuthenticationKey { get; set; }
         public string SubscriptionId { get; set; }
         public string ResourceGroup { get; set; }
-        public string FactoryName { get; set; }
+        public string OrchestratorName { get; set; }
         public string PipelineName { get; set; }
         public PipelineServiceType? OrchestratorType { get; set; }
+
         public Dictionary<string, string> PipelineParameters;
 
         public virtual void Validate(ILogger logger)
         {
             // ensure properties not null
             if (
-              OrchestratorType == null ||
               TenantId == null ||
               ApplicationId == null ||
               AuthenticationKey == null ||
               SubscriptionId == null ||
               ResourceGroup == null ||
-              FactoryName == null ||
+              OrchestratorType == null ||
+              OrchestratorName == null ||
               PipelineName == null
             )
                 ReportInvalidBody(logger);
@@ -65,7 +66,7 @@ namespace ADFprocfwk.Helpers
         protected void ReportInvalidBody(ILogger logger)
         {
             var msg = "Invalid body.";
-            logger.LogInformation(msg);
+            logger.LogError(msg);
             throw new InvalidRequestException(msg);
         }
 

@@ -36,12 +36,17 @@ namespace ADFprocfwk.Services
             _adfClient?.Dispose();
         }
 
-
         public override object ValidatePipeline(PipelineRequest request)
         {
             try
             {
-                var pipelineResource = _adfClient.Pipelines.Get(request.ResourceGroup, request.FactoryName, request.PipelineName);
+                var pipelineResource = _adfClient.Pipelines.Get
+                    (
+                    request.ResourceGroup, 
+                    request.OrchestratorName, 
+                    request.PipelineName
+                    );
+                
                 _logger.LogInformation(pipelineResource.Id.ToString());
                 _logger.LogInformation(pipelineResource.Name.ToString());
 
@@ -67,13 +72,19 @@ namespace ADFprocfwk.Services
 
         public override PipelineRunStatus ExecutePipeline(PipelineRequest request)
         {
-            _logger.LogInformation("Creating ADF connectivity client.");
             if (request.PipelineParameters == null)
-                _logger.LogInformation("Called pipeline without parameters.");
+                _logger.LogInformation("Calling pipeline without parameters.");
             else
-                _logger.LogInformation("Called pipeline with parameters.");
+                _logger.LogInformation("Calling pipeline with parameters.");
 
-            var runResponse = _adfClient.Pipelines.CreateRunWithHttpMessagesAsync(request.ResourceGroup, request.FactoryName, request.PipelineName, parameters: request.ParametersAsObjects).Result.Body;
+            var runResponse = _adfClient.Pipelines.CreateRunWithHttpMessagesAsync
+                (
+                request.ResourceGroup, 
+                request.OrchestratorName, 
+                request.PipelineName, 
+                parameters: request.ParametersAsObjects
+                ).Result.Body;
+
             _logger.LogInformation("Pipeline run ID: " + runResponse.RunId);
 
             //Wait and check for pipeline to start...
@@ -81,7 +92,13 @@ namespace ADFprocfwk.Services
             _logger.LogInformation("Checking ADF pipeline status.");
             while (true)
             {
-                pipelineRun = _adfClient.PipelineRuns.Get(request.ResourceGroup, request.FactoryName, runResponse.RunId);
+                pipelineRun = _adfClient.PipelineRuns.Get
+                    (
+                    request.ResourceGroup, 
+                    request.OrchestratorName,
+                    runResponse.RunId
+                    );
+
                 _logger.LogInformation("ADF pipeline status: " + pipelineRun.Status);
 
                 if (pipelineRun.Status != "Queued")
@@ -100,7 +117,13 @@ namespace ADFprocfwk.Services
         public override PipelineRunStatus GetPipelineRunStatus(PipelineRunRequest request)
         {
             //Get pipeline status with provided run id
-            var pipelineRun = _adfClient.PipelineRuns.Get(request.ResourceGroup, request.FactoryName, request.RunId);
+            var pipelineRun = _adfClient.PipelineRuns.Get
+                (
+                request.ResourceGroup, 
+                request.OrchestratorName, 
+                request.RunId
+                );
+
             _logger.LogInformation("Checking ADF pipeline status.");
 
             //Create simple status for Data Factory Until comparison checks
@@ -130,7 +153,7 @@ namespace ADFprocfwk.Services
                 PipelineName = request.PipelineName,
                 RunId = pipelineRun.RunId,
                 SimpleStatus = simpleStatus,
-                Status = pipelineRun.Status.Replace("Canceling", "Cancelling")
+                Status = pipelineRun.Status.Replace("Canceling", "Cancelling") //microsoft typo
             };
         }
 
@@ -141,11 +164,22 @@ namespace ADFprocfwk.Services
             DateTime today = DateTime.Now;
             DateTime lastWeek = DateTime.Now.AddDays(-daysOfRuns);
 
-            var pipelineRun = _adfClient.PipelineRuns.Get(request.ResourceGroup, request.FactoryName, request.RunId);
+            var pipelineRun = _adfClient.PipelineRuns.Get
+                (
+                request.ResourceGroup, 
+                request.OrchestratorName, 
+                request.RunId
+                );
 
             _logger.LogInformation("Querying ADF pipeline for Activity Runs.");
             RunFilterParameters filterParams = new RunFilterParameters(lastWeek, today);
-            ActivityRunsQueryResponse queryResponse = _adfClient.ActivityRuns.QueryByPipelineRun(request.ResourceGroup, request.FactoryName, request.RunId, filterParams);
+            ActivityRunsQueryResponse queryResponse = _adfClient.ActivityRuns.QueryByPipelineRun
+                (
+                request.ResourceGroup, 
+                request.OrchestratorName, 
+                request.RunId, 
+                filterParams
+                );
 
             //Create initial output content
             var output = new PipelineRunStatus()
