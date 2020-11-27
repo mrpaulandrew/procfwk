@@ -10,8 +10,12 @@ namespace mrpaulandrew.azure.procfwk.Helpers
         {
             base.Validate(logger);
 
+            // ensure properties not null
             if (RunId == null)
                 ReportInvalidBody(logger);
+
+            //other validation
+            if (!CheckGuid(RunId)) ReportInvalidBody(logger, "Expected Run Id to be a GUID.");
         }
     }
 }

@@ -32,9 +32,11 @@ namespace mrpaulandrew.azure.procfwk.Helpers
             )
                 ReportInvalidBody(logger);
 
-            // resolve key vault values
-            logger.LogInformation(CheckGuid(ApplicationId).ToString());
+            //other validation
+            if (!CheckGuid(TenantId)) ReportInvalidBody(logger, "Expected Tenant Id to be a GUID.");
+            if (!CheckGuid(SubscriptionId)) ReportInvalidBody(logger, "Expected Subscription Id to be a GUID.");
 
+            // resolve key vault values
             if (!CheckGuid(ApplicationId) && CheckUri(ApplicationId))
             {
                 logger.LogInformation("Getting applicationId from Key Vault");
@@ -56,7 +58,7 @@ namespace mrpaulandrew.azure.procfwk.Helpers
             return result;
         }
 
-        private bool CheckGuid(string idValue)
+        public bool CheckGuid(string idValue)
         {
             bool result = Guid.TryParse(idValue, out _);
 
@@ -66,6 +68,13 @@ namespace mrpaulandrew.azure.procfwk.Helpers
         protected void ReportInvalidBody(ILogger logger)
         {
             var msg = "Invalid body.";
+            logger.LogError(msg);
+            throw new InvalidRequestException(msg);
+        }
+
+        protected void ReportInvalidBody(ILogger logger, string additions)
+        {
+            var msg = "Invalid body. " + additions;
             logger.LogError(msg);
             throw new InvalidRequestException(msg);
         }
