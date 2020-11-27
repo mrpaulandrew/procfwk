@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ADFprocfwk.Helpers;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System.Linq;
 
 namespace ADFprocfwk

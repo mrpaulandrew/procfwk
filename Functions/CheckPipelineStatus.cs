@@ -7,10 +7,8 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Microsoft.Azure.Management.DataFactory;
-using Microsoft.Azure.Management.DataFactory.Models;
-using Newtonsoft.Json.Linq;
 using ADFprocfwk.Helpers;
+using ADFprocfwk.Services;
 
 namespace ADFprocfwk
 {
@@ -18,107 +16,22 @@ namespace ADFprocfwk
     {
         [FunctionName("CheckPipelineStatus")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest httpRequest,
+            ILogger logger)
         {
-            log.LogInformation("CheckPipelineStatus Function triggered by HTTP request.");
-            
-            #region ParseRequestBody
-            log.LogInformation("Parsing body from request.");        
+            logger.LogInformation("CheckPipelineStatus Function triggered by HTTP request.");
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            string outputString = string.Empty;
+            logger.LogInformation("Parsing body from request.");
+            string json = await new StreamReader(httpRequest.Body).ReadToEndAsync();
+            var request = JsonConvert.DeserializeObject<PipelineRunRequest>(json);
+            request.Validate(logger);
 
-            string tenantId = data?.tenantId;
-            string applicationId = data?.applicationId;
-            string authenticationKey = data?.authenticationKey;
-            string subscriptionId = data?.subscriptionId;
-            string resourceGroup = data?.resourceGroup;
-            string factoryName = data?.factoryName;
-            string pipelineName = data?.pipelineName;
-            string runId = data?.runId;
-
-            //Check body for values
-            if (
-                tenantId == null ||
-                applicationId == null ||
-                authenticationKey == null ||
-                subscriptionId == null ||
-                resourceGroup == null ||
-                factoryName == null ||
-                pipelineName == null ||
-                runId == null
-                )
+            using (var service = PipelineService.GetServiceForRequest(request, logger))
             {
-                log.LogInformation("Invalid body.");
-                return new BadRequestObjectResult("Invalid request body, value(s) missing.");
+                var result = service.GetPipelineRunStatus(request);
+                logger.LogInformation("CheckPipelineStatus Function complete.");
+                return new OkObjectResult(JsonConvert.SerializeObject(result));
             }
-            #endregion
-
-            #region ResolveKeyVaultValues
-
-            log.LogInformation(RequestHelper.CheckGuid(applicationId).ToString());
-
-            if (!RequestHelper.CheckGuid(applicationId) && RequestHelper.CheckUri(applicationId))
-            {
-                log.LogInformation("Getting applicationId from Key Vault");
-                applicationId = KeyVaultClient.GetSecretFromUri(applicationId);
-            }
-
-            if (RequestHelper.CheckUri(authenticationKey))
-            {
-                log.LogInformation("Getting authenticationKey from Key Vault");
-                authenticationKey = KeyVaultClient.GetSecretFromUri(authenticationKey);
-            }
-            #endregion
-
-            #region GetPipelineStatus
-            //Create a data factory management client
-            log.LogInformation("Creating ADF connectivity client.");
-            
-            using (var adfClient = DataFactoryClient.CreateDataFactoryClient(tenantId, applicationId, authenticationKey, subscriptionId))
-            {
-                //Get pipeline status with provided run id
-                PipelineRun pipelineRun;
-                pipelineRun = adfClient.PipelineRuns.Get(resourceGroup, factoryName, runId);
-                log.LogInformation("Checking ADF pipeline status.");
-
-                //Create simple status for Data Factory Until comparison checks
-                string simpleStatus;
-
-                switch (pipelineRun.Status)
-                {
-                    case "InProgress":
-                        simpleStatus = "Running";
-                        break;
-                    case "Canceling": //microsoft typo
-                        simpleStatus = "Running";
-                        break;
-                    case "Cancelling":
-                        simpleStatus = "Running";
-                        break;
-                    default:
-                        simpleStatus = "Done";
-                        break;
-                }
-
-                log.LogInformation("ADF pipeline status: " + pipelineRun.Status);
-
-                //Final return detail
-                outputString = "{ \"PipelineName\": \"" + pipelineName +
-                                        "\", \"RunId\": \"" + pipelineRun.RunId +
-                                        "\", \"SimpleStatus\": \"" + simpleStatus +
-                                        "\", \"Status\": \"" + pipelineRun.Status.Replace("Canceling", "Cancelling") + //deal with microsoft typo
-                                        "\" }";
-            }
-
-            #endregion
-
-            JObject outputJson = JObject.Parse(outputString);
-
-            log.LogInformation("CheckPipelineStatus Function complete.");
-            return new OkObjectResult(outputJson);
         }
     }
 }
