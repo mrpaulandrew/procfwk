@@ -7,10 +7,10 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using ADFprocfwk.Helpers;
-using ADFprocfwk.Services;
+using mrpaulandrew.azure.procfwk.Helpers;
+using mrpaulandrew.azure.procfwk.Services;
 
-namespace ADFprocfwk
+namespace mrpaulandrew.azure.procfwk
 {
     public static class ValidatePipeline
     {

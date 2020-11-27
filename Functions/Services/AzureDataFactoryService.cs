@@ -1,4 +1,4 @@
-﻿using ADFprocfwk.Helpers;
+﻿using mrpaulandrew.azure.procfwk.Helpers;
 using Microsoft.Azure.Management.DataFactory;
 using Microsoft.Azure.Management.DataFactory.Models;
 using Microsoft.Extensions.Logging;
@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using System;
 using System.Threading;
 
-namespace ADFprocfwk.Services
+namespace mrpaulandrew.azure.procfwk.Services
 {
     public class AzureDataFactoryService : PipelineService
     {
@@ -106,6 +106,70 @@ namespace ADFprocfwk.Services
                 Thread.Sleep(15000);
             }
 
+            return new PipelineRunStatus()
+            {
+                PipelineName = request.PipelineName,
+                RunId = runResponse.RunId,
+                Status = pipelineRun.Status
+            };
+        }
+
+        public override PipelineRunStatus CancelPipeline(PipelineRequest request)
+        {
+            var runResponse = _adfClient.Pipelines.CreateRunWithHttpMessagesAsync
+                (
+                request.ResourceGroup,
+                request.OrchestratorName,
+                request.PipelineName,
+                parameters: request.ParametersAsObjects
+                ).Result.Body;
+
+            _logger.LogInformation("Pipeline run ID: " + runResponse.RunId);
+
+            
+            PipelineRun pipelineRun;
+            pipelineRun = _adfClient.PipelineRuns.Get
+                (
+                request.ResourceGroup,
+                request.OrchestratorName,
+                runResponse.RunId
+                );
+
+            if (pipelineRun.Status == "InProgress" || pipelineRun.Status == "Queued")
+            {
+                _adfClient.PipelineRuns.Cancel
+                    (
+                    request.ResourceGroup,
+                    request.OrchestratorName,
+                    runResponse.RunId,
+                    true //recursive cancel
+                    );
+            }
+            else
+            {
+                _logger.LogInformation("ADF pipeline status: " + pipelineRun.Status);
+                throw new InvalidRequestException("Target pipeline is not in a state that can be cancelled.");
+            }
+
+            //wait for cancelled state
+            _logger.LogInformation("Checking ADF pipeline status.");
+            while (true)
+            {
+                pipelineRun = _adfClient.PipelineRuns.Get
+                    (
+                    request.ResourceGroup,
+                    request.OrchestratorName,
+                    runResponse.RunId
+                    );
+
+                _logger.LogInformation("ADF pipeline status: " + pipelineRun.Status);
+
+                if (pipelineRun.Status == "Cancelling" || pipelineRun.Status == "Canceling") //microsoft typo
+                    break;
+                Thread.Sleep(15000);
+            }
+
+            //Final return detail
             return new PipelineRunStatus()
             {
                 PipelineName = request.PipelineName,

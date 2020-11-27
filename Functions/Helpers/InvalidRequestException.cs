@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace ADFprocfwk.Helpers
+namespace mrpaulandrew.azure.procfwk.Helpers
 {
     [Serializable]
     internal class InvalidRequestException : Exception

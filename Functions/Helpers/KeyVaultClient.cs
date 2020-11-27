@@ -2,7 +2,7 @@
 using Azure.Security.KeyVault.Secrets;
 using System;
 
-namespace ADFprocfwk.Helpers
+namespace mrpaulandrew.azure.procfwk.Helpers
 {
     internal class KeyVaultClient
     {

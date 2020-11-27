@@ -1,4 +1,4 @@
-﻿namespace ADFprocfwk.Services
+﻿namespace mrpaulandrew.azure.procfwk.Services
 {
     public class PipelineNotExists
     {

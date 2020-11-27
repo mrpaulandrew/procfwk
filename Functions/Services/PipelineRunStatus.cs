@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ADFprocfwk.Services
+namespace mrpaulandrew.azure.procfwk.Services
 {
     public class PipelineRunStatus
     {

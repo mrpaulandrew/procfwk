@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ADFprocfwk.Helpers
+namespace mrpaulandrew.azure.procfwk.Helpers
 {
     public class PipelineRequest
     {

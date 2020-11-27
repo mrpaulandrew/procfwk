@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace ADFprocfwk.Helpers
+namespace mrpaulandrew.azure.procfwk.Helpers
 {
     public class PipelineRunRequest : PipelineRequest
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ADFprocfwk
+namespace mrpaulandrew.azure.procfwk
 {
     public enum PipelineServiceType
     {

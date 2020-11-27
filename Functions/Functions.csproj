@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
-    <RootNamespace>ADFprocfwk</RootNamespace>
-    <AssemblyName>ADFprocfwk</AssemblyName>
+    <RootNamespace>mrpaulandrew.azure.procfwk</RootNamespace>
+    <AssemblyName>mrpaulandrew.azure.procfwk</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.3.0" />

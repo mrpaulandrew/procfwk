@@ -1,8 +1,8 @@
-﻿using ADFprocfwk.Helpers;
+﻿using mrpaulandrew.azure.procfwk.Helpers;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace ADFprocfwk.Services
+namespace mrpaulandrew.azure.procfwk.Services
 {
     public abstract class PipelineService : IDisposable
     {
@@ -17,6 +17,8 @@ namespace ADFprocfwk.Services
         public abstract object ValidatePipeline(PipelineRequest request);
 
         public abstract PipelineRunStatus ExecutePipeline(PipelineRequest request);
+
+        public abstract PipelineRunStatus CancelPipeline(PipelineRequest request);
 
         public abstract PipelineRunStatus GetPipelineRunStatus(PipelineRunRequest request);
 
