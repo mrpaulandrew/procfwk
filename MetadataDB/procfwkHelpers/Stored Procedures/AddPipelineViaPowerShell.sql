@@ -1,44 +1,47 @@
 ﻿CREATE PROCEDURE [procfwkHelpers].[AddPipelineViaPowerShell]
 	(
 	@ResourceGroup NVARCHAR(200),
-	@DataFactoryName NVARCHAR(200),
+	@OrchestratorName NVARCHAR(200),
+	@OrchestratorType CHAR(3) = 'ADF',
 	@PipelineName NVARCHAR(200)
 	)
 AS
 BEGIN
 	SET NOCOUNT ON;
 
-	DECLARE @DataFactoryId INT
+	DECLARE @OrchestratorId INT
 	DECLARE @StageId INT
 	DECLARE @StageName VARCHAR(255) = 'PoShAdded'
 
-	--get/set data factory
+	--get/set orchestrator
 	IF EXISTS
 		(
-		SELECT * FROM [procfwk].[DataFactorys] WHERE [DataFactoryName] = @DataFactoryName AND [ResourceGroupName] = @ResourceGroup
+		SELECT * FROM [procfwk].[Orchestrators] WHERE [OrchestratorName] = @OrchestratorName AND [ResourceGroupName] = @ResourceGroup AND [OrchestratorType] = @OrchestratorType
 		)
 		BEGIN
-			SELECT @DataFactoryId = [DataFactoryId] FROM [procfwk].[DataFactorys] WHERE [DataFactoryName] = @DataFactoryName AND [ResourceGroupName] = @ResourceGroup;
+			SELECT @OrchestratorId = [OrchestratorId] FROM [procfwk].[Orchestrators] WHERE [OrchestratorName] = @OrchestratorName AND [ResourceGroupName] = @ResourceGroup AND [OrchestratorType] = @OrchestratorType;
 		END
 	ELSE
 		BEGIN
-			INSERT INTO [procfwk].[DataFactorys]
+			INSERT INTO [procfwk].[Orchestrators]
 				(
-				[DataFactoryName],
+				[OrchestratorName],
+				[OrchestratorType],
 				[ResourceGroupName],
 				[Description],
 				[SubscriptionId]
 				)
 			VALUES
 				(
-				@DataFactoryName,
+				@OrchestratorName,
+				@OrchestratorType,
 				@ResourceGroup,
 				'Added via PowerShell.',
 				'12345678-1234-1234-1234-012345678910'
 				)
 
 			SELECT
-				@DataFactoryId = SCOPE_IDENTITY();
+				@OrchestratorId = SCOPE_IDENTITY();
 		END
 
 	--get/set stage
@@ -72,7 +75,7 @@ BEGIN
 	;WITH sourceData AS
 		(
 		SELECT
-			@DataFactoryId AS DataFactoryId,
+			@OrchestratorId AS OrchestratorId,
 			@PipelineName AS PipelineName,
 			@StageId AS StageId,
 			NULL AS LogicalPredecessorId,
@@ -81,7 +84,7 @@ BEGIN
 	MERGE INTO [procfwk].[Pipelines] AS tgt
 	USING 
 		sourceData AS src
-			ON tgt.[DataFactoryId] = src.[DataFactoryId]
+			ON tgt.[OrchestratorId] = src.[OrchestratorId]
 				AND tgt.[PipelineName] = src.[PipelineName]
 	WHEN MATCHED THEN
 		UPDATE
@@ -92,7 +95,7 @@ BEGIN
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT
 			(
-			[DataFactoryId],
+			[OrchestratorId],
 			[StageId],
 			[PipelineName], 
 			[LogicalPredecessorId],
@@ -100,7 +103,7 @@ BEGIN
 			)
 		VALUES
 			(
-			src.[DataFactoryId],
+			src.[OrchestratorId],
 			src.[StageId],
 			src.[PipelineName], 
 			src.[LogicalPredecessorId],

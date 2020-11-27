@@ -33,7 +33,7 @@
 					"functionName": "ExecutePipeline",
 					"method": "POST",
 					"body": {
-						"value": "@concat('\n{\n\t\"tenantId\": \"',variables('WorkerTenantId'),'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n\t\"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n\t\"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n\t\"pipelineName\": \"',variables('WorkerPipelineName'),'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
+						"value": "@concat('\n{\n\t\"tenantId\": \"',variables('WorkerTenantId'),'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n\t\"resourceGroupName\": \"',variables('WorkerResourceGroup'),'\",\n\t\"orchestratorName\": \"',variables('WorkerOrchestratorName'),'\",\n\t\"orchestratorType\": \"',variables('WorkerOrchestratorType'),'\",\n\t\"pipelineName\": \"',variables('WorkerPipelineName'),'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
 						"type": "Expression"
 					}
 				},
@@ -478,7 +478,7 @@
 								"functionName": "CheckPipelineStatus",
 								"method": "POST",
 								"body": {
-									"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerTenantId'),'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n    \"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n    \"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n    \"pipelineName\": \"',variables('WorkerPipelineName'),'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
+									"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerTenantId'),'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n    \"resourceGroupName\": \"',variables('WorkerResourceGroup'),'\",\n     \"orchestratorName\": \"',variables('WorkerOrchestratorName'),'\",\n    \"orchestratorType\": \"',variables('WorkerOrchestratorType'),'\",\n    \"pipelineName\": \"',variables('WorkerPipelineName'),'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 									"type": "Expression"
 								}
 							},
@@ -792,7 +792,7 @@
 										"functionName": "GetActivityErrors",
 										"method": "POST",
 										"body": {
-											"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerTenantId'),'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n    \"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n    \"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n    \"pipelineName\": \"',variables('WorkerPipelineName'),'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
+											"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerTenantId'),'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n\t\"resourceGroupName\": \"',variables('WorkerResourceGroup'),'\",\n\t\"orchestratorName\": \"',variables('WorkerOrchestratorName'),'\",\n\t\"orchestratorType\": \"',variables('WorkerOrchestratorType'),'\",\n    \"pipelineName\": \"',variables('WorkerPipelineName'),'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 											"type": "Expression"
 										}
 									},
@@ -1153,7 +1153,7 @@
 				}
 			},
 			{
-				"name": "Set Data Factory Name",
+				"name": "Set Orchestrator Name",
 				"description": "Set local variable from activity output once for value reuse in downstream activities.",
 				"type": "SetVariable",
 				"dependsOn": [
@@ -1166,9 +1166,9 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "WorkerDataFactoryName",
+					"variableName": "WorkerOrchestratorName",
 					"value": {
-						"value": "@activity('Get Worker Pipeline Details').output.firstRow.DataFactoryName",
+						"value": "@activity('Get Worker Pipeline Details').output.firstRow.OrchestratorName",
 						"type": "Expression"
 					}
 				}
@@ -1206,7 +1206,7 @@
 						]
 					},
 					{
-						"activity": "Set Data Factory Name",
+						"activity": "Set Orchestrator Name",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -1260,7 +1260,7 @@
 					"functionName": "ValidatePipeline",
 					"method": "POST",
 					"body": {
-						"value": "@concat('\n{\n\t\"tenantId\": \"',variables('WorkerTenantId'),'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n\t\"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n\t\"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n\t\"pipelineName\": \"',variables('WorkerPipelineName'),'\"\n}')",
+						"value": "@concat('\n{\n\t\"tenantId\": \"',variables('WorkerTenantId'),'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n\t\"resourceGroupName\": \"',variables('WorkerResourceGroup'),'\",\n\t\"orchestratorName\": \"',variables('WorkerOrchestratorName'),'\",\n\t\"orchestratorType\": \"',variables('WorkerOrchestratorType'),'\",\n\t\"pipelineName\": \"',variables('WorkerPipelineName'),'\"\n}')",
 						"type": "Expression"
 					}
 				},
@@ -1302,7 +1302,7 @@
 								"waitOnCompletion": true,
 								"parameters": {
 									"Message": {
-										"value": "@concat('Worker pipeline [',variables('WorkerPipelineName'),'] is not valid in target Data Factory [',variables('WorkerDataFactoryName'),']')",
+										"value": "@concat('Worker pipeline [',variables('WorkerPipelineName'),'] is not valid in target Orchestrator [',variables('WorkerOrchestratorName'),']')",
 										"type": "Expression"
 									}
 								}
@@ -1492,11 +1492,15 @@
 			"WorkerPipelineName": {
 				"type": "String"
 			},
-			"WorkerDataFactoryName": {
+			"WorkerOrchestratorName": {
 				"type": "String"
 			},
 			"WorkerResourceGroup": {
 				"type": "String"
+			},
+			"WorkerOrchestratorType": {
+				"type": "String",
+				"defaultValue": "ADF"
 			}
 		},
 		"folder": {

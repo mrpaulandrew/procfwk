@@ -26,9 +26,9 @@ INSERT INTO [procfwk].[Subscriptions]
 VALUES
 	('$(AZURE_SUBSCRIPTION_ID)', 'Microsoft Sponsored Subscription', NULL, '$(AZURE_TENANT_ID)');
 
---update data factorys with new subscription
+--update Orchestrator with new subscription
 UPDATE
-	[procfwk].[DataFactorys]
+	[procfwk].[Orchestrators]
 SET
 	[SubscriptionId] = '$(AZURE_SUBSCRIPTION_ID)';
 
@@ -47,19 +47,22 @@ IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreIn
 	BEGIN
 		--Add SPN for execution of all worker pipelines using database to store SPN values
 		EXEC [procfwkHelpers].[AddServicePrincipalWrapper]
-			@DataFactory = N'FrameworkFactory',
+			@OrchestratorName = N'FrameworkFactory',
+			@OrchestratorType = 'ADF',
 			@PrincipalIdValue = '$(AZURE_CLIENT_ID)',
 			@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET)',
 			@PrincipalName = '$(AZURE_CLIENT_NAME)';
 
 		--Add specific SPN for execution of Wait 1 pipeline (functional testing)	
 		EXEC [procfwkHelpers].[DeleteServicePrincipal]
-			@DataFactory = N'FrameworkFactory',
+			@OrchestratorName = N'FrameworkFactory',
+			@OrchestratorType = 'ADF',
 			@PrincipalIdValue = '$(AZURE_CLIENT_ID)',
 			@SpecificPipelineName = N'Wait 1';
 
 		EXEC [procfwkHelpers].[AddServicePrincipalWrapper]
-			@DataFactory = N'FrameworkFactory',
+			@OrchestratorName = N'FrameworkFactory',
+			@OrchestratorType = 'ADF',
 			@PrincipalIdValue = '$(AZURE_CLIENT_ID_2)',
 			@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET_2)',
 			@PrincipalName = '$(AZURE_CLIENT_NAME_2)',
@@ -69,7 +72,8 @@ ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'St
 	BEGIN
 		--Add SPN for execution of all worker pipelines using database to store key vault URLs
 		EXEC [procfwkHelpers].[AddServicePrincipalWrapper]
-			@DataFactory = N'FrameworkFactory',
+			@OrchestratorName = N'FrameworkFactory',
+			@OrchestratorType = 'ADF',
 			@PrincipalIdValue = '$(AZURE_CLIENT_ID_URL)',
 			@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET_URL)',
 			@PrincipalName = '$(AZURE_CLIENT_NAME)';

@@ -36,8 +36,9 @@ BEGIN
 	<strong>Start Date Time: </strong>##StartDateTime###<br/>
 	<strong>End Date Time: </strong>##EndDateTime###<br/>
 	<strong>Duration (Minutes): </strong>##Duration###<br/><br/>
-	<strong>Called by Data Factory: </strong>##CalledByADF###<br/>
-	<strong>Executed by Data Factory: </strong>##ExecutedByADF###<br/><hr/>',
+	<strong>Called by Orchestrator: </strong>##CalledByOrc###<br/>
+	<strong>Executed by Orchestrator Type: </strong>##ExecutedByOrcType###<br/>
+	<strong>Executed by Orchestrator: </strong>##ExecutedByOrc###<br/><hr/>',
 		@Description = N'Basic HTML template of execution information used as the eventual body in email alerts sent.';
 
 	EXEC [procfwkHelpers].[AddProperty]

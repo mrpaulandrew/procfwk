@@ -29,15 +29,16 @@ BEGIN
 	DELETE FROM [procfwk].[Pipelines];
 	DBCC CHECKIDENT ('[procfwk].[Pipelines]', RESEED, 0);
 
-	--get data factory id
-	DECLARE @ADFId INT
+	--get Orchestrator id
+	DECLARE @OrcId INT
 	
 	SELECT 
-		@ADFId = [DataFactoryId] 
+		@OrcId = [OrchestratorId] 
 	FROM 
-		[procfwk].[DataFactorys] 
+		[procfwk].[Orchestrators] 
 	WHERE 
-		[DataFactoryName] = 'WorkersFactory';
+		[OrchestratorName] = 'WorkersFactory'
+		AND [OrchestratorType] = 'ADF';
 
 	--tweak properties
 	UPDATE
@@ -79,14 +80,14 @@ BEGIN
 		)
 	INSERT INTO [procfwk].[Pipelines]
 		(
-		[DataFactoryId],
+		[OrchestratorId],
 		[StageId],
 		[PipelineName],
 		[LogicalPredecessorId],
 		[Enabled]
 		)
 	SELECT
-		@ADFId,
+		@OrcId,
 		CASE
 			WHEN [Number] <= 50 THEN 1
 			WHEN [Number] > 50 AND  [Number] <= 100 THEN 2

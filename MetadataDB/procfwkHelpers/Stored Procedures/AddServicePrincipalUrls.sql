@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [procfwkHelpers].[AddServicePrincipalUrls]
 	(
-	@DataFactory NVARCHAR(200),
+	@OrchestratorName NVARCHAR(200),
+	@OrchestratorType CHAR(3),
 	@PrincipalIdUrl NVARCHAR(MAX),
 	@PrincipalSecretUrl NVARCHAR(MAX),
 	@SpecificPipelineName NVARCHAR(200) = NULL,
@@ -17,10 +18,10 @@ BEGIN
 	--defensive checks
 	IF NOT EXISTS
 		(
-		SELECT [DataFactoryName] FROM [procfwk].[DataFactorys] WHERE [DataFactoryName] = @DataFactory
+		SELECT [OrchestratorName] FROM [procfwk].[Orchestrators] WHERE [OrchestratorName] = @OrchestratorName AND [OrchestratorType] = @OrchestratorType
 		)
 		BEGIN
-			SET @ErrorDetails = 'Invalid Data Factory name. Please ensure the Data Factory metadata exists before trying to add authentication for it.'
+			SET @ErrorDetails = 'Invalid Orchestrator name. Please ensure the Orchestrator metadata exists before trying to add authentication for it.'
 			RAISERROR(@ErrorDetails, 16, 1);
 			RETURN 0;
 		END
@@ -31,16 +32,17 @@ BEGIN
 			*
 		FROM
 			[procfwk].[PipelineAuthLink] AL
-			INNER JOIN [procfwk].[DataFactorys] DF
-				ON AL.[DataFactoryId] = DF.[DataFactoryId]
+			INNER JOIN [procfwk].[Orchestrators] DF
+				ON AL.[OrchestratorId] = DF.[OrchestratorId]
 			INNER JOIN [procfwk].[Pipelines] PP
 				ON AL.[PipelineId] = PP.[PipelineId]
 		WHERE
-			DF.[DataFactoryName] = @DataFactory
+			DF.[OrchestratorName] = @OrchestratorName
+			AND DF.[OrchestratorType] = @OrchestratorType
 			AND PP.[PipelineName] = @SpecificPipelineName
 		)
 		BEGIN
-			SET @ErrorDetails = 'The provided Pipeline or Data Factory combination already have a Service Principal. Delete the existing record using the procedure [procfwk].[DeleteServicePrincipal].'
+			SET @ErrorDetails = 'The provided Pipeline or Orchestrator combination already have a Service Principal. Delete the existing record using the procedure [procfwk].[DeleteServicePrincipal].'
 			RAISERROR(@ErrorDetails, 16, 1);
 			RETURN 0;
 		END
@@ -100,23 +102,24 @@ BEGIN
 			INSERT INTO [procfwk].[PipelineAuthLink]
 				(
 				[PipelineId],
-				[DataFactoryId],
+				[OrchestratorId],
 				[CredentialId]
 				)
 			SELECT
 				P.[PipelineId],
-				D.[DataFactoryId],
+				D.[OrchestratorId],
 				@CredentialId
 			FROM
 				[procfwk].[Pipelines] P
-				INNER JOIN [procfwk].[DataFactorys] D
-					ON P.[DataFactoryId] = D.[DataFactoryId]
+				INNER JOIN [procfwk].[Orchestrators] D
+					ON P.[OrchestratorId] = D.[OrchestratorId]
 			WHERE
 				P.[PipelineName] = @SpecificPipelineName
-				AND D.[DataFactoryName] = @DataFactory;
+				AND D.[OrchestratorType] = @OrchestratorType
+				AND D.[OrchestratorName] = @OrchestratorName;
 		END
 	ELSE
-		--add SPN for all pipelines in data factory
+		--add SPN for all pipelines in Orchestrator
 		BEGIN
 			--add service principal
 			INSERT INTO [dbo].[ServicePrincipals]
@@ -136,21 +139,22 @@ BEGIN
 			INSERT INTO [procfwk].[PipelineAuthLink]
 				(
 				[PipelineId],
-				[DataFactoryId],
+				[OrchestratorId],
 				[CredentialId]
 				)
 			SELECT
 				P.[PipelineId],
-				D.[DataFactoryId],
+				D.[OrchestratorId],
 				@CredentialId
 			FROM
 				[procfwk].[Pipelines] P
-				INNER JOIN [procfwk].[DataFactorys] D
-					ON P.[DataFactoryId] = D.[DataFactoryId]
+				INNER JOIN [procfwk].[Orchestrators] D
+					ON P.[OrchestratorId] = D.[OrchestratorId]
 				LEFT OUTER JOIN [procfwk].[PipelineAuthLink] L
 					ON P.[PipelineId] = L.[PipelineId]
 			WHERE
-				D.[DataFactoryName] = @DataFactory
+				D.[OrchestratorName] = @OrchestratorName
+				AND D.[OrchestratorType] = @OrchestratorType
 				AND L.[PipelineId] IS NULL;
 		END
 END;

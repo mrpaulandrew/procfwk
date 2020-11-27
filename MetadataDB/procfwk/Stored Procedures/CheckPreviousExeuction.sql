@@ -23,15 +23,16 @@ BEGIN
 					[procfwk].[CurrentExecution] 
 				WHERE 
 					[PipelineStatus] NOT IN ('Success','Failed','Blocked', 'Cancelled') 
-					AND [AdfPipelineRunId] IS NOT NULL
+					AND [PipelineRunId] IS NOT NULL
 				)
 				BEGIN
 					--return pipelines details that require a clean up
 					SELECT 
 						[ResourceGroupName],
-						[DataFactoryName],
+						[OrchestratorType],
+						[OrchestratorName],
 						[PipelineName],
-						[AdfPipelineRunId],
+						[PipelineRunId],
 						[LocalExecutionId],
 						[StageId],
 						[PipelineId]
@@ -39,7 +40,7 @@ BEGIN
 						[procfwk].[CurrentExecution]
 					WHERE 
 						[PipelineStatus] NOT IN ('Success','Failed','Blocked','Cancelled') 
-						AND [AdfPipelineRunId] IS NOT NULL
+						AND [PipelineRunId] IS NOT NULL
 				END;
 			ELSE
 				GOTO LookUpReturnEmptyResult;
@@ -77,15 +78,16 @@ BEGIN
 				WHERE 
 					[LocalExecutionId] = @LocalExecutionId
 					AND [PipelineStatus] NOT IN ('Success','Failed','Blocked', 'Cancelled') 
-					AND [AdfPipelineRunId] IS NOT NULL
+					AND [PipelineRunId] IS NOT NULL
 				)
 				BEGIN
 					--return pipelines details that require a clean up
 					SELECT 
 						[ResourceGroupName],
-						[DataFactoryName],
+						[OrchestratorType],
+						[OrchestratorName],
 						[PipelineName],
-						[AdfPipelineRunId],
+						[PipelineRunId],
 						[LocalExecutionId],
 						[StageId],
 						[PipelineId]
@@ -94,7 +96,7 @@ BEGIN
 					WHERE 
 						[LocalExecutionId] = @LocalExecutionId
 						AND [PipelineStatus] NOT IN ('Success','Failed','Blocked','Cancelled') 
-						AND [AdfPipelineRunId] IS NOT NULL
+						AND [PipelineRunId] IS NOT NULL
 				END;
 			ELSE
 				GOTO LookUpReturnEmptyResult;
@@ -104,7 +106,8 @@ BEGIN
 	--lookup activity must return something, even if just an empty dataset
 	SELECT 
 		NULL AS ResourceGroupName,
-		NULL AS DataFactoryName,
+		NULL AS OrchestratorType,
+		NULL AS OrchestratorName,
 		NULL AS PipelineName,
 		NULL AS AdfPipelineRunId,
 		NULL AS LocalExecutionId,

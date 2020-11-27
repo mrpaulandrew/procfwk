@@ -11,7 +11,7 @@ Post-Deployment Script Template
 */
 --load default metadata
 :r .\Metadata\Properties.sql
-:r .\Metadata\DataFactorys.sql
+:r .\Metadata\Orchestrators.sql
 :r .\Metadata\Stages.sql
 :r .\Metadata\Pipelines.sql
 :r .\Metadata\PipelineParams.sql
@@ -27,3 +27,6 @@ Post-Deployment Script Template
 --object transfers
 :r .\Metadata\TransferHelperObjects.sql
 :r .\Metadata\TransferReportingObjects.sql
+
+--replace old objects
+:r .\Metadata\ReplaceDataFactorys.sql

@@ -102,7 +102,6 @@
     <Build Include="procfwk\Tables\Properties.sql" />
     <Build Include="procfwk\Stored Procedures\GetPropertyValue.sql" />
     <Build Include="dbo\Tables\ServicePrincipals.sql" />
-    <Build Include="procfwk\Tables\DataFactorys.sql" />
     <Build Include="procfwk\Tables\PipelineAuthLink.sql" />
     <Build Include="Security\adf_procfwkuser.sql" />
     <Build Include="dbo\Stored Procedures\FailProcedure.sql" />
@@ -211,6 +210,8 @@
     <Build Include="procfwk\Stored Procedures\SetLogPipelineValidating.sql" />
     <Build Include="procfwkTesting\Stored Procedures\Add300WorkerPipelineBatches.sql" />
     <Build Include="procfwkTesting\Stored Procedures\Add20BatchesFor1000Workers.sql" />
+    <Build Include="procfwk\Tables\Orchestrators.sql" />
+    <None Include="procfwk\Views\DataFactorys.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
@@ -220,7 +221,7 @@
     <None Include="Scripts\Metadata\Pipelines.sql" />
     <None Include="Scripts\Metadata\PipelineParams.sql" />
     <None Include="MetadataDB.publish.xml" />
-    <None Include="Scripts\Metadata\DataFactorys.sql" />
+    <None Include="Scripts\Metadata\Orchestrators.sql" />
     <None Include="Scripts\Metadata\Properties.sql" />
     <None Include="Scripts\Metadata\DeleteAll.sql" />
     <None Include="Scripts\Metadata\DropLegacyTables.sql" />
@@ -234,6 +235,7 @@
     <None Include="Scripts\Metadata\TransferReportingObjects.sql" />
     <None Include="Scripts\Alter Database Scale.sql" />
     <None Include="Scripts\Handy Selects.sql" />
+    <None Include="Scripts\Metadata\ReplaceDataFactorys.sql" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="Scripts\Script.PreDeployment.sql" />
@@ -244,5 +246,8 @@
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="MetadataDB.refactorlog" />
   </ItemGroup>
 </Project>
