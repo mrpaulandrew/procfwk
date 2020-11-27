@@ -12,7 +12,7 @@ namespace mrpaulandrew.azure.procfwk.Services
 {
     public class AzureDataFactoryService : PipelineService
     {
-        private readonly DataFactoryManagementClient _adfClient;
+        private readonly DataFactoryManagementClient _adfManagementClient;
         private readonly ILogger _logger;
 
         public AzureDataFactoryService(PipelineRequest request, ILogger logger)
@@ -25,22 +25,17 @@ namespace mrpaulandrew.azure.procfwk.Services
             var result = context.AcquireTokenAsync("https://management.azure.com/", cc).Result;
             var cred = new TokenCredentials(result.AccessToken);
 
-            _adfClient = new DataFactoryManagementClient(cred)
+            _adfManagementClient = new DataFactoryManagementClient(cred)
             {
                 SubscriptionId = request.SubscriptionId
             };
-        }
-
-        public override void Dispose()
-        {
-            _adfClient?.Dispose();
         }
 
         public override object ValidatePipeline(PipelineRequest request)
         {
             try
             {
-                var pipelineResource = _adfClient.Pipelines.Get
+                var pipelineResource = _adfManagementClient.Pipelines.Get
                     (
                     request.ResourceGroup, 
                     request.OrchestratorName, 
@@ -77,7 +72,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             else
                 _logger.LogInformation("Calling pipeline with parameters.");
 
-            var runResponse = _adfClient.Pipelines.CreateRunWithHttpMessagesAsync
+            var runResponse = _adfManagementClient.Pipelines.CreateRunWithHttpMessagesAsync
                 (
                 request.ResourceGroup, 
                 request.OrchestratorName, 
@@ -92,7 +87,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             _logger.LogInformation("Checking ADF pipeline status.");
             while (true)
             {
-                pipelineRun = _adfClient.PipelineRuns.Get
+                pipelineRun = _adfManagementClient.PipelineRuns.Get
                     (
                     request.ResourceGroup, 
                     request.OrchestratorName,
@@ -114,34 +109,25 @@ namespace mrpaulandrew.azure.procfwk.Services
             };
         }
 
-        public override PipelineRunStatus CancelPipeline(PipelineRequest request)
+        public override PipelineRunStatus CancelPipeline(PipelineRunRequest request)
         {
-            var runResponse = _adfClient.Pipelines.CreateRunWithHttpMessagesAsync
-                (
-                request.ResourceGroup,
-                request.OrchestratorName,
-                request.PipelineName,
-                parameters: request.ParametersAsObjects
-                ).Result.Body;
+            _logger.LogInformation("Getting ADF pipeline current status.");
 
-            _logger.LogInformation("Pipeline run ID: " + runResponse.RunId);
-
-            
             PipelineRun pipelineRun;
-            pipelineRun = _adfClient.PipelineRuns.Get
+            pipelineRun = _adfManagementClient.PipelineRuns.Get
                 (
                 request.ResourceGroup,
                 request.OrchestratorName,
-                runResponse.RunId
+                request.RunId
                 );
 
             if (pipelineRun.Status == "InProgress" || pipelineRun.Status == "Queued")
             {
-                _adfClient.PipelineRuns.Cancel
+                _adfManagementClient.PipelineRuns.Cancel
                     (
                     request.ResourceGroup,
                     request.OrchestratorName,
-                    runResponse.RunId,
+                    request.RunId,
                     true //recursive cancel
                     );
             }
@@ -155,11 +141,11 @@ namespace mrpaulandrew.azure.procfwk.Services
             _logger.LogInformation("Checking ADF pipeline status.");
             while (true)
             {
-                pipelineRun = _adfClient.PipelineRuns.Get
+                pipelineRun = _adfManagementClient.PipelineRuns.Get
                     (
                     request.ResourceGroup,
                     request.OrchestratorName,
-                    runResponse.RunId
+                    request.RunId
                     );
 
                 _logger.LogInformation("ADF pipeline status: " + pipelineRun.Status);
@@ -173,41 +159,22 @@ namespace mrpaulandrew.azure.procfwk.Services
             return new PipelineRunStatus()
             {
                 PipelineName = request.PipelineName,
-                RunId = runResponse.RunId,
+                RunId = request.RunId,
                 Status = pipelineRun.Status
             };
         }
 
         public override PipelineRunStatus GetPipelineRunStatus(PipelineRunRequest request)
         {
+            _logger.LogInformation("Checking ADF pipeline status.");
+
             //Get pipeline status with provided run id
-            var pipelineRun = _adfClient.PipelineRuns.Get
+            var pipelineRun = _adfManagementClient.PipelineRuns.Get
                 (
                 request.ResourceGroup, 
                 request.OrchestratorName, 
                 request.RunId
                 );
-
-            _logger.LogInformation("Checking ADF pipeline status.");
-
-            //Create simple status for Data Factory Until comparison checks
-            string simpleStatus;
-
-            switch (pipelineRun.Status)
-            {
-                case "InProgress":
-                    simpleStatus = "Running";
-                    break;
-                case "Canceling": //microsoft typo
-                    simpleStatus = "Running";
-                    break;
-                case "Cancelling":
-                    simpleStatus = "Running";
-                    break;
-                default:
-                    simpleStatus = "Done";
-                    break;
-            }
 
             _logger.LogInformation("ADF pipeline status: " + pipelineRun.Status);
 
@@ -216,7 +183,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             {
                 PipelineName = request.PipelineName,
                 RunId = pipelineRun.RunId,
-                SimpleStatus = simpleStatus,
+                SimpleStatus = ConvertPipelineStatus(pipelineRun.Status),
                 Status = pipelineRun.Status.Replace("Canceling", "Cancelling") //microsoft typo
             };
         }
@@ -228,7 +195,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             DateTime today = DateTime.Now;
             DateTime lastWeek = DateTime.Now.AddDays(-daysOfRuns);
 
-            var pipelineRun = _adfClient.PipelineRuns.Get
+            var pipelineRun = _adfManagementClient.PipelineRuns.Get
                 (
                 request.ResourceGroup, 
                 request.OrchestratorName, 
@@ -237,7 +204,7 @@ namespace mrpaulandrew.azure.procfwk.Services
 
             _logger.LogInformation("Querying ADF pipeline for Activity Runs.");
             RunFilterParameters filterParams = new RunFilterParameters(lastWeek, today);
-            ActivityRunsQueryResponse queryResponse = _adfClient.ActivityRuns.QueryByPipelineRun
+            ActivityRunsQueryResponse queryResponse = _adfManagementClient.ActivityRuns.QueryByPipelineRun
                 (
                 request.ResourceGroup, 
                 request.OrchestratorName, 
@@ -295,6 +262,12 @@ namespace mrpaulandrew.azure.procfwk.Services
 
             return output;
         }
+
+        public override void Dispose()
+        {
+            _adfManagementClient?.Dispose();
+        }
+
     }
 }
 

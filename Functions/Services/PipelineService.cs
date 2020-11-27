@@ -18,11 +18,37 @@ namespace mrpaulandrew.azure.procfwk.Services
 
         public abstract PipelineRunStatus ExecutePipeline(PipelineRequest request);
 
-        public abstract PipelineRunStatus CancelPipeline(PipelineRequest request);
+        public abstract PipelineRunStatus CancelPipeline(PipelineRunRequest request);
 
         public abstract PipelineRunStatus GetPipelineRunStatus(PipelineRunRequest request);
 
         public abstract PipelineRunStatus GetPipelineRunActivityErrors(PipelineRunRequest request);
+
+        public string ConvertPipelineStatus(string actualStatus)
+        {
+            string simpleStatus;
+
+            //Create simple status for pipeline Until comparison checks
+            switch (actualStatus)
+            {
+                case "Queued":
+                    simpleStatus = "Running";
+                    break;
+                case "InProgress":
+                    simpleStatus = "Running";
+                    break;
+                case "Canceling": //microsoft typo
+                    simpleStatus = "Running";
+                    break;
+                case "Cancelling":
+                    simpleStatus = "Running";
+                    break;
+                default:
+                    simpleStatus = "Done";
+                    break;
+            }
+            return simpleStatus;
+        }
 
         public abstract void Dispose();
     }
