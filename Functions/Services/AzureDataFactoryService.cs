@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading;
-using Microsoft.Rest;
+using System.Collections.Generic;
 using Newtonsoft.Json;
+using Microsoft.Rest;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Azure.Management.DataFactory;
@@ -33,6 +34,8 @@ namespace mrpaulandrew.azure.procfwk.Services
 
         public override object ValidatePipeline(PipelineRequest request)
         {
+            _logger.LogInformation("Validating ADF pipeline.");
+
             try
             {
                 var pipelineResource = _adfManagementClient.Pipelines.Get
@@ -128,7 +131,7 @@ namespace mrpaulandrew.azure.procfwk.Services
                     request.ResourceGroup,
                     request.OrchestratorName,
                     request.RunId,
-                    true //recursive cancel
+                    isRecursive : request.RecursivePipelineCancel
                     );
             }
             else
@@ -190,11 +193,6 @@ namespace mrpaulandrew.azure.procfwk.Services
 
         public override PipelineRunStatus GetPipelineRunActivityErrors(PipelineRunRequest request)
         {
-            //Query and output support variables
-            int daysOfRuns = 7; //max duration for mandatory RunFilterParameters
-            DateTime today = DateTime.Now;
-            DateTime lastWeek = DateTime.Now.AddDays(-daysOfRuns);
-
             var pipelineRun = _adfManagementClient.PipelineRuns.Get
                 (
                 request.ResourceGroup, 
@@ -202,8 +200,23 @@ namespace mrpaulandrew.azure.procfwk.Services
                 request.RunId
                 );
 
+            _logger.LogInformation("Create pipeline Activity Runs query filters.");
+            RunQueryFilter failedStatusFilter = new RunQueryFilter
+                (
+                RunQueryFilterOperand.Status,
+                RunQueryFilterOperator.Equals,
+                new List<string>() { "Failed" }
+                );
+
+            RunFilterParameters filterParams = new RunFilterParameters
+                (
+                request.ActivityQueryStart, 
+                request.ActivityQueryEnd
+                );
+
+            filterParams.Filters.Add(failedStatusFilter);
+
             _logger.LogInformation("Querying ADF pipeline for Activity Runs.");
-            RunFilterParameters filterParams = new RunFilterParameters(lastWeek, today);
             ActivityRunsQueryResponse queryResponse = _adfManagementClient.ActivityRuns.QueryByPipelineRun
                 (
                 request.ResourceGroup, 
@@ -219,7 +232,6 @@ namespace mrpaulandrew.azure.procfwk.Services
                 PipelineStatus = pipelineRun.Status,
                 RunId = request.RunId,
                 ResponseCount = queryResponse.Value.Count
-
             };
 
             _logger.LogInformation("Pipeline status: " + pipelineRun.Status);
@@ -267,7 +279,6 @@ namespace mrpaulandrew.azure.procfwk.Services
         {
             _adfManagementClient?.Dispose();
         }
-
     }
 }
 

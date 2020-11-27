@@ -9,6 +9,7 @@ using Azure.Core;
 using Azure.Identity;
 using Azure.Analytics.Synapse.Artifacts;
 using mrpaulandrew.azure.procfwk.Helpers;
+using Azure.Analytics.Synapse.Artifacts.Models;
 
 namespace mrpaulandrew.azure.procfwk.Services
 {
@@ -48,27 +49,115 @@ namespace mrpaulandrew.azure.procfwk.Services
             _pipelineRunClient = new PipelineRunClient(synapseDevEndpoint, token);
         }
 
-        public override PipelineRunStatus CancelPipeline(PipelineRunRequest request)
+        public override object ValidatePipeline(PipelineRequest request)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("Validating SYN pipeline.");
+
+            PipelineResource pipelineResource;
+            try
+            {
+                pipelineResource = _pipelineClient.GetPipeline
+                    (
+                    request.PipelineName
+                    );
+
+                _logger.LogInformation(pipelineResource.Id.ToString());
+                _logger.LogInformation(pipelineResource.Name.ToString());
+
+                return new PipelineDescription()
+                {
+                    PipelineExists = "True",
+                    PipelineName = pipelineResource.Name,
+                    PipelineId = pipelineResource.Id,
+                    PipelineType = pipelineResource.Type,
+                    ActivityCount = pipelineResource.Activities.Count
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                return new PipelineNotExists()
+                {
+                    PipelineExists = "False",
+                    ProvidedPipelineName = request.PipelineName
+                };
+            }
         }
 
         public override PipelineRunStatus ExecutePipeline(PipelineRequest request)
         {
-            throw new NotImplementedException();
+            if (request.PipelineParameters == null)
+                _logger.LogInformation("Calling pipeline without parameters.");
+            else
+                _logger.LogInformation("Calling pipeline with parameters.");
+
+            CreateRunResponse runResponse;
+            runResponse = _pipelineClient.CreatePipelineRun
+                (
+                request.PipelineName,
+                parameters: request.ParametersAsObjects
+                );
+
+            /*
+             * 
+             * Harden request with status checking and wait behaviour as per ADF version.
+             * 
+            */
+
+            return new PipelineRunStatus()
+            {
+                PipelineName = request.PipelineName,
+                RunId = runResponse.RunId,
+                Status = "Unknown" //replace with actual value
+            };
         }
 
-        public override PipelineRunStatus GetPipelineRunActivityErrors(PipelineRunRequest request)
+        public override PipelineRunStatus CancelPipeline(PipelineRunRequest request)
         {
-            throw new NotImplementedException();
+            _pipelineRunClient.CancelPipelineRun
+                (
+                request.RunId,
+                isRecursive: request.RecursivePipelineCancel
+                );
+
+            /*
+             * 
+             * Harden request with status checking and wait behaviour as per ADF version.
+             * 
+            */
+
+            //Final return detail
+            return new PipelineRunStatus()
+            {
+                PipelineName = request.PipelineName,
+                RunId = request.RunId,
+                Status = "Unknown" //replace with actual value
+            };
         }
 
         public override PipelineRunStatus GetPipelineRunStatus(PipelineRunRequest request)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("Getting SYN pipeline status.");
+
+            PipelineRun pipelineRun;
+            pipelineRun = _pipelineRunClient.GetPipelineRun
+                (
+                request.RunId
+                );
+
+            _logger.LogInformation("SYN pipeline status: " + pipelineRun.Status);
+
+            //Final return detail
+            return new PipelineRunStatus()
+            {
+                PipelineName = request.PipelineName,
+                RunId = pipelineRun.RunId,
+                SimpleStatus = ConvertPipelineStatus(pipelineRun.Status),
+                Status = pipelineRun.Status.Replace("Canceling", "Cancelling") //microsoft typo
+            };
         }
 
-        public override object ValidatePipeline(PipelineRequest request)
+        public override PipelineRunStatus GetPipelineRunActivityErrors(PipelineRunRequest request)
         {
             throw new NotImplementedException();
         }
