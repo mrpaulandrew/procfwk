@@ -1,0 +1,402 @@
+{
+  "name": "Check For Running Pipeline",
+  "properties": {
+    "description": "For a given pipeline and optional batch name establish if a pipeline run is already in progress. Throw an exception if it it.",
+    "activities": [
+      {
+        "name": "Get Subscription",
+        "description": "Use the Azure Management API to return the current subscription.",
+        "type": "WebActivity",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.00:10:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "url": "https://management.azure.com/subscriptions?api-version=2020-01-01",
+          "method": "GET",
+          "authentication": {
+            "type": "MSI",
+            "resource": "https://management.core.windows.net/"
+          }
+        }
+      },
+      {
+        "name": "Get Pipeline Runs",
+        "description": "Use the Azure Management API to return a list of pipeline runs within the given time window.",
+        "type": "WebActivity",
+        "dependsOn": [
+          {
+            "activity": "Get Query Run Days Value",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Check for Valid Pipeline Name",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.00:10:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "url": {
+            "value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{activity('Get Resource Group').output.firstRow.PropertyValue}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/queryPipelineRuns?api-version=2018-06-01",
+            "type": "Expression"
+          },
+          "method": "POST",
+          "body": {
+            "value": "{\n  \"lastUpdatedAfter\": \"@{adddays(utcnow(),int(activity('Get Query Run Days Value').output.firstRow.PropertyValue))}\",\n  \"lastUpdatedBefore\": \"@{utcnow()}\",\n  \"filters\": [\n    {\n      \"operand\": \"PipelineName\",\n      \"operator\": \"Equals\",\n      \"values\": [\n        \"@{pipeline().parameters.PipelineName}\"\n      ]\n    }\n  ]\n}",
+            "type": "Expression"
+          },
+          "authentication": {
+            "type": "MSI",
+            "resource": "https://management.core.windows.net/"
+          }
+        }
+      },
+      {
+        "name": "Set Parsed Subscription",
+        "description": "Parse the subscription string value to return just the subscription ID.",
+        "type": "SetVariable",
+        "dependsOn": [
+          {
+            "activity": "Get Subscription",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "userProperties": [],
+        "typeProperties": {
+          "variableName": "SubscriptionId",
+          "value": {
+            "value": "@replace(activity('Get Subscription').output.value[0].id,'/subscriptions/','')",
+            "type": "Expression"
+          }
+        }
+      },
+      {
+        "name": "Filter Running Pipelines",
+        "description": "Filter the pipeline runs results for pipelines that exclude the current triggered run and that are currently running (in progress or queued).",
+        "type": "Filter",
+        "dependsOn": [
+          {
+            "activity": "Get Pipeline Runs",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "userProperties": [],
+        "typeProperties": {
+          "items": {
+            "value": "@activity('Get Pipeline Runs').output.value",
+            "type": "Expression"
+          },
+          "condition": {
+            "value": "@and(not(equals(item().runId,pipeline().parameters.ThisRunId)),or(equals(item().status,'InProgress'),equals(item().status,'Queued')))",
+            "type": "Expression"
+          }
+        }
+      },
+      {
+        "name": "Get Resource Group",
+        "description": "Using the metadata properties table return the framework factory resource group name.",
+        "type": "Lookup",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.00:10:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "source": {
+            "type": "AzureSqlSource",
+            "sqlReaderStoredProcedureName": "[procfwk].[GetPropertyValue]",
+            "storedProcedureParameters": {
+              "PropertyName": {
+                "type": "String",
+                "value": "FrameworkFactoryResourceGroup"
+              }
+            },
+            "queryTimeout": "02:00:00",
+            "partitionOption": "None"
+          },
+          "dataset": {
+            "referenceName": "GetSetMetadata",
+            "type": "DatasetReference"
+          }
+        }
+      },
+      {
+        "name": "Get Query Run Days Value",
+        "description": "Using the metadata properties table return the run days value to provide the API request with a date range for pipeline executions.",
+        "type": "Lookup",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.00:10:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "source": {
+            "type": "AzureSqlSource",
+            "sqlReaderStoredProcedureName": "[procfwk].[GetPropertyValue]",
+            "storedProcedureParameters": {
+              "PropertyName": {
+                "type": "String",
+                "value": "PreviousPipelineRunsQueryRange"
+              }
+            },
+            "queryTimeout": "02:00:00",
+            "partitionOption": "None"
+          },
+          "dataset": {
+            "referenceName": "GetSetMetadata",
+            "type": "DatasetReference"
+          }
+        }
+      },
+      {
+        "name": "If Pipeline Is Running",
+        "description": "If the running pipeline count is greater than or equal to one.\nTrue = raise an exception.",
+        "type": "IfCondition",
+        "dependsOn": [
+          {
+            "activity": "If Using Batch Executions",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "userProperties": [],
+        "typeProperties": {
+          "expression": {
+            "value": "@greaterOrEquals(int(variables('RunCount')),1)",
+            "type": "Expression"
+          },
+          "ifTrueActivities": [
+            {
+              "name": "Throw Exception - Pipeline Running",
+              "description": "Using the utils pipeline raise an exception to stop the new trigger while a run is already in progress.",
+              "type": "ExecutePipeline",
+              "dependsOn": [],
+              "userProperties": [],
+              "typeProperties": {
+                "pipeline": {
+                  "referenceName": "Throw Exception",
+                  "type": "PipelineReference"
+                },
+                "waitOnCompletion": true,
+                "parameters": {
+                  "Message": {
+                    "value": "@concat('Provided pipeline name (',pipeline().parameters.PipelineName,') still has a run in progress or queued given the query range parameters set in the properties table.')",
+                    "type": "Expression"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Get Execution Batch Status",
+        "description": "Using the metadata properties table return the flag to indicate if batch execution setting are enabled or disabled.",
+        "type": "Lookup",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.00:10:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "source": {
+            "type": "AzureSqlSource",
+            "sqlReaderStoredProcedureName": "[procfwk].[GetPropertyValue]",
+            "storedProcedureParameters": {
+              "PropertyName": {
+                "type": "String",
+                "value": "UseExecutionBatches"
+              }
+            },
+            "queryTimeout": "02:00:00",
+            "partitionOption": "None"
+          },
+          "dataset": {
+            "referenceName": "GetSetMetadata",
+            "type": "DatasetReference"
+          }
+        }
+      },
+      {
+        "name": "If Using Batch Executions",
+        "description": "True = batch executions are enabled.\nFalse = batch execution are disabled.",
+        "type": "IfCondition",
+        "dependsOn": [
+          {
+            "activity": "Get Execution Batch Status",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Filter Running Pipelines",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "userProperties": [],
+        "typeProperties": {
+          "expression": {
+            "value": "@equals(activity('Get Execution Batch Status').output.firstRow.PropertyValue,string(1))",
+            "type": "Expression"
+          },
+          "ifFalseActivities": [
+            {
+              "name": "Set Run Count Without Batch",
+              "description": "Set the pipelines running count variable to be tested later.",
+              "type": "SetVariable",
+              "dependsOn": [],
+              "userProperties": [],
+              "typeProperties": {
+                "variableName": "RunCount",
+                "value": {
+                  "value": "@string(activity('Filter Running Pipelines').output.FilteredItemsCount)",
+                  "type": "Expression"
+                }
+              }
+            }
+          ],
+          "ifTrueActivities": [
+            {
+              "name": "Filter for Batch Name",
+              "description": "Further filter the return pipeline runs for any running pipelines with the same batch name value.",
+              "type": "Filter",
+              "dependsOn": [],
+              "userProperties": [],
+              "typeProperties": {
+                "items": {
+                  "value": "@activity('Filter Running Pipelines').output.value",
+                  "type": "Expression"
+                },
+                "condition": {
+                  "value": "@equals(item().parameters.BatchName,pipeline().parameters.BatchName)",
+                  "type": "Expression"
+                }
+              }
+            },
+            {
+              "name": "Set Run Count for Batch",
+              "description": "Set the resulting pipeline running count variable to be tested later.",
+              "type": "SetVariable",
+              "dependsOn": [
+                {
+                  "activity": "Filter for Batch Name",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ],
+              "userProperties": [],
+              "typeProperties": {
+                "variableName": "RunCount",
+                "value": {
+                  "value": "@string(activity('Filter for Batch Name').output.FilteredItemsCount)",
+                  "type": "Expression"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Check for Valid Pipeline Name",
+        "description": "Use the Azure Management API to return and establish if the framework pipeline exists in the target Data Factory, including being deployed.",
+        "type": "WebActivity",
+        "dependsOn": [
+          {
+            "activity": "Set Parsed Subscription",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Get Resource Group",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.00:10:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+          "url": {
+            "value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{activity('Get Resource Group').output.firstRow.PropertyValue}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/pipelines/@{pipeline().parameters.PipelineName}?api-version=2018-06-01",
+            "type": "Expression"
+          },
+          "method": "GET",
+          "authentication": {
+            "type": "MSI",
+            "resource": "https://management.core.windows.net/"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "BatchName": {
+        "type": "string",
+        "defaultValue": "NotUsed"
+      },
+      "PipelineName": {
+        "type": "string"
+      },
+      "ThisRunId": {
+        "type": "string"
+      }
+    },
+    "variables": {
+      "SubscriptionId": {
+        "type": "String"
+      },
+      "RunCount": {
+        "type": "String"
+      }
+    },
+    "folder": {
+      "name": "_ProcFwk/_ProcFwkUtils"
+    },
+    "annotations": [
+      "procfwk",
+      "Utils"
+    ]
+  }
+}

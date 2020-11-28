@@ -28,7 +28,10 @@ BEGIN
 				INNER JOIN procfwk.Recipients AS r
 					ON r.RecipientId = pal.RecipientId
 				WHERE ce.PipelineId = @PipelineId
-					  AND ao.BitValue & pal.OutcomesBitValue > 0
+					  AND (
+						ao.BitValue & pal.OutcomesBitValue <> 0
+						OR pal.OutcomesBitValue & 1 <> 0 --all
+						)
 					  AND pal.[Enabled] = 1
 					  AND r.[Enabled] = 1
 				)

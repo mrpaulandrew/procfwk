@@ -120,6 +120,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FactoryTesting", "FactoryTe
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "MetadataDBTests", "MetadataDBTests\MetadataDBTests.sqlproj", "{32D54B90-932D-44A3-911D-007C4B90BC55}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ProcFwkUtils", "_ProcFwkUtils", "{B0D1372F-D609-471C-BD62-AF81A6FA74FD}"
+	ProjectSection(SolutionItems) = preProject
+		Check For Running Pipeline.json = Check For Running Pipeline.json
+		Email Sender.json = Email Sender.json
+		Intentional Error.json = Intentional Error.json
+		Throw Exception.json = Throw Exception.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -165,6 +173,7 @@ Global
 		{EBC230DF-D45D-43E4-A74E-32ADA3DDAE7A} = {5A56A63A-351D-467D-A2DA-FDB3C9CBD252}
 		{20313ECA-118E-408D-BB42-8094A7A9CD20} = {CC7B607B-8C84-4E07-A6C8-326923752F92}
 		{463330CD-189F-42B4-984A-8D3C1385645B} = {CC7B607B-8C84-4E07-A6C8-326923752F92}
+		{B0D1372F-D609-471C-BD62-AF81A6FA74FD} = {17586826-8BE9-4622-B12E-1683F2A20352}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {170F5302-BB9C-4569-8F43-D859C7678EF0}
