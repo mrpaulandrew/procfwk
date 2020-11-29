@@ -108,7 +108,6 @@ namespace mrpaulandrew.azure.procfwk.Services
             {
                 PipelineName = request.PipelineName,
                 RunId = runResponse.RunId,
-                SimpleStatus = ConvertPipelineStatus(pipelineRun.Status),
                 ActualStatus = pipelineRun.Status
             };
         }
@@ -164,7 +163,6 @@ namespace mrpaulandrew.azure.procfwk.Services
             {
                 PipelineName = request.PipelineName,
                 RunId = request.RunId,
-                SimpleStatus = ConvertPipelineStatus(pipelineRun.Status),
                 ActualStatus = pipelineRun.Status.Replace("Canceling", "Cancelling") //microsoft typo
             };
         }
@@ -188,7 +186,6 @@ namespace mrpaulandrew.azure.procfwk.Services
             {
                 PipelineName = request.PipelineName,
                 RunId = pipelineRun.RunId,
-                SimpleStatus = ConvertPipelineStatus(pipelineRun.Status),
                 ActualStatus = pipelineRun.Status.Replace("Canceling", "Cancelling") //microsoft typo
             };
         }
@@ -222,7 +219,6 @@ namespace mrpaulandrew.azure.procfwk.Services
             var output = new PipelineFailStatus()
             {
                 PipelineName = request.PipelineName,
-                SimpleStatus = ConvertPipelineStatus(pipelineRun.Status),
                 ActualStatus = pipelineRun.Status,
                 RunId = request.RunId,
                 ResponseCount = queryResponse.Value.Count

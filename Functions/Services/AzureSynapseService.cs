@@ -152,7 +152,6 @@ namespace mrpaulandrew.azure.procfwk.Services
             {
                 PipelineName = request.PipelineName,
                 RunId = pipelineRun.RunId,
-                SimpleStatus = ConvertPipelineStatus(pipelineRun.Status),
                 ActualStatus = pipelineRun.Status.Replace("Canceling", "Cancelling") //microsoft typo
             };
         }
