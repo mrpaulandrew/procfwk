@@ -1179,13 +1179,14 @@
 			},
 			{
 				"name": "Get Worker Core Details",
+				"description": "Return worker pipeline information for metadata database. Including target data factory, pipeline name and resource group. Return the SPN ID and Secret for the worker pipeline being executed. Called at this level as each pipeline can have a different SPN.",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
 					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
+					"secureOutput": true,
 					"secureInput": false
 				},
 				"userProperties": [],
@@ -1227,6 +1228,7 @@
 			},
 			{
 				"name": "Capture Worker Core Details as an Array",
+				"description": "Add all worker pipeline details to a local variable array that can be accessed by each function call requiring the values.",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
