@@ -488,7 +488,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"on": {
-									"value": "@activity('Get Pipeline Status').output.Status",
+									"value": "@activity('Get Pipeline Status').output.ActualStatus",
 									"type": "Expression"
 								},
 								"cases": [
