@@ -212,6 +212,7 @@
     <Build Include="procfwkTesting\Stored Procedures\Add20BatchesFor1000Workers.sql" />
     <Build Include="procfwk\Tables\Orchestrators.sql" />
     <None Include="procfwk\Views\DataFactorys.sql" />
+    <Build Include="procfwk\Stored Procedures\GetWorkerDetailsWrapper.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
