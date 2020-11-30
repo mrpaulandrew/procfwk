@@ -644,7 +644,7 @@
 							"typeProperties": {
 								"variableName": "WorkerPipelineState",
 								"value": {
-									"value": "@equals('Done',activity('Get Worker Pipeline Status').output.SimpleStatus)",
+									"value": "@equals('Complete',activity('Get Worker Pipeline Status').output.SimpleStatus)",
 									"type": "Expression"
 								}
 							}
