@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 using Microsoft.Rest;
 using Microsoft.Extensions.Logging;
@@ -32,7 +31,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             };
         }
 
-        public override object ValidatePipeline(PipelineRequest request)
+        public override PipelineDescription ValidatePipeline(PipelineRequest request)
         {
             _logger.LogInformation("Validating ADF pipeline.");
 
@@ -60,10 +59,13 @@ namespace mrpaulandrew.azure.procfwk.Services
             catch (Exception ex)
             {
                 _logger.LogInformation(ex.Message);
-                return new PipelineNotExists()
+                return new PipelineDescription()
                 {
                     PipelineExists = "False",
-                    ProvidedPipelineName = request.PipelineName
+                    PipelineName = request.PipelineName,
+                    PipelineId = "Unknown",
+                    PipelineType = "Unknown",
+                    ActivityCount = 0
                 };
             }
         }
@@ -97,7 +99,7 @@ namespace mrpaulandrew.azure.procfwk.Services
                     runResponse.RunId
                     );
 
-                _logger.LogInformation("ADF pipeline status: " + pipelineRun.Status);
+                _logger.LogInformation("Waiting for pipeline to start, current status: " + pipelineRun.Status);
 
                 if (pipelineRun.Status != "Queued")
                     break;
@@ -124,8 +126,12 @@ namespace mrpaulandrew.azure.procfwk.Services
                 request.RunId
                 );
 
+            //Defensive check
+            PipelineNameCheck(request.PipelineName, pipelineRun.PipelineName);
+
             if (pipelineRun.Status == "InProgress" || pipelineRun.Status == "Queued")
             {
+                _logger.LogInformation("Attempting to cancel ADF pipeline.");
                 _adfManagementClient.PipelineRuns.Cancel
                     (
                     request.ResourceGroupName,
@@ -141,7 +147,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             }
 
             //wait for cancelled state
-            _logger.LogInformation("Checking ADF pipeline status.");
+            _logger.LogInformation("Checking ADF pipeline status after cancel request.");
             while (true)
             {
                 pipelineRun = _adfManagementClient.PipelineRuns.Get
@@ -151,7 +157,7 @@ namespace mrpaulandrew.azure.procfwk.Services
                     request.RunId
                     );
 
-                _logger.LogInformation("ADF pipeline status: " + pipelineRun.Status);
+                _logger.LogInformation("Waiting for pipeline to cancel, current status: " + pipelineRun.Status);
 
                 if (pipelineRun.Status == "Cancelling" || pipelineRun.Status == "Canceling") //microsoft typo
                     break;
@@ -181,6 +187,9 @@ namespace mrpaulandrew.azure.procfwk.Services
 
             _logger.LogInformation("ADF pipeline status: " + pipelineRun.Status);
 
+            //Defensive check
+            PipelineNameCheck(request.PipelineName, pipelineRun.PipelineName);
+
             //Final return detail
             return new PipelineRunStatus()
             {
@@ -190,7 +199,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             };
         }
 
-        public override PipelineRunStatus GetPipelineRunActivityErrors(PipelineRunRequest request)
+        public override PipelineFailStatus GetPipelineRunActivityErrors(PipelineRunRequest request)
         {
             var pipelineRun = _adfManagementClient.PipelineRuns.Get
                 (
@@ -198,6 +207,9 @@ namespace mrpaulandrew.azure.procfwk.Services
                 request.OrchestratorName, 
                 request.RunId
                 );
+
+            //Defensive check
+            PipelineNameCheck(request.PipelineName, pipelineRun.PipelineName);
 
             _logger.LogInformation("Create pipeline Activity Runs query filters.");
             RunFilterParameters filterParams = new RunFilterParameters
@@ -261,7 +273,6 @@ namespace mrpaulandrew.azure.procfwk.Services
                     );
                 }
             }
-
             return output;
         }
 

@@ -19,7 +19,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             throw new InvalidRequestException ("Unsupported orchestrator type: " + (pr.OrchestratorType?.ToString() ?? "<null>"));
         }
 
-        public abstract object ValidatePipeline(PipelineRequest request);
+        public abstract PipelineDescription ValidatePipeline(PipelineRequest request);
 
         public abstract PipelineRunStatus ExecutePipeline(PipelineRequest request);
 
@@ -27,7 +27,15 @@ namespace mrpaulandrew.azure.procfwk.Services
 
         public abstract PipelineRunStatus GetPipelineRunStatus(PipelineRunRequest request);
 
-        public abstract PipelineRunStatus GetPipelineRunActivityErrors(PipelineRunRequest request);
+        public abstract PipelineFailStatus GetPipelineRunActivityErrors(PipelineRunRequest request);
+
+        protected void PipelineNameCheck(string requestName, string foundName)
+        {
+            if (requestName.ToUpper() != foundName.ToUpper())
+            {
+                throw new InvalidRequestException($"Pipeline name mismatch. Provided pipeline name does not match the provided Run Id. Expected name: {foundName}");
+            }
+        }
 
         public abstract void Dispose();
     }

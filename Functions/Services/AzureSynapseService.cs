@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading;
-using Newtonsoft.Json;
 using Microsoft.Rest;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
@@ -49,7 +47,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             _pipelineRunClient = new PipelineRunClient(synapseDevEndpoint, token);
         }
 
-        public override object ValidatePipeline(PipelineRequest request)
+        public override PipelineDescription ValidatePipeline(PipelineRequest request)
         {
             _logger.LogInformation("Validating SYN pipeline.");
 
@@ -76,10 +74,13 @@ namespace mrpaulandrew.azure.procfwk.Services
             catch (Exception ex)
             {
                 _logger.LogInformation(ex.Message);
-                return new PipelineNotExists()
+                return new PipelineDescription()
                 {
                     PipelineExists = "False",
-                    ProvidedPipelineName = request.PipelineName
+                    PipelineName = request.PipelineName,
+                    PipelineId = "Unknown",
+                    PipelineType = "Unknown",
+                    ActivityCount = 0
                 };
             }
         }
@@ -156,7 +157,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             };
         }
 
-        public override PipelineRunStatus GetPipelineRunActivityErrors(PipelineRunRequest request)
+        public override PipelineFailStatus GetPipelineRunActivityErrors(PipelineRunRequest request)
         {
             throw new NotImplementedException();
         }
