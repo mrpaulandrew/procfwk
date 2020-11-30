@@ -8,7 +8,7 @@ AS
 BEGIN
 	/*
 	Created this proc just to reduce and refactor the number of pipeline activity 
-	calls due to the Microsoft enforced limit of 40 per pipeline.
+	calls needed due to the Microsoft enforced limit of 40 activities per pipeline.
 	*/
 	SET NOCOUNT ON;
 
