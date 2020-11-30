@@ -33,7 +33,7 @@
 					"functionName": "ExecutePipeline",
 					"method": "POST",
 					"body": {
-						"value": "@concat('\n{\n\t\"tenantId\": \"',variables('WorkerTenantId'),'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n\t\"resourceGroupName\": \"',variables('WorkerResourceGroup'),'\",\n\t\"orchestratorName\": \"',variables('WorkerOrchestratorName'),'\",\n\t\"orchestratorType\": \"',variables('WorkerOrchestratorType'),'\",\n\t\"pipelineName\": \"',variables('WorkerPipelineName'),'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
+						"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerCoreDetails')[0].tenantId,'\",\n    \"applicationId\": \"',variables('WorkerCoreDetails')[0].applicationId,'\",\n    \"authenticationKey\": \"',variables('WorkerCoreDetails')[0].authenticationKey,'\",\n    \"subscriptionId\": \"',variables('WorkerCoreDetails')[0].subscriptionId,'\",\n    \"resourceGroupName\": \"',variables('WorkerCoreDetails')[0].resourceGroupName,'\",\n\t\"orchestratorName\": \"',variables('WorkerCoreDetails')[0].orchestratorName,'\",\n    \"orchestratorType\": \"',variables('WorkerCoreDetails')[0].orchestratorType,'\",\n    \"pipelineName\": \"',variables('WorkerCoreDetails')[0].pipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
 						"type": "Expression"
 					}
 				},
@@ -126,55 +126,6 @@
 				"linkedServiceName": {
 					"referenceName": "SupportDatabase",
 					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "Get Worker Authentication Details",
-				"description": "Return the SPN ID and Secret for the worker pipeline being executed. Called at this level as each pipeline can have a different SPN.",
-				"type": "Lookup",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.00:10:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": true,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[procfwk].[GetWorkerAuthDetails]",
-						"storedProcedureParameters": {
-							"ExecutionId": {
-								"type": "Guid",
-								"value": {
-									"value": "@pipeline().parameters.executionId",
-									"type": "Expression"
-								}
-							},
-							"PipelineId": {
-								"type": "Int32",
-								"value": {
-									"value": "@pipeline().parameters.pipelineId",
-									"type": "Expression"
-								}
-							},
-							"StageId": {
-								"type": "Int32",
-								"value": {
-									"value": "@pipeline().parameters.stageId",
-									"type": "Expression"
-								}
-							}
-						},
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "GetSetMetadata",
-						"type": "DatasetReference"
-					}
 				}
 			},
 			{
@@ -478,7 +429,7 @@
 								"functionName": "CheckPipelineStatus",
 								"method": "POST",
 								"body": {
-									"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerTenantId'),'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n    \"resourceGroupName\": \"',variables('WorkerResourceGroup'),'\",\n     \"orchestratorName\": \"',variables('WorkerOrchestratorName'),'\",\n    \"orchestratorType\": \"',variables('WorkerOrchestratorType'),'\",\n    \"pipelineName\": \"',variables('WorkerPipelineName'),'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
+									"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerCoreDetails')[0].tenantId,'\",\n    \"applicationId\": \"',variables('WorkerCoreDetails')[0].applicationId,'\",\n    \"authenticationKey\": \"',variables('WorkerCoreDetails')[0].authenticationKey,'\",\n    \"subscriptionId\": \"',variables('WorkerCoreDetails')[0].subscriptionId,'\",\n    \"resourceGroupName\": \"',variables('WorkerCoreDetails')[0].resourceGroupName,'\",\n\t\"orchestratorName\": \"',variables('WorkerCoreDetails')[0].orchestratorName,'\",\n    \"orchestratorType\": \"',variables('WorkerCoreDetails')[0].orchestratorType,'\",\n    \"pipelineName\": \"',variables('WorkerCoreDetails')[0].pipelineName,'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 									"type": "Expression"
 								}
 							},
@@ -792,7 +743,7 @@
 										"functionName": "GetActivityErrors",
 										"method": "POST",
 										"body": {
-											"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerTenantId'),'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n\t\"resourceGroupName\": \"',variables('WorkerResourceGroup'),'\",\n\t\"orchestratorName\": \"',variables('WorkerOrchestratorName'),'\",\n\t\"orchestratorType\": \"',variables('WorkerOrchestratorType'),'\",\n    \"pipelineName\": \"',variables('WorkerPipelineName'),'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
+											"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerCoreDetails')[0].tenantId,'\",\n    \"applicationId\": \"',variables('WorkerCoreDetails')[0].applicationId,'\",\n    \"authenticationKey\": \"',variables('WorkerCoreDetails')[0].authenticationKey,'\",\n    \"subscriptionId\": \"',variables('WorkerCoreDetails')[0].subscriptionId,'\",\n    \"resourceGroupName\": \"',variables('WorkerCoreDetails')[0].resourceGroupName,'\",\n\t\"orchestratorName\": \"',variables('WorkerCoreDetails')[0].orchestratorName,'\",\n    \"orchestratorType\": \"',variables('WorkerCoreDetails')[0].orchestratorType,'\",\n    \"pipelineName\": \"',variables('WorkerCoreDetails')[0].pipelineName,'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 											"type": "Expression"
 										}
 									},
@@ -978,48 +929,6 @@
 				}
 			},
 			{
-				"name": "Set App Id",
-				"description": "Set local variable from activity output once for value reuse in downstream activities.",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Get Worker Authentication Details",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "WorkerAppId",
-					"value": {
-						"value": "@activity('Get Worker Authentication Details').output.firstRow.AppId",
-						"type": "Expression"
-					}
-				}
-			},
-			{
-				"name": "Set App Secret",
-				"description": "Set local variable from activity output once for value reuse in downstream activities.",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Get Worker Authentication Details",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "WorkerAppSecret",
-					"value": {
-						"value": "@activity('Get Worker Authentication Details').output.firstRow.AppSecret",
-						"type": "Expression"
-					}
-				}
-			},
-			{
 				"name": "Set Run Id",
 				"description": "Set local variable from activity output once for value reuse in downstream activities.",
 				"type": "SetVariable",
@@ -1041,208 +950,18 @@
 				}
 			},
 			{
-				"name": "Get Worker Pipeline Details",
-				"description": "Return none sensitive worker pipeline information for metadata database. Including target data factory, pipeline name and resource group.",
-				"type": "Lookup",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.00:10:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": true,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[procfwk].[GetWorkerPipelineDetails]",
-						"storedProcedureParameters": {
-							"ExecutionId": {
-								"type": "Guid",
-								"value": {
-									"value": "@pipeline().parameters.ExecutionId",
-									"type": "Expression"
-								}
-							},
-							"PipelineId": {
-								"type": "Int32",
-								"value": {
-									"value": "@pipeline().parameters.pipelineId",
-									"type": "Expression"
-								}
-							},
-							"StageId": {
-								"type": "Int32",
-								"value": {
-									"value": "@pipeline().parameters.stageId",
-									"type": "Expression"
-								}
-							}
-						},
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "GetSetMetadata",
-						"type": "DatasetReference"
-					}
-				}
-			},
-			{
-				"name": "Set Tenant Id",
-				"description": "Set local variable from activity output once for value reuse in downstream activities.",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Get Worker Authentication Details",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "WorkerTenantId",
-					"value": {
-						"value": "@activity('Get Worker Authentication Details').output.firstRow.TenantId",
-						"type": "Expression"
-					}
-				}
-			},
-			{
-				"name": "Set Subscription Id",
-				"description": "Set local variable from activity output once for value reuse in downstream activities.",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Get Worker Authentication Details",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "WorkerSubscriptionId",
-					"value": {
-						"value": "@activity('Get Worker Authentication Details').output.firstRow.SubscriptionId",
-						"type": "Expression"
-					}
-				}
-			},
-			{
-				"name": "Set Pipeline Name",
-				"description": "Set local variable from activity output once for value reuse in downstream activities.",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Get Worker Pipeline Details",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "WorkerPipelineName",
-					"value": {
-						"value": "@activity('Get Worker Pipeline Details').output.firstRow.PipelineName",
-						"type": "Expression"
-					}
-				}
-			},
-			{
-				"name": "Set Orchestrator Name",
-				"description": "Set local variable from activity output once for value reuse in downstream activities.",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Get Worker Pipeline Details",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "WorkerOrchestratorName",
-					"value": {
-						"value": "@activity('Get Worker Pipeline Details').output.firstRow.OrchestratorName",
-						"type": "Expression"
-					}
-				}
-			},
-			{
-				"name": "Set Resource Group",
-				"description": "Set local variable from activity output once for value reuse in downstream activities.",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Get Worker Pipeline Details",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "WorkerResourceGroup",
-					"value": {
-						"value": "@activity('Get Worker Pipeline Details').output.firstRow.ResourceGroupName",
-						"type": "Expression"
-					}
-				}
-			},
-			{
 				"name": "Validate Pipeline",
 				"description": "Query the target data factory and establish if the provided worker pipeline name is valid.",
 				"type": "AzureFunctionActivity",
 				"dependsOn": [
 					{
-						"activity": "Set Resource Group",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Set Orchestrator Name",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Set Subscription Id",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Set App Secret",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Set App Id",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Set Pipeline Name",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Set Tenant Id",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
 						"activity": "Log Pipeline Validating",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Capture Worker Core Details as an Array",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -1260,7 +979,7 @@
 					"functionName": "ValidatePipeline",
 					"method": "POST",
 					"body": {
-						"value": "@concat('\n{\n\t\"tenantId\": \"',variables('WorkerTenantId'),'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n\t\"resourceGroupName\": \"',variables('WorkerResourceGroup'),'\",\n\t\"orchestratorName\": \"',variables('WorkerOrchestratorName'),'\",\n\t\"orchestratorType\": \"',variables('WorkerOrchestratorType'),'\",\n\t\"pipelineName\": \"',variables('WorkerPipelineName'),'\"\n}')",
+						"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerCoreDetails')[0].tenantId,'\",\n    \"applicationId\": \"',variables('WorkerCoreDetails')[0].applicationId,'\",\n    \"authenticationKey\": \"',variables('WorkerCoreDetails')[0].authenticationKey,'\",\n    \"subscriptionId\": \"',variables('WorkerCoreDetails')[0].subscriptionId,'\",\n    \"resourceGroupName\": \"',variables('WorkerCoreDetails')[0].resourceGroupName,'\",\n\t\"orchestratorName\": \"',variables('WorkerCoreDetails')[0].orchestratorName,'\",\n    \"orchestratorType\": \"',variables('WorkerCoreDetails')[0].orchestratorType,'\",\n    \"pipelineName\": \"',variables('WorkerCoreDetails')[0].pipelineName,'\"\n}')",
 						"type": "Expression"
 					}
 				},
@@ -1302,7 +1021,7 @@
 								"waitOnCompletion": true,
 								"parameters": {
 									"Message": {
-										"value": "@concat('Worker pipeline [',variables('WorkerPipelineName'),'] is not valid in target Orchestrator [',variables('WorkerOrchestratorName'),']')",
+										"value": "@concat('Worker pipeline [',variables('WorkerCoreDetails')[0].pipelineName,'] is not valid in target Orchestrator [',variables('WorkerCoreDetails')[0].orchestratorName,']')",
 										"type": "Expression"
 									}
 								}
@@ -1457,6 +1176,74 @@
 					"referenceName": "SupportDatabase",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Get Worker Core Details",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetWorkerDetailsWrapper]",
+						"storedProcedureParameters": {
+							"ExecutionId": {
+								"type": "Guid",
+								"value": {
+									"value": "@pipeline().parameters.executionId",
+									"type": "Expression"
+								}
+							},
+							"PipelineId": {
+								"type": "Int32",
+								"value": {
+									"value": "@pipeline().parameters.pipelineId",
+									"type": "Expression"
+								}
+							},
+							"StageId": {
+								"type": "Int32",
+								"value": {
+									"value": "@pipeline().parameters.stageId",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Capture Worker Core Details as an Array",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get Worker Core Details",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "WorkerCoreDetails",
+					"value": {
+						"value": "@array(activity('Get Worker Core Details').output.firstRow)",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"parameters": {
@@ -1474,33 +1261,11 @@
 			"WorkerPipelineState": {
 				"type": "Boolean"
 			},
-			"WorkerAppId": {
-				"type": "String"
-			},
-			"WorkerAppSecret": {
-				"type": "String"
-			},
 			"WorkerRunId": {
 				"type": "String"
 			},
-			"WorkerTenantId": {
-				"type": "String"
-			},
-			"WorkerSubscriptionId": {
-				"type": "String"
-			},
-			"WorkerPipelineName": {
-				"type": "String"
-			},
-			"WorkerOrchestratorName": {
-				"type": "String"
-			},
-			"WorkerResourceGroup": {
-				"type": "String"
-			},
-			"WorkerOrchestratorType": {
-				"type": "String",
-				"defaultValue": "ADF"
+			"WorkerCoreDetails": {
+				"type": "Array"
 			}
 		},
 		"folder": {
