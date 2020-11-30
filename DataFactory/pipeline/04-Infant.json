@@ -668,7 +668,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"on": {
-						"value": "@activity('Get Worker Pipeline Status').output.Status",
+						"value": "@activity('Get Worker Pipeline Status').output.ActualStatus",
 						"type": "Expression"
 					},
 					"cases": [
