@@ -13,7 +13,8 @@
     "/pipeline/02-Parent.json",
     "/pipeline/01-Grandparent.json",
     "/pipeline/Throw Exception.json",
-    "/pipeline/Check For Running Pipeline.json"
+    "/pipeline/Check For Running Pipeline.json",
+    "/pipeline/Email Sender.json"
   ],
   "triggers": [
     "/trigger/FunctionalTestingTrigger.json"
