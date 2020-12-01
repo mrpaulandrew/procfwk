@@ -131,9 +131,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Synapse", "Synapse", "{6B8CC8C2-C4AA-4BC4-85EC-719348FC3B07}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipeline", "pipeline", "{398CB5BE-3687-4F95-8EAA-54EE0DAC4E6C}"
-	ProjectSection(SolutionItems) = preProject
-		Synapse\pipeline\Wait 1.json = Synapse\pipeline\Wait 1.json
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ProcFwk", "_ProcFwk", "{2181D7DA-8237-418F-8CD9-CD1BF9843524}"
 	ProjectSection(SolutionItems) = preProject
