@@ -1,10 +1,10 @@
 {
-	"name": "Wait 1",
+	"name": "Wait 9",
 	"properties": {
 		"description": "Used just so the procfwk has something to call during development.",
 		"activities": [
 			{
-				"name": "Wait1",
+				"name": "Wait9",
 				"description": "Framework development worker simulator.",
 				"type": "Wait",
 				"dependsOn": [],
@@ -20,7 +20,7 @@
 		"parameters": {
 			"WaitTime": {
 				"type": "int",
-				"defaultValue": 5
+				"defaultValue": 15
 			}
 		},
 		"folder": {

@@ -1,0 +1,20 @@
+{
+	"name": "SupportDatabase",
+	"properties": {
+		"description": "Connection between ADF and processing framework metadata SQLDB.",
+		"annotations": [
+			"procfwk"
+		],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "Keys",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "FrameworkMetadataDev"
+			}
+		}
+	}
+}

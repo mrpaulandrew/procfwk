@@ -1,0 +1,27 @@
+{
+	"name": "FunctionalTestingTrigger",
+	"properties": {
+		"description": "Used for functional testing of the framework in a dedicated environment.",
+		"annotations": [
+			"procfwk"
+		],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "01-Grandparent",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 2,
+				"startTime": "2020-04-06T15:00:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

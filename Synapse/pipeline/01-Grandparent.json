@@ -1,0 +1,41 @@
+{
+	"name": "01-Grandparent",
+	"properties": {
+		"description": "procfwk grandparent pipeline used optionally to bootstrap any wider processes in your Data Factory that then calls the processing framework.",
+		"activities": [
+			{
+				"name": "procfwk",
+				"description": "Call procfwk",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "02-Parent",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"BatchName": {
+							"value": "@pipeline().parameters.BatchName",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"BatchName": {
+				"type": "string",
+				"defaultValue": "NotUsed"
+			}
+		},
+		"folder": {
+			"name": "_ProcFwk"
+		},
+		"annotations": [
+			"procfwk",
+			"Grandparent"
+		]
+	}
+}

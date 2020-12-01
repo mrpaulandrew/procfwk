@@ -1,0 +1,50 @@
+{
+	"name": "Throw Exception",
+	"properties": {
+		"description": "Provide a simple way of throwing an exception within Data Factory using TSQL error handling.",
+		"activities": [
+			{
+				"name": "Raise Error",
+				"description": "Using a SQL database to raise an error/exception but wrapped up as a data factory pipeline. Error message information exposed as a pipeline parameter.",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "RAISERROR('@{pipeline().parameters.Message}',16,1);",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "GetSetMetadata",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"parameters": {
+			"Message": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "_ProcFwk/_ProcFwkUtils"
+		},
+		"annotations": [
+			"procfwk",
+			"Utils"
+		]
+	}
+}
