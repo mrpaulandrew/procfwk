@@ -135,6 +135,53 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipeline", "pipeline", "{39
 		Synapse\pipeline\Wait 1.json = Synapse\pipeline\Wait 1.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ProcFwk", "_ProcFwk", "{2181D7DA-8237-418F-8CD9-CD1BF9843524}"
+	ProjectSection(SolutionItems) = preProject
+		Synapse\pipeline\01-Grandparent.json = Synapse\pipeline\01-Grandparent.json
+		Synapse\pipeline\02-Parent.json = Synapse\pipeline\02-Parent.json
+		Synapse\pipeline\03-Child.json = Synapse\pipeline\03-Child.json
+		Synapse\pipeline\04-Infant.json = Synapse\pipeline\04-Infant.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ProcFwkUtils", "_ProcFwkUtils", "{6E660431-66E0-4B1A-BCFC-8FCBF1C646F2}"
+	ProjectSection(SolutionItems) = preProject
+		Synapse\pipeline\Check For Running Pipeline.json = Synapse\pipeline\Check For Running Pipeline.json
+		Synapse\pipeline\Email Sender.json = Synapse\pipeline\Email Sender.json
+		Synapse\pipeline\Throw Exception.json = Synapse\pipeline\Throw Exception.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workers", "Workers", "{21058901-FBEE-4D40-83E0-21B05636417B}"
+	ProjectSection(SolutionItems) = preProject
+		Synapse\pipeline\Intentional Error.json = Synapse\pipeline\Intentional Error.json
+		Synapse\pipeline\Wait 1.json = Synapse\pipeline\Wait 1.json
+		Synapse\pipeline\Wait 10.json = Synapse\pipeline\Wait 10.json
+		Synapse\pipeline\Wait 2.json = Synapse\pipeline\Wait 2.json
+		Synapse\pipeline\Wait 3.json = Synapse\pipeline\Wait 3.json
+		Synapse\pipeline\Wait 4.json = Synapse\pipeline\Wait 4.json
+		Synapse\pipeline\Wait 5.json = Synapse\pipeline\Wait 5.json
+		Synapse\pipeline\Wait 6.json = Synapse\pipeline\Wait 6.json
+		Synapse\pipeline\Wait 7.json = Synapse\pipeline\Wait 7.json
+		Synapse\pipeline\Wait 8.json = Synapse\pipeline\Wait 8.json
+		Synapse\pipeline\Wait 9.json = Synapse\pipeline\Wait 9.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dataset", "dataset", "{7F17593A-2CEF-4741-A4B7-C1CC79F12EB7}"
+	ProjectSection(SolutionItems) = preProject
+		Synapse\dataset\GetSetMetadata.json = Synapse\dataset\GetSetMetadata.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "linkedservice", "linkedservice", "{F495E5FB-B908-4F76-B8BB-6C83CC5D2337}"
+	ProjectSection(SolutionItems) = preProject
+		Synapse\linkedService\FrameworkFunctions.json = Synapse\linkedService\FrameworkFunctions.json
+		Synapse\linkedService\Keys.json = Synapse\linkedService\Keys.json
+		Synapse\linkedService\SupportDatabase.json = Synapse\linkedService\SupportDatabase.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "trigger", "trigger", "{29DBE5FC-D1FE-4C49-9DA2-4115C7F830B4}"
+	ProjectSection(SolutionItems) = preProject
+		Synapse\trigger\FunctionalTestingTrigger.json = Synapse\trigger\FunctionalTestingTrigger.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -182,6 +229,12 @@ Global
 		{463330CD-189F-42B4-984A-8D3C1385645B} = {CC7B607B-8C84-4E07-A6C8-326923752F92}
 		{6809EDBD-125D-440E-8486-9CFAB9BB5B7D} = {17586826-8BE9-4622-B12E-1683F2A20352}
 		{398CB5BE-3687-4F95-8EAA-54EE0DAC4E6C} = {6B8CC8C2-C4AA-4BC4-85EC-719348FC3B07}
+		{2181D7DA-8237-418F-8CD9-CD1BF9843524} = {398CB5BE-3687-4F95-8EAA-54EE0DAC4E6C}
+		{6E660431-66E0-4B1A-BCFC-8FCBF1C646F2} = {2181D7DA-8237-418F-8CD9-CD1BF9843524}
+		{21058901-FBEE-4D40-83E0-21B05636417B} = {398CB5BE-3687-4F95-8EAA-54EE0DAC4E6C}
+		{7F17593A-2CEF-4741-A4B7-C1CC79F12EB7} = {6B8CC8C2-C4AA-4BC4-85EC-719348FC3B07}
+		{F495E5FB-B908-4F76-B8BB-6C83CC5D2337} = {6B8CC8C2-C4AA-4BC4-85EC-719348FC3B07}
+		{29DBE5FC-D1FE-4C49-9DA2-4115C7F830B4} = {6B8CC8C2-C4AA-4BC4-85EC-719348FC3B07}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {170F5302-BB9C-4569-8F43-D859C7678EF0}
