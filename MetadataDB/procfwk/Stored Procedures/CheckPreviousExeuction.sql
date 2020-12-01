@@ -109,7 +109,7 @@ BEGIN
 		NULL AS OrchestratorType,
 		NULL AS OrchestratorName,
 		NULL AS PipelineName,
-		NULL AS AdfPipelineRunId,
+		NULL AS PipelineRunId,
 		NULL AS LocalExecutionId,
 		NULL AS StageId,
 		NULL AS PipelineId

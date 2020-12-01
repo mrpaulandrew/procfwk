@@ -201,7 +201,7 @@ WHERE [PropertyName] = 'ExecutionPrecursorProc'");
 
         private string GetWorkerRunId(string pipelineName = null)
         {
-            string AdfPipelineRunId;
+            string PipelineRunId;
 
             using (var cmd = new SqlCommand("procfwkTesting.GetRunIdWhenAvailable", _conn))
             {
@@ -212,9 +212,9 @@ WHERE [PropertyName] = 'ExecutionPrecursorProc'");
 
                 using var reader = cmd.ExecuteReader();
                 reader.Read();
-                AdfPipelineRunId = reader.GetString(0).ToLower();
+                PipelineRunId = reader.GetString(0).ToLower();
             }
-            return AdfPipelineRunId;
+            return PipelineRunId;
         }
 
         private void EnableDisableMetadata(string table, bool state)
