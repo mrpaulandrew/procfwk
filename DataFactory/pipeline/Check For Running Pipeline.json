@@ -433,7 +433,18 @@
 							]
 						},
 						{
-							"value": "SYN"
+							"value": "SYN",
+							"activities": [
+								{
+									"name": "Wait1",
+									"type": "Wait",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"waitTimeInSeconds": 1
+									}
+								}
+							]
 						}
 					],
 					"defaultActivities": [
