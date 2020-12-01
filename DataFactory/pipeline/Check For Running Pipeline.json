@@ -351,7 +351,7 @@
 							"activities": [
 								{
 									"name": "Check for Valid ADF Pipeline Name",
-									"description": "Use the Azure Management API to return and establish if the framework pipeline exists in the target Data Factory, including being deployed.",
+									"description": "Use the Azure Management API to return and establish if the framework pipeline exists in the target Data Factory instance, including being deployed.",
 									"type": "WebActivity",
 									"dependsOn": [],
 									"policy": {
@@ -436,12 +436,83 @@
 							"value": "SYN",
 							"activities": [
 								{
-									"name": "Wait1",
-									"type": "Wait",
+									"name": "Check for Valid SYN Pipeline Name",
+									"description": "Use the Azure Management API to return and establish if the framework pipeline exists in the target Synapse instance, including being deployed.\n\nSee: https://docs.microsoft.com/en-us/rest/api/synapse/data-plane/pipeline/getpipeline",
+									"type": "WebActivity",
 									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
 									"userProperties": [],
 									"typeProperties": {
-										"waitTimeInSeconds": 1
+										"url": {
+											"value": "https://@{pipeline().DataFactory}.dev.azuresynapse.net/pipelines/@{pipeline().Pipeline}?api-version=2019-06-01-preview",
+											"type": "Expression"
+										},
+										"method": "GET",
+										"authentication": {
+											"type": "MSI"
+										}
+									}
+								},
+								{
+									"name": "Get SYN Pipeline Runs",
+									"description": "Use the Azure Management API to return a list of synapse pipeline runs within the given time window.\n\nSee: https://docs.microsoft.com/en-us/rest/api/synapse/data-plane/pipelinerun/querypipelinerunsbyworkspace",
+									"type": "WebActivity",
+									"dependsOn": [
+										{
+											"activity": "Check for Valid SYN Pipeline Name",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": {
+											"value": "https://@{pipeline().DataFactory}.dev.azuresynapse.net/queryPipelineRuns?api-version=2019-06-01-preview",
+											"type": "Expression"
+										},
+										"method": "POST",
+										"body": {
+											"value": "{\n  \"lastUpdatedAfter\": \"@{adddays(utcnow(),int(variables('QueryRunDays')))}\",\n  \"lastUpdatedBefore\": \"@{utcnow()}\",\n  \"filters\": [\n    {\n      \"operand\": \"PipelineName\",\n      \"operator\": \"Equals\",\n      \"values\": [\n        \"@{pipeline().parameters.PipelineName}\"\n      ]\n    }\n  ]\n}",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "MSI",
+											"resource": "https://management.core.windows.net/"
+										}
+									}
+								},
+								{
+									"name": "Set SYN Runs Output",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Get SYN Pipeline Runs",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "PipelineRuns",
+										"value": {
+											"value": "@activity('Get SYN Pipeline Runs').output.value",
+											"type": "Expression"
+										}
 									}
 								}
 							]
