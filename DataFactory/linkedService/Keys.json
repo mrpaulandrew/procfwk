@@ -2,7 +2,7 @@
 	"name": "Keys",
 	"properties": {
 		"annotations": [
-			"ADF.procfwk"
+			"procfwk"
 		],
 		"type": "AzureKeyVault",
 		"typeProperties": {

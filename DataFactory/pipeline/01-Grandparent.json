@@ -1,7 +1,7 @@
 {
 	"name": "01-Grandparent",
 	"properties": {
-		"description": "ADF.procfwk grandparent pipeline used optionally to bootstrap any wider processes in your Data Factory that then calls the processing framework.",
+		"description": "procfwk grandparent pipeline used optionally to bootstrap any wider processes in your Data Factory that then calls the processing framework.",
 		"activities": [
 			{
 				"name": "procfwk",

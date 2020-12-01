@@ -10,7 +10,7 @@
 			"name": "_ProcFwk"
 		},
 		"annotations": [
-			"ADF.procfwk"
+			"procfwk"
 		],
 		"type": "AzureSqlTable",
 		"schema": []

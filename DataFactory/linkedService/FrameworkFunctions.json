@@ -2,7 +2,7 @@
 	"name": "FrameworkFunctions",
 	"properties": {
 		"annotations": [
-			"ADF.procfwk"
+			"procfwk"
 		],
 		"type": "AzureFunction",
 		"typeProperties": {
