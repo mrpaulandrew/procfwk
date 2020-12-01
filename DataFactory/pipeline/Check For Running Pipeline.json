@@ -18,7 +18,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Get Pipeline Runs').output.value",
+						"value": "@variables('PipelineRuns')",
 						"type": "Expression"
 					},
 					"condition": {
