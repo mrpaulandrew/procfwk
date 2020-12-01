@@ -132,7 +132,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Synapse", "Synapse", "{6B8C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipeline", "pipeline", "{398CB5BE-3687-4F95-8EAA-54EE0DAC4E6C}"
 	ProjectSection(SolutionItems) = preProject
-		Synapse\pipeline\Test.json = Synapse\pipeline\Test.json
+		Synapse\pipeline\Wait 1.json = Synapse\pipeline\Wait 1.json
 	EndProjectSection
 EndProject
 Global
