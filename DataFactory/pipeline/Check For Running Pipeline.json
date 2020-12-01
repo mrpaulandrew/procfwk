@@ -45,7 +45,7 @@
 						"type": "AzureSqlSource",
 						"sqlReaderStoredProcedureName": "[procfwk].[GetFrameworkOrchestratorDetails]",
 						"storedProcedureParameters": {
-							"@CallingOrchestratorName": {
+							"CallingOrchestratorName": {
 								"type": "String",
 								"value": {
 									"value": "@pipeline().DataFactory",
