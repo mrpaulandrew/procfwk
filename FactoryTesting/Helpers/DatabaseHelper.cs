@@ -106,6 +106,8 @@ namespace FactoryTesting.Helpers
         public void AddBasicMetadata()
         {
             ExecuteStoredProcedure("[procfwkTesting].[ResetMetadata]", null);
+            ExecuteNonQuery("UPDATE [procfwk].[Orchestrators] SET [IsFrameworkOrchestrator] = '0';");
+            ExecuteNonQuery($"UPDATE [procfwk].[Orchestrators] SET [IsFrameworkOrchestrator] = '1' WHERE [OrchestratorName] = '{GetSetting("DataFactoryName")}';");
         }
 
         public override void TearDown()

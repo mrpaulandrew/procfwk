@@ -5,6 +5,7 @@ BEGIN
 		(
 		[OrchestratorName] NVARCHAR(200) NOT NULL,
 		[OrchestratorType] CHAR(3) NOT NULL,
+		[IsFrameworkOrchestrator] BIT NOT NULL,
 		[ResourceGroupName] NVARCHAR(200) NOT NULL,
 		[SubscriptionId] UNIQUEIDENTIFIER NOT NULL,
 		[Description] NVARCHAR(MAX) NULL
@@ -14,15 +15,16 @@ BEGIN
 		(
 		[OrchestratorName],
 		[OrchestratorType],
+		[IsFrameworkOrchestrator],
 		[Description],
 		[ResourceGroupName],
 		[SubscriptionId]
 		)
 	VALUES
-		('FrameworkFactory','ADF','Example Data Factory used for development.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
-		('FrameworkFactoryDev','ADF','Example Data Factory used for development deployments.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
-		('FrameworkFactoryTest','ADF','Example Data Factory used for testing.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
-		('WorkersFactory','ADF','Example Data Factory used to house worker pipelines.','ADF.procfwk','12345678-1234-1234-1234-012345678910');
+		('FrameworkFactory','ADF',1,'Example Data Factory used for development.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
+		('FrameworkFactoryDev','ADF',0,'Example Data Factory used for development deployments.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
+		('FrameworkFactoryTest','ADF',0,'Example Data Factory used for testing.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
+		('WorkersFactory','ADF',0,'Example Data Factory used to house worker pipelines.','ADF.procfwk','12345678-1234-1234-1234-012345678910');
 
 	MERGE INTO [procfwk].[Orchestrators] AS tgt
 	USING 
@@ -32,6 +34,7 @@ BEGIN
 	WHEN MATCHED THEN
 		UPDATE
 		SET
+			tgt.[IsFrameworkOrchestrator] = src.[IsFrameworkOrchestrator],
 			tgt.[Description] = src.[Description],
 			tgt.[ResourceGroupName] = src.[ResourceGroupName],
 			tgt.[SubscriptionId] = src.[SubscriptionId]
@@ -40,6 +43,7 @@ BEGIN
 			(
 			[OrchestratorName],
 			[OrchestratorType],
+			[IsFrameworkOrchestrator],
 			[Description],
 			[ResourceGroupName],
 			[SubscriptionId]
@@ -48,6 +52,7 @@ BEGIN
 			(
 			src.[OrchestratorName],
 			src.[OrchestratorType],
+			src.[IsFrameworkOrchestrator],
 			src.[Description],
 			src.[ResourceGroupName],
 			src.[SubscriptionId]

@@ -177,7 +177,7 @@
     <Build Include="procfwkHelpers\Stored Procedures\DeleteMetadataWithoutIntegrity.sql" />
     <Build Include="procfwkHelpers\Stored Procedures\SetDefaultProperties.sql" />
     <Build Include="procfwkHelpers\Stored Procedures\SetDefaultStages.sql" />
-    <Build Include="procfwkHelpers\Stored Procedures\SetDefaultDataFactorys.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\SetDefaultOrchestrators.sql" />
     <Build Include="procfwkHelpers\Stored Procedures\SetDefaultPipelines.sql" />
     <Build Include="procfwkHelpers\Stored Procedures\SetDefaultPipelineParameters.sql" />
     <Build Include="procfwkHelpers\Stored Procedures\SetDefaultPipelineDependants.sql" />
@@ -213,6 +213,7 @@
     <Build Include="procfwk\Tables\Orchestrators.sql" />
     <None Include="procfwk\Views\DataFactorys.sql" />
     <Build Include="procfwk\Stored Procedures\GetWorkerDetailsWrapper.sql" />
+    <Build Include="procfwk\Stored Procedures\GetFrameworkOrchestratorDetails.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

@@ -36,6 +36,8 @@ BEGIN
 	Check 24 - Have batch executions been enabled after a none batch execution run?
 
 	Check 25 - Has the execution failed due to an invalid pipeline name? If so, attend to update this before the next run.
+	Check 26 - Is there more than one framework orchestrator set?
+	Check 27 - Has a framework orchestrator been set for any orchestrators?
 	*/
 
 	DECLARE @BatchId UNIQUEIDENTIFIER
@@ -488,7 +490,31 @@ BEGIN
 			WHERE
 				ce.[PipelineStatus] = 'InvalidPipelineNameError'
 		END;
+	
+	--Check 26:
+	IF (SELECT COUNT(0) FROM [procfwk].[Orchestrators] WHERE [IsFrameworkOrchestrator] = 1) > 1
+	BEGIN
+		INSERT INTO @MetadataIntegrityIssues
+		VALUES
+			( 
+			26,
+			'There is more than one FrameworkOrchestrator set in the table [procfwk].[Orchestrators]. Only one is supported.'
+			)		
+	END
 
+	--Check 27:
+	IF NOT EXISTS
+		(
+		SELECT 1 FROM [procfwk].[Orchestrators] WHERE [IsFrameworkOrchestrator] = 1
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				27,
+				'A FrameworkOrchestrator has not been set in the table [procfwk].[Orchestrators]. Only one is supported.'
+				)		
+		END
 
 	/*
 	Integrity Checks Outcome:
