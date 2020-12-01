@@ -128,6 +128,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ProcFwkUtils", "_ProcFwkUt
 		DataFactory\pipeline\Throw Exception.json = DataFactory\pipeline\Throw Exception.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Synapse", "Synapse", "{6B8CC8C2-C4AA-4BC4-85EC-719348FC3B07}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipeline", "pipeline", "{398CB5BE-3687-4F95-8EAA-54EE0DAC4E6C}"
+	ProjectSection(SolutionItems) = preProject
+		Synapse\pipeline\Test.json = Synapse\pipeline\Test.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -174,6 +181,7 @@ Global
 		{20313ECA-118E-408D-BB42-8094A7A9CD20} = {CC7B607B-8C84-4E07-A6C8-326923752F92}
 		{463330CD-189F-42B4-984A-8D3C1385645B} = {CC7B607B-8C84-4E07-A6C8-326923752F92}
 		{6809EDBD-125D-440E-8486-9CFAB9BB5B7D} = {17586826-8BE9-4622-B12E-1683F2A20352}
+		{398CB5BE-3687-4F95-8EAA-54EE0DAC4E6C} = {6B8CC8C2-C4AA-4BC4-85EC-719348FC3B07}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {170F5302-BB9C-4569-8F43-D859C7678EF0}

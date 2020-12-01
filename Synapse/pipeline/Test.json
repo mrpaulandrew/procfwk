@@ -1,17 +1,33 @@
 {
-	"name": "Test",
+	"name": "Wait 1",
 	"properties": {
+		"description": "Used just so the ADF.procfwk has something to call during development.",
 		"activities": [
 			{
 				"name": "Wait1",
+				"description": "Framework development worker simulator.",
 				"type": "Wait",
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
-					"waitTimeInSeconds": 1
+					"waitTimeInSeconds": {
+						"value": "@pipeline().parameters.WaitTime",
+						"type": "Expression"
+					}
 				}
 			}
 		],
-		"annotations": []
+		"parameters": {
+			"WaitTime": {
+				"type": "int",
+				"defaultValue": 5
+			}
+		},
+		"folder": {
+			"name": "_Workers"
+		},
+		"annotations": [
+			"Worker"
+		]
 	}
 }
