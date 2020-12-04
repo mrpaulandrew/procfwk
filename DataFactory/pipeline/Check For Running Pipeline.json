@@ -252,6 +252,7 @@
 			},
 			{
 				"name": "Set Subscription Id",
+				"description": "Set the subscription Id value to a local variable for use in various downstream activities.",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
@@ -272,6 +273,7 @@
 			},
 			{
 				"name": "Set Resource Group Name",
+				"description": "Set the resource group name value to a local variable for use in various downstream activities.",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
@@ -292,6 +294,7 @@
 			},
 			{
 				"name": "Set Orchestrator Type",
+				"description": "Set the orchestrator type value to a local variable for use in various downstream activities.",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
@@ -312,6 +315,7 @@
 			},
 			{
 				"name": "Switch For Orchestrator Type",
+				"description": "Switch and handle requests for both Azure Data Factory (ADF) and Azure Synapse Analytics (SYN).",
 				"type": "Switch",
 				"dependsOn": [
 					{
@@ -412,6 +416,7 @@
 								},
 								{
 									"name": "Set ADF Runs Output",
+									"description": "Set output to local array for use in downstream filtering and pipeline checks. Use the same array output for both switch cases.",
 									"type": "SetVariable",
 									"dependsOn": [
 										{
@@ -497,6 +502,7 @@
 								},
 								{
 									"name": "Set SYN Runs Output",
+									"description": "Set output to local array for use in downstream filtering and pipeline checks. Use the same array output for both switch cases.",
 									"type": "SetVariable",
 									"dependsOn": [
 										{
@@ -521,6 +527,7 @@
 					"defaultActivities": [
 						{
 							"name": "Throw Exception Invalid Orchestrator Type",
+							"description": "Throw exception if switch cases are not met.",
 							"type": "ExecutePipeline",
 							"dependsOn": [],
 							"userProperties": [],
@@ -540,6 +547,7 @@
 			},
 			{
 				"name": "Set Query Run Days",
+				"description": "Set the query run days value to a local variable for use in various downstream activities.",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
