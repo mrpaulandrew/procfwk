@@ -6,8 +6,8 @@ using Microsoft.Azure.Management.Synapse;
 using Azure.Core;
 using Azure.Identity;
 using Azure.Analytics.Synapse.Artifacts;
-using mrpaulandrew.azure.procfwk.Helpers;
 using Azure.Analytics.Synapse.Artifacts.Models;
+using mrpaulandrew.azure.procfwk.Helpers;
 
 namespace mrpaulandrew.azure.procfwk.Services
 {

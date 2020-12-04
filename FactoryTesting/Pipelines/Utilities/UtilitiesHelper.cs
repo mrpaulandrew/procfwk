@@ -15,6 +15,12 @@ namespace FactoryTesting.Pipelines.Utilities
             return this;
         }
 
+        public UtilitiesHelper WithTenantAndSubscriptionIds()
+        {
+            AddTenantAndSubscription();
+            return this;
+        }
+
         public override void TearDown()
         {
             base.TearDown();

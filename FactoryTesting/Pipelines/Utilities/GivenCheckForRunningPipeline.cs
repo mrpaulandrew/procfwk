@@ -15,6 +15,7 @@ namespace FactoryTesting.Pipelines.Utilities
         {
             _helper = new UtilitiesHelper()
                 .WithBasicMetadata()
+                .WithTenantAndSubscriptionIds()
                 .WithParameter("PipelineName", "Check For Running Pipeline");
 
             await _helper.RunPipeline("Check For Running Pipeline");
@@ -38,8 +39,8 @@ namespace FactoryTesting.Pipelines.Utilities
         {
             string subSetting = _helper.GetSetting("AZURE_SUBSCRIPTION_ID");
 
-            var subscriptionId = await _helper.GetActivityOutput("Set Parsed Subscription", "$.value");
-            subscriptionId.Should().Equals(subSetting);
+            var subscriptionId = await _helper.GetActivityOutput("Set Subscription Id", "$.value");
+            subscriptionId.Should().Equals(subSetting.ToString());
         }
 
         [Test]
@@ -47,8 +48,8 @@ namespace FactoryTesting.Pipelines.Utilities
         {
             string rgSsetting = _helper.GetSetting("DataFactoryResourceGroup");
 
-            var subscriptionId = await _helper.GetActivityOutput("Get Resource Group", "$.firstRow.PropertyValue");
-            subscriptionId.Should().Equals(rgSsetting);
+            var resourceGroupName = await _helper.GetActivityOutput("Set Resource Group Name", "$.value");
+            resourceGroupName.Should().Equals(rgSsetting.ToString());
         }
 
         [OneTimeTearDown]
