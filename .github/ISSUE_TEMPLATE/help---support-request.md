@@ -1,14 +1,17 @@
 ---
-name: Bug Found
-about: Tell me about the bug you've found in the procfwk please
+name: Help & Support Request
+about: Tell me about the problem or error you are facing when using the procfwk
 title: ''
-labels: bug
+labels: help wanted
 assignees: mrpaulandrew
 
 ---
 
-**Describe the bug**
+**Describe the error**
 A clear and concise description of what the bug is.
+
+**Error message**
+An output of the error message presented.
 
 **Affected services**
 Which resource within the processing framework does this affect?
@@ -25,11 +28,5 @@ Steps to reproduce the behavior:
 3. Scroll down to '....'
 4. See error
 
-**Expected behaviour**
-A clear and concise description of what you expected to happen.
-
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
-
-**Additional context**
-Add any other context about the problem here.
