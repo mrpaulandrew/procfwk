@@ -346,7 +346,7 @@
 							}
 						},
 						{
-							"name": "Send Email",
+							"name": "Call Email Sender",
 							"type": "ExecutePipeline",
 							"dependsOn": [
 								{
