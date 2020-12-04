@@ -15,8 +15,8 @@ BEGIN
 	DECLARE @WorkerAuthDetails TABLE
 		(
 		[tenantId] UNIQUEIDENTIFIER NULL,
-		[applicationId] UNIQUEIDENTIFIER NULL,
-		[authenticationKey] NVARCHAR(255) NULL,
+		[applicationId] NVARCHAR(MAX) NULL,
+		[authenticationKey] NVARCHAR(MAX) NULL,
 		[subscriptionId] UNIQUEIDENTIFIER NULL
 		)
 
