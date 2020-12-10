@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "procfwkforsynapse"
+		},
+		"procfwkforsynapse-WorkspaceDefaultSqlServer_connectionString": {
+			"value": ""
+		},
+		"procfwkforsynapse-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://frameworkdatalake01.dfs.core.windows.net"
+		}
+	}
+}
