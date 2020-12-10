@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.Rest;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
@@ -8,6 +9,7 @@ using Azure.Identity;
 using Azure.Analytics.Synapse.Artifacts;
 using Azure.Analytics.Synapse.Artifacts.Models;
 using mrpaulandrew.azure.procfwk.Helpers;
+using Azure;
 
 namespace mrpaulandrew.azure.procfwk.Services
 {
@@ -52,6 +54,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             _logger.LogInformation("Validating SYN pipeline.");
 
             PipelineResource pipelineResource;
+
             try
             {
                 pipelineResource = _pipelineClient.GetPipeline
@@ -71,9 +74,19 @@ namespace mrpaulandrew.azure.procfwk.Services
                     ActivityCount = pipelineResource.Activities.Count
                 };
             }
-            catch (Exception ex)
+            catch (System.InvalidOperationException) //for bug in underlying activity classes, pipeline does exist
             {
-                _logger.LogInformation(ex.Message);
+                return new PipelineDescription()
+                {
+                    PipelineExists = "True",
+                    PipelineName = request.PipelineName,
+                    PipelineId = "Unknown",
+                    PipelineType = "Unknown",
+                    ActivityCount = 0
+                }; 
+            }
+            catch (Azure.RequestFailedException) //expected exception when pipeline doesnt exist
+            {
                 return new PipelineDescription()
                 {
                     PipelineExists = "False",
@@ -82,6 +95,16 @@ namespace mrpaulandrew.azure.procfwk.Services
                     PipelineType = "Unknown",
                     ActivityCount = 0
                 };
+            }
+            catch (Exception ex) //unknown issue
+            {
+                _logger.LogInformation(ex.Message);
+                _logger.LogInformation(ex.GetType().ToString());
+                _logger.LogInformation(ex.StackTrace);
+                _logger.LogInformation(ex.Source);
+                _logger.LogInformation(ex.HelpLink);
+
+                throw new InvalidRequestException("Failed to validate pipeline. ", ex);
             }
         }
 
@@ -99,40 +122,83 @@ namespace mrpaulandrew.azure.procfwk.Services
                 parameters: request.ParametersAsObjects
                 );
 
-            /*
-             * 
-             * Harden request with status checking and wait behaviour as per ADF version.
-             * 
-            */
+            _logger.LogInformation("Pipeline run ID: " + runResponse.RunId);
+
+            //Wait and check for pipeline to start...
+            PipelineRun pipelineRun;
+            _logger.LogInformation("Checking ADF pipeline status.");
+            while (true)
+            {
+                pipelineRun = _pipelineRunClient.GetPipelineRun
+                    (
+                    runResponse.RunId
+                    );
+
+                _logger.LogInformation("Waiting for pipeline to start, current status: " + pipelineRun.Status);
+
+                if (pipelineRun.Status != "Queued")
+                    break;
+                Thread.Sleep(internalWaitDuration);
+            }
 
             return new PipelineRunStatus()
             {
                 PipelineName = request.PipelineName,
                 RunId = runResponse.RunId,
-                ActualStatus = "Unknown" //replace with actual value
+                ActualStatus = pipelineRun.Status
             };
         }
 
         public override PipelineRunStatus CancelPipeline(PipelineRunRequest request)
         {
-            _pipelineRunClient.CancelPipelineRun
+            _logger.LogInformation("Getting SYN pipeline current status.");
+
+            PipelineRun pipelineRun;
+            pipelineRun = _pipelineRunClient.GetPipelineRun
                 (
-                request.RunId,
-                isRecursive: request.RecursivePipelineCancel
+                request.RunId
                 );
 
-            /*
-             * 
-             * Harden request with status checking and wait behaviour as per ADF version.
-             * 
-            */
+            //Defensive check
+            PipelineNameCheck(request.PipelineName, pipelineRun.PipelineName);
+
+            if (pipelineRun.Status == "InProgress" || pipelineRun.Status == "Queued")
+            {
+                _logger.LogInformation("Attempting to cancel SYN pipeline.");
+                _pipelineRunClient.CancelPipelineRun
+                    (
+                    request.RunId,
+                    isRecursive: request.RecursivePipelineCancel
+                    );
+            }
+            else
+            {
+                _logger.LogInformation("ADF pipeline status: " + pipelineRun.Status);
+                throw new InvalidRequestException("Target pipeline is not in a state that can be cancelled.");
+            }
+
+            //wait for cancelled state
+            _logger.LogInformation("Checking ADF pipeline status after cancel request.");
+            while (true)
+            {
+                pipelineRun = _pipelineRunClient.GetPipelineRun
+                    (
+                    request.RunId
+                    );
+
+                _logger.LogInformation("Waiting for pipeline to cancel, current status: " + pipelineRun.Status);
+
+                if (pipelineRun.Status == "Cancelled")
+                    break;
+                Thread.Sleep(internalWaitDuration);
+            }
 
             //Final return detail
             return new PipelineRunStatus()
             {
                 PipelineName = request.PipelineName,
                 RunId = request.RunId,
-                ActualStatus = "Unknown" //replace with actual value
+                ActualStatus = pipelineRun.Status
             };
         }
 
@@ -140,11 +206,15 @@ namespace mrpaulandrew.azure.procfwk.Services
         {
             _logger.LogInformation("Getting SYN pipeline status.");
 
+            //Get pipeline status with provided run id
             PipelineRun pipelineRun;
             pipelineRun = _pipelineRunClient.GetPipelineRun
                 (
                 request.RunId
                 );
+
+            //Defensive check
+            PipelineNameCheck(request.PipelineName, pipelineRun.PipelineName);
 
             _logger.LogInformation("SYN pipeline status: " + pipelineRun.Status);
 

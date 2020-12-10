@@ -159,7 +159,7 @@ namespace mrpaulandrew.azure.procfwk.Services
 
                 _logger.LogInformation("Waiting for pipeline to cancel, current status: " + pipelineRun.Status);
 
-                if (pipelineRun.Status == "Cancelling" || pipelineRun.Status == "Canceling") //microsoft typo
+                if (pipelineRun.Status == "Cancelled")
                     break;
                 Thread.Sleep(internalWaitDuration);
             }
@@ -178,12 +178,16 @@ namespace mrpaulandrew.azure.procfwk.Services
             _logger.LogInformation("Checking ADF pipeline status.");
 
             //Get pipeline status with provided run id
-            var pipelineRun = _adfManagementClient.PipelineRuns.Get
+            PipelineRun pipelineRun;
+            pipelineRun = _adfManagementClient.PipelineRuns.Get
                 (
                 request.ResourceGroupName, 
                 request.OrchestratorName, 
                 request.RunId
                 );
+
+            //Defensive check
+            PipelineNameCheck(request.PipelineName, pipelineRun.PipelineName);
 
             _logger.LogInformation("ADF pipeline status: " + pipelineRun.Status);
 
