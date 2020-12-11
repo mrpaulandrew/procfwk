@@ -1,0 +1,18 @@
+{
+	"name": "GetSetMetadata",
+	"properties": {
+		"description": "Single generic dataset used to get and set all database metadata.",
+		"linkedServiceName": {
+			"referenceName": "SupportDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "_ProcFwk"
+		},
+		"annotations": [
+			"procfwk"
+		],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
