@@ -8,6 +8,12 @@
 		"procfwkforsynapse-WorkspaceDefaultSqlServer_connectionString": {
 			"value": ""
 		},
+		"Keys_properties_typeProperties_baseUrl": {
+			"value": "https://FrameworkKeys.vault.azure.net/"
+		},
+		"SupportDatabase_properties_typeProperties_connectionString_secretName": {
+			"value": "FrameworkMetadataDev"
+		},
 		"procfwkforsynapse-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"value": "https://frameworkdatalake01.dfs.core.windows.net"
 		}
