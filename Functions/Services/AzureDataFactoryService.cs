@@ -18,13 +18,15 @@ namespace mrpaulandrew.azure.procfwk.Services
         public AzureDataFactoryService(PipelineRequest request, ILogger logger)
         {
             _logger = logger;
-            _logger.LogInformation("Creating ADF connectivity client.");
+            _logger.LogInformation("Creating ADF connectivity clients.");
 
+            //Auth details
             var context = new AuthenticationContext("https://login.windows.net/" + request.TenantId);
             var cc = new ClientCredential(request.ApplicationId, request.AuthenticationKey);
             var result = context.AcquireTokenAsync("https://management.azure.com/", cc).Result;
             var cred = new TokenCredentials(result.AccessToken);
 
+            //Management Client
             _adfManagementClient = new DataFactoryManagementClient(cred)
             {
                 SubscriptionId = request.SubscriptionId
@@ -56,9 +58,8 @@ namespace mrpaulandrew.azure.procfwk.Services
                     ActivityCount = pipelineResource.Activities.Count
                 };
             }
-            catch (Exception ex)
+            catch (Microsoft.Rest.Azure.CloudException) //expected exception when pipeline doesnt exist
             {
-                _logger.LogInformation(ex.Message);
                 return new PipelineDescription()
                 {
                     PipelineExists = "False",
@@ -67,6 +68,12 @@ namespace mrpaulandrew.azure.procfwk.Services
                     PipelineType = "Unknown",
                     ActivityCount = 0
                 };
+            }
+            catch (Exception ex) //other unknown issue
+            {
+                _logger.LogInformation(ex.Message);
+                _logger.LogInformation(ex.GetType().ToString());
+                throw new InvalidRequestException("Failed to validate pipeline. ", ex);
             }
         }
 
@@ -205,7 +212,7 @@ namespace mrpaulandrew.azure.procfwk.Services
 
         public override PipelineFailStatus GetPipelineRunActivityErrors(PipelineRunRequest request)
         {
-            var pipelineRun = _adfManagementClient.PipelineRuns.Get
+            PipelineRun pipelineRun = _adfManagementClient.PipelineRuns.Get
                 (
                 request.ResourceGroupName, 
                 request.OrchestratorName, 
@@ -232,7 +239,7 @@ namespace mrpaulandrew.azure.procfwk.Services
                 );
 
             //Create initial output content
-            var output = new PipelineFailStatus()
+            PipelineFailStatus output = new PipelineFailStatus()
             {
                 PipelineName = request.PipelineName,
                 ActualStatus = pipelineRun.Status,
@@ -244,11 +251,11 @@ namespace mrpaulandrew.azure.procfwk.Services
             _logger.LogInformation("Activities found in pipeline response: " + queryResponse.Value.Count.ToString());
 
             //Loop over activities in pipeline run
-            foreach (var activity in queryResponse.Value)
+            foreach (ActivityRun activity in queryResponse.Value)
             {
-                if (string.IsNullOrEmpty(activity.Error.ToString()))
+                if (activity.Error == null)
                 {
-                    continue; //just incase
+                    continue; //only want errors
                 }
 
                 //Parse error output to customise output
@@ -257,25 +264,20 @@ namespace mrpaulandrew.azure.procfwk.Services
                 string errorType = outputBlockInner?.failureType;
                 string errorMessage = outputBlockInner?.message;
 
-                //Get output details
-                if (!string.IsNullOrEmpty(errorCode))
-                {
-                    _logger.LogInformation("Activity run id: " + activity.ActivityRunId);
-                    _logger.LogInformation("Activity name: " + activity.ActivityName);
-                    _logger.LogInformation("Activity type: " + activity.ActivityType);
-                    _logger.LogInformation("Error message: " + errorMessage);
+                _logger.LogInformation("Activity run id: " + activity.ActivityRunId);
+                _logger.LogInformation("Activity name: " + activity.ActivityName);
+                _logger.LogInformation("Activity type: " + activity.ActivityType);
+                _logger.LogInformation("Error message: " + errorMessage);
 
-                    output.Errors.Add(new FailedActivity()
-                    {
-                        ActivityRunId = activity.ActivityRunId,
-                        ActivityName = activity.ActivityName,
-                        ActivityType = activity.ActivityType,
-                        ErrorCode = errorCode,
-                        ErrorType = errorType,
-                        ErrorMessage = errorMessage
-                    }
-                    );
-                }
+                output.Errors.Add(new FailedActivity()
+                {
+                    ActivityRunId = activity.ActivityRunId,
+                    ActivityName = activity.ActivityName,
+                    ActivityType = activity.ActivityType,
+                    ErrorCode = errorCode,
+                    ErrorType = errorType,
+                    ErrorMessage = errorMessage
+                });
             }
             return output;
         }

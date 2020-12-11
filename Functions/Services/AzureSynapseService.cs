@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using Microsoft.Rest;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
@@ -9,7 +11,6 @@ using Azure.Identity;
 using Azure.Analytics.Synapse.Artifacts;
 using Azure.Analytics.Synapse.Artifacts.Models;
 using mrpaulandrew.azure.procfwk.Helpers;
-using Azure;
 
 namespace mrpaulandrew.azure.procfwk.Services
 {
@@ -25,12 +26,13 @@ namespace mrpaulandrew.azure.procfwk.Services
             _logger = logger;
             _logger.LogInformation("Creating SYN connectivity clients.");
 
-            //Management Client
+            //Auth details
             var context = new AuthenticationContext("https://login.windows.net/" + request.TenantId);
             var cc = new ClientCredential(request.ApplicationId, request.AuthenticationKey);
             var result = context.AcquireTokenAsync("https://management.azure.com/", cc).Result;
             var cred = new TokenCredentials(result.AccessToken);
 
+            //Management Client
             _synManagementClient = new SynapseManagementClient(cred)
             {
                 SubscriptionId = request.SubscriptionId
@@ -96,14 +98,10 @@ namespace mrpaulandrew.azure.procfwk.Services
                     ActivityCount = 0
                 };
             }
-            catch (Exception ex) //unknown issue
+            catch (Exception ex) //other unknown issue
             {
                 _logger.LogInformation(ex.Message);
                 _logger.LogInformation(ex.GetType().ToString());
-                _logger.LogInformation(ex.StackTrace);
-                _logger.LogInformation(ex.Source);
-                _logger.LogInformation(ex.HelpLink);
-
                 throw new InvalidRequestException("Failed to validate pipeline. ", ex);
             }
         }
@@ -229,7 +227,69 @@ namespace mrpaulandrew.azure.procfwk.Services
 
         public override PipelineFailStatus GetPipelineRunActivityErrors(PipelineRunRequest request)
         {
-            throw new NotImplementedException();
+            PipelineRun pipelineRun = _pipelineRunClient.GetPipelineRun
+                (
+                request.RunId
+                );
+
+            //Defensive check
+            PipelineNameCheck(request.PipelineName, pipelineRun.PipelineName);
+
+            _logger.LogInformation("Create pipeline Activity Runs query filters.");
+            RunFilterParameters filterParams = new RunFilterParameters
+                (
+                request.ActivityQueryStart,
+                request.ActivityQueryEnd
+                );
+
+            _logger.LogInformation("Querying SYN pipeline for Activity Runs.");
+            ActivityRunsQueryResponse queryResponse = _pipelineRunClient.QueryActivityRuns
+                (
+                request.PipelineName,
+                request.RunId,
+                filterParams
+                );
+
+            //Create initial output content
+            PipelineFailStatus output = new PipelineFailStatus()
+            {
+                PipelineName = request.PipelineName,
+                ActualStatus = pipelineRun.Status,
+                RunId = request.RunId,
+                ResponseCount = queryResponse.Value.Count
+            };
+
+            _logger.LogInformation("Pipeline status: " + pipelineRun.Status);
+            _logger.LogInformation("Activities found in pipeline response: " + queryResponse.Value.Count.ToString());
+
+            //Loop over activities in pipeline run
+            foreach (ActivityRun activity in queryResponse.Value)
+            {
+                if (activity.Error == null)
+                {
+                    continue; //only want errors
+                }
+
+                //Parse error output to customise output
+                var json = JsonConvert.SerializeObject(activity.Error);
+                Dictionary<string, object> errorContent = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+
+                _logger.LogInformation("Activity run id: " + activity.ActivityRunId);
+                _logger.LogInformation("Activity name: " + activity.ActivityName);
+                _logger.LogInformation("Activity type: " + activity.ActivityType);
+                _logger.LogInformation("Error message: " + errorContent["message"].ToString());
+
+                output.Errors.Add(new FailedActivity()
+                {
+                    ActivityRunId = activity.ActivityRunId,
+                    ActivityName = activity.ActivityName,
+                    ActivityType = activity.ActivityType,
+                    ErrorCode = errorContent["errorCode"].ToString(),
+                    ErrorType = errorContent["failureType"].ToString(),
+                    ErrorMessage = errorContent["message"].ToString()
+                });
+            }
+            return output;
         }
 
         public override void Dispose()
