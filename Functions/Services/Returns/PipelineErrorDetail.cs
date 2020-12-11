@@ -2,9 +2,9 @@
 
 namespace mrpaulandrew.azure.procfwk.Services
 {
-    public class PipelineFailStatus : PipelineRunStatus
+    public class PipelineErrorDetail : PipelineRunStatus
     {
-        public PipelineFailStatus()
+        public PipelineErrorDetail()
         {
             Errors = new List<FailedActivity>();
         }

@@ -22,13 +22,12 @@ namespace mrpaulandrew.azure.procfwk
             logger.LogInformation("CancelPipeline Function triggered by HTTP request.");
 
             logger.LogInformation("Parsing body from request.");
-            string json = await new StreamReader(httpRequest.Body).ReadToEndAsync();
-            var request = JsonConvert.DeserializeObject<PipelineRunRequest>(json);
+            PipelineRunRequest request = await new BodyReader(httpRequest).GetRunRequestBodyAsync();
             request.Validate(logger);
 
             using (var service = PipelineService.GetServiceForRequest(request, logger))
             {
-                var result = service.CancelPipeline(request);
+                PipelineRunStatus result = service.CancelPipeline(request);
                 logger.LogInformation("CancelPipeline Function complete.");
                 return new OkObjectResult(JsonConvert.SerializeObject(result));
             }

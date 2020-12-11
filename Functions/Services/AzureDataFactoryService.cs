@@ -210,7 +210,7 @@ namespace mrpaulandrew.azure.procfwk.Services
             };
         }
 
-        public override PipelineFailStatus GetPipelineRunActivityErrors(PipelineRunRequest request)
+        public override PipelineErrorDetail GetPipelineRunActivityErrors(PipelineRunRequest request)
         {
             PipelineRun pipelineRun = _adfManagementClient.PipelineRuns.Get
                 (
@@ -239,7 +239,7 @@ namespace mrpaulandrew.azure.procfwk.Services
                 );
 
             //Create initial output content
-            PipelineFailStatus output = new PipelineFailStatus()
+            PipelineErrorDetail output = new PipelineErrorDetail()
             {
                 PipelineName = request.PipelineName,
                 ActualStatus = pipelineRun.Status,

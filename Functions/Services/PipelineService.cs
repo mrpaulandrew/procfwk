@@ -27,7 +27,7 @@ namespace mrpaulandrew.azure.procfwk.Services
 
         public abstract PipelineRunStatus GetPipelineRunStatus(PipelineRunRequest request);
 
-        public abstract PipelineFailStatus GetPipelineRunActivityErrors(PipelineRunRequest request);
+        public abstract PipelineErrorDetail GetPipelineRunActivityErrors(PipelineRunRequest request);
 
         protected void PipelineNameCheck(string requestName, string foundName)
         {
