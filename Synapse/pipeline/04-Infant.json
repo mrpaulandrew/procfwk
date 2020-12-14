@@ -346,7 +346,8 @@
 							}
 						},
 						{
-							"name": "Send Email",
+							"name": "Call Email Sender",
+							"description": "Pass off email request to Utils Send Email pipeline.",
 							"type": "ExecutePipeline",
 							"dependsOn": [
 								{
@@ -1196,7 +1197,7 @@
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
-					"timeout": "7.00:00:00",
+					"timeout": "0.00:10:00",
 					"retry": 0,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": true,

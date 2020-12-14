@@ -27,7 +27,7 @@
 			"name": "_Workers"
 		},
 		"annotations": [
-			"Worker"
+			"_ProcFwkWorker"
 		]
 	}
 }
