@@ -29,7 +29,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "ADF.procfwk grandparent pipeline used optionally to bootstrap any wider processes in your Data Factory that then calls the processing framework.",
+				"description": "procfwk grandparent pipeline used optionally to bootstrap any wider processes in your Data Factory that then calls the processing framework.",
 				"activities": [
 					{
 						"name": "procfwk",
@@ -281,7 +281,7 @@
 								"type": "AzureSqlSource",
 								"sqlReaderStoredProcedureName": "[[procfwk].[ExecutionWrapper]",
 								"storedProcedureParameters": {
-									"CallingDataFactory": {
+									"CallingOrchestratorName": {
 										"type": "String",
 										"value": {
 											"value": "@pipeline().DataFactory",
@@ -543,7 +543,7 @@
 										"method": "POST",
 										"headers": {},
 										"body": {
-											"value": "@concat('\n{\n    \"tenantId\": \"',activity('Get SPN Details').output.firstRow.TenantId,'\",\n    \"applicationId\": \"',activity('Get SPN Details').output.firstRow.AppId,'\",\n    \"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.AppSecret,'\",\n    \"subscriptionId\": \"',activity('Get SPN Details').output.firstRow.SubscriptionId,'\",\n    \"resourceGroup\": \"',item().ResourceGroupName,'\",\n    \"factoryName\": \"',item().DataFactoryName,'\",\n    \"pipelineName\": \"',item().PipelineName,'\",\n    \"runId\": \"',item().AdfPipelineRunId,'\"\n}')",
+											"value": "@concat('\n{\n    \"tenantId\": \"',activity('Get SPN Details').output.firstRow.TenantId,'\",\n    \"applicationId\": \"',activity('Get SPN Details').output.firstRow.AppId,'\",\n    \"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.AppSecret,'\",\n    \"subscriptionId\": \"',activity('Get SPN Details').output.firstRow.SubscriptionId,'\",\n    \"resourceGroupName\": \"',item().ResourceGroupName,'\",\n    \"orchestratorName\": \"',item().OrchestratorName,'\",\n    \"orchestratorType\": \"',item().OrchestratorType,'\",\n    \"pipelineName\": \"',item().PipelineName,'\",\n    \"runId\": \"',item().PipelineRunId,'\"\n}')",
 											"type": "Expression"
 										}
 									},
@@ -567,7 +567,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"on": {
-											"value": "@activity('Get Pipeline Status').output.Status",
+											"value": "@activity('Get Pipeline Status').output.ActualStatus",
 											"type": "Expression"
 										},
 										"cases": [
@@ -1091,7 +1091,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "ADF.procfwk child pipeline used to execute Worker pipelines within a given execution stage. This pipeline will be called once for each stage, then execute all Workers in parallel.",
+				"description": "procfwk child pipeline used to execute Worker pipelines within a given execution stage. This pipeline will be called once for each stage, then execute all Workers in parallel.",
 				"activities": [
 					{
 						"name": "Get Pipelines",
@@ -1216,7 +1216,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "ADF.procfwk infant pipeline used to check when the processing pipeline called by the Child completes and passes the resulting status back to the metadata database.",
+				"description": "procfwk infant pipeline used to check when the processing pipeline called by the Child completes and passes the resulting status back to the metadata database.",
 				"activities": [
 					{
 						"name": "Execute Worker Pipeline",
@@ -1249,7 +1249,7 @@
 							"method": "POST",
 							"headers": {},
 							"body": {
-								"value": "@concat('\n{\n\t\"tenantId\": \"',variables('WorkerTenantId'),'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n\t\"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n\t\"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n\t\"pipelineName\": \"',variables('WorkerPipelineName'),'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
+								"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerCoreDetails')[0].tenantId,'\",\n    \"applicationId\": \"',variables('WorkerCoreDetails')[0].applicationId,'\",\n    \"authenticationKey\": \"',variables('WorkerCoreDetails')[0].authenticationKey,'\",\n    \"subscriptionId\": \"',variables('WorkerCoreDetails')[0].subscriptionId,'\",\n    \"resourceGroupName\": \"',variables('WorkerCoreDetails')[0].resourceGroupName,'\",\n\t\"orchestratorName\": \"',variables('WorkerCoreDetails')[0].orchestratorName,'\",\n    \"orchestratorType\": \"',variables('WorkerCoreDetails')[0].orchestratorType,'\",\n    \"pipelineName\": \"',variables('WorkerCoreDetails')[0].pipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
 								"type": "Expression"
 							}
 						},
@@ -1343,56 +1343,6 @@
 						"linkedServiceName": {
 							"referenceName": "SupportDatabase",
 							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "Get Worker Authentication Details",
-						"description": "Return the SPN ID and Secret for the worker pipeline being executed. Called at this level as each pipeline can have a different SPN.",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": true,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[procfwk].[GetWorkerAuthDetails]",
-								"storedProcedureParameters": {
-									"ExecutionId": {
-										"type": "Guid",
-										"value": {
-											"value": "@pipeline().parameters.executionId",
-											"type": "Expression"
-										}
-									},
-									"PipelineId": {
-										"type": "Int32",
-										"value": {
-											"value": "@pipeline().parameters.pipelineId",
-											"type": "Expression"
-										}
-									},
-									"StageId": {
-										"type": "Int32",
-										"value": {
-											"value": "@pipeline().parameters.stageId",
-											"type": "Expression"
-										}
-									}
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
 						}
 					},
 					{
@@ -1615,9 +1565,9 @@
 									}
 								},
 								{
-									"name": "Send Email",
-									"description": "Use an Azure Function to perform an SMTP client email send operation.",
-									"type": "AzureFunctionActivity",
+									"name": "Call Email Sender",
+									"description": "Pass off email request to Utils Send Email pipeline.",
+									"type": "ExecutePipeline",
 									"dependsOn": [
 										{
 											"activity": "Get Email Parts",
@@ -1626,26 +1576,39 @@
 											]
 										}
 									],
-									"policy": {
-										"timeout": "0.00:10:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": true
-									},
 									"userProperties": [],
 									"typeProperties": {
-										"functionName": "SendEmail",
-										"method": "POST",
-										"headers": {},
-										"body": {
-											"value": "@activity('Get Email Parts').output.firstRow",
-											"type": "Expression"
+										"pipeline": {
+											"referenceName": "Email Sender",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"Recipients": {
+												"value": "@activity('Get Email Parts').output.firstRow.emailRecipients",
+												"type": "Expression"
+											},
+											"CcRecipients": {
+												"value": "@activity('Get Email Parts').output.firstRow.emailCcRecipients",
+												"type": "Expression"
+											},
+											"BccRecipients": {
+												"value": "@activity('Get Email Parts').output.firstRow.emailBccRecipients",
+												"type": "Expression"
+											},
+											"Subject": {
+												"value": "@activity('Get Email Parts').output.firstRow.emailSubject",
+												"type": "Expression"
+											},
+											"Body": {
+												"value": "@activity('Get Email Parts').output.firstRow.emailBody",
+												"type": "Expression"
+											},
+											"Importance": {
+												"value": "@activity('Get Email Parts').output.firstRow.emailImportance",
+												"type": "Expression"
+											}
 										}
-									},
-									"linkedServiceName": {
-										"referenceName": "FrameworkFunctions",
-										"type": "LinkedServiceReference"
 									}
 								}
 							]
@@ -1700,7 +1663,7 @@
 										"method": "POST",
 										"headers": {},
 										"body": {
-											"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerTenantId'),'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n    \"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n    \"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n    \"pipelineName\": \"',variables('WorkerPipelineName'),'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
+											"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerCoreDetails')[0].tenantId,'\",\n    \"applicationId\": \"',variables('WorkerCoreDetails')[0].applicationId,'\",\n    \"authenticationKey\": \"',variables('WorkerCoreDetails')[0].authenticationKey,'\",\n    \"subscriptionId\": \"',variables('WorkerCoreDetails')[0].subscriptionId,'\",\n    \"resourceGroupName\": \"',variables('WorkerCoreDetails')[0].resourceGroupName,'\",\n\t\"orchestratorName\": \"',variables('WorkerCoreDetails')[0].orchestratorName,'\",\n    \"orchestratorType\": \"',variables('WorkerCoreDetails')[0].orchestratorType,'\",\n    \"pipelineName\": \"',variables('WorkerCoreDetails')[0].pipelineName,'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 											"type": "Expression"
 										}
 									},
@@ -1866,7 +1829,7 @@
 									"typeProperties": {
 										"variableName": "WorkerPipelineState",
 										"value": {
-											"value": "@equals('Done',activity('Get Worker Pipeline Status').output.SimpleStatus)",
+											"value": "@equals('Complete',activity('Get Worker Pipeline Status').output.SimpleStatus)",
 											"type": "Expression"
 										}
 									}
@@ -1890,7 +1853,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"on": {
-								"value": "@activity('Get Worker Pipeline Status').output.Status",
+								"value": "@activity('Get Worker Pipeline Status').output.ActualStatus",
 								"type": "Expression"
 							},
 							"cases": [
@@ -2015,7 +1978,7 @@
 												"method": "POST",
 												"headers": {},
 												"body": {
-													"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerTenantId'),'\",\n    \"applicationId\": \"',variables('WorkerAppId'),'\",\n    \"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n    \"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n    \"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n    \"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n    \"pipelineName\": \"',variables('WorkerPipelineName'),'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
+													"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerCoreDetails')[0].tenantId,'\",\n    \"applicationId\": \"',variables('WorkerCoreDetails')[0].applicationId,'\",\n    \"authenticationKey\": \"',variables('WorkerCoreDetails')[0].authenticationKey,'\",\n    \"subscriptionId\": \"',variables('WorkerCoreDetails')[0].subscriptionId,'\",\n    \"resourceGroupName\": \"',variables('WorkerCoreDetails')[0].resourceGroupName,'\",\n\t\"orchestratorName\": \"',variables('WorkerCoreDetails')[0].orchestratorName,'\",\n    \"orchestratorType\": \"',variables('WorkerCoreDetails')[0].orchestratorType,'\",\n    \"pipelineName\": \"',variables('WorkerCoreDetails')[0].pipelineName,'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
 													"type": "Expression"
 												}
 											},
@@ -2202,48 +2165,6 @@
 						}
 					},
 					{
-						"name": "Set App Id",
-						"description": "Set local variable from activity output once for value reuse in downstream activities.",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Get Worker Authentication Details",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "WorkerAppId",
-							"value": {
-								"value": "@activity('Get Worker Authentication Details').output.firstRow.AppId",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set App Secret",
-						"description": "Set local variable from activity output once for value reuse in downstream activities.",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Get Worker Authentication Details",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "WorkerAppSecret",
-							"value": {
-								"value": "@activity('Get Worker Authentication Details').output.firstRow.AppSecret",
-								"type": "Expression"
-							}
-						}
-					},
-					{
 						"name": "Set Run Id",
 						"description": "Set local variable from activity output once for value reuse in downstream activities.",
 						"type": "SetVariable",
@@ -2265,209 +2186,18 @@
 						}
 					},
 					{
-						"name": "Get Worker Pipeline Details",
-						"description": "Return none sensitive worker pipeline information for metadata database. Including target data factory, pipeline name and resource group.",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": true,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[procfwk].[GetWorkerPipelineDetails]",
-								"storedProcedureParameters": {
-									"ExecutionId": {
-										"type": "Guid",
-										"value": {
-											"value": "@pipeline().parameters.ExecutionId",
-											"type": "Expression"
-										}
-									},
-									"PipelineId": {
-										"type": "Int32",
-										"value": {
-											"value": "@pipeline().parameters.pipelineId",
-											"type": "Expression"
-										}
-									},
-									"StageId": {
-										"type": "Int32",
-										"value": {
-											"value": "@pipeline().parameters.stageId",
-											"type": "Expression"
-										}
-									}
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						}
-					},
-					{
-						"name": "Set Tenant Id",
-						"description": "Set local variable from activity output once for value reuse in downstream activities.",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Get Worker Authentication Details",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "WorkerTenantId",
-							"value": {
-								"value": "@activity('Get Worker Authentication Details').output.firstRow.TenantId",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set Subscription Id",
-						"description": "Set local variable from activity output once for value reuse in downstream activities.",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Get Worker Authentication Details",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "WorkerSubscriptionId",
-							"value": {
-								"value": "@activity('Get Worker Authentication Details').output.firstRow.SubscriptionId",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set Pipeline Name",
-						"description": "Set local variable from activity output once for value reuse in downstream activities.",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Get Worker Pipeline Details",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "WorkerPipelineName",
-							"value": {
-								"value": "@activity('Get Worker Pipeline Details').output.firstRow.PipelineName",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set Data Factory Name",
-						"description": "Set local variable from activity output once for value reuse in downstream activities.",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Get Worker Pipeline Details",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "WorkerDataFactoryName",
-							"value": {
-								"value": "@activity('Get Worker Pipeline Details').output.firstRow.DataFactoryName",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "Set Resource Group",
-						"description": "Set local variable from activity output once for value reuse in downstream activities.",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Get Worker Pipeline Details",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "WorkerResourceGroup",
-							"value": {
-								"value": "@activity('Get Worker Pipeline Details').output.firstRow.ResourceGroupName",
-								"type": "Expression"
-							}
-						}
-					},
-					{
 						"name": "Validate Pipeline",
 						"description": "Query the target data factory and establish if the provided worker pipeline name is valid.",
 						"type": "AzureFunctionActivity",
 						"dependsOn": [
 							{
-								"activity": "Set Resource Group",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Set Data Factory Name",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Set Subscription Id",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Set App Secret",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Set App Id",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Set Pipeline Name",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Set Tenant Id",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
 								"activity": "Log Pipeline Validating",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Capture Worker Core Details as an Array",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -2486,7 +2216,7 @@
 							"method": "POST",
 							"headers": {},
 							"body": {
-								"value": "@concat('\n{\n\t\"tenantId\": \"',variables('WorkerTenantId'),'\",\n\t\"applicationId\": \"',variables('WorkerAppId'),'\",\n\t\"authenticationKey\": \"',variables('WorkerAppSecret'),'\",\n\t\"subscriptionId\": \"',variables('WorkerSubscriptionId'),'\",\n\t\"resourceGroup\": \"',variables('WorkerResourceGroup'),'\",\n\t\"factoryName\": \"',variables('WorkerDataFactoryName'),'\",\n\t\"pipelineName\": \"',variables('WorkerPipelineName'),'\"\n}')",
+								"value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerCoreDetails')[0].tenantId,'\",\n    \"applicationId\": \"',variables('WorkerCoreDetails')[0].applicationId,'\",\n    \"authenticationKey\": \"',variables('WorkerCoreDetails')[0].authenticationKey,'\",\n    \"subscriptionId\": \"',variables('WorkerCoreDetails')[0].subscriptionId,'\",\n    \"resourceGroupName\": \"',variables('WorkerCoreDetails')[0].resourceGroupName,'\",\n\t\"orchestratorName\": \"',variables('WorkerCoreDetails')[0].orchestratorName,'\",\n    \"orchestratorType\": \"',variables('WorkerCoreDetails')[0].orchestratorType,'\",\n    \"pipelineName\": \"',variables('WorkerCoreDetails')[0].pipelineName,'\"\n}')",
 								"type": "Expression"
 							}
 						},
@@ -2528,7 +2258,7 @@
 										"waitOnCompletion": true,
 										"parameters": {
 											"Message": {
-												"value": "@concat('Worker pipeline [',variables('WorkerPipelineName'),'] is not valid in target Data Factory [',variables('WorkerDataFactoryName'),']')",
+												"value": "@concat('Worker pipeline [',variables('WorkerCoreDetails')[0].pipelineName,'] is not valid in target Orchestrator [',variables('WorkerCoreDetails')[0].orchestratorName,']')",
 												"type": "Expression"
 											}
 										}
@@ -2683,6 +2413,77 @@
 							"referenceName": "SupportDatabase",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "Get Worker Core Details",
+						"description": "Return worker pipeline information for metadata database. Including target data factory, pipeline name and resource group. Return the SPN ID and Secret for the worker pipeline being executed. Called at this level as each pipeline can have a different SPN.",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:10:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": true,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[procfwk].[GetWorkerDetailsWrapper]",
+								"storedProcedureParameters": {
+									"ExecutionId": {
+										"type": "Guid",
+										"value": {
+											"value": "@pipeline().parameters.executionId",
+											"type": "Expression"
+										}
+									},
+									"PipelineId": {
+										"type": "Int32",
+										"value": {
+											"value": "@pipeline().parameters.pipelineId",
+											"type": "Expression"
+										}
+									},
+									"StageId": {
+										"type": "Int32",
+										"value": {
+											"value": "@pipeline().parameters.stageId",
+											"type": "Expression"
+										}
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "GetSetMetadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Capture Worker Core Details as an Array",
+						"description": "Add all worker pipeline details to a local variable array that can be accessed by each function call requiring the values.",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Worker Core Details",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "WorkerCoreDetails",
+							"value": {
+								"value": "@array(activity('Get Worker Core Details').output.firstRow)",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"parameters": {
@@ -2700,29 +2501,11 @@
 					"WorkerPipelineState": {
 						"type": "Boolean"
 					},
-					"WorkerAppId": {
-						"type": "String"
-					},
-					"WorkerAppSecret": {
-						"type": "String"
-					},
 					"WorkerRunId": {
 						"type": "String"
 					},
-					"WorkerTenantId": {
-						"type": "String"
-					},
-					"WorkerSubscriptionId": {
-						"type": "String"
-					},
-					"WorkerPipelineName": {
-						"type": "String"
-					},
-					"WorkerDataFactoryName": {
-						"type": "String"
-					},
-					"WorkerResourceGroup": {
-						"type": "String"
+					"WorkerCoreDetails": {
+						"type": "Array"
 					}
 				},
 				"folder": {
@@ -2737,6 +2520,7 @@
 				"[concat(variables('factoryId'), '/linkedServices/FrameworkFunctions')]",
 				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
 				"[concat(variables('factoryId'), '/linkedServices/SupportDatabase')]",
+				"[concat(variables('factoryId'), '/pipelines/Email Sender')]",
 				"[concat(variables('factoryId'), '/pipelines/Throw Exception')]"
 			]
 		},
@@ -2748,99 +2532,12 @@
 				"description": "For a given pipeline and optional batch name establish if a pipeline run is already in progress. Throw an exception if it it.",
 				"activities": [
 					{
-						"name": "Get Subscription",
-						"description": "Use the Azure Management API to return the current subscription.",
-						"type": "WebActivity",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": "https://management.azure.com/subscriptions?api-version=2020-01-01",
-							"method": "GET",
-							"headers": {},
-							"authentication": {
-								"type": "MSI",
-								"resource": "https://management.core.windows.net/"
-							}
-						}
-					},
-					{
-						"name": "Get Pipeline Runs",
-						"description": "Use the Azure Management API to return a list of pipeline runs within the given time window.",
-						"type": "WebActivity",
-						"dependsOn": [
-							{
-								"activity": "Get Query Run Days Value",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Check for Valid Pipeline Name",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": {
-								"value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{activity('Get Resource Group').output.firstRow.PropertyValue}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/queryPipelineRuns?api-version=2018-06-01",
-								"type": "Expression"
-							},
-							"method": "POST",
-							"headers": {},
-							"body": {
-								"value": "{\n  \"lastUpdatedAfter\": \"@{adddays(utcnow(),int(activity('Get Query Run Days Value').output.firstRow.PropertyValue))}\",\n  \"lastUpdatedBefore\": \"@{utcnow()}\",\n  \"filters\": [\n    {\n      \"operand\": \"PipelineName\",\n      \"operator\": \"Equals\",\n      \"values\": [\n        \"@{pipeline().parameters.PipelineName}\"\n      ]\n    }\n  ]\n}",
-								"type": "Expression"
-							},
-							"authentication": {
-								"type": "MSI",
-								"resource": "https://management.core.windows.net/"
-							}
-						}
-					},
-					{
-						"name": "Set Parsed Subscription",
-						"description": "Parse the subscription string value to return just the subscription ID.",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Get Subscription",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "SubscriptionId",
-							"value": {
-								"value": "@replace(activity('Get Subscription').output.value[0].id,'/subscriptions/','')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
 						"name": "Filter Running Pipelines",
 						"description": "Filter the pipeline runs results for pipelines that exclude the current triggered run and that are currently running (in progress or queued).",
 						"type": "Filter",
 						"dependsOn": [
 							{
-								"activity": "Get Pipeline Runs",
+								"activity": "Switch For Orchestrator Type",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -2849,7 +2546,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"items": {
-								"value": "@activity('Get Pipeline Runs').output.value",
+								"value": "@variables('PipelineRuns')",
 								"type": "Expression"
 							},
 							"condition": {
@@ -2859,8 +2556,8 @@
 						}
 					},
 					{
-						"name": "Get Resource Group",
-						"description": "Using the metadata properties table return the framework factory resource group name.",
+						"name": "Get Framework Orchestrator Details",
+						"description": "Using the metadata orchestrators return details about the resource running the framework pipelines.",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
@@ -2874,11 +2571,14 @@
 						"typeProperties": {
 							"source": {
 								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[procfwk].[GetPropertyValue]",
+								"sqlReaderStoredProcedureName": "[[procfwk].[GetFrameworkOrchestratorDetails]",
 								"storedProcedureParameters": {
-									"PropertyName": {
+									"CallingOrchestratorName": {
 										"type": "String",
-										"value": "FrameworkFactoryResourceGroup"
+										"value": {
+											"value": "@pipeline().DataFactory",
+											"type": "Expression"
+										}
 									}
 								},
 								"queryTimeout": "02:00:00",
@@ -3082,41 +2782,323 @@
 						}
 					},
 					{
-						"name": "Check for Valid Pipeline Name",
-						"description": "Use the Azure Management API to return and establish if the framework pipeline exists in the target Data Factory, including being deployed.",
-						"type": "WebActivity",
+						"name": "Set Subscription Id",
+						"description": "Set the subscription Id value to a local variable for use in various downstream activities.",
+						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Set Parsed Subscription",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Get Resource Group",
+								"activity": "Get Framework Orchestrator Details",
 								"dependencyConditions": [
 									"Succeeded"
 								]
 							}
 						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
 						"userProperties": [],
 						"typeProperties": {
-							"url": {
-								"value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{activity('Get Resource Group').output.firstRow.PropertyValue}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/pipelines/@{pipeline().parameters.PipelineName}?api-version=2018-06-01",
+							"variableName": "SubscriptionId",
+							"value": {
+								"value": "@activity('Get Framework Orchestrator Details').output.firstRow.SubscriptionId",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Resource Group Name",
+						"description": "Set the resource group name value to a local variable for use in various downstream activities.",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Framework Orchestrator Details",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "ResourceGroupName",
+							"value": {
+								"value": "@activity('Get Framework Orchestrator Details').output.firstRow.ResourceGroupName",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Orchestrator Type",
+						"description": "Set the orchestrator type value to a local variable for use in various downstream activities.",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Framework Orchestrator Details",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "OrchestratorType",
+							"value": {
+								"value": "@toUpper(activity('Get Framework Orchestrator Details').output.firstRow.OrchestratorType)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Switch For Orchestrator Type",
+						"description": "Switch and handle requests for both Azure Data Factory (ADF) and Azure Synapse Analytics (SYN).",
+						"type": "Switch",
+						"dependsOn": [
+							{
+								"activity": "Set Orchestrator Type",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set Query Run Days",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set Resource Group Name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set Subscription Id",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"on": {
+								"value": "@variables('OrchestratorType')",
 								"type": "Expression"
 							},
-							"method": "GET",
-							"headers": {},
-							"authentication": {
-								"type": "MSI",
-								"resource": "https://management.core.windows.net/"
+							"cases": [
+								{
+									"value": "ADF",
+									"activities": [
+										{
+											"name": "Check for Valid ADF Pipeline Name",
+											"description": "Use the Azure Management API to return and establish if the framework pipeline exists in the target Data Factory instance, including being deployed.",
+											"type": "WebActivity",
+											"dependsOn": [],
+											"policy": {
+												"timeout": "7.00:00:00",
+												"retry": 0,
+												"retryIntervalInSeconds": 30,
+												"secureOutput": false,
+												"secureInput": false
+											},
+											"userProperties": [],
+											"typeProperties": {
+												"url": {
+													"value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{variables('ResourceGroupName')}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/pipelines/@{pipeline().parameters.PipelineName}?api-version=2018-06-01",
+													"type": "Expression"
+												},
+												"method": "GET",
+												"headers": {},
+												"authentication": {
+													"type": "MSI",
+													"resource": "https://management.core.windows.net/"
+												}
+											}
+										},
+										{
+											"name": "Get ADF Pipeline Runs",
+											"description": "Use the Azure Management API to return a list of data factory pipeline runs within the given time window.",
+											"type": "WebActivity",
+											"dependsOn": [
+												{
+													"activity": "Check for Valid ADF Pipeline Name",
+													"dependencyConditions": [
+														"Succeeded"
+													]
+												}
+											],
+											"policy": {
+												"timeout": "7.00:00:00",
+												"retry": 0,
+												"retryIntervalInSeconds": 30,
+												"secureOutput": false,
+												"secureInput": false
+											},
+											"userProperties": [],
+											"typeProperties": {
+												"url": {
+													"value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{variables('ResourceGroupName')}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/queryPipelineRuns?api-version=2018-06-01",
+													"type": "Expression"
+												},
+												"method": "POST",
+												"headers": {},
+												"body": {
+													"value": "{\n  \"lastUpdatedAfter\": \"@{adddays(utcnow(),int(variables('QueryRunDays')))}\",\n  \"lastUpdatedBefore\": \"@{utcnow()}\",\n  \"filters\": [\n    {\n      \"operand\": \"PipelineName\",\n      \"operator\": \"Equals\",\n      \"values\": [\n        \"@{pipeline().parameters.PipelineName}\"\n      ]\n    }\n  ]\n}",
+													"type": "Expression"
+												},
+												"authentication": {
+													"type": "MSI",
+													"resource": "https://management.core.windows.net/"
+												}
+											}
+										},
+										{
+											"name": "Set ADF Runs Output",
+											"description": "Set output to local array for use in downstream filtering and pipeline checks. Use the same array output for both switch cases.",
+											"type": "SetVariable",
+											"dependsOn": [
+												{
+													"activity": "Get ADF Pipeline Runs",
+													"dependencyConditions": [
+														"Succeeded"
+													]
+												}
+											],
+											"userProperties": [],
+											"typeProperties": {
+												"variableName": "PipelineRuns",
+												"value": {
+													"value": "@activity('Get ADF Pipeline Runs').output.value",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"value": "SYN",
+									"activities": [
+										{
+											"name": "Check for Valid SYN Pipeline Name",
+											"description": "Use the Azure Management API to return and establish if the framework pipeline exists in the target Synapse instance, including being deployed.\n\nSee: https://docs.microsoft.com/en-us/rest/api/synapse/data-plane/pipeline/getpipeline",
+											"type": "WebActivity",
+											"dependsOn": [],
+											"policy": {
+												"timeout": "7.00:00:00",
+												"retry": 0,
+												"retryIntervalInSeconds": 30,
+												"secureOutput": false,
+												"secureInput": false
+											},
+											"userProperties": [],
+											"typeProperties": {
+												"url": {
+													"value": "https://@{pipeline().DataFactory}.dev.azuresynapse.net/pipelines/@{pipeline().parameters.PipelineName}?api-version=2019-06-01-preview",
+													"type": "Expression"
+												},
+												"method": "GET",
+												"headers": {},
+												"authentication": {
+													"type": "MSI",
+													"resource": "https://management.core.windows.net/"
+												}
+											}
+										},
+										{
+											"name": "Get SYN Pipeline Runs",
+											"description": "Use the Azure Management API to return a list of synapse pipeline runs within the given time window.\n\nSee: https://docs.microsoft.com/en-us/rest/api/synapse/data-plane/pipelinerun/querypipelinerunsbyworkspace",
+											"type": "WebActivity",
+											"dependsOn": [
+												{
+													"activity": "Check for Valid SYN Pipeline Name",
+													"dependencyConditions": [
+														"Succeeded"
+													]
+												}
+											],
+											"policy": {
+												"timeout": "7.00:00:00",
+												"retry": 0,
+												"retryIntervalInSeconds": 30,
+												"secureOutput": false,
+												"secureInput": false
+											},
+											"userProperties": [],
+											"typeProperties": {
+												"url": {
+													"value": "https://@{pipeline().DataFactory}.dev.azuresynapse.net/queryPipelineRuns?api-version=2019-06-01-preview",
+													"type": "Expression"
+												},
+												"method": "POST",
+												"headers": {},
+												"body": {
+													"value": "{\n  \"lastUpdatedAfter\": \"@{adddays(utcnow(),int(variables('QueryRunDays')))}\",\n  \"lastUpdatedBefore\": \"@{utcnow()}\",\n  \"filters\": [\n    {\n      \"operand\": \"PipelineName\",\n      \"operator\": \"Equals\",\n      \"values\": [\n        \"@{pipeline().parameters.PipelineName}\"\n      ]\n    }\n  ]\n}",
+													"type": "Expression"
+												},
+												"authentication": {
+													"type": "MSI",
+													"resource": "https://management.core.windows.net/"
+												}
+											}
+										},
+										{
+											"name": "Set SYN Runs Output",
+											"description": "Set output to local array for use in downstream filtering and pipeline checks. Use the same array output for both switch cases.",
+											"type": "SetVariable",
+											"dependsOn": [
+												{
+													"activity": "Get SYN Pipeline Runs",
+													"dependencyConditions": [
+														"Succeeded"
+													]
+												}
+											],
+											"userProperties": [],
+											"typeProperties": {
+												"variableName": "PipelineRuns",
+												"value": {
+													"value": "@activity('Get SYN Pipeline Runs').output.value",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							],
+							"defaultActivities": [
+								{
+									"name": "Throw Exception Invalid Orchestrator Type",
+									"description": "Throw exception if switch cases are not met.",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Throw Exception",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"Message": "Invalid orchestrator type provided. Unable to check pipeline running state."
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Set Query Run Days",
+						"description": "Set the query run days value to a local variable for use in various downstream activities.",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Query Run Days Value",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "QueryRunDays",
+							"value": {
+								"value": "@activity('Get Query Run Days Value').output.firstRow.PropertyValue",
+								"type": "Expression"
 							}
 						}
 					}
@@ -3139,6 +3121,18 @@
 					},
 					"RunCount": {
 						"type": "String"
+					},
+					"ResourceGroupName": {
+						"type": "String"
+					},
+					"OrchestratorType": {
+						"type": "String"
+					},
+					"QueryRunDays": {
+						"type": "String"
+					},
+					"PipelineRuns": {
+						"type": "Array"
 					}
 				},
 				"folder": {
@@ -3226,7 +3220,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"description": "Used just so the procfwk has something to call during development.",
 				"activities": [
 					{
 						"name": "Wait1",
@@ -3307,7 +3301,7 @@
 					"name": "_Workers"
 				},
 				"annotations": [
-					"Worker"
+					"_ProcFwkWorker"
 				]
 			},
 			"dependsOn": [
@@ -3375,7 +3369,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"description": "Used just so the procfwk has something to call during development.",
 				"activities": [
 					{
 						"name": "Wait1",
@@ -3401,7 +3395,7 @@
 					"name": "_Workers"
 				},
 				"annotations": [
-					"Worker"
+					"_ProcFwkWorker"
 				]
 			},
 			"dependsOn": []
@@ -3411,7 +3405,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"description": "Used just so the procfwk has something to call during development.",
 				"activities": [
 					{
 						"name": "Wait10",
@@ -3437,7 +3431,7 @@
 					"name": "_Workers"
 				},
 				"annotations": [
-					"Worker"
+					"_ProcFwkWorker"
 				]
 			},
 			"dependsOn": []
@@ -3447,7 +3441,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"description": "Used just so the procfwk has something to call during development.",
 				"activities": [
 					{
 						"name": "Wait2",
@@ -3473,7 +3467,7 @@
 					"name": "_Workers"
 				},
 				"annotations": [
-					"Worker"
+					"_ProcFwkWorker"
 				]
 			},
 			"dependsOn": []
@@ -3483,7 +3477,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"description": "Used just so the procfwk has something to call during development.",
 				"activities": [
 					{
 						"name": "Wait3",
@@ -3509,7 +3503,7 @@
 					"name": "_Workers"
 				},
 				"annotations": [
-					"Worker"
+					"_ProcFwkWorker"
 				]
 			},
 			"dependsOn": []
@@ -3519,7 +3513,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"description": "Used just so the procfwk has something to call during development.",
 				"activities": [
 					{
 						"name": "Wait4",
@@ -3545,7 +3539,7 @@
 					"name": "_Workers"
 				},
 				"annotations": [
-					"Worker"
+					"_ProcFwkWorker"
 				]
 			},
 			"dependsOn": []
@@ -3555,7 +3549,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"description": "Used just so the procfwk has something to call during development.",
 				"activities": [
 					{
 						"name": "Wait5",
@@ -3581,7 +3575,7 @@
 					"name": "_Workers"
 				},
 				"annotations": [
-					"Worker"
+					"_ProcFwkWorker"
 				]
 			},
 			"dependsOn": []
@@ -3591,7 +3585,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"description": "Used just so the procfwk has something to call during development.",
 				"activities": [
 					{
 						"name": "Wait6",
@@ -3617,7 +3611,7 @@
 					"name": "_Workers"
 				},
 				"annotations": [
-					"Worker"
+					"_ProcFwkWorker"
 				]
 			},
 			"dependsOn": []
@@ -3627,7 +3621,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"description": "Used just so the procfwk has something to call during development.",
 				"activities": [
 					{
 						"name": "Wait7",
@@ -3653,7 +3647,7 @@
 					"name": "_Workers"
 				},
 				"annotations": [
-					"Worker"
+					"_ProcFwkWorker"
 				]
 			},
 			"dependsOn": []
@@ -3663,7 +3657,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"description": "Used just so the procfwk has something to call during development.",
 				"activities": [
 					{
 						"name": "Wait8",
@@ -3689,7 +3683,7 @@
 					"name": "_Workers"
 				},
 				"annotations": [
-					"Worker"
+					"_ProcFwkWorker"
 				]
 			},
 			"dependsOn": []
@@ -3699,7 +3693,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Used just so the ADF.procfwk has something to call during development.",
+				"description": "Used just so the procfwk has something to call during development.",
 				"activities": [
 					{
 						"name": "Wait9",
@@ -3725,7 +3719,7 @@
 					"name": "_Workers"
 				},
 				"annotations": [
-					"Worker"
+					"_ProcFwkWorker"
 				]
 			},
 			"dependsOn": []
@@ -3744,7 +3738,7 @@
 					"name": "_ProcFwk"
 				},
 				"annotations": [
-					"ADF.procfwk"
+					"procfwk"
 				],
 				"type": "AzureSqlTable",
 				"schema": [],
@@ -3761,7 +3755,7 @@
 			"properties": {
 				"description": "Interact with the Azure Functions App used as middle ware when making requests to Worker pipelines. Authentication done at the Function App level.",
 				"annotations": [
-					"ADF.procfwk"
+					"procfwk"
 				],
 				"type": "AzureFunction",
 				"typeProperties": {
@@ -3787,7 +3781,7 @@
 			"properties": {
 				"description": "Connection to Key Vault for all other ADF linked service credentials required to run the processing framework.",
 				"annotations": [
-					"ADF.procfwk"
+					"procfwk"
 				],
 				"type": "AzureKeyVault",
 				"typeProperties": {
@@ -3803,7 +3797,7 @@
 			"properties": {
 				"description": "Connection between ADF and processing framework metadata SQLDB.",
 				"annotations": [
-					"ADF.procfwk"
+					"procfwk"
 				],
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
@@ -3828,7 +3822,7 @@
 			"properties": {
 				"description": "Used for functional testing of the framework in a dedicated environment.",
 				"annotations": [
-					"ADF.procfwk"
+					"procfwk"
 				],
 				"runtimeState": "Stopped",
 				"pipelines": [

@@ -223,7 +223,7 @@
 								"type": "AzureSqlSource",
 								"sqlReaderStoredProcedureName": "[[procfwk].[ExecutionWrapper]",
 								"storedProcedureParameters": {
-									"CallingDataFactory": {
+									"CallingOrchestratorName": {
 										"type": "String",
 										"value": {
 											"value": "@pipeline().DataFactory",
@@ -485,7 +485,7 @@
 										"method": "POST",
 										"headers": {},
 										"body": {
-											"value": "@concat('\n{\n    \"tenantId\": \"',activity('Get SPN Details').output.firstRow.TenantId,'\",\n    \"applicationId\": \"',activity('Get SPN Details').output.firstRow.AppId,'\",\n    \"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.AppSecret,'\",\n    \"subscriptionId\": \"',activity('Get SPN Details').output.firstRow.SubscriptionId,'\",\n    \"resourceGroup\": \"',item().ResourceGroupName,'\",\n    \"factoryName\": \"',item().DataFactoryName,'\",\n    \"pipelineName\": \"',item().PipelineName,'\",\n    \"runId\": \"',item().AdfPipelineRunId,'\"\n}')",
+											"value": "@concat('\n{\n    \"tenantId\": \"',activity('Get SPN Details').output.firstRow.TenantId,'\",\n    \"applicationId\": \"',activity('Get SPN Details').output.firstRow.AppId,'\",\n    \"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.AppSecret,'\",\n    \"subscriptionId\": \"',activity('Get SPN Details').output.firstRow.SubscriptionId,'\",\n    \"resourceGroupName\": \"',item().ResourceGroupName,'\",\n    \"orchestratorName\": \"',item().OrchestratorName,'\",\n    \"orchestratorType\": \"',item().OrchestratorType,'\",\n    \"pipelineName\": \"',item().PipelineName,'\",\n    \"runId\": \"',item().PipelineRunId,'\"\n}')",
 											"type": "Expression"
 										}
 									},
@@ -509,7 +509,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"on": {
-											"value": "@activity('Get Pipeline Status').output.Status",
+											"value": "@activity('Get Pipeline Status').output.ActualStatus",
 											"type": "Expression"
 										},
 										"cases": [
@@ -1027,7 +1027,7 @@
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "ADF.procfwk grandparent pipeline used optionally to bootstrap any wider processes in your Data Factory that then calls the processing framework.",
+				"description": "procfwk grandparent pipeline used optionally to bootstrap any wider processes in your Data Factory that then calls the processing framework.",
 				"activities": [
 					{
 						"name": "procfwk",
@@ -1075,7 +1075,7 @@
 			"properties": {
 				"description": "Used for functional testing of the framework in a dedicated environment.",
 				"annotations": [
-					"ADF.procfwk"
+					"procfwk"
 				],
 				"runtimeState": "Stopped",
 				"pipelines": [
