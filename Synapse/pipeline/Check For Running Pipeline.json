@@ -460,7 +460,8 @@
 										},
 										"method": "GET",
 										"authentication": {
-											"type": "MSI"
+											"type": "MSI",
+											"resource": "https://management.core.windows.net/"
 										}
 									}
 								},
