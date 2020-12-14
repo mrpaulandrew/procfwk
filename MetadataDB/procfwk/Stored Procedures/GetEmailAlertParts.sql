@@ -92,13 +92,13 @@ BEGIN
 	--set subject, body and importance
 	SELECT TOP (1)
 		--subject
-		@EmailSubject = 'ADFprocfwk Alert: ' + [PipelineName] + ' - ' + [PipelineStatus],
+		@EmailSubject = 'ProcFwk Alert: ' + [PipelineName] + ' - ' + [PipelineStatus],
 	
 		--body
 		@EmailBody = REPLACE(@EmailBody,'##PipelineName###',[PipelineName]),
 		@EmailBody = REPLACE(@EmailBody,'##Status###',[PipelineStatus]),
 		@EmailBody = REPLACE(@EmailBody,'##ExecId###',CAST([LocalExecutionId] AS VARCHAR(36))),
-		@EmailBody = REPLACE(@EmailBody,'##RunId###',CAST([AdfPipelineRunId] AS VARCHAR(36))),
+		@EmailBody = REPLACE(@EmailBody,'##RunId###',CAST([PipelineRunId] AS VARCHAR(36))),
 		@EmailBody = REPLACE(@EmailBody,'##StartDateTime###',CONVERT(VARCHAR(30), [StartDateTime], 120)),
 		@EmailBody = CASE
 						WHEN [EndDateTime] IS NULL THEN REPLACE(@EmailBody,'##EndDateTime###','N/A')
@@ -108,8 +108,9 @@ BEGIN
 						WHEN [EndDateTime] IS NULL THEN REPLACE(@EmailBody,'##Duration###','N/A')
 						ELSE REPLACE(@EmailBody,'##Duration###',CAST(DATEDIFF(MINUTE, [StartDateTime], [EndDateTime]) AS VARCHAR(30)))
 					END,
-		@EmailBody = REPLACE(@EmailBody,'##CalledByADF###',[CallingDataFactoryName]),
-		@EmailBody = REPLACE(@EmailBody,'##ExecutedByADF###',[DataFactoryName]),
+		@EmailBody = REPLACE(@EmailBody,'##CalledByOrc###',[CallingOrchestratorName]),
+		@EmailBody = REPLACE(@EmailBody,'##ExecutedByOrcType###',[OrchestratorType]),
+		@EmailBody = REPLACE(@EmailBody,'##ExecutedByOrc###',[OrchestratorName]),
 
 		--importance
 		@EmailImportance = 

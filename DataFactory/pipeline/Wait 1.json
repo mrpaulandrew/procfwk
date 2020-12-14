@@ -1,7 +1,7 @@
 {
 	"name": "Wait 1",
 	"properties": {
-		"description": "Used just so the ADF.procfwk has something to call during development.",
+		"description": "Used just so the procfwk has something to call during development.",
 		"activities": [
 			{
 				"name": "Wait1",
@@ -27,7 +27,7 @@
 			"name": "_Workers"
 		},
 		"annotations": [
-			"Worker"
+			"_ProcFwkWorker"
 		]
 	}
 }

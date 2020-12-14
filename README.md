@@ -12,8 +12,9 @@ For complete documentation on this solution see [procfwk.com](http://procfwk.com
  * Metadata integrity checking.
  * Global properties.
  * Complete pipeline dependency chains.
+ * Concurrent batch executions (hourly/daily/monthly).
  * Execution restart-ability.
- * Parallel execution.
+ * Parallel pipeline execution.
  * Full execution and error logs.
  * Operational dashboards.
  * Low cost orchestration.
@@ -25,6 +26,7 @@ For complete documentation on this solution see [procfwk.com](http://procfwk.com
  * Email alerting.
  * Automated testing.
  * Azure Key Vault integration.
+ * Is pipeline already running checks.
 
 ## Complete Data Factory Activity Chain
 
@@ -45,6 +47,7 @@ Go to... [Internal Backlog](https://github.com/mrpaulandrew/procfwk/projects/1)
 
 | Version | Overview | Version Details & Release Notes |
 |:----:|--------------|--------|
+| 2.0 |<u>Azure Synapse Analytics **Beta** support</u> added.<br/><br/>Development of Azure Functions App completed using the Synapse namespace: _Azure.Analytics.Synapse.Artifacts_ with version **1.0.0-beta.1** of the NuGet package.|GitHub Pages: [Orchestrator Types](https://mrpaulandrew.github.io/procfwk/orchestratortypes) </br></br>Release Summary Video: [YouTube - procfwk Playlist](https://www.youtube.com/c/mrpaulandrew)<br/><br/>GitHub Issues:</br>[procfwk #21](https://github.com/mrpaulandrew/procfwk/issues/21) |
 | 1.9.2 |<u>Batch Executions</u> added, plus:<ul><li>Exception Pipeline</li><li>Running Pipeline Check</li><li>Pipeline Parameter Last Values</li><li>Worker Pipeline Validation</li></ul>|GitHub Pages: [Batch Executions](https://mrpaulandrew.github.io/procfwk/executionbatches) </br></br>Release Demo Summary Video: [YouTube - procfwk Playlist](https://www.youtube.com/c/mrpaulandrew)<br/><br/>GitHub Issues:</br>[procfwk #78](https://github.com/mrpaulandrew/procfwk/issues/78)<br/>[procfwk #77](https://github.com/mrpaulandrew/procfwk/issues/77)<br/>[procfwk #71](https://github.com/mrpaulandrew/procfwk/issues/71)<br/>[procfwk #73](https://github.com/mrpaulandrew/procfwk/issues/73)<br/>[procfwk #80](https://github.com/mrpaulandrew/procfwk/issues/80)<br/>[procfwk #72](https://github.com/mrpaulandrew/procfwk/issues/72) |
 | 1.9.1 |<u>Activity Policy Update</u>, plus:<ul><li>Secure Activity Inputs/Outputs.</li><li>Execution Wrapper Hardening.</li><li>New Activity Icons and Framework Factory Cosmetics.</li></ul> |GitHub Issues:</br>[procfwk #65](https://github.com/mrpaulandrew/procfwk/issues/65)<br/>[procfwk #66](https://github.com/mrpaulandrew/procfwk/issues/66)<br/>[procfwk #67](https://github.com/mrpaulandrew/procfwk/issues/67)<br/>[procfwk #69](https://github.com/mrpaulandrew/procfwk/issues/69) |
 | 1.9.0 |<u>Cross Tenant & Subscription Support</u> added, plus:<ul><li>New integration tests created.</li><li>Infant pipeline refactoring.</li><li>tSQLt project added.</li></ul> |GitHub Issues:</br>[procfwk #34](https://github.com/mrpaulandrew/procfwk/issues/34)<br/>[procfwk #35](https://github.com/mrpaulandrew/procfwk/issues/35)<br/>[procfwk #46](https://github.com/mrpaulandrew/procfwk/issues/46)<br/>[procfwk #55](https://github.com/mrpaulandrew/procfwk/issues/55)<br/>[procfwk #56](https://github.com/mrpaulandrew/procfwk/issues/56)<br/>[procfwk #59](https://github.com/mrpaulandrew/procfwk/issues/59) |

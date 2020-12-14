@@ -26,28 +26,30 @@ BEGIN
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
-		[CallingDataFactoryName],
+		[CallingOrchestratorName],
 		[ResourceGroupName],
-		[DataFactoryName],
+		[OrchestratorType],
+		[OrchestratorName],
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
 		[EndDateTime],
-		[AdfPipelineRunId],
+		[PipelineRunId],
 		[PipelineParamsUsed]
 		)
 	SELECT
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
-		[CallingDataFactoryName],
+		[CallingOrchestratorName],
 		[ResourceGroupName],
-		[DataFactoryName],
+		[OrchestratorType],
+		[OrchestratorName],
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
 		[EndDateTime],
-		[AdfPipelineRunId],
+		[PipelineRunId],
 		[PipelineParamsUsed]
 	FROM
 		[procfwk].[CurrentExecution]
@@ -82,7 +84,7 @@ BEGIN
 					UPDATE
 						[procfwk].[BatchExecution]
 					SET
-						[BatchStatus] = 'Stopped' --special case when its an activity failure to call stop ready for restart
+						[BatchStatus] = 'Stopping' --special case when its an activity failure to call stop ready for restart
 					WHERE
 						[ExecutionId] = @ExecutionId
 						AND [BatchStatus] = 'Running';

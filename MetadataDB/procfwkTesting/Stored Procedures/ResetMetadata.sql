@@ -4,7 +4,7 @@ BEGIN
 	EXEC [procfwkHelpers].[SetDefaultProperties];
 	EXEC [procfwkHelpers].[SetDefaultTenant];
 	EXEC [procfwkHelpers].[SetDefaultSubscription];
-	EXEC [procfwkHelpers].[SetDefaultDataFactorys];
+	EXEC [procfwkHelpers].[SetDefaultOrchestrators];
 	EXEC [procfwkHelpers].[SetDefaultBatches];
 	EXEC [procfwkHelpers].[SetDefaultStages];
 	EXEC [procfwkHelpers].[SetDefaultBatchStageLink];

@@ -15,7 +15,7 @@ BEGIN
 	Check 5 - Is there at least one SubscriptionId available?
 	Check 6 - Is there a current OverideRestart property available?
 	Check 7 - Are there any enabled pipelines configured without a service principal?
-	Check 8 - Are any Data Factorys set to use the default subscription value?
+	Check 8 - Are any Orchestrators set to use the default subscription value?
 	Check 9 - Are any Subscription set to use the default tenant value?
 	Check 10 - Is there a current PipelineStatusCheckDuration property available?
 	Check 11 - Is there a current UseFrameworkEmailAlerting property available?
@@ -36,6 +36,8 @@ BEGIN
 	Check 24 - Have batch executions been enabled after a none batch execution run?
 
 	Check 25 - Has the execution failed due to an invalid pipeline name? If so, attend to update this before the next run.
+	Check 26 - Is there more than one framework orchestrator set?
+	Check 27 - Has a framework orchestrator been set for any orchestrators?
 	*/
 
 	DECLARE @BatchId UNIQUEIDENTIFIER
@@ -60,7 +62,7 @@ BEGIN
 			VALUES
 				( 
 				1,
-				'No execution stages are enabled within the metadatabase. Data Factory has nothing to run.'
+				'No execution stages are enabled within the metadatabase. Orchestrator has nothing to run.'
 				)
 		END;
 
@@ -74,7 +76,7 @@ BEGIN
 			VALUES
 				( 
 				2,
-				'No execution pipelines are enabled within the metadatabase. Data Factory has nothing to run.'
+				'No execution pipelines are enabled within the metadatabase. Orchestrator has nothing to run.'
 				)
 		END;
 
@@ -88,7 +90,7 @@ BEGIN
 			VALUES
 				( 
 				3,
-				'No service principal details have been added to the metadata. Data Factory cannot authorise pipeline executions.'
+				'No service principal details have been added to the metadata. Orchestrator cannot authorise pipeline executions.'
 				)		
 		END;
 
@@ -159,14 +161,14 @@ BEGIN
 	--Check 8:
 	IF EXISTS
 		(
-		SELECT * FROM [procfwk].[DataFactorys] WHERE [SubscriptionId] = '12345678-1234-1234-1234-012345678910'
+		SELECT * FROM [procfwk].[Orchestrators] WHERE [SubscriptionId] = '12345678-1234-1234-1234-012345678910'
 		)
 		BEGIN
 			INSERT INTO @MetadataIntegrityIssues
 			VALUES
 				( 
 				8,
-				'Data Factorys still set to use the default subscription value of 12345678-1234-1234-1234-012345678910.'
+				'Orchestrator still set to use the default subscription value of 12345678-1234-1234-1234-012345678910.'
 				)		
 		END;
 
@@ -488,7 +490,31 @@ BEGIN
 			WHERE
 				ce.[PipelineStatus] = 'InvalidPipelineNameError'
 		END;
+	
+	--Check 26:
+	IF (SELECT COUNT(0) FROM [procfwk].[Orchestrators] WHERE [IsFrameworkOrchestrator] = 1) > 1
+	BEGIN
+		INSERT INTO @MetadataIntegrityIssues
+		VALUES
+			( 
+			26,
+			'There is more than one FrameworkOrchestrator set in the table [procfwk].[Orchestrators]. Only one is supported.'
+			)		
+	END
 
+	--Check 27:
+	IF NOT EXISTS
+		(
+		SELECT 1 FROM [procfwk].[Orchestrators] WHERE [IsFrameworkOrchestrator] = 1
+		)
+		BEGIN
+			INSERT INTO @MetadataIntegrityIssues
+			VALUES
+				( 
+				27,
+				'A FrameworkOrchestrator has not been set in the table [procfwk].[Orchestrators]. Only one is supported.'
+				)		
+		END
 
 	/*
 	Integrity Checks Outcome:

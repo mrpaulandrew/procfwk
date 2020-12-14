@@ -2,7 +2,7 @@
 	(
 	[LogId] [int] IDENTITY(1,1) NOT NULL,
 	[LocalExecutionId] [uniqueidentifier] NOT NULL,
-	[AdfPipelineRunId] [uniqueidentifier] NOT NULL,
+	[PipelineRunId] [uniqueidentifier] NOT NULL,
 	[ActivityRunId] [uniqueidentifier] NOT NULL,
 	[ActivityName] [varchar](100) NOT NULL,
 	[ActivityType] [varchar](100) NOT NULL,

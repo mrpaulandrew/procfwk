@@ -13,12 +13,14 @@ BEGIN
 	DECLARE @AppId NVARCHAR(MAX)
 	DECLARE @AppSecret NVARCHAR(MAX)
 
-	DECLARE @DataFactory NVARCHAR(200)
+	DECLARE @OrchestratorName NVARCHAR(200)
+	DECLARE @OrchestratorType CHAR(3)
 	DECLARE @PipelineName NVARCHAR(200)
 
 	SELECT 
 		@PipelineName = [PipelineName],
-		@DataFactory = [DataFactoryName]
+		@OrchestratorName = [OrchestratorName],
+		@OrchestratorType = [OrchestratorType]
 	FROM 
 		[procfwk].[CurrentExecution]
 	WHERE 
@@ -36,21 +38,22 @@ BEGIN
 					Sub.[TenantId],
 					Sub.[SubscriptionId],
 					S.[PrincipalId] AS AppId,
-					CAST(DECRYPTBYPASSPHRASE(CONCAT(@DataFactory, @PipelineName), S.[PrincipalSecret]) AS NVARCHAR(MAX)) AS AppSecret
+					CAST(DECRYPTBYPASSPHRASE(CONCAT(@OrchestratorName, @OrchestratorType, @PipelineName), S.[PrincipalSecret]) AS NVARCHAR(MAX)) AS AppSecret
 				FROM
 					[dbo].[ServicePrincipals] S
 					INNER JOIN  [procfwk].[PipelineAuthLink] L
 						ON S.[CredentialId] = L.[CredentialId]
 					INNER JOIN [procfwk].[Pipelines] P
 						ON L.[PipelineId] = P.[PipelineId]
-					INNER JOIN [procfwk].[DataFactorys] D
-						ON P.[DataFactoryId] = D.[DataFactoryId]
-							AND L.[DataFactoryId] = D.[DataFactoryId]
+					INNER JOIN [procfwk].[Orchestrators] D
+						ON P.[OrchestratorId] = D.[OrchestratorId]
+							AND L.[OrchestratorId] = D.[OrchestratorId]
 					INNER JOIN [procfwk].[Subscriptions] Sub
 						ON D.[SubscriptionId] = Sub.[SubscriptionId]
 				WHERE
 					P.[PipelineName] = @PipelineName
-					AND D.[DataFactoryName] = @DataFactory
+					AND D.[OrchestratorName] = @OrchestratorName
+					AND D.[OrchestratorType] = @OrchestratorType
 			
 				UNION
 
@@ -58,18 +61,18 @@ BEGIN
 					Sub.[TenantId],
 					Sub.[SubscriptionId],					
 					S.[PrincipalId] AS AppId,
-					CAST(DECRYPTBYPASSPHRASE(@DataFactory, S.[PrincipalSecret]) AS NVARCHAR(MAX)) AS AppSecret
+					CAST(DECRYPTBYPASSPHRASE(CONCAT(@OrchestratorName, @OrchestratorType), S.[PrincipalSecret]) AS NVARCHAR(MAX)) AS AppSecret
 				FROM
 					[dbo].[ServicePrincipals] S
 					INNER JOIN  [procfwk].[PipelineAuthLink] L
 						ON S.[CredentialId] = L.[CredentialId]
-					INNER JOIN [procfwk].[DataFactorys] D
-						ON L.[DataFactoryId] = D.[DataFactoryId]
-							AND L.[DataFactoryId] = D.[DataFactoryId]
+					INNER JOIN [procfwk].[Orchestrators] D
+						ON L.[OrchestratorId] = D.[OrchestratorId]
 					INNER JOIN [procfwk].[Subscriptions] Sub
 						ON D.[SubscriptionId] = Sub.[SubscriptionId]
 				WHERE
-					D.[DataFactoryName] = @DataFactory
+					D.[OrchestratorName] = @OrchestratorName
+					AND D.[OrchestratorType] = @OrchestratorType
 				)
 			SELECT TOP 1
 				@TenId = [TenantId],
@@ -98,14 +101,15 @@ BEGIN
 						ON S.[CredentialId] = L.[CredentialId]
 					INNER JOIN [procfwk].[Pipelines] P
 						ON L.[PipelineId] = P.[PipelineId]
-					INNER JOIN [procfwk].[DataFactorys] D
-						ON P.[DataFactoryId] = D.[DataFactoryId]
-							AND L.[DataFactoryId] = D.[DataFactoryId]
+					INNER JOIN [procfwk].[Orchestrators] D
+						ON P.[OrchestratorId] = D.[OrchestratorId]
+							AND L.[OrchestratorId] = D.[OrchestratorId]
 					INNER JOIN [procfwk].[Subscriptions] Sub
 						ON D.[SubscriptionId] = Sub.[SubscriptionId]
 				WHERE
 					P.[PipelineName] = @PipelineName
-					AND D.[DataFactoryName] = @DataFactory
+					AND D.[OrchestratorName] = @OrchestratorName
+					AND D.[OrchestratorType] = @OrchestratorType
 			
 				UNION
 
@@ -118,13 +122,13 @@ BEGIN
 					[dbo].[ServicePrincipals] S
 					INNER JOIN  [procfwk].[PipelineAuthLink] L
 						ON S.[CredentialId] = L.[CredentialId]
-					INNER JOIN [procfwk].[DataFactorys] D
-						ON L.[DataFactoryId] = D.[DataFactoryId]
-							AND L.[DataFactoryId] = D.[DataFactoryId]
+					INNER JOIN [procfwk].[Orchestrators] D
+						ON L.[OrchestratorId] = D.[OrchestratorId]
 					INNER JOIN [procfwk].[Subscriptions] Sub
 						ON D.[SubscriptionId] = Sub.[SubscriptionId]
 				WHERE
-					D.[DataFactoryName] = @DataFactory
+					D.[OrchestratorName] = @OrchestratorName
+					AND D.[OrchestratorType] = @OrchestratorType
 				)
 			SELECT TOP 1
 				@TenId = [TenantId],

@@ -11,11 +11,11 @@ BEGIN
 				IF EXISTS
 					(
 					SELECT TOP 1 
-						[AdfPipelineRunId] 
+						[PipelineRunId] 
 					FROM 
 						[procfwk].[CurrentExecution] 
 					WHERE 
-						[AdfPipelineRunId] IS NOT NULL
+						[PipelineRunId] IS NOT NULL
 					)
 				BEGIN
 					BREAK;
@@ -25,11 +25,11 @@ BEGIN
 			END;
 
 			SELECT TOP 1 
-				CAST([AdfPipelineRunId] AS VARCHAR(36)) AS RunId 
+				CAST([PipelineRunId] AS VARCHAR(36)) AS RunId 
 			FROM 
 				[procfwk].[CurrentExecution] 
 			WHERE 
-				[AdfPipelineRunId] IS NOT NULL
+				[PipelineRunId] IS NOT NULL
 		END
 	ELSE IF @PipelineName IS NOT NULL
 		BEGIN
@@ -38,11 +38,11 @@ BEGIN
 				IF EXISTS
 					(
 					SELECT TOP 1 
-						[AdfPipelineRunId] 
+						[PipelineRunId] 
 					FROM 
 						[procfwk].[CurrentExecution] 
 					WHERE 
-						[AdfPipelineRunId] IS NOT NULL 
+						[PipelineRunId] IS NOT NULL 
 						AND [PipelineName] = @PipelineName
 					)
 				BEGIN
@@ -53,11 +53,11 @@ BEGIN
 			END;
 
 			SELECT TOP 1 
-				CAST([AdfPipelineRunId] AS VARCHAR(36)) AS RunId 
+				CAST([PipelineRunId] AS VARCHAR(36)) AS RunId 
 			FROM 
 				[procfwk].[CurrentExecution] 
 			WHERE 
-				[AdfPipelineRunId] IS NOT NULL
+				[PipelineRunId] IS NOT NULL
 				AND [PipelineName] = @PipelineName
 		END
 	ELSE

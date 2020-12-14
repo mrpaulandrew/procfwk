@@ -4,97 +4,12 @@
 		"description": "For a given pipeline and optional batch name establish if a pipeline run is already in progress. Throw an exception if it it.",
 		"activities": [
 			{
-				"name": "Get Subscription",
-				"description": "Use the Azure Management API to return the current subscription.",
-				"type": "WebActivity",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.00:10:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"url": "https://management.azure.com/subscriptions?api-version=2020-01-01",
-					"method": "GET",
-					"authentication": {
-						"type": "MSI",
-						"resource": "https://management.core.windows.net/"
-					}
-				}
-			},
-			{
-				"name": "Get Pipeline Runs",
-				"description": "Use the Azure Management API to return a list of pipeline runs within the given time window.",
-				"type": "WebActivity",
-				"dependsOn": [
-					{
-						"activity": "Get Query Run Days Value",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Check for Valid Pipeline Name",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.00:10:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"url": {
-						"value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{activity('Get Resource Group').output.firstRow.PropertyValue}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/queryPipelineRuns?api-version=2018-06-01",
-						"type": "Expression"
-					},
-					"method": "POST",
-					"body": {
-						"value": "{\n  \"lastUpdatedAfter\": \"@{adddays(utcnow(),int(activity('Get Query Run Days Value').output.firstRow.PropertyValue))}\",\n  \"lastUpdatedBefore\": \"@{utcnow()}\",\n  \"filters\": [\n    {\n      \"operand\": \"PipelineName\",\n      \"operator\": \"Equals\",\n      \"values\": [\n        \"@{pipeline().parameters.PipelineName}\"\n      ]\n    }\n  ]\n}",
-						"type": "Expression"
-					},
-					"authentication": {
-						"type": "MSI",
-						"resource": "https://management.core.windows.net/"
-					}
-				}
-			},
-			{
-				"name": "Set Parsed Subscription",
-				"description": "Parse the subscription string value to return just the subscription ID.",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Get Subscription",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "SubscriptionId",
-					"value": {
-						"value": "@replace(activity('Get Subscription').output.value[0].id,'/subscriptions/','')",
-						"type": "Expression"
-					}
-				}
-			},
-			{
 				"name": "Filter Running Pipelines",
 				"description": "Filter the pipeline runs results for pipelines that exclude the current triggered run and that are currently running (in progress or queued).",
 				"type": "Filter",
 				"dependsOn": [
 					{
-						"activity": "Get Pipeline Runs",
+						"activity": "Switch For Orchestrator Type",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -103,7 +18,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Get Pipeline Runs').output.value",
+						"value": "@variables('PipelineRuns')",
 						"type": "Expression"
 					},
 					"condition": {
@@ -113,8 +28,8 @@
 				}
 			},
 			{
-				"name": "Get Resource Group",
-				"description": "Using the metadata properties table return the framework factory resource group name.",
+				"name": "Get Framework Orchestrator Details",
+				"description": "Using the metadata orchestrators return details about the resource running the framework pipelines.",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -128,11 +43,14 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[procfwk].[GetPropertyValue]",
+						"sqlReaderStoredProcedureName": "[procfwk].[GetFrameworkOrchestratorDetails]",
 						"storedProcedureParameters": {
-							"PropertyName": {
+							"CallingOrchestratorName": {
 								"type": "String",
-								"value": "FrameworkFactoryResourceGroup"
+								"value": {
+									"value": "@pipeline().DataFactory",
+									"type": "Expression"
+								}
 							}
 						},
 						"queryTimeout": "02:00:00",
@@ -333,40 +251,319 @@
 				}
 			},
 			{
-				"name": "Check for Valid Pipeline Name",
-				"description": "Use the Azure Management API to return and establish if the framework pipeline exists in the target Data Factory, including being deployed.",
-				"type": "WebActivity",
+				"name": "Set Subscription Id",
+				"description": "Set the subscription Id value to a local variable for use in various downstream activities.",
+				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "Set Parsed Subscription",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Get Resource Group",
+						"activity": "Get Framework Orchestrator Details",
 						"dependencyConditions": [
 							"Succeeded"
 						]
 					}
 				],
-				"policy": {
-					"timeout": "0.00:10:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": {
-						"value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{activity('Get Resource Group').output.firstRow.PropertyValue}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/pipelines/@{pipeline().parameters.PipelineName}?api-version=2018-06-01",
+					"variableName": "SubscriptionId",
+					"value": {
+						"value": "@activity('Get Framework Orchestrator Details').output.firstRow.SubscriptionId",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set Resource Group Name",
+				"description": "Set the resource group name value to a local variable for use in various downstream activities.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get Framework Orchestrator Details",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ResourceGroupName",
+					"value": {
+						"value": "@activity('Get Framework Orchestrator Details').output.firstRow.ResourceGroupName",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set Orchestrator Type",
+				"description": "Set the orchestrator type value to a local variable for use in various downstream activities.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get Framework Orchestrator Details",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "OrchestratorType",
+					"value": {
+						"value": "@toUpper(activity('Get Framework Orchestrator Details').output.firstRow.OrchestratorType)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Switch For Orchestrator Type",
+				"description": "Switch and handle requests for both Azure Data Factory (ADF) and Azure Synapse Analytics (SYN).",
+				"type": "Switch",
+				"dependsOn": [
+					{
+						"activity": "Set Orchestrator Type",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Query Run Days",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Resource Group Name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Subscription Id",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"on": {
+						"value": "@variables('OrchestratorType')",
 						"type": "Expression"
 					},
-					"method": "GET",
-					"authentication": {
-						"type": "MSI",
-						"resource": "https://management.core.windows.net/"
+					"cases": [
+						{
+							"value": "ADF",
+							"activities": [
+								{
+									"name": "Check for Valid ADF Pipeline Name",
+									"description": "Use the Azure Management API to return and establish if the framework pipeline exists in the target Data Factory instance, including being deployed.",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": {
+											"value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{variables('ResourceGroupName')}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/pipelines/@{pipeline().parameters.PipelineName}?api-version=2018-06-01",
+											"type": "Expression"
+										},
+										"method": "GET",
+										"authentication": {
+											"type": "MSI",
+											"resource": "https://management.core.windows.net/"
+										}
+									}
+								},
+								{
+									"name": "Get ADF Pipeline Runs",
+									"description": "Use the Azure Management API to return a list of data factory pipeline runs within the given time window.",
+									"type": "WebActivity",
+									"dependsOn": [
+										{
+											"activity": "Check for Valid ADF Pipeline Name",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": {
+											"value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{variables('ResourceGroupName')}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/queryPipelineRuns?api-version=2018-06-01",
+											"type": "Expression"
+										},
+										"method": "POST",
+										"body": {
+											"value": "{\n  \"lastUpdatedAfter\": \"@{adddays(utcnow(),int(variables('QueryRunDays')))}\",\n  \"lastUpdatedBefore\": \"@{utcnow()}\",\n  \"filters\": [\n    {\n      \"operand\": \"PipelineName\",\n      \"operator\": \"Equals\",\n      \"values\": [\n        \"@{pipeline().parameters.PipelineName}\"\n      ]\n    }\n  ]\n}",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "MSI",
+											"resource": "https://management.core.windows.net/"
+										}
+									}
+								},
+								{
+									"name": "Set ADF Runs Output",
+									"description": "Set output to local array for use in downstream filtering and pipeline checks. Use the same array output for both switch cases.",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Get ADF Pipeline Runs",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "PipelineRuns",
+										"value": {
+											"value": "@activity('Get ADF Pipeline Runs').output.value",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"value": "SYN",
+							"activities": [
+								{
+									"name": "Check for Valid SYN Pipeline Name",
+									"description": "Use the Azure Management API to return and establish if the framework pipeline exists in the target Synapse instance, including being deployed.\n\nSee: https://docs.microsoft.com/en-us/rest/api/synapse/data-plane/pipeline/getpipeline",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": {
+											"value": "https://@{pipeline().DataFactory}.dev.azuresynapse.net/pipelines/@{pipeline().parameters.PipelineName}?api-version=2019-06-01-preview",
+											"type": "Expression"
+										},
+										"method": "GET",
+										"authentication": {
+											"type": "MSI",
+											"resource": "https://management.core.windows.net/"
+										}
+									}
+								},
+								{
+									"name": "Get SYN Pipeline Runs",
+									"description": "Use the Azure Management API to return a list of synapse pipeline runs within the given time window.\n\nSee: https://docs.microsoft.com/en-us/rest/api/synapse/data-plane/pipelinerun/querypipelinerunsbyworkspace",
+									"type": "WebActivity",
+									"dependsOn": [
+										{
+											"activity": "Check for Valid SYN Pipeline Name",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": {
+											"value": "https://@{pipeline().DataFactory}.dev.azuresynapse.net/queryPipelineRuns?api-version=2019-06-01-preview",
+											"type": "Expression"
+										},
+										"method": "POST",
+										"body": {
+											"value": "{\n  \"lastUpdatedAfter\": \"@{adddays(utcnow(),int(variables('QueryRunDays')))}\",\n  \"lastUpdatedBefore\": \"@{utcnow()}\",\n  \"filters\": [\n    {\n      \"operand\": \"PipelineName\",\n      \"operator\": \"Equals\",\n      \"values\": [\n        \"@{pipeline().parameters.PipelineName}\"\n      ]\n    }\n  ]\n}",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "MSI",
+											"resource": "https://management.core.windows.net/"
+										}
+									}
+								},
+								{
+									"name": "Set SYN Runs Output",
+									"description": "Set output to local array for use in downstream filtering and pipeline checks. Use the same array output for both switch cases.",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Get SYN Pipeline Runs",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "PipelineRuns",
+										"value": {
+											"value": "@activity('Get SYN Pipeline Runs').output.value",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					],
+					"defaultActivities": [
+						{
+							"name": "Throw Exception Invalid Orchestrator Type",
+							"description": "Throw exception if switch cases are not met.",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "Throw Exception",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"Message": "Invalid orchestrator type provided. Unable to check pipeline running state."
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Set Query Run Days",
+				"description": "Set the query run days value to a local variable for use in various downstream activities.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get Query Run Days Value",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "QueryRunDays",
+					"value": {
+						"value": "@activity('Get Query Run Days Value').output.firstRow.PropertyValue",
+						"type": "Expression"
 					}
 				}
 			}
@@ -389,6 +586,18 @@
 			},
 			"RunCount": {
 				"type": "String"
+			},
+			"ResourceGroupName": {
+				"type": "String"
+			},
+			"OrchestratorType": {
+				"type": "String"
+			},
+			"QueryRunDays": {
+				"type": "String"
+			},
+			"PipelineRuns": {
+				"type": "Array"
 			}
 		},
 		"folder": {

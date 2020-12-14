@@ -43,6 +43,8 @@ BEGIN
 	SELECT
 		el3.[LogId],
 		el3.[LocalExecutionId],
+		el3.[OrchestratorType],
+		el3.[OrchestratorName],
 		el3.[StageId],
 		stgs.[StageName],
 		el3.[PipelineId],
@@ -51,7 +53,7 @@ BEGIN
 		el3.[EndDateTime],
 		ISNULL(DATEDIFF(MINUTE, el3.[StartDateTime], el3.[EndDateTime]),0) AS DurationMinutes,
 		el3.[PipelineStatus],
-		el3.[AdfPipelineRunId],
+		el3.[PipelineRunId],
 		el3.[PipelineParamsUsed],
 		errLog.[ActivityRunId],
 		errLog.[ActivityName],
@@ -63,7 +65,7 @@ BEGIN
 		[procfwk].[ExecutionLog] el3
 		LEFT OUTER JOIN [procfwk].[ErrorLog] errLog
 			ON el3.[LocalExecutionId] = errLog.[LocalExecutionId]
-				AND el3.[AdfPipelineRunId] = errLog.[AdfPipelineRunId]
+				AND el3.[PipelineRunId] = errLog.[PipelineRunId]
 		INNER JOIN [procfwk].[Stages] stgs
 			ON el3.[StageId] = stgs.[StageId]
 	WHERE

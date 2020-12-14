@@ -25,8 +25,8 @@ BEGIN
 			WHERE
 				[BatchId] = @BatchId;
 			
-			--should never actually be called as handled within Data Factory using the Pipeline Run Check utility
-			RAISERROR('There is already an batch execution run in progress. Stop the related parent pipeline via Data Factory first.',16,1);
+			--should never actually be called as handled within Orchestrator pipelines using the Pipeline Run Check utility
+			RAISERROR('There is already an batch execution run in progress. Stop the related parent pipeline via the Orchestrator first.',16,1);
 			RETURN 0;
 		END
 	ELSE IF EXISTS

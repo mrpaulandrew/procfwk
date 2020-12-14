@@ -1,7 +1,7 @@
 {
 	"name": "Intentional Error",
 	"properties": {
-		"description": "Used just so the ADF.procfwk has something to call during development.",
+		"description": "Used just so the procfwk has something to call during development.",
 		"activities": [
 			{
 				"name": "Wait1",
@@ -42,7 +42,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -82,7 +82,7 @@
 			"name": "_Workers"
 		},
 		"annotations": [
-			"Worker"
+			"_ProcFwkWorker"
 		]
 	}
 }

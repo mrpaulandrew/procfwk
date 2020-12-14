@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [procfwk].[ExecutionWrapper]
 	(
-	@CallingDataFactory NVARCHAR(200) = NULL,
+	@CallingOrchestratorName NVARCHAR(200) = NULL,
 	@BatchName VARCHAR(255) = NULL
 	)
 AS
@@ -11,8 +11,8 @@ BEGIN
 	DECLARE @BatchId UNIQUEIDENTIFIER
 	DECLARE @BLocalExecutionId UNIQUEIDENTIFIER --declared here for batches
 
-	IF @CallingDataFactory IS NULL
-		SET @CallingDataFactory = 'Unknown';
+	IF @CallingOrchestratorName IS NULL
+		SET @CallingOrchestratorName = 'Unknown';
 
 	--get restart overide property	
 	SELECT @RestartStatus = [procfwk].[GetPropertyValueInternal]('OverideRestart')
@@ -27,7 +27,7 @@ BEGIN
 				SELECT * FROM [procfwk].[CurrentExecution] WHERE ISNULL([PipelineStatus],'') = 'Running'
 				)
 				BEGIN
-					RAISERROR('There is already an execution run in progress. Stop this via Data Factory before restarting.',16,1);
+					RAISERROR('There is already an execution run in progress. Stop this via the Orchestrator before restarting.',16,1);
 					RETURN 0;
 				END;	
 
@@ -51,13 +51,13 @@ BEGIN
 						@PerformErrorCheck = 0; --Special case when OverideRestart = 1;
 
 					EXEC [procfwk].[CreateNewExecution] 
-						@CallingDataFactoryName = @CallingDataFactory
+						@CallingOrchestratorName = @CallingOrchestratorName
 				END
 			--no restart considerations, just create new execution
 			ELSE
 				BEGIN
 					EXEC [procfwk].[CreateNewExecution] 
-						@CallingDataFactoryName = @CallingDataFactory
+						@CallingOrchestratorName = @CallingOrchestratorName
 				END
 		END
 	ELSE IF ([procfwk].[GetPropertyValueInternal]('UseExecutionBatches')) = '1'
@@ -111,14 +111,14 @@ BEGIN
 						@ExecutionId = @BLocalExecutionId;
 
 					EXEC [procfwk].[CreateNewExecution]
-						@CallingDataFactoryName = @CallingDataFactory,
+						@CallingOrchestratorName = @CallingOrchestratorName,
 						@LocalExecutionId = @BLocalExecutionId;
 				END
 			--no restart considerations, just create new execution
 			ELSE
 				BEGIN
 					EXEC [procfwk].[CreateNewExecution] 
-						@CallingDataFactoryName = @CallingDataFactory,
+						@CallingOrchestratorName = @CallingOrchestratorName,
 						@LocalExecutionId = @BLocalExecutionId;
 				END
 			

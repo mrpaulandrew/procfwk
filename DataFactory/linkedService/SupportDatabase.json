@@ -3,7 +3,7 @@
 	"properties": {
 		"description": "Connection between ADF and processing framework metadata SQLDB.",
 		"annotations": [
-			"ADF.procfwk"
+			"procfwk"
 		],
 		"type": "AzureSqlDatabase",
 		"typeProperties": {

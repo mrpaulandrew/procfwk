@@ -61,3 +61,21 @@ IF EXISTS
 		
 		DROP TABLE [procfwk].[DataFactoryDetails];
 	END;
+
+--DataFactorys
+IF EXISTS 
+	(
+	SELECT
+		* 
+	FROM
+		sys.objects o
+		INNER JOIN sys.schemas s
+			ON o.[schema_id] = s.[schema_id]
+	WHERE
+		o.[name] = 'DataFactorys'
+		AND s.[name] = 'procfwk'
+		AND o.[type] = 'U' --Check for tables as created synonyms to support backwards compatability
+	)
+	BEGIN
+		SELECT * INTO [dbo].[zz_DataFactorys] FROM [procfwk].[DataFactorys];
+	END;
