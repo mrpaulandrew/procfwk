@@ -862,14 +862,7 @@
 				"name": "Execute Precursor",
 				"description": "Uses the database property value ExecutionPrecursorProc to run any custom logic against the metadata database before the execution run starts.",
 				"type": "SqlServerStoredProcedure",
-				"dependsOn": [
-					{
-						"activity": "Is Parent Already Running",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
@@ -904,34 +897,6 @@
 					"value": {
 						"value": "@activity('Execution Wrapper').output.firstRow.ExecutionId",
 						"type": "Expression"
-					}
-				}
-			},
-			{
-				"name": "Is Parent Already Running",
-				"description": "Establish before anything else if the parent pipeline is already running. Batch execution aware.",
-				"type": "ExecutePipeline",
-				"dependsOn": [],
-				"userProperties": [],
-				"typeProperties": {
-					"pipeline": {
-						"referenceName": "Check For Running Pipeline",
-						"type": "PipelineReference"
-					},
-					"waitOnCompletion": true,
-					"parameters": {
-						"BatchName": {
-							"value": "@pipeline().parameters.BatchName",
-							"type": "Expression"
-						},
-						"PipelineName": {
-							"value": "@pipeline().Pipeline",
-							"type": "Expression"
-						},
-						"ThisRunId": {
-							"value": "@pipeline().RunId",
-							"type": "Expression"
-						}
 					}
 				}
 			},
