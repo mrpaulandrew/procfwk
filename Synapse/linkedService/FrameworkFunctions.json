@@ -1,0 +1,21 @@
+{
+	"name": "FrameworkFunctions",
+	"properties": {
+		"annotations": [
+			"procfwk"
+		],
+		"type": "AzureFunction",
+		"typeProperties": {
+			"functionAppUrl": "https://frameworksupportfunctions.azurewebsites.net",
+			"functionKey": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "Keys",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "FrameworkFunctionsKey"
+			}
+		},
+		"description": "Interact with the Azure Functions App used as middle ware when making requests to Worker pipelines. Authentication done at the Function App level."
+	}
+}
