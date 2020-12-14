@@ -65,7 +65,6 @@ namespace mrpaulandrew.azure.procfwk.Services
                     );
 
                 _logger.LogInformation(pipelineResource.Id.ToString());
-                _logger.LogInformation(pipelineResource.Name.ToString());
 
                 return new PipelineDescription()
                 {

@@ -22,7 +22,7 @@ namespace mrpaulandrew.azure.procfwk
             logger.LogInformation("ExecutePipeline Function triggered by HTTP request.");
 
             logger.LogInformation("Parsing body from request.");
-            PipelineRunRequest request = await new BodyReader(httpRequest).GetRunRequestBodyAsync();
+            PipelineRequest request = await new BodyReader(httpRequest).GetRequestBodyAsync();
             request.Validate(logger);
 
             using (var service = PipelineService.GetServiceForRequest(request, logger))
