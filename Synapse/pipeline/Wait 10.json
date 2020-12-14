@@ -1,0 +1,33 @@
+{
+	"name": "Wait 10",
+	"properties": {
+		"description": "Used just so the procfwk has something to call during development.",
+		"activities": [
+			{
+				"name": "Wait10",
+				"description": "Framework development worker simulator.",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": {
+						"value": "@pipeline().parameters.WaitTime",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"WaitTime": {
+				"type": "int",
+				"defaultValue": 5
+			}
+		},
+		"folder": {
+			"name": "_Workers"
+		},
+		"annotations": [
+			"_ProcFwkWorker"
+		]
+	}
+}

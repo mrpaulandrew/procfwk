@@ -1,0 +1,61 @@
+{
+	"name": "Email Sender",
+	"properties": {
+		"description": "Provide a simple abstract over the send email function with request body item exposed as pipeline parameters.",
+		"activities": [
+			{
+				"name": "Send Email",
+				"description": "Use an Azure Function to perform an SMTP client email send operation.",
+				"type": "AzureFunctionActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"functionName": "SendEmail",
+					"method": "POST",
+					"body": {
+						"value": "{\n\"emailRecipients\": \"@{pipeline().parameters.Recipients}\",\n\"emailCcRecipients\": \"@{pipeline().parameters.CcRecipients}\",\n\"emailBccRecipients\": \"@{pipeline().parameters.BccRecipients}\",\n\"emailSubject\": \"@{pipeline().parameters.Subject}\",\n\"emailBody\": \"@{pipeline().parameters.Body}\",\n\"emailImportance\": \"@{pipeline().parameters.Importance}\"\n}",
+						"type": "Expression"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "FrameworkFunctions",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"Recipients": {
+				"type": "string"
+			},
+			"CcRecipients": {
+				"type": "string"
+			},
+			"BccRecipients": {
+				"type": "string"
+			},
+			"Subject": {
+				"type": "string"
+			},
+			"Body": {
+				"type": "string"
+			},
+			"Importance": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "_ProcFwk/_ProcFwkUtils"
+		},
+		"annotations": [
+			"procfwk",
+			"Utils"
+		]
+	}
+}

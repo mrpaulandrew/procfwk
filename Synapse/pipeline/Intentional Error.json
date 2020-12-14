@@ -1,0 +1,88 @@
+{
+	"name": "Intentional Error",
+	"properties": {
+		"description": "Used just so the procfwk has something to call during development.",
+		"activities": [
+			{
+				"name": "Wait1",
+				"description": "Framework development worker simulator.",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": {
+						"value": "@pipeline().parameters.WaitTime",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Raise Errors or Not",
+				"description": "Framework development worker simulator.",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Wait1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(pipeline().parameters.RaiseErrors,'true')",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Call Fail Procedure",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.00:10:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[FailProcedure]",
+								"storedProcedureParameters": {
+									"RaiseError": {
+										"value": {
+											"value": "@pipeline().parameters.RaiseErrors",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "SupportDatabase",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"RaiseErrors": {
+				"type": "string",
+				"defaultValue": "false"
+			},
+			"WaitTime": {
+				"type": "int",
+				"defaultValue": 5
+			}
+		},
+		"folder": {
+			"name": "_Workers"
+		},
+		"annotations": [
+			"_ProcFwkWorker"
+		]
+	}
+}
