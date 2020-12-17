@@ -1,4 +1,10 @@
-﻿	--CurrentExecution
+﻿	--BatchExecution
+	IF OBJECT_ID(N'[procfwk].[BatchExecution]') IS NOT NULL 
+		BEGIN
+			TRUNCATE TABLE [procfwk].[BatchExecution];
+		END;
+
+	--CurrentExecution
 	IF OBJECT_ID(N'[procfwk].[CurrentExecution]') IS NOT NULL 
 		BEGIN
 			TRUNCATE TABLE [procfwk].[CurrentExecution];
@@ -15,6 +21,18 @@
 		BEGIN
 			TRUNCATE TABLE [procfwk].[ErrorLog];
 		END
+
+	--BatchStageLink
+	IF OBJECT_ID(N'[procfwk].[BatchStageLink]') IS NOT NULL 
+		BEGIN
+			DELETE FROM [procfwk].[BatchStageLink];
+		END;
+
+	--Batches
+	IF OBJECT_ID(N'[procfwk].[Batches]') IS NOT NULL 
+		BEGIN
+			DELETE FROM [procfwk].[Batches];
+		END;
 
 	--PipelineDependencies
 	IF OBJECT_ID(N'[procfwk].[PipelineDependencies]') IS NOT NULL 
@@ -78,11 +96,28 @@
 			DBCC CHECKIDENT ('[procfwk].[Pipelines]', RESEED, 0);
 		END;
 
-	--DataFactorys
-	IF OBJECT_ID(N'[procfwk].[DataFactorys]') IS NOT NULL 
+	--Orchestrators
+	IF EXISTS 
+		(
+		SELECT
+			* 
+		FROM
+			sys.objects o
+			INNER JOIN sys.schemas s
+				ON o.[schema_id] = s.[schema_id]
+		WHERE
+			o.[name] = 'DataFactorys'
+			AND s.[name] = 'procfwk'
+			AND o.[type] = 'U' --Check for tables as created synonyms to support backwards compatability
+		)
 		BEGIN
 			DELETE FROM [procfwk].[DataFactorys];
-			DBCC CHECKIDENT ('[procfwk].[DataFactorys]', RESEED, 0);
+		END;
+
+	IF OBJECT_ID(N'[procfwk].[Orchestrators]') IS NOT NULL 
+		BEGIN
+			DELETE FROM [procfwk].[Orchestrators];
+			DBCC CHECKIDENT ('[procfwk].[Orchestrators]', RESEED, 0);
 		END;
 
 	--Stages

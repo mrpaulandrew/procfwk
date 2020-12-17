@@ -30,33 +30,36 @@ BEGIN
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
-		[CallingDataFactoryName],
+		[CallingOrchestratorName],
 		[ResourceGroupName],
-		[DataFactoryName],
+		[OrchestratorType],
+		[OrchestratorName],
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
 		[EndDateTime],
-		[AdfPipelineRunId],
+		[PipelineRunId],
 		[PipelineParamsUsed]
 		)
 	SELECT
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
-		[CallingDataFactoryName],
+		[CallingOrchestratorName],
 		[ResourceGroupName],
-		[DataFactoryName],
+		[OrchestratorType],
+		[OrchestratorName],
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
 		[EndDateTime],
-		[AdfPipelineRunId],
+		[PipelineRunId],
 		[PipelineParamsUsed]
 	FROM
 		[procfwk].[CurrentExecution]
 	WHERE
-		[PipelineStatus] = 'Cancelled'
+		[LocalExecutionId] = @ExecutionId
+		AND [PipelineStatus] = 'Cancelled'
 		AND [StageId] = @StageId
 		AND [PipelineId] = @PipelineId;
 
@@ -81,6 +84,18 @@ BEGIN
 				WHERE
 					[LocalExecutionId] = @ExecutionId
 					AND [StageId] > @StageId
+				
+				--update batch if applicable
+				IF ([procfwk].[GetPropertyValueInternal]('UseExecutionBatches')) = '1'
+					BEGIN
+						UPDATE
+							[procfwk].[BatchExecution]
+						SET
+							[BatchStatus] = 'Stopping'
+						WHERE
+							[ExecutionId] = @ExecutionId
+							AND [BatchStatus] = 'Running';
+					END;
 
 				SET @ErrorDetail = 'Pipeline execution has a cancelled status. Blocking downstream stages as a precaution.'
 

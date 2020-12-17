@@ -27,7 +27,15 @@ BEGIN
 					AND [IsBlocked] = 1
 				)
 				BEGIN		
-					--Saves the child pipeline and activities being called throwing the exception at this level.
+					UPDATE
+						[procfwk].[BatchExecution]
+					SET
+						[EndDateTime] = GETUTCDATE(),
+						[BatchStatus] = 'Stopped'
+					WHERE
+						[ExecutionId] = @ExecutionId;
+					
+					--Saves the infant pipeline and activities being called throwing the exception at this level.
 					RAISERROR('All pipelines are blocked. Stopping processing.',16,1); 
 					--If not thrown here, the proc [procfwk].[UpdateExecutionLog] would eventually throw an exception.
 					RETURN 0;

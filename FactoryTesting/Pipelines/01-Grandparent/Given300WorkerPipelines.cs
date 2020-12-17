@@ -23,18 +23,18 @@ namespace FactoryTesting.Pipelines.Grandparent
 
         #region Integration tests
 
-        [Test, Order(1)]
+        [Test]
         public void ThenPipelineOutcomeIsSucceeded()
         {
             _helper.RunOutcome.Should().Be("Succeeded");
         }
-        [Test, Order(2)]
+        [Test]
         public void ThenCurrentExecutionTableIsEmpty()
         {
             _helper.RowCount("procfwk.CurrentExecution").Should().Be(0);
         }
 
-        [Test, Order(3)]
+        [Test]
         public void Then300ExecutionLogRecords()
         {
             _helper.RowCount("procfwk.ExecutionLog").Should().Be(300);

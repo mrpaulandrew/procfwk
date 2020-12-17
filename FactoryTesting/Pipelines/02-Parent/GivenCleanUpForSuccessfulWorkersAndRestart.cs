@@ -34,7 +34,6 @@ namespace FactoryTesting.Pipelines.Parent
 
             await _helperRestartRun.RunPipeline();
         }
-        #region Integration tests
 
         [Test]
         public void ThenPipelineOutcomeIsSucceeded()
@@ -45,7 +44,7 @@ namespace FactoryTesting.Pipelines.Parent
         [Test]
         public async Task ThenActivityShouldReturnThreeRowsForCleanUp()
         {
-            var count = await _helperRestartRun.GetActivityOutput("Metadata Integrity Checks", "$.count");
+            var count = await _helperRestartRun.GetActivityOutput("Check Previous Execution", "$.count");
             int.Parse(count).Should().Be(3);
         }
 
@@ -59,7 +58,6 @@ namespace FactoryTesting.Pipelines.Parent
         {
             _helperRestartRun.RowCount("procfwk.ExecutionLog", where: "PipelineStatus", equals: "Success").Should().Be(11);
         }
-        #endregion
 
         [OneTimeTearDown]
         public void TearDown()

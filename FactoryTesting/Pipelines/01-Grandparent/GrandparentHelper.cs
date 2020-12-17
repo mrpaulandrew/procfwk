@@ -44,6 +44,14 @@ namespace FactoryTesting.Pipelines.Grandparent
             return this;
         }
 
+        public GrandparentHelper WithBatchExecutionHandling()
+        {
+            ExecuteNonQuery(@$"UPDATE [procfwk].[Properties] 
+SET [PropertyValue] = '1' 
+WHERE [PropertyName] = 'UseExecutionBatches'");
+            return this;
+        }
+
         public GrandparentHelper WithSimpleFailureHandling()
         {
             ExecuteNonQuery("UPDATE [procfwk].[Properties] SET [PropertyValue] = 'Simple' WHERE [PropertyName] = 'FailureHandling'");
@@ -58,6 +66,27 @@ namespace FactoryTesting.Pipelines.Grandparent
         public GrandparentHelper With300WorkerPipelinesEnabled()
         {
             ExecuteStoredProcedure("[procfwkTesting].[Add300WorkerPipelines]", null);
+
+            return this;
+        }
+
+        public GrandparentHelper With20BatchesFor1000WorkersEnabled()
+        {
+            ExecuteStoredProcedure("[procfwkTesting].[Add20BatchesFor1000Workers]", null);
+
+            return this;
+        }
+
+        public GrandparentHelper WithCustom()
+        {
+            ExecuteStoredProcedure("[dbo].[PaulTemp]", null);
+
+            return this;
+        }
+
+        public GrandparentHelper With300WorkerPipelineBatches()
+        {
+            ExecuteStoredProcedure("[procfwkTesting].[Add300WorkerPipelineBatches]", null);
 
             return this;
         }

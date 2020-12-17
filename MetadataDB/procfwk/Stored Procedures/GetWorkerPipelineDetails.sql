@@ -10,7 +10,8 @@ BEGIN
 
 	SELECT 
 		[PipelineName],
-		[DataFactoryName],
+		[OrchestratorName],
+		[OrchestratorType],
 		[ResourceGroupName]
 	FROM 
 		[procfwk].[CurrentExecution]

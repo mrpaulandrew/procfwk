@@ -1,8 +1,9 @@
 ﻿CREATE PROCEDURE [procfwkTesting].[Add300WorkerPipelines]
 AS
 BEGIN
+	SET NOCOUNT ON;
 
-	--clear the decks from dev metadata
+	--clear default metadata
 	DELETE FROM [procfwk].[PipelineDependencies];
 	DBCC CHECKIDENT ('[procfwk].[PipelineDependencies]', RESEED, 0);
 
@@ -24,35 +25,36 @@ BEGIN
 	DELETE FROM [procfwk].[Pipelines];
 	DBCC CHECKIDENT ('[procfwk].[Pipelines]', RESEED, 0);
 
-	--get data factory id
-	DECLARE @ADFId INT
+	--get Orchestrator id
+	DECLARE @OrcId INT
 	
 	SELECT 
-		@ADFId = [DataFactoryId] 
+		@OrcId = [OrchestratorId] 
 	FROM 
-		[procfwk].[DataFactorys] 
+		[procfwk].[Orchestrators] 
 	WHERE 
-		[DataFactoryName] = 'WorkersFactory';
+		[OrchestratorName] = 'WorkersFactory'
+		AND [OrchestratorType] = 'ADF';
 
 	--insert 300 pipelines
 	;WITH cte AS
 		(
 		SELECT TOP 300
-			ROW_NUMBER() OVER (ORDER BY s1.[object_id]) AS 'Number'
+			ROW_NUMBER() OVER (ORDER BY s1.[object_id]) AS Number
 		FROM 
 			sys.all_columns AS s1
 			CROSS JOIN sys.all_columns AS s2
 		)
 	INSERT INTO [procfwk].[Pipelines]
 		(
-		[DataFactoryId],
+		[OrchestratorId],
 		[StageId],
 		[PipelineName],
 		[LogicalPredecessorId],
 		[Enabled]
 		)
 	SELECT
-		@ADFId,
+		@OrcId,
 		CASE
 			WHEN [Number] <= 100 THEN 1
 			WHEN [Number] > 100 AND  [Number] <= 200 THEN 2

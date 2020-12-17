@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="717816f7-ea31-400c-b4f3-fd3d729e358a" ChangeDateTime="11/26/2020 13:22:36">
+    <Property Name="ElementName" Value="[procfwk].[CurrentExecution].[AdfPipelineRunId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[procfwk].[CurrentExecution]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PipelineRunId" />
+  </Operation>
+</Operations>

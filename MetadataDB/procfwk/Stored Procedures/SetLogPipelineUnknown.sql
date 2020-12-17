@@ -30,28 +30,30 @@ BEGIN
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
-		[CallingDataFactoryName],
+		[CallingOrchestratorName],
 		[ResourceGroupName],
-		[DataFactoryName],
+		[OrchestratorType],
+		[OrchestratorName],
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
 		[EndDateTime],
-		[AdfPipelineRunId],
+		[PipelineRunId],
 		[PipelineParamsUsed]
 		)
 	SELECT
 		[LocalExecutionId],
 		[StageId],
 		[PipelineId],
-		[CallingDataFactoryName],
+		[CallingOrchestratorName],
 		[ResourceGroupName],
-		[DataFactoryName],
+		[OrchestratorType],
+		[OrchestratorName],
 		[PipelineName],
 		[StartDateTime],
 		[PipelineStatus],
 		[EndDateTime],
-		[AdfPipelineRunId],
+		[PipelineRunId],
 		[PipelineParamsUsed]
 	FROM
 		[procfwk].[CurrentExecution]
@@ -81,6 +83,14 @@ BEGIN
 				WHERE
 					[LocalExecutionId] = @ExecutionId
 					AND [StageId] > @StageId
+
+				UPDATE
+					[procfwk].[BatchExecution]
+				SET
+					[BatchStatus] = 'Stopping'
+				WHERE
+					[ExecutionId] = @ExecutionId
+					AND [BatchStatus] = 'Running';
 
 				SET @ErrorDetail = 'Pipeline execution has an unknown status. Blocking downstream stages as a precaution.'
 

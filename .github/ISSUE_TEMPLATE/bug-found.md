@@ -1,6 +1,6 @@
 ---
 name: Bug Found
-about: Tell me about the bug please
+about: Tell me about the bug you've found in the procfwk please
 title: ''
 labels: bug
 assignees: mrpaulandrew
@@ -12,7 +12,7 @@ A clear and concise description of what the bug is.
 
 **Affected services**
 Which resource within the processing framework does this affect?
-* Data Factory
+* Data Factory/Synapse
 * SQL Database
 * Functions
 * All of them

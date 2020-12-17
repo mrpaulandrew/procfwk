@@ -1,0 +1,1 @@
+﻿ALTER DATABASE [FrameworkMetadataDev] MODIFY (EDITION ='Standard', SERVICE_OBJECTIVE = 'S2', MAXSIZE = 50 GB);

@@ -23,7 +23,7 @@ BEGIN
 
 	EXEC [procfwkHelpers].[AddProperty]
 		@PropertyName = N'UseFrameworkEmailAlerting',
-		@PropertyValue = N'1',
+		@PropertyValue = N'0',
 		@Description = N'Do you want the framework to handle pipeline email alerts via the database metadata? 1 = Yes, 0 = No.';
 
 	EXEC [procfwkHelpers].[AddProperty]
@@ -36,8 +36,9 @@ BEGIN
 	<strong>Start Date Time: </strong>##StartDateTime###<br/>
 	<strong>End Date Time: </strong>##EndDateTime###<br/>
 	<strong>Duration (Minutes): </strong>##Duration###<br/><br/>
-	<strong>Called by Data Factory: </strong>##CalledByADF###<br/>
-	<strong>Executed by Data Factory: </strong>##ExecutedByADF###<br/><hr/>',
+	<strong>Called by Orchestrator: </strong>##CalledByOrc###<br/>
+	<strong>Executed by Orchestrator Type: </strong>##ExecutedByOrcType###<br/>
+	<strong>Executed by Orchestrator: </strong>##ExecutedByOrc###<br/><hr/>',
 		@Description = N'Basic HTML template of execution information used as the eventual body in email alerts sent.';
 
 	EXEC [procfwkHelpers].[AddProperty]
@@ -54,4 +55,19 @@ BEGIN
 		@PropertyName = N'ExecutionPrecursorProc',
 		@PropertyValue = N'[dbo].[ExampleCustomExecutionPrecursor]',
 		@Description = N'This procedure will be called first in the parent pipeline and can be used to perform/update any required custom behaviour in the framework execution. For example, enable/disable Worker pipelines given a certain run time/day. Invalid proc name values will be ignored.'
+
+	EXEC [procfwkHelpers].[AddProperty]
+		@PropertyName = N'UseExecutionBatches',
+		@PropertyValue = N'0',
+		@Description = N'Establishes if execution batches are used as a level above execution stages within the framework. 1 = True, 0 = False.';
+
+	EXEC [procfwkHelpers].[AddProperty]
+		@PropertyName = N'FrameworkFactoryResourceGroup',
+		@PropertyValue = N'ADF.procfwk',
+		@Description = N'Supports various queries where the framework factory is inspecting itself and the resource group cant be inferred.';
+
+	EXEC [procfwkHelpers].[AddProperty]
+		@PropertyName = N'PreviousPipelineRunsQueryRange',
+		@PropertyValue = N'-1',
+		@Description = N'Used as a date range, today +- this value, when checking for if an execution for a given pipeline is already running. Must include +- symbol in value.';
 END;

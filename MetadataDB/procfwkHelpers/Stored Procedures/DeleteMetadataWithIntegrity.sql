@@ -5,6 +5,12 @@ BEGIN
 	DELETE ORDER IMPORTANT FOR REFERENTIAL INTEGRITY
 	*/
 
+	--BatchExecution
+	IF OBJECT_ID(N'[procfwk].[BatchExecution]') IS NOT NULL 
+		BEGIN
+			TRUNCATE TABLE [procfwk].[BatchExecution];
+		END;
+
 	--CurrentExecution
 	IF OBJECT_ID(N'[procfwk].[CurrentExecution]') IS NOT NULL 
 		BEGIN
@@ -22,6 +28,18 @@ BEGIN
 		BEGIN
 			TRUNCATE TABLE [procfwk].[ErrorLog];
 		END
+
+	--BatchStageLink
+	IF OBJECT_ID(N'[procfwk].[BatchStageLink]') IS NOT NULL 
+		BEGIN
+			DELETE FROM [procfwk].[BatchStageLink];
+		END;
+
+	--Batches
+	IF OBJECT_ID(N'[procfwk].[Batches]') IS NOT NULL 
+		BEGIN
+			DELETE FROM [procfwk].[Batches];
+		END;
 
 	--PipelineDependencies
 	IF OBJECT_ID(N'[procfwk].[PipelineDependencies]') IS NOT NULL 
@@ -85,11 +103,11 @@ BEGIN
 			DBCC CHECKIDENT ('[procfwk].[Pipelines]', RESEED, 0);
 		END;
 
-	--DataFactorys
-	IF OBJECT_ID(N'[procfwk].[DataFactorys]') IS NOT NULL 
+	--Orchestrators
+	IF OBJECT_ID(N'[procfwk].[Orchestrators]') IS NOT NULL 
 		BEGIN
-			DELETE FROM [procfwk].[DataFactorys];
-			DBCC CHECKIDENT ('[procfwk].[DataFactorys]', RESEED, 0);
+			DELETE FROM [procfwk].[Orchestrators];
+			DBCC CHECKIDENT ('[procfwk].[Orchestrators]', RESEED, 0);
 		END;
 
 	--Stages

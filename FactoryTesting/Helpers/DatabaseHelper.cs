@@ -68,16 +68,17 @@ namespace FactoryTesting.Helpers
 
             ExecuteNonQuery($"INSERT INTO[procfwk].[Tenants] ([TenantId],[Name],[Description]) VALUES ('{tenantId}', 'mrpaulandrew.com', NULL);");
             ExecuteNonQuery($"INSERT INTO [procfwk].[Subscriptions] ([SubscriptionId],[Name],[Description],[TenantId]) VALUES ('{subscriptionId}', 'Microsoft Sponsored Subscription', NULL, '{tenantId}');");
-            ExecuteNonQuery($"UPDATE [procfwk].[DataFactorys] SET [SubscriptionId] = '{subscriptionId}';");
+            ExecuteNonQuery($"UPDATE [procfwk].[Orchestrators] SET [SubscriptionId] = '{subscriptionId}';");
         }
 
-        public void AddWorkerSPNStoredInDatabase(string workerFactoryName)
+        public void AddWorkerSPNStoredInDatabase(string workerFactoryName, string orchestratorType = "ADF")
         {
             ExecuteNonQuery("UPDATE [procfwk].[Properties] SET [PropertyValue] = 'StoreInDatabase' WHERE [PropertyName] = 'SPNHandlingMethod';");
 
             var parameters = new Dictionary<string, object>
             {
-                ["@DataFactory"] = workerFactoryName,
+                ["@OrchestratorName"] = workerFactoryName,
+                ["@OrchestratorType"] = orchestratorType,
                 ["@PrincipalIdValue"] = GetSetting("AZURE_CLIENT_ID"),
                 ["@PrincipalSecretValue"] = GetSetting("AZURE_CLIENT_SECRET"),
                 ["@PrincipalName"] = GetSetting("AZURE_CLIENT_NAME")
@@ -86,13 +87,14 @@ namespace FactoryTesting.Helpers
             ExecuteStoredProcedure("[procfwkHelpers].[AddServicePrincipalWrapper]", parameters);
         }
 
-        public void AddWorkerSPNStoredInKeyVault(string workerFactoryName)
+        public void AddWorkerSPNStoredInKeyVault(string workerFactoryName, string orchestratorType = "ADF")
         {
             ExecuteNonQuery("UPDATE [procfwk].[Properties] SET [PropertyValue] = 'StoreInKeyVault' WHERE [PropertyName] = 'SPNHandlingMethod';");
 
             var parameters = new Dictionary<string, object>
             {
-                ["@DataFactory"] = workerFactoryName,
+                ["@OrchestratorName"] = workerFactoryName,
+                ["@OrchestratorType"] = orchestratorType,
                 ["@PrincipalIdValue"] = GetSetting("AZURE_CLIENT_ID_URL"),
                 ["@PrincipalSecretValue"] = GetSetting("AZURE_CLIENT_SECRET_URL"),
                 ["@PrincipalName"] = GetSetting("AZURE_CLIENT_NAME")
@@ -104,6 +106,8 @@ namespace FactoryTesting.Helpers
         public void AddBasicMetadata()
         {
             ExecuteStoredProcedure("[procfwkTesting].[ResetMetadata]", null);
+            ExecuteNonQuery("UPDATE [procfwk].[Orchestrators] SET [IsFrameworkOrchestrator] = '0';");
+            ExecuteNonQuery($"UPDATE [procfwk].[Orchestrators] SET [IsFrameworkOrchestrator] = '1' WHERE [OrchestratorName] = '{GetSetting("DataFactoryName")}';");
         }
 
         public override void TearDown()

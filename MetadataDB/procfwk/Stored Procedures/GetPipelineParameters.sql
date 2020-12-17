@@ -37,8 +37,8 @@ BEGIN
 			--handle parameter(s) with a NULL values
 			IF LEN(@Json) > 0
 			BEGIN
-				--JSON snippet gets injected into Azure Function body request via Data Factory expressions.
-				--Comma used to support Data Factory expression.
+				--JSON snippet gets injected into Azure Function body request via Orchestrator expressions.
+				--Comma used to support Orchestrator expression.
 				SET @Json = ',"pipelineParameters": {' + LEFT(@Json,LEN(@Json)-1) + '}'
 
 				--update current execution log if this is a runtime request
@@ -48,7 +48,15 @@ BEGIN
 					--add extra braces to make JSON string valid in logs
 					[PipelineParamsUsed] = '{ ' + RIGHT(@Json,LEN(@Json)-1) + ' }'
 				WHERE
-				[PipelineId] = @PipelineId;
+					[PipelineId] = @PipelineId;
+
+				--set last values values
+				UPDATE
+					[procfwk].[PipelineParameters]
+				SET
+					[ParameterValueLastUsed] = [ParameterValue]
+				WHERE
+					[PipelineId] = @PipelineId;
 			END;
 		END;
 

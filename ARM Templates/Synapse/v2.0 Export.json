@@ -1,0 +1,3878 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspaceName": {
+      "type": "string",
+      "metadata": "Workspace name",
+      "defaultValue": ""
+    },
+    "FrameworkFunctions_properties_typeProperties_functionAppUrl": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "Keys_properties_typeProperties_baseUrl": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "SupportDatabase_properties_typeProperties_connectionString_secretName": {
+      "type": "string",
+      "defaultValue": ""
+    }
+  },
+  "variables": {
+    "workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
+  },
+  "resources": [
+    {
+      "name": "[concat(parameters('workspaceName'), '/01-Grandparent')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "procfwk grandparent pipeline used optionally to bootstrap any wider processes in your Data Factory that then calls the processing framework.",
+        "activities": [
+          {
+            "name": "procfwk",
+            "description": "Call procfwk",
+            "type": "ExecutePipeline",
+            "dependsOn": [],
+            "userProperties": [],
+            "typeProperties": {
+              "pipeline": {
+                "referenceName": "02-Parent",
+                "type": "PipelineReference"
+              },
+              "waitOnCompletion": true,
+              "parameters": {
+                "BatchName": {
+                  "value": "@pipeline().parameters.BatchName",
+                  "type": "Expression"
+                }
+              }
+            }
+          }
+        ],
+        "parameters": {
+          "BatchName": {
+            "type": "string",
+            "defaultValue": "NotUsed"
+          }
+        },
+        "folder": {
+          "name": "_ProcFwk"
+        },
+        "annotations": [
+          "procfwk",
+          "Grandparent"
+        ]
+      },
+      "dependsOn": [
+        "[concat(variables('workspaceId'), '/pipelines/02-Parent')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/02-Parent')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "ADF.procfwk parent pipeline used to bootstrap the orchestration framework in perform the first level ForEach calls in sequence for the metadata stages.",
+        "activities": [
+          {
+            "name": "Get Stages",
+            "description": "Returns a distinct list of execution stages within the framework metadata.",
+            "type": "Lookup",
+            "dependsOn": [
+              {
+                "activity": "Set Execution Id",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "source": {
+                "type": "AzureSqlSource",
+                "sqlReaderStoredProcedureName": "[[procfwk].[GetStages]",
+                "storedProcedureParameters": {
+                  "ExecutionId": {
+                    "type": "Guid",
+                    "value": {
+                      "value": "@variables('ExecutionId')",
+                      "type": "Expression"
+                    }
+                  }
+                },
+                "queryTimeout": "02:00:00",
+                "partitionOption": "None"
+              },
+              "dataset": {
+                "referenceName": "GetSetMetadata",
+                "type": "DatasetReference",
+                "parameters": {}
+              },
+              "firstRowOnly": false
+            }
+          },
+          {
+            "name": "Execute Stages",
+            "description": "Top level ForEach to sequentially call all processing stages within the framework metadata. Items for iteration passed from the Get Stages lookup activity.",
+            "type": "ForEach",
+            "dependsOn": [
+              {
+                "activity": "Get Stages",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "items": {
+                "value": "@activity('Get Stages').output.value",
+                "type": "Expression"
+              },
+              "isSequential": true,
+              "activities": [
+                {
+                  "name": "Stage Executor",
+                  "description": "Call to the framework generic child pipeline for a given execution stage.",
+                  "type": "ExecutePipeline",
+                  "dependsOn": [
+                    {
+                      "activity": "Log Stage Preparing",
+                      "dependencyConditions": [
+                        "Succeeded"
+                      ]
+                    }
+                  ],
+                  "userProperties": [],
+                  "typeProperties": {
+                    "pipeline": {
+                      "referenceName": "03-Child",
+                      "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true,
+                    "parameters": {
+                      "StageId": {
+                        "value": "@item().StageId",
+                        "type": "Expression"
+                      },
+                      "ExecutionId": {
+                        "value": "@variables('ExecutionId')",
+                        "type": "Expression"
+                      }
+                    }
+                  }
+                },
+                {
+                  "name": "Log Stage Preparing",
+                  "description": "Update the current execution table flagging all pipelines within the stage as preparing.",
+                  "type": "SqlServerStoredProcedure",
+                  "dependsOn": [
+                    {
+                      "activity": "Check and Update Blockers",
+                      "dependencyConditions": [
+                        "Succeeded"
+                      ]
+                    }
+                  ],
+                  "policy": {
+                    "timeout": "0.00:10:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                  },
+                  "userProperties": [],
+                  "typeProperties": {
+                    "storedProcedureName": "[[procfwk].[SetLogStagePreparing]",
+                    "storedProcedureParameters": {
+                      "ExecutionId": {
+                        "value": {
+                          "value": "@variables('ExecutionId')",
+                          "type": "Expression"
+                        },
+                        "type": "Guid"
+                      },
+                      "StageId": {
+                        "value": {
+                          "value": "@item().StageId",
+                          "type": "Expression"
+                        },
+                        "type": "Int32"
+                      }
+                    }
+                  },
+                  "linkedServiceName": {
+                    "referenceName": "SupportDatabase",
+                    "type": "LinkedServiceReference"
+                  }
+                },
+                {
+                  "name": "Check and Update Blockers",
+                  "description": "Used to double check and stop the next execution stage if failures and blockers have be incurred. This also depends on the failure handling property value which defines the stored procedure behaviour.",
+                  "type": "SqlServerStoredProcedure",
+                  "dependsOn": [],
+                  "policy": {
+                    "timeout": "0.00:10:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                  },
+                  "userProperties": [],
+                  "typeProperties": {
+                    "storedProcedureName": "[[procfwk].[CheckForBlockedPipelines]",
+                    "storedProcedureParameters": {
+                      "ExecutionId": {
+                        "value": {
+                          "value": "@variables('ExecutionId')",
+                          "type": "Expression"
+                        },
+                        "type": "Guid"
+                      },
+                      "StageId": {
+                        "value": {
+                          "value": "@item().StageId",
+                          "type": "Expression"
+                        },
+                        "type": "Int32"
+                      }
+                    }
+                  },
+                  "linkedServiceName": {
+                    "referenceName": "SupportDatabase",
+                    "type": "LinkedServiceReference"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "Execution Wrapper",
+            "description": "Wrapper to reset and restart processing or create a completely new execution instance of the framework metadata.",
+            "type": "Lookup",
+            "dependsOn": [
+              {
+                "activity": "Clean Up Previous Run",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "source": {
+                "type": "AzureSqlSource",
+                "sqlReaderStoredProcedureName": "[[procfwk].[ExecutionWrapper]",
+                "storedProcedureParameters": {
+                  "CallingOrchestratorName": {
+                    "type": "String",
+                    "value": {
+                      "value": "@pipeline().DataFactory",
+                      "type": "Expression"
+                    }
+                  },
+                  "BatchName": {
+                    "type": "String",
+                    "value": {
+                      "value": "@pipeline().parameters.BatchName",
+                      "type": "Expression"
+                    }
+                  }
+                },
+                "queryTimeout": "02:00:00",
+                "partitionOption": "None"
+              },
+              "dataset": {
+                "referenceName": "GetSetMetadata",
+                "type": "DatasetReference",
+                "parameters": {}
+              }
+            }
+          },
+          {
+            "name": "Check Outcome and Update Logs",
+            "description": "After a successful execution run the current execution metadata is moved to the long term logging table by this stored procedure call. Otherwise an error will be raised.",
+            "type": "SqlServerStoredProcedure",
+            "dependsOn": [
+              {
+                "activity": "Execute Stages",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "storedProcedureName": "[[procfwk].[UpdateExecutionLog]",
+              "storedProcedureParameters": {
+                "PerformErrorCheck": {
+                  "value": {
+                    "value": "@bool(1)",
+                    "type": "Expression"
+                  },
+                  "type": "Boolean"
+                },
+                "ExecutionId": {
+                  "value": {
+                    "value": "@variables('ExecutionId')",
+                    "type": "Expression"
+                  },
+                  "type": "Guid"
+                }
+              }
+            },
+            "linkedServiceName": {
+              "referenceName": "SupportDatabase",
+              "type": "LinkedServiceReference"
+            }
+          },
+          {
+            "name": "Check Previous Execution",
+            "description": "Query the current execution table for worker pipelines that require a clean up from the previous execution run.",
+            "type": "Lookup",
+            "dependsOn": [
+              {
+                "activity": "Execute Precursor",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "source": {
+                "type": "AzureSqlSource",
+                "sqlReaderStoredProcedureName": "[[procfwk].[CheckPreviousExeuction]",
+                "storedProcedureParameters": {
+                  "BatchName": {
+                    "type": "String",
+                    "value": {
+                      "value": "@pipeline().parameters.BatchName",
+                      "type": "Expression"
+                    }
+                  }
+                },
+                "queryTimeout": "02:00:00",
+                "partitionOption": "None"
+              },
+              "dataset": {
+                "referenceName": "GetSetMetadata",
+                "type": "DatasetReference",
+                "parameters": {}
+              },
+              "firstRowOnly": false
+            }
+          },
+          {
+            "name": "Clean Up Previous Run",
+            "description": "Handle Worker pipelines that are reported as Running when the parent pipeline is called again. Get what the actual status of those pipelines is.",
+            "type": "ForEach",
+            "dependsOn": [
+              {
+                "activity": "Check Previous Execution",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              },
+              {
+                "activity": "Check Metadata Integrity",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "items": {
+                "value": "@activity('Check Previous Execution').output.value",
+                "type": "Expression"
+              },
+              "isSequential": false,
+              "batchCount": 50,
+              "activities": [
+                {
+                  "name": "Get SPN Details",
+                  "type": "Lookup",
+                  "dependsOn": [],
+                  "policy": {
+                    "timeout": "0.00:10:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": true,
+                    "secureInput": false
+                  },
+                  "userProperties": [],
+                  "typeProperties": {
+                    "source": {
+                      "type": "AzureSqlSource",
+                      "sqlReaderStoredProcedureName": "[[procfwk].[GetWorkerAuthDetails]",
+                      "storedProcedureParameters": {
+                        "ExecutionId": {
+                          "type": "Guid",
+                          "value": {
+                            "value": "@item().LocalExecutionId",
+                            "type": "Expression"
+                          }
+                        },
+                        "PipelineId": {
+                          "type": "Int32",
+                          "value": {
+                            "value": "@item().PipelineId",
+                            "type": "Expression"
+                          }
+                        },
+                        "StageId": {
+                          "type": "Int32",
+                          "value": {
+                            "value": "@item().StageId",
+                            "type": "Expression"
+                          }
+                        }
+                      },
+                      "queryTimeout": "02:00:00",
+                      "partitionOption": "None"
+                    },
+                    "dataset": {
+                      "referenceName": "GetSetMetadata",
+                      "type": "DatasetReference",
+                      "parameters": {}
+                    }
+                  }
+                },
+                {
+                  "name": "Log Pipeline Checking",
+                  "type": "SqlServerStoredProcedure",
+                  "dependsOn": [],
+                  "policy": {
+                    "timeout": "0.00:10:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                  },
+                  "userProperties": [],
+                  "typeProperties": {
+                    "storedProcedureName": "[[procfwk].[SetLogPipelineChecking]",
+                    "storedProcedureParameters": {
+                      "ExecutionId": {
+                        "value": {
+                          "value": "@item().LocalExecutionId",
+                          "type": "Expression"
+                        },
+                        "type": "Guid"
+                      },
+                      "PipelineId": {
+                        "value": {
+                          "value": "@item().PipelineId",
+                          "type": "Expression"
+                        },
+                        "type": "Int32"
+                      },
+                      "StageId": {
+                        "value": {
+                          "value": "@item().StageId",
+                          "type": "Expression"
+                        },
+                        "type": "Int32"
+                      }
+                    }
+                  },
+                  "linkedServiceName": {
+                    "referenceName": "SupportDatabase",
+                    "type": "LinkedServiceReference"
+                  }
+                },
+                {
+                  "name": "Get Pipeline Status",
+                  "type": "AzureFunctionActivity",
+                  "dependsOn": [
+                    {
+                      "activity": "Get SPN Details",
+                      "dependencyConditions": [
+                        "Succeeded"
+                      ]
+                    },
+                    {
+                      "activity": "Log Pipeline Checking",
+                      "dependencyConditions": [
+                        "Succeeded"
+                      ]
+                    }
+                  ],
+                  "policy": {
+                    "timeout": "0.00:10:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": true
+                  },
+                  "userProperties": [],
+                  "typeProperties": {
+                    "functionName": "CheckPipelineStatus",
+                    "method": "POST",
+                    "headers": {},
+                    "body": {
+                      "value": "@concat('\n{\n    \"tenantId\": \"',activity('Get SPN Details').output.firstRow.TenantId,'\",\n    \"applicationId\": \"',activity('Get SPN Details').output.firstRow.AppId,'\",\n    \"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.AppSecret,'\",\n    \"subscriptionId\": \"',activity('Get SPN Details').output.firstRow.SubscriptionId,'\",\n    \"resourceGroupName\": \"',item().ResourceGroupName,'\",\n    \"orchestratorName\": \"',item().OrchestratorName,'\",\n    \"orchestratorType\": \"',item().OrchestratorType,'\",\n    \"pipelineName\": \"',item().PipelineName,'\",\n    \"runId\": \"',item().PipelineRunId,'\"\n}')",
+                      "type": "Expression"
+                    }
+                  },
+                  "linkedServiceName": {
+                    "referenceName": "FrameworkFunctions",
+                    "type": "LinkedServiceReference"
+                  }
+                },
+                {
+                  "name": "Set Pipeline Status",
+                  "description": "Update the metadata depending on the actual pipeline outcome. Using the status as the case.",
+                  "type": "Switch",
+                  "dependsOn": [
+                    {
+                      "activity": "Get Pipeline Status",
+                      "dependencyConditions": [
+                        "Succeeded"
+                      ]
+                    }
+                  ],
+                  "userProperties": [],
+                  "typeProperties": {
+                    "on": {
+                      "value": "@activity('Get Pipeline Status').output.ActualStatus",
+                      "type": "Expression"
+                    },
+                    "cases": [
+                      {
+                        "value": "Failed",
+                        "activities": [
+                          {
+                            "name": "Pipeline Status Failed",
+                            "description": "Updates the current execution table with a pipeline status of failed if the function outcome is failed. Also blocks pipelines in the downstream execution stage.",
+                            "type": "SqlServerStoredProcedure",
+                            "dependsOn": [],
+                            "policy": {
+                              "timeout": "0.00:10:00",
+                              "retry": 0,
+                              "retryIntervalInSeconds": 30,
+                              "secureOutput": false,
+                              "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                              "storedProcedureName": "[[procfwk].[SetLogPipelineFailed]",
+                              "storedProcedureParameters": {
+                                "ExecutionId": {
+                                  "value": {
+                                    "value": "@item().LocalExecutionId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Guid"
+                                },
+                                "PipelineId": {
+                                  "value": {
+                                    "value": "@item().PipelineId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Int32"
+                                },
+                                "RunId": {
+                                  "value": null,
+                                  "type": "Guid"
+                                },
+                                "StageId": {
+                                  "value": {
+                                    "value": "@item().StageId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Int32"
+                                }
+                              }
+                            },
+                            "linkedServiceName": {
+                              "referenceName": "SupportDatabase",
+                              "type": "LinkedServiceReference"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "value": "Succeeded",
+                        "activities": [
+                          {
+                            "name": "Pipeline Status Succeeded",
+                            "description": "Updates the current execution table with a pipeline status of success if the function outcome is succeeded.",
+                            "type": "SqlServerStoredProcedure",
+                            "dependsOn": [],
+                            "policy": {
+                              "timeout": "0.00:10:00",
+                              "retry": 0,
+                              "retryIntervalInSeconds": 30,
+                              "secureOutput": false,
+                              "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                              "storedProcedureName": "[[procfwk].[SetLogPipelineSuccess]",
+                              "storedProcedureParameters": {
+                                "ExecutionId": {
+                                  "value": {
+                                    "value": "@item().LocalExecutionId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Guid"
+                                },
+                                "PipelineId": {
+                                  "value": {
+                                    "value": "@item().PipelineId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Int32"
+                                },
+                                "StageId": {
+                                  "value": {
+                                    "value": "@item().StageId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Int32"
+                                }
+                              }
+                            },
+                            "linkedServiceName": {
+                              "referenceName": "SupportDatabase",
+                              "type": "LinkedServiceReference"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "value": "Queued",
+                        "activities": [
+                          {
+                            "name": "Pipeline Status Queued - Running",
+                            "description": "Updates the current execution table with a pipeline status of running if the function outcome is queued.",
+                            "type": "SqlServerStoredProcedure",
+                            "dependsOn": [],
+                            "policy": {
+                              "timeout": "0.00:10:00",
+                              "retry": 0,
+                              "retryIntervalInSeconds": 30,
+                              "secureOutput": false,
+                              "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                              "storedProcedureName": "[[procfwk].[SetLogPipelineRunning]",
+                              "storedProcedureParameters": {
+                                "ExecutionId": {
+                                  "value": {
+                                    "value": "@item().LocalExecutionId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Guid"
+                                },
+                                "PipelineId": {
+                                  "value": {
+                                    "value": "@item().PipelineId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Int32"
+                                },
+                                "StageId": {
+                                  "value": {
+                                    "value": "@item().StageId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Int32"
+                                }
+                              }
+                            },
+                            "linkedServiceName": {
+                              "referenceName": "SupportDatabase",
+                              "type": "LinkedServiceReference"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "value": "InProgress",
+                        "activities": [
+                          {
+                            "name": "Pipeline Status InProgress - Running",
+                            "description": "Updates the current execution table with a pipeline status of running if the function outcome is in progress.",
+                            "type": "SqlServerStoredProcedure",
+                            "dependsOn": [],
+                            "policy": {
+                              "timeout": "0.00:10:00",
+                              "retry": 0,
+                              "retryIntervalInSeconds": 30,
+                              "secureOutput": false,
+                              "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                              "storedProcedureName": "[[procfwk].[SetLogPipelineRunning]",
+                              "storedProcedureParameters": {
+                                "ExecutionId": {
+                                  "value": {
+                                    "value": "@item().LocalExecutionId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Guid"
+                                },
+                                "PipelineId": {
+                                  "value": {
+                                    "value": "@item().PipelineId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Int32"
+                                },
+                                "StageId": {
+                                  "value": {
+                                    "value": "@item().StageId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Int32"
+                                }
+                              }
+                            },
+                            "linkedServiceName": {
+                              "referenceName": "SupportDatabase",
+                              "type": "LinkedServiceReference"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "value": "Cancelled",
+                        "activities": [
+                          {
+                            "name": "Pipeline Status Cancelled",
+                            "description": "Updates the current execution table with a pipeline status of cancelled if the function outcome is cancelled.",
+                            "type": "SqlServerStoredProcedure",
+                            "dependsOn": [],
+                            "policy": {
+                              "timeout": "0.00:10:00",
+                              "retry": 0,
+                              "retryIntervalInSeconds": 30,
+                              "secureOutput": false,
+                              "secureInput": false
+                            },
+                            "userProperties": [],
+                            "typeProperties": {
+                              "storedProcedureName": "[[procfwk].[SetLogPipelineCancelled]",
+                              "storedProcedureParameters": {
+                                "ExecutionId": {
+                                  "value": {
+                                    "value": "@item().LocalExecutionId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Guid"
+                                },
+                                "PipelineId": {
+                                  "value": {
+                                    "value": "@item().PipelineId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Int32"
+                                },
+                                "StageId": {
+                                  "value": {
+                                    "value": "@item().StageId",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Int32"
+                                },
+                                "CleanUpRun": {
+                                  "value": {
+                                    "value": "@bool(1)",
+                                    "type": "Expression"
+                                  },
+                                  "type": "Boolean"
+                                }
+                              }
+                            },
+                            "linkedServiceName": {
+                              "referenceName": "SupportDatabase",
+                              "type": "LinkedServiceReference"
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "defaultActivities": [
+                      {
+                        "name": "Pipeline Status Unknown",
+                        "description": "Updates the current execution table with a pipeline status of unknown if the function returns an unexpected outcome.",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                          "timeout": "0.00:10:00",
+                          "retry": 0,
+                          "retryIntervalInSeconds": 30,
+                          "secureOutput": false,
+                          "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                          "storedProcedureName": "[[procfwk].[SetLogPipelineUnknown]",
+                          "storedProcedureParameters": {
+                            "ExecutionId": {
+                              "value": {
+                                "value": "@item().LocalExecutionId",
+                                "type": "Expression"
+                              },
+                              "type": "Guid"
+                            },
+                            "PipelineId": {
+                              "value": {
+                                "value": "@item().PipelineId",
+                                "type": "Expression"
+                              },
+                              "type": "Int32"
+                            },
+                            "StageId": {
+                              "value": {
+                                "value": "@item().StageId",
+                                "type": "Expression"
+                              },
+                              "type": "Int32"
+                            },
+                            "CleanUpRun": {
+                              "value": {
+                                "value": "@bool(1)",
+                                "type": "Expression"
+                              },
+                              "type": "Boolean"
+                            }
+                          }
+                        },
+                        "linkedServiceName": {
+                          "referenceName": "SupportDatabase",
+                          "type": "LinkedServiceReference"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "Set Last Check DateTime",
+                  "description": "Update the current execution table with a date time from when the function last checked the pipeline status.",
+                  "type": "SqlServerStoredProcedure",
+                  "dependsOn": [
+                    {
+                      "activity": "Get Pipeline Status",
+                      "dependencyConditions": [
+                        "Succeeded"
+                      ]
+                    }
+                  ],
+                  "policy": {
+                    "timeout": "0.00:10:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                  },
+                  "userProperties": [],
+                  "typeProperties": {
+                    "storedProcedureName": "[[procfwk].[SetLogPipelineLastStatusCheck]",
+                    "storedProcedureParameters": {
+                      "ExecutionId": {
+                        "value": {
+                          "value": "@item().LocalExecutionId",
+                          "type": "Expression"
+                        },
+                        "type": "Guid"
+                      },
+                      "PipelineId": {
+                        "value": {
+                          "value": "@item().PipelineId",
+                          "type": "Expression"
+                        },
+                        "type": "Int32"
+                      },
+                      "StageId": {
+                        "value": {
+                          "value": "@item().StageId",
+                          "type": "Expression"
+                        },
+                        "type": "Int32"
+                      }
+                    }
+                  },
+                  "linkedServiceName": {
+                    "referenceName": "SupportDatabase",
+                    "type": "LinkedServiceReference"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "Execute Precursor",
+            "description": "Uses the database property value ExecutionPrecursorProc to run any custom logic against the metadata database before the execution run starts.",
+            "type": "SqlServerStoredProcedure",
+            "dependsOn": [],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "storedProcedureName": "[[procfwk].[ExecutePrecursorProcedure]"
+            },
+            "linkedServiceName": {
+              "referenceName": "SupportDatabase",
+              "type": "LinkedServiceReference"
+            }
+          },
+          {
+            "name": "Set Execution Id",
+            "description": "Set the local execution Id to a pipeline variable for each in several downstream activities.",
+            "type": "SetVariable",
+            "dependsOn": [
+              {
+                "activity": "Execution Wrapper",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "variableName": "ExecutionId",
+              "value": {
+                "value": "@activity('Execution Wrapper').output.firstRow.ExecutionId",
+                "type": "Expression"
+              }
+            }
+          },
+          {
+            "name": "Check Metadata Integrity",
+            "description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
+            "type": "SqlServerStoredProcedure",
+            "dependsOn": [
+              {
+                "activity": "Execute Precursor",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "storedProcedureName": "[[procfwk].[CheckMetadataIntegrity]",
+              "storedProcedureParameters": {
+                "BatchName": {
+                  "value": {
+                    "value": "@pipeline().parameters.BatchName",
+                    "type": "Expression"
+                  },
+                  "type": "String"
+                },
+                "DebugMode": {
+                  "value": {
+                    "value": "@bool(0)",
+                    "type": "Expression"
+                  },
+                  "type": "Boolean"
+                }
+              }
+            },
+            "linkedServiceName": {
+              "referenceName": "SupportDatabase",
+              "type": "LinkedServiceReference"
+            }
+          }
+        ],
+        "parameters": {
+          "BatchName": {
+            "type": "string",
+            "defaultValue": "NotUsed"
+          }
+        },
+        "variables": {
+          "ExecutionId": {
+            "type": "String"
+          }
+        },
+        "folder": {
+          "name": "_ProcFwk"
+        },
+        "annotations": [
+          "procfwk",
+          "Parent"
+        ]
+      },
+      "dependsOn": [
+        "[concat(variables('workspaceId'), '/datasets/GetSetMetadata')]",
+        "[concat(variables('workspaceId'), '/linkedServices/SupportDatabase')]",
+        "[concat(variables('workspaceId'), '/pipelines/03-Child')]",
+        "[concat(variables('workspaceId'), '/linkedServices/FrameworkFunctions')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/03-Child')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "procfwk child pipeline used to execute Worker pipelines within a given execution stage. This pipeline will be called once for each stage, then execute all Workers in parallel.",
+        "activities": [
+          {
+            "name": "Get Pipelines",
+            "description": "Returns all pipelines from the metadata to be executed within a given processing stage.",
+            "type": "Lookup",
+            "dependsOn": [],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "source": {
+                "type": "AzureSqlSource",
+                "sqlReaderStoredProcedureName": "[[procfwk].[GetPipelinesInStage]",
+                "storedProcedureParameters": {
+                  "ExecutionId": {
+                    "type": "Guid",
+                    "value": {
+                      "value": "@pipeline().parameters.ExecutionId",
+                      "type": "Expression"
+                    }
+                  },
+                  "StageId": {
+                    "type": "Int32",
+                    "value": {
+                      "value": "@pipeline().parameters.StageId",
+                      "type": "Expression"
+                    }
+                  }
+                },
+                "queryTimeout": "02:00:00",
+                "partitionOption": "None"
+              },
+              "dataset": {
+                "referenceName": "GetSetMetadata",
+                "type": "DatasetReference",
+                "parameters": {}
+              },
+              "firstRowOnly": false
+            }
+          },
+          {
+            "name": "Execute Pipelines",
+            "description": "Second level ForEach to run in parallel all pipelines within the stage. Items for iteration passed from the Get Pipelines lookup activity.",
+            "type": "ForEach",
+            "dependsOn": [
+              {
+                "activity": "Get Pipelines",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "items": {
+                "value": "@activity('Get Pipelines').output.value",
+                "type": "Expression"
+              },
+              "isSequential": false,
+              "batchCount": 50,
+              "activities": [
+                {
+                  "name": "Worker Pipeline Executor",
+                  "description": "Run the required worker pipeline and wait for its completion. Update metadata once done.",
+                  "type": "ExecutePipeline",
+                  "dependsOn": [],
+                  "userProperties": [],
+                  "typeProperties": {
+                    "pipeline": {
+                      "referenceName": "04-Infant",
+                      "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true,
+                    "parameters": {
+                      "executionId": {
+                        "value": "@pipeline().parameters.ExecutionId",
+                        "type": "Expression"
+                      },
+                      "stageId": {
+                        "value": "@pipeline().parameters.StageId",
+                        "type": "Expression"
+                      },
+                      "pipelineId": {
+                        "value": "@item().PipelineId",
+                        "type": "Expression"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "parameters": {
+          "StageId": {
+            "type": "int"
+          },
+          "ExecutionId": {
+            "type": "string"
+          }
+        },
+        "folder": {
+          "name": "_ProcFwk"
+        },
+        "annotations": [
+          "procfwk",
+          "Child"
+        ]
+      },
+      "dependsOn": [
+        "[concat(variables('workspaceId'), '/datasets/GetSetMetadata')]",
+        "[concat(variables('workspaceId'), '/pipelines/04-Infant')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/04-Infant')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "procfwk infant pipeline used to check when the processing pipeline called by the Child completes and passes the resulting status back to the metadata database.",
+        "activities": [
+          {
+            "name": "Execute Worker Pipeline",
+            "description": "The lowest level executor with the metadata framework to call existing processing pipelines within Data Factory. The function called will block processing and wait for an outcome.",
+            "type": "AzureFunctionActivity",
+            "dependsOn": [
+              {
+                "activity": "Log Pipeline Running",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              },
+              {
+                "activity": "Get Pipeline Params",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": true
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "functionName": "ExecutePipeline",
+              "method": "POST",
+              "headers": {},
+              "body": {
+                "value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerCoreDetails')[0].tenantId,'\",\n    \"applicationId\": \"',variables('WorkerCoreDetails')[0].applicationId,'\",\n    \"authenticationKey\": \"',variables('WorkerCoreDetails')[0].authenticationKey,'\",\n    \"subscriptionId\": \"',variables('WorkerCoreDetails')[0].subscriptionId,'\",\n    \"resourceGroupName\": \"',variables('WorkerCoreDetails')[0].resourceGroupName,'\",\n\t\"orchestratorName\": \"',variables('WorkerCoreDetails')[0].orchestratorName,'\",\n    \"orchestratorType\": \"',variables('WorkerCoreDetails')[0].orchestratorType,'\",\n    \"pipelineName\": \"',variables('WorkerCoreDetails')[0].pipelineName,'\"',activity('Get Pipeline Params').output.firstRow.Params,'\n}')",
+                "type": "Expression"
+              }
+            },
+            "linkedServiceName": {
+              "referenceName": "FrameworkFunctions",
+              "type": "LinkedServiceReference"
+            }
+          },
+          {
+            "name": "Get Pipeline Params",
+            "description": "Returns any parameters from metadata required for the processing pipeline being called. The output can be an empty string if no parameters are required.",
+            "type": "Lookup",
+            "dependsOn": [],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "source": {
+                "type": "AzureSqlSource",
+                "sqlReaderStoredProcedureName": "[[procfwk].[GetPipelineParameters]",
+                "storedProcedureParameters": {
+                  "PipelineId": {
+                    "type": "Int32",
+                    "value": {
+                      "value": "@pipeline().parameters.pipelineId",
+                      "type": "Expression"
+                    }
+                  }
+                },
+                "queryTimeout": "02:00:00",
+                "partitionOption": "None"
+              },
+              "dataset": {
+                "referenceName": "GetSetMetadata",
+                "type": "DatasetReference",
+                "parameters": {}
+              }
+            }
+          },
+          {
+            "name": "Log Pipeline Running",
+            "description": "Sets the current pipeline with a status of running within the current execution database table.",
+            "type": "SqlServerStoredProcedure",
+            "dependsOn": [
+              {
+                "activity": "Is Target Worker Validate",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "storedProcedureName": "[[procfwk].[SetLogPipelineRunning]",
+              "storedProcedureParameters": {
+                "ExecutionId": {
+                  "value": {
+                    "value": "@pipeline().parameters.ExecutionId",
+                    "type": "Expression"
+                  },
+                  "type": "Guid"
+                },
+                "PipelineId": {
+                  "value": {
+                    "value": "@pipeline().parameters.pipelineId",
+                    "type": "Expression"
+                  },
+                  "type": "Int32"
+                },
+                "StageId": {
+                  "value": {
+                    "value": "@pipeline().parameters.StageId",
+                    "type": "Expression"
+                  },
+                  "type": "Int32"
+                }
+              }
+            },
+            "linkedServiceName": {
+              "referenceName": "SupportDatabase",
+              "type": "LinkedServiceReference"
+            }
+          },
+          {
+            "name": "Log Execute Function Activity Failure",
+            "description": "Handle true failures from calling out to the Azure Function and update the current execution table accordingly so a restart can occur.",
+            "type": "SqlServerStoredProcedure",
+            "dependsOn": [
+              {
+                "activity": "Execute Worker Pipeline",
+                "dependencyConditions": [
+                  "Failed"
+                ]
+              }
+            ],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "storedProcedureName": "[[procfwk].[SetLogActivityFailed]",
+              "storedProcedureParameters": {
+                "ExecutionId": {
+                  "value": {
+                    "value": "@pipeline().parameters.ExecutionId",
+                    "type": "Expression"
+                  },
+                  "type": "Guid"
+                },
+                "PipelineId": {
+                  "value": {
+                    "value": "@pipeline().parameters.pipelineId",
+                    "type": "Expression"
+                  },
+                  "type": "Int32"
+                },
+                "StageId": {
+                  "value": {
+                    "value": "@pipeline().parameters.StageId",
+                    "type": "Expression"
+                  },
+                  "type": "Int32"
+                },
+                "CallingActivity": {
+                  "value": "ExecuteWorkerPipeline",
+                  "type": "String"
+                }
+              }
+            },
+            "linkedServiceName": {
+              "referenceName": "SupportDatabase",
+              "type": "LinkedServiceReference"
+            }
+          },
+          {
+            "name": "Update Run Id",
+            "description": "Provide the actual ADF run ID back to the current execution table for long term logging and alignment between the metadata other Azure monitoring tools.",
+            "type": "SqlServerStoredProcedure",
+            "dependsOn": [
+              {
+                "activity": "Set Run Id",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "storedProcedureName": "[[procfwk].[SetLogPipelineRunId]",
+              "storedProcedureParameters": {
+                "ExecutionId": {
+                  "value": {
+                    "value": "@pipeline().parameters.ExecutionId",
+                    "type": "Expression"
+                  },
+                  "type": "Guid"
+                },
+                "PipelineId": {
+                  "value": {
+                    "value": "@pipeline().parameters.pipelineId",
+                    "type": "Expression"
+                  },
+                  "type": "Int32"
+                },
+                "RunId": {
+                  "value": {
+                    "value": "@variables('WorkerRunId')",
+                    "type": "Expression"
+                  },
+                  "type": "Guid"
+                },
+                "StageId": {
+                  "value": {
+                    "value": "@pipeline().parameters.StageId",
+                    "type": "Expression"
+                  },
+                  "type": "Int32"
+                }
+              }
+            },
+            "linkedServiceName": {
+              "referenceName": "SupportDatabase",
+              "type": "LinkedServiceReference"
+            }
+          },
+          {
+            "name": "Check For Alerts",
+            "description": "Checks the properties tables and if any recipients in the database require alerts sending for the current pipeline ID.",
+            "type": "Lookup",
+            "dependsOn": [
+              {
+                "activity": "Update Run Id",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              },
+              {
+                "activity": "Set Pipeline Result",
+                "dependencyConditions": [
+                  "Completed"
+                ]
+              }
+            ],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "source": {
+                "type": "AzureSqlSource",
+                "sqlReaderStoredProcedureName": "[[procfwk].[CheckForEmailAlerts]",
+                "storedProcedureParameters": {
+                  "PipelineId": {
+                    "type": "Int32",
+                    "value": {
+                      "value": "@pipeline().parameters.pipelineId",
+                      "type": "Expression"
+                    }
+                  }
+                },
+                "queryTimeout": "02:00:00",
+                "partitionOption": "None"
+              },
+              "dataset": {
+                "referenceName": "GetSetMetadata",
+                "type": "DatasetReference",
+                "parameters": {}
+              },
+              "firstRowOnly": true
+            }
+          },
+          {
+            "name": "Send Alerts",
+            "description": "True = alerts need sending.\nFalse = do nothing.",
+            "type": "IfCondition",
+            "dependsOn": [
+              {
+                "activity": "Check For Alerts",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "expression": {
+                "value": "@activity('Check For Alerts').output.firstRow.SendAlerts",
+                "type": "Expression"
+              },
+              "ifTrueActivities": [
+                {
+                  "name": "Get Email Parts",
+                  "description": "Return all required content from the metadata database to send an email alerting using the procfwk. The lookup returns the exact content for the function body request.",
+                  "type": "Lookup",
+                  "dependsOn": [],
+                  "policy": {
+                    "timeout": "0.00:10:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": true,
+                    "secureInput": false
+                  },
+                  "userProperties": [],
+                  "typeProperties": {
+                    "source": {
+                      "type": "AzureSqlSource",
+                      "sqlReaderStoredProcedureName": "[[procfwk].[GetEmailAlertParts]",
+                      "storedProcedureParameters": {
+                        "PipelineId": {
+                          "type": "Int32",
+                          "value": {
+                            "value": "@pipeline().parameters.pipelineId",
+                            "type": "Expression"
+                          }
+                        }
+                      },
+                      "queryTimeout": "02:00:00",
+                      "partitionOption": "None"
+                    },
+                    "dataset": {
+                      "referenceName": "GetSetMetadata",
+                      "type": "DatasetReference",
+                      "parameters": {}
+                    },
+                    "firstRowOnly": true
+                  }
+                },
+                {
+                  "name": "Call Email Sender",
+                  "description": "Pass off email request to Utils Send Email pipeline.",
+                  "type": "ExecutePipeline",
+                  "dependsOn": [
+                    {
+                      "activity": "Get Email Parts",
+                      "dependencyConditions": [
+                        "Succeeded"
+                      ]
+                    }
+                  ],
+                  "userProperties": [],
+                  "typeProperties": {
+                    "pipeline": {
+                      "referenceName": "Email Sender",
+                      "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true,
+                    "parameters": {
+                      "Recipients": {
+                        "value": "@activity('Get Email Parts').output.firstRow.emailRecipients",
+                        "type": "Expression"
+                      },
+                      "CcRecipients": {
+                        "value": "@activity('Get Email Parts').output.firstRow.emailCcRecipients",
+                        "type": "Expression"
+                      },
+                      "BccRecipients": {
+                        "value": "@activity('Get Email Parts').output.firstRow.emailBccRecipients",
+                        "type": "Expression"
+                      },
+                      "Subject": {
+                        "value": "@activity('Get Email Parts').output.firstRow.emailSubject",
+                        "type": "Expression"
+                      },
+                      "Body": {
+                        "value": "@activity('Get Email Parts').output.firstRow.emailBody",
+                        "type": "Expression"
+                      },
+                      "Importance": {
+                        "value": "@activity('Get Email Parts').output.firstRow.emailImportance",
+                        "type": "Expression"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "Wait Until Pipeline Completes",
+            "description": "Loops until the Worker pipeline called completes.\n\nSimple status:\n- Running = new iteration.\n- Done = break.",
+            "type": "Until",
+            "dependsOn": [
+              {
+                "activity": "Get Wait Duration",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              },
+              {
+                "activity": "Execute Worker Pipeline",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              },
+              {
+                "activity": "Set Run Id",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "expression": {
+                "value": "@variables('WorkerPipelineState')",
+                "type": "Expression"
+              },
+              "activities": [
+                {
+                  "name": "Get Worker Pipeline Status",
+                  "description": "Checks the status of a given processing pipeline and provides the value for the downstream framework activities to act upon.",
+                  "type": "AzureFunctionActivity",
+                  "dependsOn": [],
+                  "policy": {
+                    "timeout": "0.00:10:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": true
+                  },
+                  "userProperties": [],
+                  "typeProperties": {
+                    "functionName": "CheckPipelineStatus",
+                    "method": "POST",
+                    "headers": {},
+                    "body": {
+                      "value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerCoreDetails')[0].tenantId,'\",\n    \"applicationId\": \"',variables('WorkerCoreDetails')[0].applicationId,'\",\n    \"authenticationKey\": \"',variables('WorkerCoreDetails')[0].authenticationKey,'\",\n    \"subscriptionId\": \"',variables('WorkerCoreDetails')[0].subscriptionId,'\",\n    \"resourceGroupName\": \"',variables('WorkerCoreDetails')[0].resourceGroupName,'\",\n\t\"orchestratorName\": \"',variables('WorkerCoreDetails')[0].orchestratorName,'\",\n    \"orchestratorType\": \"',variables('WorkerCoreDetails')[0].orchestratorType,'\",\n    \"pipelineName\": \"',variables('WorkerCoreDetails')[0].pipelineName,'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
+                      "type": "Expression"
+                    }
+                  },
+                  "linkedServiceName": {
+                    "referenceName": "FrameworkFunctions",
+                    "type": "LinkedServiceReference"
+                  }
+                },
+                {
+                  "name": "Wait If Running",
+                  "description": "True = Do nothing.\nFalse = Wait, before the next iteration.",
+                  "type": "IfCondition",
+                  "dependsOn": [
+                    {
+                      "activity": "Set Worker State",
+                      "dependencyConditions": [
+                        "Succeeded"
+                      ]
+                    }
+                  ],
+                  "userProperties": [],
+                  "typeProperties": {
+                    "expression": {
+                      "value": "@variables('WorkerPipelineState')",
+                      "type": "Expression"
+                    },
+                    "ifFalseActivities": [
+                      {
+                        "name": "Wait for Pipeline",
+                        "description": "The processing pipeline is still running so Wait before checking its status again.",
+                        "type": "Wait",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                          "waitTimeInSeconds": {
+                            "value": "@activity('Get Wait Duration').output.firstRow.PropertyValue",
+                            "type": "Expression"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "Set Last Check DateTime",
+                  "description": "Update the current execution table with a date time from when the Worker pipeline status was last checked as part of the Until iterations.",
+                  "type": "SqlServerStoredProcedure",
+                  "dependsOn": [
+                    {
+                      "activity": "Get Worker Pipeline Status",
+                      "dependencyConditions": [
+                        "Succeeded"
+                      ]
+                    }
+                  ],
+                  "policy": {
+                    "timeout": "0.00:10:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                  },
+                  "userProperties": [],
+                  "typeProperties": {
+                    "storedProcedureName": "[[procfwk].[SetLogPipelineLastStatusCheck]",
+                    "storedProcedureParameters": {
+                      "ExecutionId": {
+                        "value": {
+                          "value": "@pipeline().parameters.executionId",
+                          "type": "Expression"
+                        },
+                        "type": "Guid"
+                      },
+                      "PipelineId": {
+                        "value": {
+                          "value": "@pipeline().parameters.pipelineId",
+                          "type": "Expression"
+                        },
+                        "type": "Int32"
+                      },
+                      "StageId": {
+                        "value": {
+                          "value": "@pipeline().parameters.stageId",
+                          "type": "Expression"
+                        },
+                        "type": "Int32"
+                      }
+                    }
+                  },
+                  "linkedServiceName": {
+                    "referenceName": "SupportDatabase",
+                    "type": "LinkedServiceReference"
+                  }
+                },
+                {
+                  "name": "Log Check Function Activity Failure",
+                  "description": "Report to the current execution table that the framework pipeline activity has failed. This failure is outside of the scope of the framework and is probably related to a wider platform problem.",
+                  "type": "SqlServerStoredProcedure",
+                  "dependsOn": [
+                    {
+                      "activity": "Get Worker Pipeline Status",
+                      "dependencyConditions": [
+                        "Failed"
+                      ]
+                    }
+                  ],
+                  "policy": {
+                    "timeout": "0.00:10:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                  },
+                  "userProperties": [],
+                  "typeProperties": {
+                    "storedProcedureName": "[[procfwk].[SetLogActivityFailed]",
+                    "storedProcedureParameters": {
+                      "CallingActivity": {
+                        "value": "GetWorkerPipelineStatus",
+                        "type": "String"
+                      },
+                      "ExecutionId": {
+                        "value": {
+                          "value": "@pipeline().parameters.executionId",
+                          "type": "Expression"
+                        },
+                        "type": "Guid"
+                      },
+                      "PipelineId": {
+                        "value": {
+                          "value": "@pipeline().parameters.pipelineId",
+                          "type": "Expression"
+                        },
+                        "type": "Int32"
+                      },
+                      "StageId": {
+                        "value": {
+                          "value": "@pipeline().parameters.stageId",
+                          "type": "Expression"
+                        },
+                        "type": "Int32"
+                      }
+                    }
+                  },
+                  "linkedServiceName": {
+                    "referenceName": "SupportDatabase",
+                    "type": "LinkedServiceReference"
+                  }
+                },
+                {
+                  "name": "Set Worker State",
+                  "description": "Set the bool state of the Worker pipeline to be used by the Until and If expressions. True = Complete, False = Running.",
+                  "type": "SetVariable",
+                  "dependsOn": [
+                    {
+                      "activity": "Get Worker Pipeline Status",
+                      "dependencyConditions": [
+                        "Succeeded"
+                      ]
+                    }
+                  ],
+                  "userProperties": [],
+                  "typeProperties": {
+                    "variableName": "WorkerPipelineState",
+                    "value": {
+                      "value": "@equals('Complete',activity('Get Worker Pipeline Status').output.SimpleStatus)",
+                      "type": "Expression"
+                    }
+                  }
+                }
+              ],
+              "timeout": "0.00:10:00"
+            }
+          },
+          {
+            "name": "Set Pipeline Result",
+            "description": "Receives the outcome from the function execution for a given processing pipeline and updates the current execution table with different pipelines status values depending on the result (case).",
+            "type": "Switch",
+            "dependsOn": [
+              {
+                "activity": "Wait Until Pipeline Completes",
+                "dependencyConditions": [
+                  "Completed"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "on": {
+                "value": "@activity('Get Worker Pipeline Status').output.ActualStatus",
+                "type": "Expression"
+              },
+              "cases": [
+                {
+                  "value": "Succeeded",
+                  "activities": [
+                    {
+                      "name": "Pipeline Status Succeeded",
+                      "description": "Updates the current execution table with a pipeline status of success if the function outcome is succeeded.",
+                      "type": "SqlServerStoredProcedure",
+                      "dependsOn": [],
+                      "policy": {
+                        "timeout": "0.00:10:00",
+                        "retry": 0,
+                        "retryIntervalInSeconds": 30,
+                        "secureOutput": false,
+                        "secureInput": false
+                      },
+                      "userProperties": [],
+                      "typeProperties": {
+                        "storedProcedureName": "[[procfwk].[SetLogPipelineSuccess]",
+                        "storedProcedureParameters": {
+                          "ExecutionId": {
+                            "value": {
+                              "value": "@pipeline().parameters.executionId",
+                              "type": "Expression"
+                            },
+                            "type": "Guid"
+                          },
+                          "PipelineId": {
+                            "value": {
+                              "value": "@pipeline().parameters.pipelineId",
+                              "type": "Expression"
+                            },
+                            "type": "Int32"
+                          },
+                          "StageId": {
+                            "value": {
+                              "value": "@pipeline().parameters.stageId",
+                              "type": "Expression"
+                            },
+                            "type": "Int32"
+                          }
+                        }
+                      },
+                      "linkedServiceName": {
+                        "referenceName": "SupportDatabase",
+                        "type": "LinkedServiceReference"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "value": "Failed",
+                  "activities": [
+                    {
+                      "name": "Pipeline Status Failed",
+                      "description": "Updates the current execution table with a pipeline status of failed if the function outcome is failed. Also blocks pipelines in the downstream execution stage.",
+                      "type": "SqlServerStoredProcedure",
+                      "dependsOn": [],
+                      "policy": {
+                        "timeout": "0.00:10:00",
+                        "retry": 0,
+                        "retryIntervalInSeconds": 30,
+                        "secureOutput": false,
+                        "secureInput": false
+                      },
+                      "userProperties": [],
+                      "typeProperties": {
+                        "storedProcedureName": "[[procfwk].[SetLogPipelineFailed]",
+                        "storedProcedureParameters": {
+                          "ExecutionId": {
+                            "value": {
+                              "value": "@pipeline().parameters.executionId",
+                              "type": "Expression"
+                            },
+                            "type": "Guid"
+                          },
+                          "PipelineId": {
+                            "value": {
+                              "value": "@pipeline().parameters.pipelineId",
+                              "type": "Expression"
+                            },
+                            "type": "Int32"
+                          },
+                          "RunId": {
+                            "value": {
+                              "value": "@variables('WorkerRunId')",
+                              "type": "Expression"
+                            },
+                            "type": "Guid"
+                          },
+                          "StageId": {
+                            "value": {
+                              "value": "@pipeline().parameters.stageId",
+                              "type": "Expression"
+                            },
+                            "type": "Int32"
+                          }
+                        }
+                      },
+                      "linkedServiceName": {
+                        "referenceName": "SupportDatabase",
+                        "type": "LinkedServiceReference"
+                      }
+                    },
+                    {
+                      "name": "Get Worker Pipeline Error Details",
+                      "description": "Get the activity error details for the run ID of the worker pipeline called. Returns an array of all errors.",
+                      "type": "AzureFunctionActivity",
+                      "dependsOn": [],
+                      "policy": {
+                        "timeout": "0.00:10:00",
+                        "retry": 0,
+                        "retryIntervalInSeconds": 30,
+                        "secureOutput": false,
+                        "secureInput": true
+                      },
+                      "userProperties": [],
+                      "typeProperties": {
+                        "functionName": "GetActivityErrors",
+                        "method": "POST",
+                        "headers": {},
+                        "body": {
+                          "value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerCoreDetails')[0].tenantId,'\",\n    \"applicationId\": \"',variables('WorkerCoreDetails')[0].applicationId,'\",\n    \"authenticationKey\": \"',variables('WorkerCoreDetails')[0].authenticationKey,'\",\n    \"subscriptionId\": \"',variables('WorkerCoreDetails')[0].subscriptionId,'\",\n    \"resourceGroupName\": \"',variables('WorkerCoreDetails')[0].resourceGroupName,'\",\n\t\"orchestratorName\": \"',variables('WorkerCoreDetails')[0].orchestratorName,'\",\n    \"orchestratorType\": \"',variables('WorkerCoreDetails')[0].orchestratorType,'\",\n    \"pipelineName\": \"',variables('WorkerCoreDetails')[0].pipelineName,'\",\n    \"runId\": \"',variables('WorkerRunId'),'\"\n}')",
+                          "type": "Expression"
+                        }
+                      },
+                      "linkedServiceName": {
+                        "referenceName": "FrameworkFunctions",
+                        "type": "LinkedServiceReference"
+                      }
+                    },
+                    {
+                      "name": "Log Error Details",
+                      "description": "Parses pipeline error details and persists them to the metadata database error log table.",
+                      "type": "SqlServerStoredProcedure",
+                      "dependsOn": [
+                        {
+                          "activity": "Get Worker Pipeline Error Details",
+                          "dependencyConditions": [
+                            "Succeeded"
+                          ]
+                        }
+                      ],
+                      "policy": {
+                        "timeout": "0.00:10:00",
+                        "retry": 0,
+                        "retryIntervalInSeconds": 30,
+                        "secureOutput": false,
+                        "secureInput": false
+                      },
+                      "userProperties": [],
+                      "typeProperties": {
+                        "storedProcedureName": "[[procfwk].[SetErrorLogDetails]",
+                        "storedProcedureParameters": {
+                          "JsonErrorDetails": {
+                            "value": {
+                              "value": "@string(activity('Get Worker Pipeline Error Details').output)",
+                              "type": "Expression"
+                            },
+                            "type": "String"
+                          },
+                          "LocalExecutionId": {
+                            "value": {
+                              "value": "@pipeline().parameters.executionId",
+                              "type": "Expression"
+                            },
+                            "type": "Guid"
+                          }
+                        }
+                      },
+                      "linkedServiceName": {
+                        "referenceName": "SupportDatabase",
+                        "type": "LinkedServiceReference"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "value": "Cancelled",
+                  "activities": [
+                    {
+                      "name": "Pipeline Status Cancelled",
+                      "description": "Updates the current execution table with a pipeline status of cancelled if the function outcome is cancelled.",
+                      "type": "SqlServerStoredProcedure",
+                      "dependsOn": [],
+                      "policy": {
+                        "timeout": "0.00:10:00",
+                        "retry": 0,
+                        "retryIntervalInSeconds": 30,
+                        "secureOutput": false,
+                        "secureInput": false
+                      },
+                      "userProperties": [],
+                      "typeProperties": {
+                        "storedProcedureName": "[[procfwk].[SetLogPipelineCancelled]",
+                        "storedProcedureParameters": {
+                          "ExecutionId": {
+                            "value": {
+                              "value": "@pipeline().parameters.executionId",
+                              "type": "Expression"
+                            },
+                            "type": "Guid"
+                          },
+                          "PipelineId": {
+                            "value": {
+                              "value": "@pipeline().parameters.pipelineId",
+                              "type": "Expression"
+                            },
+                            "type": "Int32"
+                          },
+                          "StageId": {
+                            "value": {
+                              "value": "@pipeline().parameters.stageId",
+                              "type": "Expression"
+                            },
+                            "type": "Int32"
+                          }
+                        }
+                      },
+                      "linkedServiceName": {
+                        "referenceName": "SupportDatabase",
+                        "type": "LinkedServiceReference"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "defaultActivities": [
+                {
+                  "name": "Pipeline Status Unknown",
+                  "description": "Updates the current execution table with a pipeline status of unknown if the function returns an unexpected outcome.",
+                  "type": "SqlServerStoredProcedure",
+                  "dependsOn": [],
+                  "policy": {
+                    "timeout": "0.00:10:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                  },
+                  "userProperties": [],
+                  "typeProperties": {
+                    "storedProcedureName": "[[procfwk].[SetLogPipelineUnknown]",
+                    "storedProcedureParameters": {
+                      "ExecutionId": {
+                        "value": {
+                          "value": "@pipeline().parameters.executionId",
+                          "type": "Expression"
+                        },
+                        "type": "Guid"
+                      },
+                      "PipelineId": {
+                        "value": {
+                          "value": "@pipeline().parameters.pipelineId",
+                          "type": "Expression"
+                        },
+                        "type": "Int32"
+                      },
+                      "StageId": {
+                        "value": {
+                          "value": "@pipeline().parameters.stageId",
+                          "type": "Expression"
+                        },
+                        "type": "Int32"
+                      }
+                    }
+                  },
+                  "linkedServiceName": {
+                    "referenceName": "SupportDatabase",
+                    "type": "LinkedServiceReference"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "Get Wait Duration",
+            "description": "Return wait duration in seconds from database properties table to be used during each Until iteration when the Worker pipeline is still running.",
+            "type": "Lookup",
+            "dependsOn": [],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "source": {
+                "type": "AzureSqlSource",
+                "sqlReaderStoredProcedureName": "[[procfwk].[GetPropertyValue]",
+                "storedProcedureParameters": {
+                  "PropertyName": {
+                    "type": "String",
+                    "value": "PipelineStatusCheckDuration"
+                  }
+                },
+                "queryTimeout": "02:00:00",
+                "partitionOption": "None"
+              },
+              "dataset": {
+                "referenceName": "GetSetMetadata",
+                "type": "DatasetReference",
+                "parameters": {}
+              }
+            }
+          },
+          {
+            "name": "Set Run Id",
+            "description": "Set local variable from activity output once for value reuse in downstream activities.",
+            "type": "SetVariable",
+            "dependsOn": [
+              {
+                "activity": "Execute Worker Pipeline",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "variableName": "WorkerRunId",
+              "value": {
+                "value": "@activity('Execute Worker Pipeline').output.RunId",
+                "type": "Expression"
+              }
+            }
+          },
+          {
+            "name": "Validate Pipeline",
+            "description": "Query the target data factory and establish if the provided worker pipeline name is valid.",
+            "type": "AzureFunctionActivity",
+            "dependsOn": [
+              {
+                "activity": "Log Pipeline Validating",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              },
+              {
+                "activity": "Capture Worker Core Details as an Array",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": true
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "functionName": "ValidatePipeline",
+              "method": "POST",
+              "headers": {},
+              "body": {
+                "value": "@concat('\n{\n    \"tenantId\": \"',variables('WorkerCoreDetails')[0].tenantId,'\",\n    \"applicationId\": \"',variables('WorkerCoreDetails')[0].applicationId,'\",\n    \"authenticationKey\": \"',variables('WorkerCoreDetails')[0].authenticationKey,'\",\n    \"subscriptionId\": \"',variables('WorkerCoreDetails')[0].subscriptionId,'\",\n    \"resourceGroupName\": \"',variables('WorkerCoreDetails')[0].resourceGroupName,'\",\n\t\"orchestratorName\": \"',variables('WorkerCoreDetails')[0].orchestratorName,'\",\n    \"orchestratorType\": \"',variables('WorkerCoreDetails')[0].orchestratorType,'\",\n    \"pipelineName\": \"',variables('WorkerCoreDetails')[0].pipelineName,'\"\n}')",
+                "type": "Expression"
+              }
+            },
+            "linkedServiceName": {
+              "referenceName": "FrameworkFunctions",
+              "type": "LinkedServiceReference"
+            }
+          },
+          {
+            "name": "Is Target Worker Validate",
+            "description": "True = the worker pipeline name is valid.\nFalse = the worker pipeline name is invalid. Raise an exception.",
+            "type": "IfCondition",
+            "dependsOn": [
+              {
+                "activity": "Validate Pipeline",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "expression": {
+                "value": "@bool(activity('Validate Pipeline').output.PipelineExists)",
+                "type": "Expression"
+              },
+              "ifFalseActivities": [
+                {
+                  "name": "Throw Exception - Invalid Infant",
+                  "description": "Throw an exception with details about the invalid worker pipeline name.",
+                  "type": "ExecutePipeline",
+                  "dependsOn": [],
+                  "userProperties": [],
+                  "typeProperties": {
+                    "pipeline": {
+                      "referenceName": "Throw Exception",
+                      "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true,
+                    "parameters": {
+                      "Message": {
+                        "value": "@concat('Worker pipeline [',variables('WorkerCoreDetails')[0].pipelineName,'] is not valid in target Orchestrator [',variables('WorkerCoreDetails')[0].orchestratorName,']')",
+                        "type": "Expression"
+                      }
+                    }
+                  }
+                },
+                {
+                  "name": "Update Execution With Invalid Worker",
+                  "description": "Update the current execution table with an informed status for the worker pipeline that couldn't be executed.",
+                  "type": "SqlServerStoredProcedure",
+                  "dependsOn": [],
+                  "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                  },
+                  "userProperties": [],
+                  "typeProperties": {
+                    "storedProcedureName": "[[procfwk].[SetLogActivityFailed]",
+                    "storedProcedureParameters": {
+                      "CallingActivity": {
+                        "value": "InvalidPipelineName",
+                        "type": "String"
+                      },
+                      "ExecutionId": {
+                        "value": {
+                          "value": "@pipeline().parameters.ExecutionId",
+                          "type": "Expression"
+                        },
+                        "type": "Guid"
+                      },
+                      "PipelineId": {
+                        "value": {
+                          "value": "@pipeline().parameters.pipelineId",
+                          "type": "Expression"
+                        },
+                        "type": "Int32"
+                      },
+                      "StageId": {
+                        "value": {
+                          "value": "@pipeline().parameters.StageId",
+                          "type": "Expression"
+                        },
+                        "type": "Int32"
+                      }
+                    }
+                  },
+                  "linkedServiceName": {
+                    "referenceName": "SupportDatabase",
+                    "type": "LinkedServiceReference"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "Log Validate Function Activity Failure",
+            "description": "Handle true failures from calling out to the Azure Function and update the current execution table accordingly so a restart can occur.",
+            "type": "SqlServerStoredProcedure",
+            "dependsOn": [
+              {
+                "activity": "Validate Pipeline",
+                "dependencyConditions": [
+                  "Failed"
+                ]
+              }
+            ],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "storedProcedureName": "[[procfwk].[SetLogActivityFailed]",
+              "storedProcedureParameters": {
+                "ExecutionId": {
+                  "value": {
+                    "value": "@pipeline().parameters.ExecutionId",
+                    "type": "Expression"
+                  },
+                  "type": "Guid"
+                },
+                "PipelineId": {
+                  "value": {
+                    "value": "@pipeline().parameters.pipelineId",
+                    "type": "Expression"
+                  },
+                  "type": "Int32"
+                },
+                "StageId": {
+                  "value": {
+                    "value": "@pipeline().parameters.StageId",
+                    "type": "Expression"
+                  },
+                  "type": "Int32"
+                },
+                "CallingActivity": {
+                  "value": "ValidatePipeline",
+                  "type": "String"
+                }
+              }
+            },
+            "linkedServiceName": {
+              "referenceName": "SupportDatabase",
+              "type": "LinkedServiceReference"
+            }
+          },
+          {
+            "name": "Log Pipeline Validating",
+            "description": "Sets the current pipeline with a status of validating within the current execution database table.",
+            "type": "SqlServerStoredProcedure",
+            "dependsOn": [],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "storedProcedureName": "[[procfwk].[SetLogPipelineValidating]",
+              "storedProcedureParameters": {
+                "ExecutionId": {
+                  "value": {
+                    "value": "@pipeline().parameters.ExecutionId",
+                    "type": "Expression"
+                  },
+                  "type": "Guid"
+                },
+                "PipelineId": {
+                  "value": {
+                    "value": "@pipeline().parameters.pipelineId",
+                    "type": "Expression"
+                  },
+                  "type": "Int32"
+                },
+                "StageId": {
+                  "value": {
+                    "value": "@pipeline().parameters.StageId",
+                    "type": "Expression"
+                  },
+                  "type": "Int32"
+                }
+              }
+            },
+            "linkedServiceName": {
+              "referenceName": "SupportDatabase",
+              "type": "LinkedServiceReference"
+            }
+          },
+          {
+            "name": "Get Worker Core Details",
+            "description": "Return worker pipeline information for metadata database. Including target data factory, pipeline name and resource group. Return the SPN ID and Secret for the worker pipeline being executed. Called at this level as each pipeline can have a different SPN.",
+            "type": "Lookup",
+            "dependsOn": [],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": true,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "source": {
+                "type": "AzureSqlSource",
+                "sqlReaderStoredProcedureName": "[[procfwk].[GetWorkerDetailsWrapper]",
+                "storedProcedureParameters": {
+                  "ExecutionId": {
+                    "type": "Guid",
+                    "value": {
+                      "value": "@pipeline().parameters.executionId",
+                      "type": "Expression"
+                    }
+                  },
+                  "PipelineId": {
+                    "type": "Int32",
+                    "value": {
+                      "value": "@pipeline().parameters.pipelineId",
+                      "type": "Expression"
+                    }
+                  },
+                  "StageId": {
+                    "type": "Int32",
+                    "value": {
+                      "value": "@pipeline().parameters.stageId",
+                      "type": "Expression"
+                    }
+                  }
+                },
+                "queryTimeout": "02:00:00",
+                "partitionOption": "None"
+              },
+              "dataset": {
+                "referenceName": "GetSetMetadata",
+                "type": "DatasetReference",
+                "parameters": {}
+              }
+            }
+          },
+          {
+            "name": "Capture Worker Core Details as an Array",
+            "description": "Add all worker pipeline details to a local variable array that can be accessed by each function call requiring the values.",
+            "type": "SetVariable",
+            "dependsOn": [
+              {
+                "activity": "Get Worker Core Details",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "variableName": "WorkerCoreDetails",
+              "value": {
+                "value": "@array(activity('Get Worker Core Details').output.firstRow)",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "parameters": {
+          "executionId": {
+            "type": "string"
+          },
+          "stageId": {
+            "type": "int"
+          },
+          "pipelineId": {
+            "type": "int"
+          }
+        },
+        "variables": {
+          "WorkerPipelineState": {
+            "type": "Boolean"
+          },
+          "WorkerRunId": {
+            "type": "String"
+          },
+          "WorkerCoreDetails": {
+            "type": "Array"
+          }
+        },
+        "folder": {
+          "name": "_ProcFwk"
+        },
+        "annotations": [
+          "procfwk",
+          "Infant"
+        ]
+      },
+      "dependsOn": [
+        "[concat(variables('workspaceId'), '/linkedServices/FrameworkFunctions')]",
+        "[concat(variables('workspaceId'), '/datasets/GetSetMetadata')]",
+        "[concat(variables('workspaceId'), '/linkedServices/SupportDatabase')]",
+        "[concat(variables('workspaceId'), '/pipelines/Email Sender')]",
+        "[concat(variables('workspaceId'), '/pipelines/Throw Exception')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Check For Running Pipeline')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "For a given pipeline and optional batch name establish if a pipeline run is already in progress. Throw an exception if it it.",
+        "activities": [
+          {
+            "name": "Filter Running Pipelines",
+            "description": "Filter the pipeline runs results for pipelines that exclude the current triggered run and that are currently running (in progress or queued).",
+            "type": "Filter",
+            "dependsOn": [
+              {
+                "activity": "Switch For Orchestrator Type",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "items": {
+                "value": "@variables('PipelineRuns')",
+                "type": "Expression"
+              },
+              "condition": {
+                "value": "@and(not(equals(item().runId,pipeline().parameters.ThisRunId)),or(equals(item().status,'InProgress'),equals(item().status,'Queued')))",
+                "type": "Expression"
+              }
+            }
+          },
+          {
+            "name": "Get Framework Orchestrator Details",
+            "description": "Using the metadata orchestrators return details about the resource running the framework pipelines.",
+            "type": "Lookup",
+            "dependsOn": [],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "source": {
+                "type": "AzureSqlSource",
+                "sqlReaderStoredProcedureName": "[[procfwk].[GetFrameworkOrchestratorDetails]",
+                "storedProcedureParameters": {
+                  "CallingOrchestratorName": {
+                    "type": "String",
+                    "value": {
+                      "value": "@pipeline().DataFactory",
+                      "type": "Expression"
+                    }
+                  }
+                },
+                "queryTimeout": "02:00:00",
+                "partitionOption": "None"
+              },
+              "dataset": {
+                "referenceName": "GetSetMetadata",
+                "type": "DatasetReference",
+                "parameters": {}
+              }
+            }
+          },
+          {
+            "name": "Get Query Run Days Value",
+            "description": "Using the metadata properties table return the run days value to provide the API request with a date range for pipeline executions.",
+            "type": "Lookup",
+            "dependsOn": [],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "source": {
+                "type": "AzureSqlSource",
+                "sqlReaderStoredProcedureName": "[[procfwk].[GetPropertyValue]",
+                "storedProcedureParameters": {
+                  "PropertyName": {
+                    "type": "String",
+                    "value": "PreviousPipelineRunsQueryRange"
+                  }
+                },
+                "queryTimeout": "02:00:00",
+                "partitionOption": "None"
+              },
+              "dataset": {
+                "referenceName": "GetSetMetadata",
+                "type": "DatasetReference",
+                "parameters": {}
+              }
+            }
+          },
+          {
+            "name": "If Pipeline Is Running",
+            "description": "If the running pipeline count is greater than or equal to one.\nTrue = raise an exception.",
+            "type": "IfCondition",
+            "dependsOn": [
+              {
+                "activity": "If Using Batch Executions",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "expression": {
+                "value": "@greaterOrEquals(int(variables('RunCount')),1)",
+                "type": "Expression"
+              },
+              "ifTrueActivities": [
+                {
+                  "name": "Throw Exception - Pipeline Running",
+                  "description": "Using the utils pipeline raise an exception to stop the new trigger while a run is already in progress.",
+                  "type": "ExecutePipeline",
+                  "dependsOn": [],
+                  "userProperties": [],
+                  "typeProperties": {
+                    "pipeline": {
+                      "referenceName": "Throw Exception",
+                      "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true,
+                    "parameters": {
+                      "Message": {
+                        "value": "@concat('Provided pipeline name (',pipeline().parameters.PipelineName,') still has a run in progress or queued given the query range parameters set in the properties table.')",
+                        "type": "Expression"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "Get Execution Batch Status",
+            "description": "Using the metadata properties table return the flag to indicate if batch execution setting are enabled or disabled.",
+            "type": "Lookup",
+            "dependsOn": [],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "source": {
+                "type": "AzureSqlSource",
+                "sqlReaderStoredProcedureName": "[[procfwk].[GetPropertyValue]",
+                "storedProcedureParameters": {
+                  "PropertyName": {
+                    "type": "String",
+                    "value": "UseExecutionBatches"
+                  }
+                },
+                "queryTimeout": "02:00:00",
+                "partitionOption": "None"
+              },
+              "dataset": {
+                "referenceName": "GetSetMetadata",
+                "type": "DatasetReference",
+                "parameters": {}
+              }
+            }
+          },
+          {
+            "name": "If Using Batch Executions",
+            "description": "True = batch executions are enabled.\nFalse = batch execution are disabled.",
+            "type": "IfCondition",
+            "dependsOn": [
+              {
+                "activity": "Get Execution Batch Status",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              },
+              {
+                "activity": "Filter Running Pipelines",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "expression": {
+                "value": "@equals(activity('Get Execution Batch Status').output.firstRow.PropertyValue,string(1))",
+                "type": "Expression"
+              },
+              "ifFalseActivities": [
+                {
+                  "name": "Set Run Count Without Batch",
+                  "description": "Set the pipelines running count variable to be tested later.",
+                  "type": "SetVariable",
+                  "dependsOn": [],
+                  "userProperties": [],
+                  "typeProperties": {
+                    "variableName": "RunCount",
+                    "value": {
+                      "value": "@string(activity('Filter Running Pipelines').output.FilteredItemsCount)",
+                      "type": "Expression"
+                    }
+                  }
+                }
+              ],
+              "ifTrueActivities": [
+                {
+                  "name": "Filter for Batch Name",
+                  "description": "Further filter the return pipeline runs for any running pipelines with the same batch name value.",
+                  "type": "Filter",
+                  "dependsOn": [],
+                  "userProperties": [],
+                  "typeProperties": {
+                    "items": {
+                      "value": "@activity('Filter Running Pipelines').output.value",
+                      "type": "Expression"
+                    },
+                    "condition": {
+                      "value": "@equals(item().parameters.BatchName,pipeline().parameters.BatchName)",
+                      "type": "Expression"
+                    }
+                  }
+                },
+                {
+                  "name": "Set Run Count for Batch",
+                  "description": "Set the resulting pipeline running count variable to be tested later.",
+                  "type": "SetVariable",
+                  "dependsOn": [
+                    {
+                      "activity": "Filter for Batch Name",
+                      "dependencyConditions": [
+                        "Succeeded"
+                      ]
+                    }
+                  ],
+                  "userProperties": [],
+                  "typeProperties": {
+                    "variableName": "RunCount",
+                    "value": {
+                      "value": "@string(activity('Filter for Batch Name').output.FilteredItemsCount)",
+                      "type": "Expression"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "Set Subscription Id",
+            "description": "Set the subscription Id value to a local variable for use in various downstream activities.",
+            "type": "SetVariable",
+            "dependsOn": [
+              {
+                "activity": "Get Framework Orchestrator Details",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "variableName": "SubscriptionId",
+              "value": {
+                "value": "@activity('Get Framework Orchestrator Details').output.firstRow.SubscriptionId",
+                "type": "Expression"
+              }
+            }
+          },
+          {
+            "name": "Set Resource Group Name",
+            "description": "Set the resource group name value to a local variable for use in various downstream activities.",
+            "type": "SetVariable",
+            "dependsOn": [
+              {
+                "activity": "Get Framework Orchestrator Details",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "variableName": "ResourceGroupName",
+              "value": {
+                "value": "@activity('Get Framework Orchestrator Details').output.firstRow.ResourceGroupName",
+                "type": "Expression"
+              }
+            }
+          },
+          {
+            "name": "Set Orchestrator Type",
+            "description": "Set the orchestrator type value to a local variable for use in various downstream activities.",
+            "type": "SetVariable",
+            "dependsOn": [
+              {
+                "activity": "Get Framework Orchestrator Details",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "variableName": "OrchestratorType",
+              "value": {
+                "value": "@toUpper(activity('Get Framework Orchestrator Details').output.firstRow.OrchestratorType)",
+                "type": "Expression"
+              }
+            }
+          },
+          {
+            "name": "Switch For Orchestrator Type",
+            "description": "Switch and handle requests for both Azure Data Factory (ADF) and Azure Synapse Analytics (SYN).",
+            "type": "Switch",
+            "dependsOn": [
+              {
+                "activity": "Set Orchestrator Type",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              },
+              {
+                "activity": "Set Query Run Days",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              },
+              {
+                "activity": "Set Resource Group Name",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              },
+              {
+                "activity": "Set Subscription Id",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "on": {
+                "value": "@variables('OrchestratorType')",
+                "type": "Expression"
+              },
+              "cases": [
+                {
+                  "value": "ADF",
+                  "activities": [
+                    {
+                      "name": "Check for Valid ADF Pipeline Name",
+                      "description": "Use the Azure Management API to return and establish if the framework pipeline exists in the target Data Factory instance, including being deployed.",
+                      "type": "WebActivity",
+                      "dependsOn": [],
+                      "policy": {
+                        "timeout": "7.00:00:00",
+                        "retry": 0,
+                        "retryIntervalInSeconds": 30,
+                        "secureOutput": false,
+                        "secureInput": false
+                      },
+                      "userProperties": [],
+                      "typeProperties": {
+                        "url": {
+                          "value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{variables('ResourceGroupName')}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/pipelines/@{pipeline().parameters.PipelineName}?api-version=2018-06-01",
+                          "type": "Expression"
+                        },
+                        "method": "GET",
+                        "headers": {},
+                        "authentication": {
+                          "type": "MSI",
+                          "resource": "https://management.core.windows.net/"
+                        }
+                      }
+                    },
+                    {
+                      "name": "Get ADF Pipeline Runs",
+                      "description": "Use the Azure Management API to return a list of data factory pipeline runs within the given time window.",
+                      "type": "WebActivity",
+                      "dependsOn": [
+                        {
+                          "activity": "Check for Valid ADF Pipeline Name",
+                          "dependencyConditions": [
+                            "Succeeded"
+                          ]
+                        }
+                      ],
+                      "policy": {
+                        "timeout": "7.00:00:00",
+                        "retry": 0,
+                        "retryIntervalInSeconds": 30,
+                        "secureOutput": false,
+                        "secureInput": false
+                      },
+                      "userProperties": [],
+                      "typeProperties": {
+                        "url": {
+                          "value": "https://management.azure.com/subscriptions/@{variables('SubscriptionId')}/resourceGroups/@{variables('ResourceGroupName')}/providers/Microsoft.DataFactory/factories/@{pipeline().DataFactory}/queryPipelineRuns?api-version=2018-06-01",
+                          "type": "Expression"
+                        },
+                        "method": "POST",
+                        "headers": {},
+                        "body": {
+                          "value": "{\n  \"lastUpdatedAfter\": \"@{adddays(utcnow(),int(variables('QueryRunDays')))}\",\n  \"lastUpdatedBefore\": \"@{utcnow()}\",\n  \"filters\": [\n    {\n      \"operand\": \"PipelineName\",\n      \"operator\": \"Equals\",\n      \"values\": [\n        \"@{pipeline().parameters.PipelineName}\"\n      ]\n    }\n  ]\n}",
+                          "type": "Expression"
+                        },
+                        "authentication": {
+                          "type": "MSI",
+                          "resource": "https://management.core.windows.net/"
+                        }
+                      }
+                    },
+                    {
+                      "name": "Set ADF Runs Output",
+                      "description": "Set output to local array for use in downstream filtering and pipeline checks. Use the same array output for both switch cases.",
+                      "type": "SetVariable",
+                      "dependsOn": [
+                        {
+                          "activity": "Get ADF Pipeline Runs",
+                          "dependencyConditions": [
+                            "Succeeded"
+                          ]
+                        }
+                      ],
+                      "userProperties": [],
+                      "typeProperties": {
+                        "variableName": "PipelineRuns",
+                        "value": {
+                          "value": "@activity('Get ADF Pipeline Runs').output.value",
+                          "type": "Expression"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "value": "SYN",
+                  "activities": [
+                    {
+                      "name": "Check for Valid SYN Pipeline Name",
+                      "description": "Use the Azure Management API to return and establish if the framework pipeline exists in the target Synapse instance, including being deployed.\n\nSee: https://docs.microsoft.com/en-us/rest/api/synapse/data-plane/pipeline/getpipeline",
+                      "type": "WebActivity",
+                      "dependsOn": [],
+                      "policy": {
+                        "timeout": "7.00:00:00",
+                        "retry": 0,
+                        "retryIntervalInSeconds": 30,
+                        "secureOutput": false,
+                        "secureInput": false
+                      },
+                      "userProperties": [],
+                      "typeProperties": {
+                        "url": {
+                          "value": "https://@{pipeline().DataFactory}.dev.azuresynapse.net/pipelines/@{pipeline().parameters.PipelineName}?api-version=2019-06-01-preview",
+                          "type": "Expression"
+                        },
+                        "method": "GET",
+                        "headers": {},
+                        "authentication": {
+                          "type": "MSI",
+                          "resource": "https://management.core.windows.net/"
+                        }
+                      }
+                    },
+                    {
+                      "name": "Get SYN Pipeline Runs",
+                      "description": "Use the Azure Management API to return a list of synapse pipeline runs within the given time window.\n\nSee: https://docs.microsoft.com/en-us/rest/api/synapse/data-plane/pipelinerun/querypipelinerunsbyworkspace",
+                      "type": "WebActivity",
+                      "dependsOn": [
+                        {
+                          "activity": "Check for Valid SYN Pipeline Name",
+                          "dependencyConditions": [
+                            "Succeeded"
+                          ]
+                        }
+                      ],
+                      "policy": {
+                        "timeout": "7.00:00:00",
+                        "retry": 0,
+                        "retryIntervalInSeconds": 30,
+                        "secureOutput": false,
+                        "secureInput": false
+                      },
+                      "userProperties": [],
+                      "typeProperties": {
+                        "url": {
+                          "value": "https://@{pipeline().DataFactory}.dev.azuresynapse.net/queryPipelineRuns?api-version=2019-06-01-preview",
+                          "type": "Expression"
+                        },
+                        "method": "POST",
+                        "headers": {},
+                        "body": {
+                          "value": "{\n  \"lastUpdatedAfter\": \"@{adddays(utcnow(),int(variables('QueryRunDays')))}\",\n  \"lastUpdatedBefore\": \"@{utcnow()}\",\n  \"filters\": [\n    {\n      \"operand\": \"PipelineName\",\n      \"operator\": \"Equals\",\n      \"values\": [\n        \"@{pipeline().parameters.PipelineName}\"\n      ]\n    }\n  ]\n}",
+                          "type": "Expression"
+                        },
+                        "authentication": {
+                          "type": "MSI",
+                          "resource": "https://management.core.windows.net/"
+                        }
+                      }
+                    },
+                    {
+                      "name": "Set SYN Runs Output",
+                      "description": "Set output to local array for use in downstream filtering and pipeline checks. Use the same array output for both switch cases.",
+                      "type": "SetVariable",
+                      "dependsOn": [
+                        {
+                          "activity": "Get SYN Pipeline Runs",
+                          "dependencyConditions": [
+                            "Succeeded"
+                          ]
+                        }
+                      ],
+                      "userProperties": [],
+                      "typeProperties": {
+                        "variableName": "PipelineRuns",
+                        "value": {
+                          "value": "@activity('Get SYN Pipeline Runs').output.value",
+                          "type": "Expression"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ],
+              "defaultActivities": [
+                {
+                  "name": "Throw Exception Invalid Orchestrator Type",
+                  "description": "Throw exception if switch cases are not met.",
+                  "type": "ExecutePipeline",
+                  "dependsOn": [],
+                  "userProperties": [],
+                  "typeProperties": {
+                    "pipeline": {
+                      "referenceName": "Throw Exception",
+                      "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true,
+                    "parameters": {
+                      "Message": "Invalid orchestrator type provided. Unable to check pipeline running state."
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "Set Query Run Days",
+            "description": "Set the query run days value to a local variable for use in various downstream activities.",
+            "type": "SetVariable",
+            "dependsOn": [
+              {
+                "activity": "Get Query Run Days Value",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "variableName": "QueryRunDays",
+              "value": {
+                "value": "@activity('Get Query Run Days Value').output.firstRow.PropertyValue",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "parameters": {
+          "BatchName": {
+            "type": "string",
+            "defaultValue": "NotUsed"
+          },
+          "PipelineName": {
+            "type": "string"
+          },
+          "ThisRunId": {
+            "type": "string"
+          }
+        },
+        "variables": {
+          "SubscriptionId": {
+            "type": "String"
+          },
+          "RunCount": {
+            "type": "String"
+          },
+          "ResourceGroupName": {
+            "type": "String"
+          },
+          "OrchestratorType": {
+            "type": "String"
+          },
+          "QueryRunDays": {
+            "type": "String"
+          },
+          "PipelineRuns": {
+            "type": "Array"
+          }
+        },
+        "folder": {
+          "name": "_ProcFwk/_ProcFwkUtils"
+        },
+        "annotations": [
+          "procfwk",
+          "Utils"
+        ]
+      },
+      "dependsOn": [
+        "[concat(variables('workspaceId'), '/datasets/GetSetMetadata')]",
+        "[concat(variables('workspaceId'), '/pipelines/Throw Exception')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Email Sender')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Provide a simple abstract over the send email function with request body item exposed as pipeline parameters.",
+        "activities": [
+          {
+            "name": "Send Email",
+            "description": "Use an Azure Function to perform an SMTP client email send operation.",
+            "type": "AzureFunctionActivity",
+            "dependsOn": [],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "functionName": "SendEmail",
+              "method": "POST",
+              "headers": {},
+              "body": {
+                "value": "{\n\"emailRecipients\": \"@{pipeline().parameters.Recipients}\",\n\"emailCcRecipients\": \"@{pipeline().parameters.CcRecipients}\",\n\"emailBccRecipients\": \"@{pipeline().parameters.BccRecipients}\",\n\"emailSubject\": \"@{pipeline().parameters.Subject}\",\n\"emailBody\": \"@{pipeline().parameters.Body}\",\n\"emailImportance\": \"@{pipeline().parameters.Importance}\"\n}",
+                "type": "Expression"
+              }
+            },
+            "linkedServiceName": {
+              "referenceName": "FrameworkFunctions",
+              "type": "LinkedServiceReference"
+            }
+          }
+        ],
+        "parameters": {
+          "Recipients": {
+            "type": "string"
+          },
+          "CcRecipients": {
+            "type": "string"
+          },
+          "BccRecipients": {
+            "type": "string"
+          },
+          "Subject": {
+            "type": "string"
+          },
+          "Body": {
+            "type": "string"
+          },
+          "Importance": {
+            "type": "string"
+          }
+        },
+        "folder": {
+          "name": "_ProcFwk/_ProcFwkUtils"
+        },
+        "annotations": [
+          "procfwk",
+          "Utils"
+        ]
+      },
+      "dependsOn": [
+        "[concat(variables('workspaceId'), '/linkedServices/FrameworkFunctions')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Intentional Error')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Used just so the procfwk has something to call during development.",
+        "activities": [
+          {
+            "name": "Wait1",
+            "description": "Framework development worker simulator.",
+            "type": "Wait",
+            "dependsOn": [],
+            "userProperties": [],
+            "typeProperties": {
+              "waitTimeInSeconds": {
+                "value": "@pipeline().parameters.WaitTime",
+                "type": "Expression"
+              }
+            }
+          },
+          {
+            "name": "Raise Errors or Not",
+            "description": "Framework development worker simulator.",
+            "type": "IfCondition",
+            "dependsOn": [
+              {
+                "activity": "Wait1",
+                "dependencyConditions": [
+                  "Succeeded"
+                ]
+              }
+            ],
+            "userProperties": [],
+            "typeProperties": {
+              "expression": {
+                "value": "@equals(pipeline().parameters.RaiseErrors,'true')",
+                "type": "Expression"
+              },
+              "ifTrueActivities": [
+                {
+                  "name": "Call Fail Procedure",
+                  "type": "SqlServerStoredProcedure",
+                  "dependsOn": [],
+                  "policy": {
+                    "timeout": "0.00:10:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                  },
+                  "userProperties": [],
+                  "typeProperties": {
+                    "storedProcedureName": "[[dbo].[FailProcedure]",
+                    "storedProcedureParameters": {
+                      "RaiseError": {
+                        "value": {
+                          "value": "@pipeline().parameters.RaiseErrors",
+                          "type": "Expression"
+                        },
+                        "type": "String"
+                      }
+                    }
+                  },
+                  "linkedServiceName": {
+                    "referenceName": "SupportDatabase",
+                    "type": "LinkedServiceReference"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "parameters": {
+          "RaiseErrors": {
+            "type": "string",
+            "defaultValue": "false"
+          },
+          "WaitTime": {
+            "type": "int",
+            "defaultValue": 5
+          }
+        },
+        "folder": {
+          "name": "_Workers"
+        },
+        "annotations": [
+          "_ProcFwkWorker"
+        ]
+      },
+      "dependsOn": [
+        "[concat(variables('workspaceId'), '/linkedServices/SupportDatabase')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Throw Exception')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Provide a simple way of throwing an exception within Data Factory using TSQL error handling.",
+        "activities": [
+          {
+            "name": "Raise Error",
+            "description": "Using a SQL database to raise an error/exception but wrapped up as a data factory pipeline. Error message information exposed as a pipeline parameter.",
+            "type": "Lookup",
+            "dependsOn": [],
+            "policy": {
+              "timeout": "0.00:10:00",
+              "retry": 0,
+              "retryIntervalInSeconds": 30,
+              "secureOutput": false,
+              "secureInput": false
+            },
+            "userProperties": [],
+            "typeProperties": {
+              "source": {
+                "type": "AzureSqlSource",
+                "sqlReaderQuery": {
+                  "value": "RAISERROR('@{pipeline().parameters.Message}',16,1);",
+                  "type": "Expression"
+                },
+                "queryTimeout": "02:00:00",
+                "partitionOption": "None"
+              },
+              "dataset": {
+                "referenceName": "GetSetMetadata",
+                "type": "DatasetReference",
+                "parameters": {}
+              },
+              "firstRowOnly": false
+            }
+          }
+        ],
+        "parameters": {
+          "Message": {
+            "type": "string"
+          }
+        },
+        "folder": {
+          "name": "_ProcFwk/_ProcFwkUtils"
+        },
+        "annotations": [
+          "procfwk",
+          "Utils"
+        ]
+      },
+      "dependsOn": [
+        "[concat(variables('workspaceId'), '/datasets/GetSetMetadata')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Wait 1')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Used just so the procfwk has something to call during development.",
+        "activities": [
+          {
+            "name": "Wait1",
+            "description": "Framework development worker simulator.",
+            "type": "Wait",
+            "dependsOn": [],
+            "userProperties": [],
+            "typeProperties": {
+              "waitTimeInSeconds": {
+                "value": "@pipeline().parameters.WaitTime",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "parameters": {
+          "WaitTime": {
+            "type": "int",
+            "defaultValue": 5
+          }
+        },
+        "folder": {
+          "name": "_Workers"
+        },
+        "annotations": [
+          "_ProcFwkWorker"
+        ]
+      },
+      "dependsOn": []
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Wait 10')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Used just so the procfwk has something to call during development.",
+        "activities": [
+          {
+            "name": "Wait10",
+            "description": "Framework development worker simulator.",
+            "type": "Wait",
+            "dependsOn": [],
+            "userProperties": [],
+            "typeProperties": {
+              "waitTimeInSeconds": {
+                "value": "@pipeline().parameters.WaitTime",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "parameters": {
+          "WaitTime": {
+            "type": "int",
+            "defaultValue": 5
+          }
+        },
+        "folder": {
+          "name": "_Workers"
+        },
+        "annotations": [
+          "_ProcFwkWorker"
+        ]
+      },
+      "dependsOn": []
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Wait 2')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Used just so the procfwk has something to call during development.",
+        "activities": [
+          {
+            "name": "Wait2",
+            "description": "Framework development worker simulator.",
+            "type": "Wait",
+            "dependsOn": [],
+            "userProperties": [],
+            "typeProperties": {
+              "waitTimeInSeconds": {
+                "value": "@pipeline().parameters.WaitTime",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "parameters": {
+          "WaitTime": {
+            "type": "int",
+            "defaultValue": 5
+          }
+        },
+        "folder": {
+          "name": "_Workers"
+        },
+        "annotations": [
+          "_ProcFwkWorker"
+        ]
+      },
+      "dependsOn": []
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Wait 3')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Used just so the procfwk has something to call during development.",
+        "activities": [
+          {
+            "name": "Wait3",
+            "description": "Framework development worker simulator.",
+            "type": "Wait",
+            "dependsOn": [],
+            "userProperties": [],
+            "typeProperties": {
+              "waitTimeInSeconds": {
+                "value": "@pipeline().parameters.WaitTime",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "parameters": {
+          "WaitTime": {
+            "type": "int",
+            "defaultValue": 5
+          }
+        },
+        "folder": {
+          "name": "_Workers"
+        },
+        "annotations": [
+          "_ProcFwkWorker"
+        ]
+      },
+      "dependsOn": []
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Wait 4')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Used just so the procfwk has something to call during development.",
+        "activities": [
+          {
+            "name": "Wait4",
+            "description": "Framework development worker simulator.",
+            "type": "Wait",
+            "dependsOn": [],
+            "userProperties": [],
+            "typeProperties": {
+              "waitTimeInSeconds": {
+                "value": "@pipeline().parameters.WaitTime",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "parameters": {
+          "WaitTime": {
+            "type": "int",
+            "defaultValue": 5
+          }
+        },
+        "folder": {
+          "name": "_Workers"
+        },
+        "annotations": [
+          "_ProcFwkWorker"
+        ]
+      },
+      "dependsOn": []
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Wait 5')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Used just so the procfwk has something to call during development.",
+        "activities": [
+          {
+            "name": "Wait5",
+            "description": "Framework development worker simulator.",
+            "type": "Wait",
+            "dependsOn": [],
+            "userProperties": [],
+            "typeProperties": {
+              "waitTimeInSeconds": {
+                "value": "@pipeline().parameters.WaitTime",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "parameters": {
+          "WaitTime": {
+            "type": "int",
+            "defaultValue": 5
+          }
+        },
+        "folder": {
+          "name": "_Workers"
+        },
+        "annotations": [
+          "_ProcFwkWorker"
+        ]
+      },
+      "dependsOn": []
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Wait 6')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Used just so the procfwk has something to call during development.",
+        "activities": [
+          {
+            "name": "Wait6",
+            "description": "Framework development worker simulator.",
+            "type": "Wait",
+            "dependsOn": [],
+            "userProperties": [],
+            "typeProperties": {
+              "waitTimeInSeconds": {
+                "value": "@pipeline().parameters.WaitTime",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "parameters": {
+          "WaitTime": {
+            "type": "int",
+            "defaultValue": 5
+          }
+        },
+        "folder": {
+          "name": "_Workers"
+        },
+        "annotations": [
+          "_ProcFwkWorker"
+        ]
+      },
+      "dependsOn": []
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Wait 7')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Used just so the procfwk has something to call during development.",
+        "activities": [
+          {
+            "name": "Wait7",
+            "description": "Framework development worker simulator.",
+            "type": "Wait",
+            "dependsOn": [],
+            "userProperties": [],
+            "typeProperties": {
+              "waitTimeInSeconds": {
+                "value": "@pipeline().parameters.WaitTime",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "parameters": {
+          "WaitTime": {
+            "type": "int",
+            "defaultValue": 5
+          }
+        },
+        "folder": {
+          "name": "_Workers"
+        },
+        "annotations": [
+          "_ProcFwkWorker"
+        ]
+      },
+      "dependsOn": []
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Wait 8')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Used just so the procfwk has something to call during development.",
+        "activities": [
+          {
+            "name": "Wait8",
+            "description": "Framework development worker simulator.",
+            "type": "Wait",
+            "dependsOn": [],
+            "userProperties": [],
+            "typeProperties": {
+              "waitTimeInSeconds": {
+                "value": "@pipeline().parameters.WaitTime",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "parameters": {
+          "WaitTime": {
+            "type": "int",
+            "defaultValue": 5
+          }
+        },
+        "folder": {
+          "name": "_Workers"
+        },
+        "annotations": [
+          "_ProcFwkWorker"
+        ]
+      },
+      "dependsOn": []
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Wait 9')]",
+      "type": "Microsoft.Synapse/workspaces/pipelines",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Used just so the procfwk has something to call during development.",
+        "activities": [
+          {
+            "name": "Wait9",
+            "description": "Framework development worker simulator.",
+            "type": "Wait",
+            "dependsOn": [],
+            "userProperties": [],
+            "typeProperties": {
+              "waitTimeInSeconds": {
+                "value": "@pipeline().parameters.WaitTime",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "parameters": {
+          "WaitTime": {
+            "type": "int",
+            "defaultValue": 15
+          }
+        },
+        "folder": {
+          "name": "_Workers"
+        },
+        "annotations": [
+          "_ProcFwkWorker"
+        ]
+      },
+      "dependsOn": []
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/GetSetMetadata')]",
+      "type": "Microsoft.Synapse/workspaces/datasets",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Single generic dataset used to get and set all database metadata.",
+        "linkedServiceName": {
+          "referenceName": "SupportDatabase",
+          "type": "LinkedServiceReference"
+        },
+        "folder": {
+          "name": "_ProcFwk"
+        },
+        "annotations": [
+          "procfwk"
+        ],
+        "type": "AzureSqlTable",
+        "schema": [],
+        "typeProperties": {}
+      },
+      "dependsOn": [
+        "[concat(variables('workspaceId'), '/linkedServices/SupportDatabase')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/FrameworkFunctions')]",
+      "type": "Microsoft.Synapse/workspaces/linkedServices",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Interact with the Azure Functions App used as middle ware when making requests to Worker pipelines. Authentication done at the Function App level.",
+        "annotations": [
+          "procfwk"
+        ],
+        "type": "AzureFunction",
+        "typeProperties": {
+          "functionAppUrl": "[parameters('FrameworkFunctions_properties_typeProperties_functionAppUrl')]",
+          "functionKey": {
+            "type": "AzureKeyVaultSecret",
+            "store": {
+              "referenceName": "Keys",
+              "type": "LinkedServiceReference"
+            },
+            "secretName": "FrameworkFunctionsKey"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat(variables('workspaceId'), '/linkedServices/Keys')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/Keys')]",
+      "type": "Microsoft.Synapse/workspaces/linkedServices",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Connection to Key Vault for all other ADF linked service credentials required to run the processing framework.",
+        "annotations": [
+          "procfwk"
+        ],
+        "type": "AzureKeyVault",
+        "typeProperties": {
+          "baseUrl": "[parameters('Keys_properties_typeProperties_baseUrl')]"
+        }
+      },
+      "dependsOn": []
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/SupportDatabase')]",
+      "type": "Microsoft.Synapse/workspaces/linkedServices",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Connection between ADF and processing framework metadata SQLDB.",
+        "annotations": [
+          "procfwk"
+        ],
+        "type": "AzureSqlDatabase",
+        "typeProperties": {
+          "connectionString": {
+            "type": "AzureKeyVaultSecret",
+            "store": {
+              "referenceName": "Keys",
+              "type": "LinkedServiceReference"
+            },
+            "secretName": "[parameters('SupportDatabase_properties_typeProperties_connectionString_secretName')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat(variables('workspaceId'), '/linkedServices/Keys')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/procfwkforsynapse-WorkspaceDefaultSqlServer')]",
+      "type": "Microsoft.Synapse/workspaces/linkedServices",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "parameters": {
+          "DBName": {
+            "type": "String"
+          }
+        },
+        "annotations": [],
+        "type": "AzureSqlDW",
+        "typeProperties": {
+          "connectionString": "[parameters('procfwkforsynapse-WorkspaceDefaultSqlServer_connectionString')]"
+        },
+        "connectVia": {
+          "referenceName": "AutoResolveIntegrationRuntime",
+          "type": "IntegrationRuntimeReference"
+        }
+      },
+      "dependsOn": [
+        "[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/procfwkforsynapse-WorkspaceDefaultStorage')]",
+      "type": "Microsoft.Synapse/workspaces/linkedServices",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "annotations": [],
+        "type": "AzureBlobFS",
+        "typeProperties": {
+          "url": "[parameters('procfwkforsynapse-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+        },
+        "connectVia": {
+          "referenceName": "AutoResolveIntegrationRuntime",
+          "type": "IntegrationRuntimeReference"
+        }
+      },
+      "dependsOn": [
+        "[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/FunctionalTestingTrigger')]",
+      "type": "Microsoft.Synapse/workspaces/triggers",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "description": "Used for functional testing of the framework in a dedicated environment.",
+        "annotations": [
+          "procfwk"
+        ],
+        "runtimeState": "Stopped",
+        "pipelines": [
+          {
+            "pipelineReference": {
+              "referenceName": "01-Grandparent",
+              "type": "PipelineReference"
+            },
+            "parameters": {}
+          }
+        ],
+        "type": "ScheduleTrigger",
+        "typeProperties": {
+          "recurrence": {
+            "frequency": "Hour",
+            "interval": 2,
+            "startTime": "2020-04-06T15:00:00Z",
+            "timeZone": "UTC"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat(variables('workspaceId'), '/pipelines/01-Grandparent')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
+      "type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+      "apiVersion": "2019-06-01-preview",
+      "properties": {
+        "type": "Managed",
+        "typeProperties": {
+          "computeProperties": {
+            "location": "AutoResolve",
+            "dataFlowProperties": {
+              "computeType": "General",
+              "coreCount": 8,
+              "timeToLive": 0
+            }
+          }
+        }
+      },
+      "dependsOn": []
+    }
+  ]
+}

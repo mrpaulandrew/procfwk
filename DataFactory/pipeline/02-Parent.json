@@ -18,7 +18,7 @@
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -112,7 +112,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -149,7 +149,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -196,7 +196,7 @@
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -206,10 +206,17 @@
 						"type": "AzureSqlSource",
 						"sqlReaderStoredProcedureName": "[procfwk].[ExecutionWrapper]",
 						"storedProcedureParameters": {
-							"CallingDataFactory": {
+							"CallingOrchestratorName": {
 								"type": "String",
 								"value": {
 									"value": "@pipeline().DataFactory",
+									"type": "Expression"
+								}
+							},
+							"BatchName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.BatchName",
 									"type": "Expression"
 								}
 							}
@@ -238,7 +245,7 @@
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -252,6 +259,13 @@
 								"type": "Expression"
 							},
 							"type": "Boolean"
+						},
+						"ExecutionId": {
+							"value": {
+								"value": "@variables('ExecutionId')",
+								"type": "Expression"
+							},
+							"type": "Guid"
 						}
 					}
 				},
@@ -261,8 +275,8 @@
 				}
 			},
 			{
-				"name": "Metadata Integrity Checks",
-				"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
+				"name": "Check Previous Execution",
+				"description": "Query the current execution table for worker pipelines that require a clean up from the previous execution run.",
 				"type": "Lookup",
 				"dependsOn": [
 					{
@@ -275,7 +289,7 @@
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -283,11 +297,14 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[procfwk].[CheckMetadataIntegrity]",
+						"sqlReaderStoredProcedureName": "[procfwk].[CheckPreviousExeuction]",
 						"storedProcedureParameters": {
-							"DebugMode": {
-								"type": "Boolean",
-								"value": "false"
+							"BatchName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().parameters.BatchName",
+									"type": "Expression"
+								}
 							}
 						},
 						"queryTimeout": "02:00:00",
@@ -306,7 +323,13 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Metadata Integrity Checks",
+						"activity": "Check Previous Execution",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Check Metadata Integrity",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -315,7 +338,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Metadata Integrity Checks').output.value",
+						"value": "@activity('Check Previous Execution').output.value",
 						"type": "Expression"
 					},
 					"isSequential": false,
@@ -328,8 +351,8 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
-								"secureOutput": false,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": true,
 								"secureInput": false
 							},
 							"userProperties": [],
@@ -376,7 +399,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -432,7 +455,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": true
 							},
@@ -441,7 +464,7 @@
 								"functionName": "CheckPipelineStatus",
 								"method": "POST",
 								"body": {
-									"value": "@concat('\n{\n    \"tenantId\": \"',activity('Get SPN Details').output.firstRow.TenantId,'\",\n    \"applicationId\": \"',activity('Get SPN Details').output.firstRow.AppId,'\",\n    \"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.AppSecret,'\",\n    \"subscriptionId\": \"',activity('Get SPN Details').output.firstRow.SubscriptionId,'\",\n    \"resourceGroup\": \"',item().ResourceGroupName,'\",\n    \"factoryName\": \"',item().DataFactoryName,'\",\n    \"pipelineName\": \"',item().PipelineName,'\",\n    \"runId\": \"',item().AdfPipelineRunId,'\"\n}')",
+									"value": "@concat('\n{\n    \"tenantId\": \"',activity('Get SPN Details').output.firstRow.TenantId,'\",\n    \"applicationId\": \"',activity('Get SPN Details').output.firstRow.AppId,'\",\n    \"authenticationKey\": \"',activity('Get SPN Details').output.firstRow.AppSecret,'\",\n    \"subscriptionId\": \"',activity('Get SPN Details').output.firstRow.SubscriptionId,'\",\n    \"resourceGroupName\": \"',item().ResourceGroupName,'\",\n    \"orchestratorName\": \"',item().OrchestratorName,'\",\n    \"orchestratorType\": \"',item().OrchestratorType,'\",\n    \"pipelineName\": \"',item().PipelineName,'\",\n    \"runId\": \"',item().PipelineRunId,'\"\n}')",
 									"type": "Expression"
 								}
 							},
@@ -465,7 +488,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"on": {
-									"value": "@activity('Get Pipeline Status').output.Status",
+									"value": "@activity('Get Pipeline Status').output.ActualStatus",
 									"type": "Expression"
 								},
 								"cases": [
@@ -480,7 +503,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -533,7 +556,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -582,7 +605,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -631,7 +654,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -680,7 +703,7 @@
 												"policy": {
 													"timeout": "0.00:10:00",
 													"retry": 0,
-													"retryIntervalInSeconds": 0,
+													"retryIntervalInSeconds": 30,
 													"secureOutput": false,
 													"secureInput": false
 												},
@@ -735,7 +758,7 @@
 										"policy": {
 											"timeout": "0.00:10:00",
 											"retry": 0,
-											"retryIntervalInSeconds": 0,
+											"retryIntervalInSeconds": 30,
 											"secureOutput": false,
 											"secureInput": false
 										},
@@ -796,7 +819,7 @@
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
-								"retryIntervalInSeconds": 0,
+								"retryIntervalInSeconds": 30,
 								"secureOutput": false,
 								"secureInput": false
 							},
@@ -839,11 +862,18 @@
 				"name": "Execute Precursor",
 				"description": "Uses the database property value ExecutionPrecursorProc to run any custom logic against the metadata database before the execution run starts.",
 				"type": "SqlServerStoredProcedure",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Is Parent Already Running",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
-					"retryIntervalInSeconds": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -876,8 +906,86 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "Is Parent Already Running",
+				"description": "Establish before anything else if the parent pipeline is already running. Batch execution aware.",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Check For Running Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"BatchName": {
+							"value": "@pipeline().parameters.BatchName",
+							"type": "Expression"
+						},
+						"PipelineName": {
+							"value": "@pipeline().Pipeline",
+							"type": "Expression"
+						},
+						"ThisRunId": {
+							"value": "@pipeline().RunId",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Check Metadata Integrity",
+				"description": "Performs a series of checks on all metadata held in the framework SQLDB. This is intended to raise errors before an execution run even starts.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Execute Precursor",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[procfwk].[CheckMetadataIntegrity]",
+					"storedProcedureParameters": {
+						"BatchName": {
+							"value": {
+								"value": "@pipeline().parameters.BatchName",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"DebugMode": {
+							"value": {
+								"value": "@bool(0)",
+								"type": "Expression"
+							},
+							"type": "Boolean"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "SupportDatabase",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
+		"parameters": {
+			"BatchName": {
+				"type": "string",
+				"defaultValue": "NotUsed"
+			}
+		},
 		"variables": {
 			"ExecutionId": {
 				"type": "String"
@@ -887,7 +995,7 @@
 			"name": "_ProcFwk"
 		},
 		"annotations": [
-			"ADF.procfwk",
+			"procfwk",
 			"Parent"
 		]
 	}

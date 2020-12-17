@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [procfwkHelpers].[AddServicePrincipalWrapper]
 	(
-	@DataFactory NVARCHAR(200),
+	@OrchestratorName NVARCHAR(200),
+	@OrchestratorType CHAR(3),
 	@PrincipalIdValue NVARCHAR(MAX),
 	@PrincipalSecretValue NVARCHAR(MAX),
 	@SpecificPipelineName NVARCHAR(200) = NULL,
@@ -12,7 +13,8 @@ BEGIN
 	IF ([procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInDatabase'
 		BEGIN
 			EXEC [procfwk].[AddServicePrincipal]
-				@DataFactory = @DataFactory,
+				@OrchestratorName = @OrchestratorName,
+				@OrchestratorType = @OrchestratorType,
 				@PrincipalId = @PrincipalIdValue,
 				@PrincipalSecret = @PrincipalSecretValue,
 				@PrincipalName = @PrincipalName,
@@ -21,7 +23,8 @@ BEGIN
 	ELSE IF ([procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInKeyVault'
 		BEGIN
 			EXEC [procfwk].[AddServicePrincipalUrls]
-				@DataFactory = @DataFactory,
+				@OrchestratorName = @OrchestratorName,
+				@OrchestratorType = @OrchestratorType,
 				@PrincipalIdUrl = @PrincipalIdValue,
 				@PrincipalSecretUrl = @PrincipalSecretValue,
 				@PrincipalName = @PrincipalName,
