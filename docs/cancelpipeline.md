@@ -1,4 +1,4 @@
-# Check Pipeline Status
+# Cancel Pipeline
 
 ___
 [<< Contents](/procfwk/contents) / [Functions](/procfwk/functions)
@@ -7,15 +7,19 @@ ___
 
 ## Role
 
-Queries the target worker pipeline and [orchestrator](/procfwk/orchestrators) type for the status of the pipeline run. Returning the actual pipline status and a simplified status for internal use.
+To make a recursive cancel request against to the target worker pipeline and [orchestrator](/procfwk/orchestrators) type.
+
+While the pipeline is in a 'cancelling' state the function will wait and return only once a 'cancelled' state has been achieved.
+
+Note; Microsoft side typo's mean 'canceling' may also appear in the logging outputs.
 
 Namespace: __mrpaulandrew.azure.procfwk__.
 
 ## Method
 
-GET, POST
+POST
 
-## Example Input
+## Body Request
 
 ```json
 {
@@ -39,9 +43,9 @@ See [Services](/procfwk/services) return classes.
 
 ```json
 {
-"PipelineName": "Intentional Error",
+"PipelineName": "Wait 1",
 "RunId": "c5c2e1e7-bdc8-4eec-b015-cd1aa498b0a4",
-"ActualStatus": "Failed",
+"ActualStatus": "Cancelled",
 "SimpleStatus": "Complete"
 }
 ```

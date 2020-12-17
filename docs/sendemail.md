@@ -9,6 +9,8 @@ This function sits within the framework but is very generic and could easily be 
 
 The code is very simple and uses the System.Web.Mail library.
 
+Namespace: __mrpaulandrew.azure.procfwk__.
+
 ## Body Request 
 
 The Function expects the following things in the request body:
@@ -73,5 +75,5 @@ Example of the local setting JSON file:
 
 If running in debug mode log information provides outputs on the number of recipients included as To/CC/BCC for the send email operation.
 
-
+___
 

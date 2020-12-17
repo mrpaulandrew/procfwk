@@ -6,14 +6,16 @@ ___
 
 * [Deploying ProcFwk](/procfwk/deployprocfwk)
 
-### [Data Factory](/procfwk/datafactory)
+### [Orchestrators](/procfwk/orchestrators)
+
+* [Orchestrator Types](/procfwk/orchestratortypes)
+  * [Azure Data Factory](/procfwk/datafactory)
+  * [Azure Synapse Analytics](/procfwk/synapse)
+
 * [Linked Services](/procfwk/linkedservices)
 * [Datasets](/procfwk/datasets)
 * [Pipelines](/procfwk/pipelines)
 * [Activities](/procfwk/activities)
-
-### [Synapse](/procfwk/synapse)
-* [Current Support & Limitations](https://mrpaulandrew.com/2020/06/03/adf-procfwk-and-azure-synapse-orchestrate-preview-and-limitations/)
 
 ### [Database](/procfwk/database)
 * [Properties](/procfwk/properties)
@@ -25,12 +27,20 @@ ___
 * [Stored Procedures](/procfwk/storedprocedures)
 
 ### [Functions](/procfwk/functions)
-* [Helpers](/procfwk/helpers)
+
 * [Execute Pipeline](/procfwk/executepipeline)
 * [Check Pipeline Status](/procfwk/checkpipelinestatus)
 * [Validate Pipeline](/procfwk/validatepipeline)
 * [Get Error Details](/procfwk/geterrordetails)
+* [Cancel Pipeline](/procfwk/cancelpipeline)
 * [Send Email](/procfwk/sendemail)
+
+* [Services](/procfwk/services)
+  * [AzureDataFactoryService](/procfwk/datafactoryservice)
+  * [AzureSynapseService](/procfwk/synapseservice)
+* [Helpers](/procfwk/helpers)
+  * [Pipeline Request](/procfwk/pipelinerequest)
+  * [Pipeline Run Request](/procfwk/pipelinerunrequest)
 
 ___
 
@@ -62,8 +72,11 @@ ___
 * Feedback
   * [Raise a Bug](https://github.com/mrpaulandrew/procfwk/issues/new?labels=bug&template=bug-found.md&title=){:target="_blank"}
   * [Request a New Feature](https://github.com/mrpaulandrew/procfwk/issues/new?labels=enhancement&template=feature-request.md&title=){:target="_blank"}
+  * [Help & Support Request](https://github.com/mrpaulandrew/procfwk/issues/new?assignees=mrpaulandrew&labels=help+wanted&template=help---support-request.md&title=){:target="_blank"}
 * [Azure Service Tiers](/procfwk/servicetiers)
 * [Glossary](/procfwk/glossary)
 * [Contributors](/procfwk/contributors)
 * [Resources](/procfwk/resources)
 * [Release Details (Read Me)](https://github.com/mrpaulandrew/procfwk/blob/master/README.md){:target="_blank"}
+
+___

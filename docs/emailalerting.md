@@ -18,7 +18,7 @@ The following statements have been met in terms of alerting capabilities and des
 * Recipients can optionally be included in the email message as the main receiver (__To__), copied (__CC__) or blind copied (__BCC__).
 * Pipeline alert subscriptions (links) can be enabled/disabled as required within the metadata [table](/procfwk/tables).
 * Pipeline alert subscriptions (links) can be setup for all or one particular worker pipelines outcome using the pipeline result status from the current execution table. For example; Success, Failed, Cancelled etc.
-* Alerting content can be customised using a generic email body configured in the [properties](/procfwk/propertis) that has the details like the Data Factory and Pipeline name injected into the underlying HTML message at runtime.
+* Alerting content can be customised using a generic email body configured in the [properties](/procfwk/propertis) that has the details like the [orchestrator](/procfwk/orchestrators) name/type and Pipeline name injected into the underlying HTML message at runtime.
 * SMTP details are configured via the Azure Function 'SendEmail' application settings.
 * Email traffic is reduced to only a single message sent per worker pipeline. Not one message per recipient.
 
@@ -26,7 +26,7 @@ The following statements have been met in terms of alerting capabilities and des
 
 Using email alerting in as part of the processing framework is set by the [property](/procfwk/properties) __UseFrameworkEmailAlerting__.
 
-As stated above, the alerting features of the framework are completely optional. You may already have a different way of producing alerts for your Data Factory pipelines. If so, simply set this property value to '0' and alerting will be disabled for your processing framework.
+As stated above, the alerting features of the framework are completely optional. You may already have a different way of producing alerts for your pipelines. If so, simply set this property value to '0' and alerting will be disabled for your processing framework.
 
 ## Adding & Removing Email Recipients
 
@@ -56,4 +56,8 @@ EXEC [procfwkHelpers].[AddRecipientPipelineAlerts]
 
 ## Sending Emails
 
-Once the metadata has been returned from the [database](/procfwk/database) to the [Data Factory](/procfwk/datafactory) infant [pipeline](/procfwk/pipelines) emails are sent by the framework using the [Send Email](/procfwk/sendemail) Azure [Function](/procfwk/functions).
+Once the metadata has been returned from the [database](/procfwk/database) to the [orchestrators](/procfwk/orchestrators) infant [pipeline](/procfwk/pipelines) emails are sent by the framework using the [Send Email](/procfwk/sendemail) Azure [Function](/procfwk/functions).
+
+For re-use outside of the processing framework the email sender is also wrapped up as a utilities pipeline that exposes email content as pipeline level parameters.
+
+___

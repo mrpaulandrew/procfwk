@@ -5,7 +5,7 @@ ___
 
 ___
 
-Following the failure of a worker pipeline anb subsequent execution run you may wish to re-run or restart the framework execution from the grandparent or parent pipelines. In either case this can be done via the Data Factory monitoring portal by selecting 're-run' on the applicable pipeline (that currently has a status of failed).
+Following the failure of a worker pipeline and subsequent execution run you may wish to re-run or restart the framework execution from the grandparent or parent pipelines. In either case this can be done via the [orchestrators](/procfwk/orchestrators) monitoring portal by selecting 're-run' on the applicable pipeline (that currently has a status of failed).
 
 The [property](/procfwk/properties) __OverideRestart__ is key to what the framework does when the re-run operation is called.
 
@@ -21,3 +21,5 @@ If the property is set to '1', meaning true. The framework will ignore any conte
 
 
 The framework restart-ability is established and supported in conjunction with the [failure handling](/procfwk/failurehandling) configuration.
+
+___

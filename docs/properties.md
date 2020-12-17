@@ -63,9 +63,10 @@ __Default Value:__
 <strong>Start Date Time: </strong>##StartDateTime###<br/>
 <strong>End Date Time: </strong>##EndDateTime###<br/>
 <strong>Duration (Minutes): </strong>##Duration###<br/><br/>
-<strong>Called by Data Factory: </strong>##CalledByADF###<br/>
-<strong>Executed by Data Factory: </strong>##ExecutedByADF###<br/>
-<hr/>	
+<strong>Called by Orchestrator: </strong>##CalledByOrc###<br/>
+<strong>Executed by Orchestrator Type: </strong>##ExecutedByOrcType###<br/>
+<strong>Executed by Orchestrator: </strong>##ExecutedByOrc###<br/>
+<hr/>
 ```
 
 __Role:__ Basic HTML template of execution information used as the eventual body in [email alerts](/procfwk/emailalerting) sent.
@@ -104,19 +105,12 @@ __Role:__ Establishes if [execution batches](/procfwk/executionbatches) are used
 
 ___
 
-### FrameworkFactoryResourceGroup
-
-__Example Value:__ ADF.procfwk
-
-__Role:__ Supports various queries where the framework factory pipeline are inspecting themselves and the resource group can't easily be inferred. The primary use for the property is within the utility pipeline to [check if the parent is already running](/procfwk/pipelinealreadyrunning).
-
-___
 
 ### PreviousPipelineRunsQueryRange
 
 __Example Value:__ -1
 
-__Role:__ Used as a date range, today +- this value, when checking for if an execution for a given pipeline is already running. The primary use for the property is within the utility pipeline to [check if the parent is already running](/procfwk/pipelinealreadyrunning). Here the value is wrapped in the following Data Factory expression as a request body passed to the Azure Management API:
+__Role:__ Used as a date range, today +- this value, when checking for if an execution for a given pipeline is already running. The primary use for the property is within the utility pipeline to [check if the parent is already running](/procfwk/pipelinealreadyrunning). Here the value is wrapped in the following [orchestrator](/procfwk/orchestrators) expression as a request body passed to the Azure Management API:
 
 ```json
 {

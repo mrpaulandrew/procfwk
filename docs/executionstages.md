@@ -22,3 +22,5 @@ These sets of work can be considered in the following ways, or defined with thes
 * Configurable [failure handling](/procfwk/failurehandling) behaviour allows pipelines within an execution stage to fail and still call a subsequent stage.
 * The database [stored procedure](/procfwk/storedprocedures) 'GetStages' is used by the parent pipeline to return a distinct, ordered and enabled list of all execution stages in scope for running during a given framework execution run.
 * An Azure service level limitation in the pipeline Lookup activity means only 5,000 execution stages can currently be handled by the processing framework. If you require more execution stages, please log a feature request via the GitHub repository issues area, [here](https://github.com/mrpaulandrew/procfwk/issues/new/choose){:target="_blank"}.
+
+___

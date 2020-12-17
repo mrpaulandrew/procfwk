@@ -14,6 +14,7 @@ In the case of the processing framework, the intention is to keep resources runn
 | Resource | Tier |Comments |
 |:----:|:----:|----|
 |Data Factory | v2 | Data Flow activities are not used as part of the processing framework so the default auto resolving Azure Integration Runtime can be used. |
+|Synapse | N/A | Data Flow activities are not used as part of the processing framework so the default auto resolving Azure Integration Runtime can be used. |
 | SQL Database | S2 |Using a provisioned service tier rather than serverless is recommended to avoid framework start up failures.  |
 | Functions App | Consumption Plan |Deployments done using code to a Windows host wit support for .Net Core 3.1  |
 | Key Vault | Standard |Optional.  |
@@ -22,7 +23,7 @@ The above service tiers have been bench marked running 300 worker pipelines, acr
 
 ## Service Limitations
 
-The service limitations for the processing framework are inherited from Microsoft's Azure Resource limitations. For the service tiers described above the first resource limitation you'll likely hit will be for Data Factory and the allowed number of pipeline activity runs __per subscription and IR region__.
+The service limitations for the processing framework are inherited from Microsoft's Azure Resource limitations. For the service tiers described above the first resource limitation you'll likely hit will be for the [orchestrator](/procfwk/orchestrators) and the allowed number of pipeline activity runs __per subscription and IR region__.
 
 |Limit Detail | Default Limit | Maximum Limit |
 |----|:----:|:----:|
@@ -37,8 +38,8 @@ However, for a single execution stage, in a single batch, triggered from the par
 
 [ ![](/procfwk/single-run-activitynosie.png) ](/procfwk/single-run-activitynosie.png){:target="_blank"}
 
-At the point of testing, no other Data Factory instances were present on an isolated Azure Subscription and worker pipelines were running in a different Azure tenant.
+At the point of testing, no other [orchestrator](/procfwk/orchestrators) instances were present on an isolated Azure Subscription and worker pipelines were running in a different Azure tenant.
 
 This gives a theorical maximum degree of parallelism of __285 worker pipelines__.
 
-It is possible to push these service limitations by creating a custom set of Azure Integration Runtimes for Data Factory and tuning specific parts of the framework pipelines to reduce the number of internal activity calls. If you hit activity run failures during a framework execution run and this is isolated within a subscription please email paul@mrpaulandrew.com for support. To that end, stress testing of the framework has been done using 20 concurrent execution batches, each calling 50 worker pipelines to achieve a maximum degree of parallelism of __1000 worker pipelines__. This was done under ideal conditions and using a custom configuration of 4x Azure Integration Runtimes, in different Azure Regions.
+It is possible to push these service limitations by creating a custom set of Azure Integration Runtimes for the [orchestrator](/procfwk/orchestrators) and tuning specific parts of the framework pipelines to reduce the number of internal activity calls. If you hit activity run failures during a framework execution run and this is isolated within a subscription please email paul@mrpaulandrew.com for support. To that end, stress testing of the framework has been done using 20 concurrent execution batches, each calling 50 worker pipelines to achieve a maximum degree of parallelism of __1000 worker pipelines__. This was done under ideal conditions and using a custom configuration of 4x Azure Integration Runtimes, in different Azure Regions.

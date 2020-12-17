@@ -59,38 +59,43 @@ __Definition:__ Provides a link between the [batch execution](/procfwk/execution
 ## CurrentExecution
 __Schema:__ procfwk
 
-__Definition:__ For a given execution run this table will be used to handle all metadata exchanges between Data Factory and the database. After a successful run the table is truncated. Indexing is used here to ensure the current execution run has access to the requested metadata given common where clause requirements.
+__Definition:__ For a given execution run this table will be used to handle all metadata exchanges between the [orchestrator](/procfwk/orchestrators) and the database. After a successful run the table is truncated. Indexing is used here to ensure the current execution run has access to the requested metadata given common where clause requirements.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
 |1|LocalExecutionId|uniqueidentifier|16|No
 |2|StageId|int|4|No
 |3|PipelineId|int|4|No
-|4|CallingDataFactoryName|nvarchar|400|No
+|4|CallingOrchestratorName|nvarchar|400|No
 |5|ResourceGroupName|nvarchar|400|No
-|6|DataFactoryName|nvarchar|400|No
-|7|PipelineName|nvarchar|400|No
-|8|StartDateTime|datetime|8|Yes
-|9|PipelineStatus|nvarchar|400|Yes
-|10|LastStatusCheckDateTime|datetime|8|Yes
-|11|EndDateTime|datetime|8|Yes
-|12|IsBlocked|bit|1|No
-|13|AdfPipelineRunId|uniqueidentifier|16|Yes
-|14|PipelineParamsUsed|nvarchar|max|Yes
+|6|OrchestratorType|char|3|No
+|7|OrchestratorName|nvarchar|400|No
+|8|PipelineName|nvarchar|400|No
+|9|StartDateTime|datetime|8|Yes
+|10|PipelineStatus|nvarchar|400|Yes
+|11|LastStatusCheckDateTime|datetime|8|Yes
+|12|EndDateTime|datetime|8|Yes
+|13|IsBlocked|bit|1|No
+|14|PipelineRunId|uniqueidentifier|16|Yes
+|15|PipelineParamsUsed|nvarchar|max|Yes
 
 
-## DataFactorys
+## Orchestrators
 __Schema:__ procfwk
 
-__Definition:__ To support the [decoupling](/procfwk/workerdecoupling) of worker [pipelines](/procfwk/pipelines) from the orchestration [pipelines](/procfwk/pipelines) this table houses information about the Data Factory resources used by the framework when executing workers. It does not need to contain data about the Data Factory where the orchestration [pipelines](/procfwk/pipelines) are running from.
+__Definition:__ To support the [decoupling](/procfwk/workerdecoupling) of worker [pipelines](/procfwk/pipelines) from the orchestration [pipelines](/procfwk/pipelines) this table houses information about the [orchestrators](/procfwk/orchestrators) used by the framework.
+
+Within the table metadata one [orchestrator](/procfwk/orchestrators) needs to be set as the framework orchestrator, where the orchestration [pipelines](/procfwk/pipelines) (parent, child, infant) are running from. This is done using the 'IsFrameworkOrchestrator' attribute.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
-|1|DataFactoryId|int|4|No
-|2|DataFactoryName|nvarchar|400|No
-|3|ResourceGroupName|nvarchar|400|No
-|4|SubscriptionId|uniqueidentifier|16|No
-|5|Description|nvarchar|max|Yes
+|1|OrchestratorId|int|4|No
+|2|OrchestratorName|nvarchar|400|No
+|3|OrchestratorType|char|3|No
+|4|IsFrameworkOrchestrator|bit||No
+|5|ResourceGroupName|nvarchar|400|No
+|6|SubscriptionId|uniqueidentifier|16|No
+|7|Description|nvarchar|max|Yes
 
 
 ## ErrorLog
@@ -102,7 +107,7 @@ __Definition:__ In the event of a worker pipeline failure, activity level error 
 |:---:|---|---|:---:|:---:|
 |1|LogId|int|4|No
 |2|LocalExecutionId|uniqueidentifier|16|No
-|3|AdfPipelineRunId|uniqueidentifier|16|No
+|3|PipelineRunId|uniqueidentifier|16|No
 |4|ActivityRunId|uniqueidentifier|16|No
 |5|ActivityName|varchar|100|No
 |6|ActivityType|varchar|100|No
@@ -122,15 +127,16 @@ __Definition:__ This table is used as a long term store from the current executi
 |2|LocalExecutionId|uniqueidentifier|16|No
 |3|StageId|int|4|No
 |4|PipelineId|int|4|No
-|5|CallingDataFactoryName|nvarchar|400|No
+|5|CallingOrchestratorName|nvarchar|400|No
 |6|ResourceGroupName|nvarchar|400|No
-|7|DataFactoryName|nvarchar|400|No
-|8|PipelineName|nvarchar|400|No
-|9|StartDateTime|datetime|8|Yes
-|10|PipelineStatus|nvarchar|400|Yes
-|11|EndDateTime|datetime|8|Yes
-|12|AdfPipelineRunId|uniqueidentifier|16|Yes
-|13|PipelineParamsUsed|nvarchar|max|Yes
+|7|OrchestratorType|char|3|No
+|8|OrchestratorName|nvarchar|400|No
+|9|PipelineName|nvarchar|400|No
+|10|StartDateTime|datetime|8|Yes
+|11|PipelineStatus|nvarchar|400|Yes
+|12|EndDateTime|datetime|8|Yes
+|13|PipelineRunId|uniqueidentifier|16|Yes
+|14|PipelineParamsUsed|nvarchar|max|Yes
 
 
 ## PipelineAlertLink
@@ -150,13 +156,13 @@ __Definition:__ This table provides a many to many connection between the email 
 ## PipelineAuthLink
 __Schema:__ procfwk
 
-__Definition:__ For the purposes of granular security when providing service principal details that can be used to execute worker [pipelines](/procfwk/pipelines) this table provides that many to many link and has further referential integrity checks against the Data Factory as well.
+__Definition:__ For the purposes of granular security when providing service principal details that can be used to execute worker [pipelines](/procfwk/pipelines) this table provides a many to many link between pipelines and credentials. Further referential integrity checks are then done to include the [orchestrator](/procfwk/orchestrators) in the metadata relationship.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
 |1|AuthId|int|4|No
 |2|PipelineId|int|4|No
-|3|DataFactoryId|int|4|No
+|3|OrchestratorId|int|4|No
 |4|CredentialId|int|4|No
 
 
@@ -189,12 +195,12 @@ __Definition:__ Worker pipeline parameters are stored in this table as metadata 
 ## Pipelines
 __Schema:__ procfwk
 
-__Definition:__ This core table in the framework houses all worker [pipelines](/procfwk/pipelines) that the framework is expected to call per [execution stage](/procfwk/executionstage) and for a given worker Data Factory.
+__Definition:__ This core table in the framework houses all worker [pipelines](/procfwk/pipelines) that the framework is expected to call per [batch](/procfwk/executionbatches)/[stage](/procfwk/executionstage) executions and for a given worker [orchestrator](/procfwk/orchestrators).
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
 |1|PipelineId|int|4|No
-|2|DataFactoryId|int|4|No
+|2|OrchestratorId|int|4|No
 |3|StageId|int|4|No
 |4|PipelineName|nvarchar|400|No
 |5|LogicalPredecessorId|int|4|Yes
@@ -234,7 +240,7 @@ __Definition:__ Named people and email addresses are stored in this table for th
 ## ServicePrincipals
 __Schema:__ dbo
 
-__Definition:__ At runtime a worker [pipeline](/procfwk/pipelines) will be executed by the framework [functions](/procfwk/functions). The function will authenticate against the target worker data factory using SPN details sorted in this table directly, or referenced by this table to Azure Key Vault.
+__Definition:__ At runtime a worker [pipeline](/procfwk/pipelines) will be executed by the framework [functions](/procfwk/functions). The function will authenticate against the target worker [orchestrator](/procfwk/orchestrators) instance using SPN details sorted in this table directly, or referenced by this table to Azure Key Vault. See [service principal handling](/procfwk/spnhandling) for details.
 
 |Id|Attribute|Data Type|Length|Nullable
 |:---:|---|---|:---:|:---:|
@@ -261,7 +267,7 @@ __Definition:__ This core table in the framework houses details of all the seque
 ## Subscriptions
 __Schema:__ procfwk
 
-__Definition:__ To support the [decoupling](/procfwk/workerdecoupling) of pipelines and [Data Factory's](/procfwk/datafactory) this table houses details of Azure Subscriptions that are connected with 1 or many worker Data Factory instances.
+__Definition:__ To support the [decoupling](/procfwk/workerdecoupling) of pipelines and [orchestrators](/procfwk/orchestrators) this table houses details of Azure Subscriptions that are connected with 1 or many worker [orchestrator](/procfwk/orchestrators) instances.
 
 At least 1 subscription must exist within the metadata.
 
@@ -276,7 +282,7 @@ At least 1 subscription must exist within the metadata.
 ## Tenants
 __Schema:__ procfwk
 
-__Definition:__ To support the [decoupling](/procfwk/workerdecoupling) of pipelines within [Data Factory's](/procfwk/datafactory) at this final level tenant details are sorted within this table and connected to 1 or many Azure Subscriptions.
+__Definition:__ To support the [decoupling](/procfwk/workerdecoupling) of pipelines within [orchestrator](/procfwk/orchestrators) at this final level tenant details are sorted within this table and connected to 1 or many Azure Subscriptions.
 
 At least 1 tenant must exist within the metadata.
 

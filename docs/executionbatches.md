@@ -15,7 +15,7 @@ _The key feature of batches is to have concurrent parent pipeline executions con
 
 For context, batches can be used within the processing framework, for example, if you wish to trigger a set of stages/worker processes that fall or overlap within a given frequency. Hourly, daily or monthly.
 
-At deplopment time it is expected that triggers will be configured separately within Data Factory using different schedules, each hitting the framework parent [pipeline](/procfwk/pipelines), but with different 'Batch Name' parameter values passed according to the batch execution required.
+At deplopment time it is expected that triggers will be configured separately within each [orchestrator](/procfwk/orchestrators) using different schedules, each hitting the framework parent [pipeline](/procfwk/pipelines), but with different 'Batch Name' parameter values passed according to the batch execution required.
 
 ___
 
@@ -50,3 +50,5 @@ To use execution batches the following four updates should be made to processing
 Please check out a demostration of this feature on my YouTube channel:
 
 [![YouTube Demo Video](youtubeheader.png)](https://www.youtube.com/watch?v=V2R6AmFJrsA "Alt Text"){:target="_blank"}
+
+___

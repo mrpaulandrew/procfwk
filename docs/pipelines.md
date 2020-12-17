@@ -1,7 +1,15 @@
 # Pipelines
 
 ___
-[<< Contents](/procfwk/contents) / [Data Factory](/procfwk/datafactory)
+[<< Contents](/procfwk/contents) / [Orchestrators](/procfwk/orchestrators)
+
+___
+
+Pipelines are a common component of the [orchestrator](/procfwk/orchestrators) used as a logic housing for groups of Activities needed to perform a process or task.
+
+Given the interchangeable nature of different [orchestrators](/procfwk/orchestrators) within the processing framework. Pipelines are also interchangeable and use a common code base for currently support Azure resources.
+
+Regardless of the [orchestrator type](/procfwk/orchestratortype) the framework uses the following set of generational pipeline concepts and definitions.
 
 ___
 
@@ -47,7 +55,7 @@ The infant pipeline could be used in isolation in trigger a worker pipeline if r
 
 ____
 
-## Worker
+## Workers
 ![Worker Pipeline](/procfwk/worker.png){:style="float: right;margin-left: 15px;margin-bottom: 10px; width: 150px;"}
 __Role:__ Anything specific to the process needing to be performed.
 
@@ -57,9 +65,11 @@ By design [worker pipelines can be decoupled](/procfwk/workerdecoupling) from th
 
 ____
 
-## Utilities
+## Utilities (Internal Workers)
 
-Utility pipelines are small reusable packages within the processing framework that support the above generational pipelines. These sit within the framework Data Factory instance in the sub folder '_ProcFwkUtils'
+![replace](/procfwk/utilities.png){:style="float: right;margin-left: 15px;margin-bottom: 10px; width: 150px;""}Utility pipelines (or internal workers) are small reusable packages within the processing framework that support the above generational pipelines. These sit within the framework [orchestrator](/procfwk/orchestrators) instance in the sub folder '_ProcFwkUtils'
+
+For the framework to run the following utility pipelines are used:
 
 ### Throw Exception
 
@@ -75,3 +85,5 @@ This pipeline provides a simple abstract over the [send email](/procfwk/sendemai
 ### Check For Running Pipeline
 
 See [Pipeline Already Running](/procfwk/pipelinealreadyrunning) for more details.
+
+___

@@ -16,7 +16,7 @@ This procedure is intended as a set pass/fail checks to prevent any runtime fail
 - Is there at least one SubscriptionId available?
 - Is there a current OverideRestart property available?
 - Are there any enabled pipelines configured without a service principal?
-- Are any Data Factorys set to use the default subscription value?
+- Are any orchestrators set to use the default subscription value?
 - Are any Subscription set to use the default tenant value?
 - Is there a current PipelineStatusCheckDuration property available?
 - Is there a current UseFrameworkEmailAlerting property available?
@@ -34,6 +34,9 @@ This procedure is intended as a set pass/fail checks to prevent any runtime fail
 - If using batch executions, does the requested batch have links to execution stages?
 - Have batch executions been enabled after a none batch execution run?
 - Has the execution failed due to an invalid pipeline name? If so, attend to update this before the next run.
+- Has a framework orchestrator been set for any orchestrators?
+- Is there more than one framework orchestrator set?
+
 
 In the event any check fails an exception will be raised stopping the parent pipeline and framework execution run from proceeding.
 

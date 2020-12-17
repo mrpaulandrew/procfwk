@@ -1,7 +1,7 @@
 # Activities
 
 ___
-[<< Contents](/procfwk/contents) / [Data Factory](/procfwk/datafactory)
+[<< Contents](/procfwk/contents) / [Orchestrators](/procfwk/orchestrators)
 
 ___
 
@@ -43,3 +43,5 @@ At the infant level, every activity becomes important and used during the normal
 * Finally, the infant pipeline will check for any required email alerts depending on the outcome of the worker pipeline and use a function activity to [send the email](/procfwk/sendemail).
 
 [ ![](/procfwk/activitychain-infant.png) ](/procfwk/activitychain-infant.png)
+
+___

@@ -24,7 +24,7 @@ WHERE
 		'Blocked',
 		'Cancelled'
 		) 
-	AND [AdfPipelineRunId] IS NOT NULL
+	AND [PipelineRunId] IS NOT NULL
 	--if using batch executions:
 	AND [LocalExecutionId] = @LocalExecutionId;
 ```
@@ -38,3 +38,5 @@ ___
 The following parent pipeline activity chain snippet shows the clean-up handling using a subset of the infant pipeline to perform the worker [pipeline](/procfwk/pipelines) status checks.
 
 [ ![](/procfwk/activitychain-cleanup.png) ](/procfwk/activitychain-cleanup.png){:target="_blank"}
+
+___

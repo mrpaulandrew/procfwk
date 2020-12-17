@@ -25,13 +25,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{0261DD
 		Images.pptx = Images.pptx
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataFactory", "DataFactory", "{43D8C262-5EA3-48B4-BA51-EE5E13891CB3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Orchestrators", "Orchestrators", "{43D8C262-5EA3-48B4-BA51-EE5E13891CB3}"
 	ProjectSection(SolutionItems) = preProject
 		activities.md = activities.md
 		datafactory.md = datafactory.md
 		datasets.md = datasets.md
 		linkedservices.md = linkedservices.md
+		orchestrators.md = orchestrators.md
+		orchestratortypes.md = orchestratortypes.md
 		pipelines.md = pipelines.md
+		synapse.md = synapse.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{F9DFE9B3-0EA5-4CE9-A76F-762AC58ABD65}"
@@ -48,12 +51,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{F9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{9F58ED69-1325-4126-BDF2-5AC84139EFD8}"
 	ProjectSection(SolutionItems) = preProject
+		cancelpipeline.md = cancelpipeline.md
 		checkpipelinestatus.md = checkpipelinestatus.md
+		datafactoryservice.md = datafactoryservice.md
 		executepipeline.md = executepipeline.md
 		functions.md = functions.md
 		geterrordetails.md = geterrordetails.md
 		helpers.md = helpers.md
+		invalidrequestexception.md = invalidrequestexception.md
+		pipelinerequest.md = pipelinerequest.md
+		pipelinerunrequest.md = pipelinerunrequest.md
 		sendemail.md = sendemail.md
+		services.md = services.md
+		servicetype.md = servicetype.md
+		synapseservice.md = synapseservice.md
 		validatepipeline.md = validatepipeline.md
 	EndProjectSection
 EndProject
@@ -62,11 +73,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{8DB1
 		contributors.md = contributors.md
 		glossary.md = glossary.md
 		resources.md = resources.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Synapse", "Synapse", "{33C75DB2-77DF-4C9E-8760-06DCFAFA5D5F}"
-	ProjectSection(SolutionItems) = preProject
-		synapse.md = synapse.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C83634-3A1B-43AA-87C4-D97D3BDD3D31}"
@@ -78,6 +84,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C836
 		activitychain-full.png = activitychain-full.png
 		activitychain-infant.png = activitychain-infant.png
 		activitychain-parent.png = activitychain-parent.png
+		arrow-grey.png = arrow-grey.png
 		batch-chain.png = batch-chain.png
 		child.png = child.png
 		crosstenantauth.png = crosstenantauth.png
@@ -99,6 +106,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C836
 		linkedservice-connections.png = linkedservice-connections.png
 		linkedservice.png = linkedservice.png
 		msi.png = msi.png
+		orc-adf-all.png = orc-adf-all.png
+		orc-adf-driver.png = orc-adf-driver.png
+		orc-adf-worker.png = orc-adf-worker.png
+		orc-syn-all.png = orc-syn-all.png
+		orc-syn-driver.png = orc-syn-driver.png
+		orc-syn-worker.png = orc-syn-worker.png
 		overview.png = overview.png
 		parent.png = parent.png
 		pipeline-key.png = pipeline-key.png
@@ -113,6 +126,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C836
 		synapse.png = synapse.png
 		this-running.png = this-running.png
 		thumbnail.png = thumbnail.png
+		utilities.png = utilities.png
 		worker-decoupling.png = worker-decoupling.png
 		worker.png = worker.png
 		youtubeheader.png = youtubeheader.png
@@ -151,7 +165,6 @@ Global
 		{F9DFE9B3-0EA5-4CE9-A76F-762AC58ABD65} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
 		{9F58ED69-1325-4126-BDF2-5AC84139EFD8} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
 		{8DB1ED23-8248-4CC1-889B-87D6A8180094} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
-		{33C75DB2-77DF-4C9E-8760-06DCFAFA5D5F} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
 		{7BD21269-6F71-4ED1-8DB6-73734A01F8C2} = {2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

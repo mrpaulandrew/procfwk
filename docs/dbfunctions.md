@@ -19,7 +19,7 @@ __Output:__ @PropertyValue NVARCHAR(MAX)
 
 __Role:__ the role of this function is to wrap up and return [property](/procfwk/properties) values from the database properties [table](/procfwk/tables) when required as part of other internal stored procedure logic. For example; when a stored procedure IF condition needs a property value as part of its valuation logic.
 
-As the name suggests this scalar function is only used internally by other database objects. When Data Factory requires a property value the [stored procedure](/procfwk/storedprocedure) [procfwk].[GetPropertyValue] is used.
+As the name suggests this scalar function is only used internally by other database objects. When the [orchestrator](/procfwk/orchestrators) requires a property value the [stored procedure](/procfwk/storedprocedure) [procfwk].[GetPropertyValue] is used.
 
 __Example Use:__ 
 
@@ -56,3 +56,5 @@ BEGIN
 	PRINT @ErrorDetails;		
 END
 ```
+
+___
