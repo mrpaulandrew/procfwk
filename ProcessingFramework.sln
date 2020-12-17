@@ -61,8 +61,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{16E32CF7-361C-4A58-B0E1-5C8C46181ADE}"
 	ProjectSection(SolutionItems) = preProject
 		Images\Activity Chain.png = Images\Activity Chain.png
-		Images\ADFprocfwk Designs.vsdx = Images\ADFprocfwk Designs.vsdx
 		Images\Database Diagram.png = Images\Database Diagram.png
+		Images\procfwk Designs.vsdx = Images\procfwk Designs.vsdx
 		Images\Repo Social Media Image.png = Images\Repo Social Media Image.png
 	EndProjectSection
 EndProject
@@ -91,6 +91,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataFactory", "DataFactory"
 		ARM Templates\Data Factory\v1.9 Export.json = ARM Templates\Data Factory\v1.9 Export.json
 		ARM Templates\Data Factory\v1.9.1 Export.json = ARM Templates\Data Factory\v1.9.1 Export.json
 		ARM Templates\Data Factory\v1.9.2 Export.json = ARM Templates\Data Factory\v1.9.2 Export.json
+		ARM Templates\Data Factory\v2.0 Export.json = ARM Templates\Data Factory\v2.0 Export.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "trigger", "trigger", "{FC7877EF-110F-4AD7-B203-EEECE6F08A86}"
