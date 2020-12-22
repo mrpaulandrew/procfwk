@@ -10,7 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pages", "Pages", "{2BB4EF83
 		deployprocfwk.md = deployprocfwk.md
 		index.md = index.md
 		servicetiers.md = servicetiers.md
-		testpage.md = testpage.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{0261DDC1-17FF-4054-B280-711E91A30B3E}"
@@ -23,6 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{0261DD
 		Generate Markdown for Database Procedures.sql = Generate Markdown for Database Procedures.sql
 		Generate Markdown for Database Tables.sql = Generate Markdown for Database Tables.sql
 		Generate Markdown for Database Views.sql = Generate Markdown for Database Views.sql
+		_includes\google-search.html = _includes\google-search.html
 		googlebed0a327165f6996.html = googlebed0a327165f6996.html
 		Images.pptx = Images.pptx
 	EndProjectSection

@@ -2,6 +2,9 @@
 
 ___
 
+## Search procfwk.com
+{% include google-search.html %}
+
 ## Framework Components
 
 * [Deploying ProcFwk](/procfwk/deployprocfwk)
