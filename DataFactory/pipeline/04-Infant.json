@@ -646,9 +646,9 @@
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
-										"timeout": "0.00:10:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
+										"timeout": "0.00:01:00",
+										"retry": 2,
+										"retryIntervalInSeconds": 5,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -695,9 +695,9 @@
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
-										"timeout": "0.00:10:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
+										"timeout": "0.00:01:00",
+										"retry": 2,
+										"retryIntervalInSeconds": 5,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -779,9 +779,9 @@
 										}
 									],
 									"policy": {
-										"timeout": "0.00:10:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
+										"timeout": "0.00:01:00",
+										"retry": 2,
+										"retryIntervalInSeconds": 5,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -821,9 +821,9 @@
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
-										"timeout": "0.00:10:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
+										"timeout": "0.00:01:00",
+										"retry": 2,
+										"retryIntervalInSeconds": 5,
 										"secureOutput": false,
 										"secureInput": false
 									},
@@ -869,9 +869,9 @@
 							"type": "SqlServerStoredProcedure",
 							"dependsOn": [],
 							"policy": {
-								"timeout": "0.00:10:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
+								"timeout": "0.00:01:00",
+								"retry": 2,
+								"retryIntervalInSeconds": 5,
 								"secureOutput": false,
 								"secureInput": false
 							},
