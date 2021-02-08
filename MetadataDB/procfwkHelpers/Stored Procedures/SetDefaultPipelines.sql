@@ -34,17 +34,22 @@ BEGIN
 		(1,5	,'Wait 1'				,NULL		,0),
 		(1,5	,'Wait 2'				,NULL		,0),
 		(1,5	,'Wait 3'				,NULL		,0),
-		(1,5	,'Wait 4'				,NULL		,0);
+		(1,5	,'Wait 4'				,NULL		,0),
+		--synapse
+		(5,1	,'Wait 1'				,NULL		,1),
+		(5,1	,'Wait 2'				,NULL		,1),
+		(5,1	,'Wait 3'				,NULL		,1),
+		(5,1	,'Wait 4'				,NULL		,1);
 
 	MERGE INTO [procfwk].[Pipelines] AS tgt
 	USING 
 		@Pipelines AS src
-			ON tgt.[PipelineName] = src.[PipelineName]
+			ON tgt.[OrchestratorId] = src.[OrchestratorId]
+				AND tgt.[PipelineName] = src.[PipelineName]
 				AND tgt.[StageId] = src.[StageId]
 	WHEN MATCHED THEN
 		UPDATE
 		SET
-			tgt.[OrchestratorId] = src.[OrchestratorId],
 			tgt.[LogicalPredecessorId] = src.[LogicalPredecessorId],
 			tgt.[Enabled] = src.[Enabled]
 	WHEN NOT MATCHED BY TARGET THEN
