@@ -52,7 +52,15 @@ IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreIn
 			@PrincipalIdValue = '$(AZURE_CLIENT_ID)',
 			@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET)',
 			@PrincipalName = '$(AZURE_CLIENT_NAME)';
+		
+		EXEC [procfwkHelpers].[AddServicePrincipalWrapper]
+			@OrchestratorName = N'procfwkforsynapse',
+			@OrchestratorType = 'SYN',
+			@PrincipalIdValue = '$(AZURE_CLIENT_ID)',
+			@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET)',
+			@PrincipalName = '$(AZURE_CLIENT_NAME)';
 
+		/*
 		--Add specific SPN for execution of Wait 1 pipeline (functional testing)	
 		EXEC [procfwkHelpers].[DeleteServicePrincipal]
 			@OrchestratorName = N'FrameworkFactory',
@@ -67,6 +75,7 @@ IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreIn
 			@PrincipalSecretValue = '$(AZURE_CLIENT_SECRET_2)',
 			@PrincipalName = '$(AZURE_CLIENT_NAME_2)',
 			@SpecificPipelineName = N'Wait 1';
+		*/
 	END
 ELSE IF (SELECT [procfwk].[GetPropertyValueInternal]('SPNHandlingMethod')) = 'StoreInKeyVault'
 	BEGIN
