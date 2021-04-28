@@ -34,7 +34,7 @@ Source: [https://github.com/MicrosoftDocs/azure-docs/blob/master/includes/azure-
 
 Within the framework defining internal and external activities can be difficult as this greatly depends on your worker pipelines and how long the infant pipeline is going to wait between complete status checks.
 
-However, for a single execution stage, in a single batch, triggered from the parent pipeline using the default linked service/intergration runtime setup and with with 50 concurrent worker pipeline. This will generate approximatley __700 activity runs__ within your framework Data Factoy instance. Using a 30 second infant pipeline wait duration.
+However, for a single execution stage, in a single batch, triggered from the parent pipeline using the default linked service/integration runtime setup and with with 50 concurrent worker pipeline. This will generate approximatley __700 activity runs__ within your framework Data Factoy instance. Using a 30 second infant pipeline wait duration.
 
 [ ![](/procfwk/single-run-activitynosie.png) ](/procfwk/single-run-activitynosie.png){:target="_blank"}
 

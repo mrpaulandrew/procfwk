@@ -9,7 +9,7 @@ ___
 
 For more granular security models you could use Function level key instead of the top level Function App service key. In which case, more linked service connection maybe required per Function activity request. Unless you wish to handle this dynamically. The framework doesn't have a specific requirement.
 
-Depending on your preferred setup the default, hosted or tailored intergration runtime (IR) can be used for these linked service. The framework doesn't have a specific requirement for the IR. Only that connectivity is possible.
+Depending on your preferred setup the default, hosted or tailored integration runtime (IR) can be used for these linked service. The framework doesn't have a specific requirement for the IR. Only that connectivity is possible.
 
 ## Linked Service Typical Setup
 
