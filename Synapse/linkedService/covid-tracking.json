@@ -1,0 +1,10 @@
+{
+	"name": "covid-tracking",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"sasUri": "https://pandemicdatalake.blob.core.windows.net/public/curated/covid-19/covid_tracking/latest/covid_tracking.parquet?\"\""
+		}
+	}
+}
