@@ -7,13 +7,13 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Analytics.Synapse.Artifacts" Version="1.0.0-beta.1" />
-    <PackageReference Include="Azure.Identity" Version="1.4.0-beta.1" />
+    <PackageReference Include="Azure.Identity" Version="1.4.0" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.1.0" />
-    <PackageReference Include="Microsoft.Azure.Management.DataFactory" Version="4.17.1" />
+    <PackageReference Include="Microsoft.Azure.Management.DataFactory" Version="4.19.0" />
     <PackageReference Include="Microsoft.Azure.Management.ResourceManager" Version="3.10.1-preview" />
     <PackageReference Include="Microsoft.Azure.Management.Synapse" Version="2.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.9" />
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.11" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.12" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
