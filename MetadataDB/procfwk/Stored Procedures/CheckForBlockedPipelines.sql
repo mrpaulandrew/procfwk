@@ -49,7 +49,7 @@ BEGIN
 					@PipelineId = @RunningPipelineId,
 					@RunId = @RunId;
 
-				SET @ErrorJson = '{ "RunId": "' + Cast(@RunId AS CHAR(36)) + '", "Errors": [ { "ActivityRunId": "00000000-0000-0000-0000-000000000000", "ActivityName": "Set Pipeline Result", "ActivityType": "Switch", "ErrorCode": "Unknown", "ErrorType": "Framework Error", "ErrorMessage": "Framework pipeline ''04-Infant'' failed to set the pipeline result, most likely due to a timeout or azure connectivity issue. Check the framework Data Factory monitor for maore information." } ] }'
+				SET @ErrorJson = '{ "RunId": "' + Cast(@RunId AS CHAR(36)) + '", "Errors": [ { "ActivityRunId": "00000000-0000-0000-0000-000000000000", "ActivityName": "Set Pipeline Result", "ActivityType": "Switch", "ErrorCode": "Unknown", "ErrorType": "Framework Error", "ErrorMessage": "Framework pipeline ''04-Infant'' failed to set the pipeline result, most likely due to a timeout or azure connectivity issue. Check the framework Data Factory monitor for more information." } ] }'
 				EXEC procfwk.SetErrorLogDetails @LocalExecutionId = @ExecutionId,
                                         @JsonErrorDetails = @ErrorJson;
 						
