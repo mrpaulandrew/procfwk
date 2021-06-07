@@ -52,51 +52,43 @@ BEGIN
 					RAISERROR('A NULL batch name cannot be passed when the UseExecutionBatches property is set to 1 (true).',16,1);
 					RETURN 0;
 				END
-
-			SELECT 
-				@BatchId = [BatchId]
-			FROM
-				[procfwk].[Batches]
-			WHERE
-				[BatchName] = @BatchName;			
-			
-			SELECT
-				@LocalExecutionId = [ExecutionId]
-			FROM
-				[procfwk].[BatchExecution]
-			WHERE
-				[BatchId] = @BatchId
-				AND [BatchStatus] = 'Running'
-				AND [EndDateTime] IS NULL;
 			
 			IF EXISTS
 				(
 				SELECT 
 					1 
 				FROM 
-					[procfwk].[CurrentExecution] 
+					[procfwk].[CurrentExecution] ce
+					INNER JOIN [procfwk].[BatchExecution] be
+						ON ce.[LocalExecutionId] = be.[ExecutionId]
+					INNER JOIN [procfwk].[Batches] b
+						ON be.[BatchId] = b.[BatchId]
 				WHERE 
-					[LocalExecutionId] = @LocalExecutionId
-					AND [PipelineStatus] NOT IN ('Success','Failed','Blocked', 'Cancelled') 
-					AND [PipelineRunId] IS NOT NULL
+					b.[BatchName] = @BatchName
+					AND ce.[PipelineStatus] NOT IN ('Success','Failed','Blocked','Cancelled') 
+					AND ce.[PipelineRunId] IS NOT NULL
 				)
 				BEGIN
 					--return pipelines details that require a clean up
 					SELECT 
-						[ResourceGroupName],
-						[OrchestratorType],
-						[OrchestratorName],
-						[PipelineName],
-						[PipelineRunId],
-						[LocalExecutionId],
-						[StageId],
-						[PipelineId]
+						ce.[ResourceGroupName],
+						ce.[OrchestratorType],
+						ce.[OrchestratorName],
+						ce.[PipelineName],
+						ce.[PipelineRunId],
+						ce.[LocalExecutionId],
+						ce.[StageId],
+						ce.[PipelineId]
 					FROM 
-						[procfwk].[CurrentExecution]
+						[procfwk].[CurrentExecution] ce
+						INNER JOIN [procfwk].[BatchExecution] be
+							ON ce.[LocalExecutionId] = be.[ExecutionId]
+						INNER JOIN [procfwk].[Batches] b
+							ON be.[BatchId] = b.[BatchId]
 					WHERE 
-						[LocalExecutionId] = @LocalExecutionId
-						AND [PipelineStatus] NOT IN ('Success','Failed','Blocked','Cancelled') 
-						AND [PipelineRunId] IS NOT NULL
+						b.[BatchName] = @BatchName
+						AND ce.[PipelineStatus] NOT IN ('Success','Failed','Blocked','Cancelled') 
+						AND ce.[PipelineRunId] IS NOT NULL
 				END;
 			ELSE
 				GOTO LookUpReturnEmptyResult;

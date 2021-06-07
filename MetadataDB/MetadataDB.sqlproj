@@ -103,7 +103,7 @@
     <Build Include="procfwk\Stored Procedures\GetPropertyValue.sql" />
     <Build Include="dbo\Tables\ServicePrincipals.sql" />
     <Build Include="procfwk\Tables\PipelineAuthLink.sql" />
-    <Build Include="Security\adf_procfwkuser.sql" />
+    <Build Include="Security\procfwkuser Role.sql" />
     <Build Include="dbo\Stored Procedures\FailProcedure.sql" />
     <Build Include="procfwk\Stored Procedures\ResetExecution.sql" />
     <Build Include="procfwk\Stored Procedures\ExecutionWrapper.sql" />

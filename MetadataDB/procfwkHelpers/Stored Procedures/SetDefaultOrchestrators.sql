@@ -24,7 +24,8 @@ BEGIN
 		('FrameworkFactory','ADF',1,'Example Data Factory used for development.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
 		('FrameworkFactoryDev','ADF',0,'Example Data Factory used for development deployments.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
 		('FrameworkFactoryTest','ADF',0,'Example Data Factory used for testing.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
-		('WorkersFactory','ADF',0,'Example Data Factory used to house worker pipelines.','ADF.procfwk','12345678-1234-1234-1234-012345678910');
+		('WorkersFactory','ADF',0,'Example Data Factory used to house worker pipelines.','ADF.procfwk','12345678-1234-1234-1234-012345678910'),
+		('procfwkforsynapse','SYN',0,'Example Synapse instance used to house all pipelines.','ADF.procfwk','12345678-1234-1234-1234-012345678910');
 
 	MERGE INTO [procfwk].[Orchestrators] AS tgt
 	USING 
