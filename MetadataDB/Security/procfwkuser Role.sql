@@ -14,6 +14,12 @@ GRANT
 ON SCHEMA::[procfwk] TO [procfwkuser]
 GO
 
+GRANT 
+	EXECUTE
+ON SCHEMA::[dbo] TO [procfwkuser]
+GO
+
+
 /*
 ALTER ROLE [procfwkuser] 
 ADD MEMBER [##Data Factory Name (Managed Identity)##];
