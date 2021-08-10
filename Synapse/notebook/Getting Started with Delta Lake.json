@@ -1,0 +1,460 @@
+{
+	"name": "Getting Started with Delta Lake",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "SampleSpark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"kernelspec": {
+				"name": "synapse_sparkdotnet",
+				"display_name": "Synapse SparkDotNet"
+			},
+			"language_info": {
+				"name": "csharp"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/450eaf4d-1124-4b6d-b490-95dedc991c1e/resourceGroups/ADF.procfwk/providers/Microsoft.Synapse/workspaces/procfwkforsynapse/bigDataPools/SampleSpark",
+				"name": "SampleSpark",
+				"type": "Spark",
+				"endpoint": "https://procfwkforsynapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SampleSpark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 3,
+				"cores": 8,
+				"memory": 56,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"source": [
+					"# Hitchhiker's Guide to Delta Lake (.NET for Spark C#)\n",
+					"\n",
+					"This tutorial has been adapted for more clarity from its original counterpart [here](https://docs.delta.io/latest/quick-start.html). This notebook helps you quickly explore the main features of [Delta Lake](https://github.com/delta-io/delta). It provides code snippets that show how to read from and write to Delta Lake tables from interactive, batch, and streaming queries.\n",
+					"\n",
+					"Here's what we will cover:\n",
+					"* Create a table\n",
+					"* Understanding meta-data\n",
+					"* Read data\n",
+					"* Update table data\n",
+					"* Overwrite table data\n",
+					"* Conditional update without overwrite\n",
+					"* Read older versions of data using Time Travel\n",
+					"* Write a stream of data to a table\n",
+					"* Read a stream of changes from a table"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Configuration\n",
+					"Make sure you modify this as appropriate."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"var sessionId = (new Random()).Next(10000000);\n",
+					"var deltaTablePath = $\"/delta/delta-table-{sessionId}\";\n",
+					"\n",
+					"deltaTablePath"
+				],
+				"execution_count": 1
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Create a table\n",
+					"To create a Delta Lake table, write a DataFrame out in the **delta** format. You can use existing Spark SQL code and change the format from parquet, csv, json, and so on, to delta.\n",
+					"\n",
+					"These operations create a new Delta Lake table using the schema that was inferred from your DataFrame. For the full set of options available when you create a new Delta Lake table, see Create a table and Write to a table (subsequent cells in this notebook)."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"var data = spark.Range(0,5);\n",
+					"data.Show();\n",
+					"data.Write().Format(\"delta\").Save(deltaTablePath);"
+				],
+				"execution_count": 2
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Understanding Meta-data\n",
+					"\n",
+					"In Delta Lake, meta-data is no different from data i.e., it is stored next to the data. Therefore, an interesting side-effect here is that you can peek into meta-data using regular Spark APIs. "
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"using System.Linq;\n",
+					"spark.Read().Text($\"{deltaTablePath}/_delta_log/\").Collect().ToList().ForEach(x => Console.WriteLine(x.GetAs<string>(\"value\")));"
+				],
+				"execution_count": 3
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Read data\n",
+					"\n",
+					"You read data in your Delta Lake table by specifying the path to the files."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"var df = spark.Read().Format(\"delta\").Load(deltaTablePath);\n",
+					"df.Show()"
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Update table data\n",
+					"\n",
+					"Delta Lake supports several operations to modify tables using standard DataFrame APIs. This example runs a batch job to overwrite the data in the table.\n",
+					""
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"var data = spark.Range(5,10);\n",
+					"data.Write().Format(\"delta\").Mode(\"overwrite\").Save(deltaTablePath);\n",
+					"df.Show();"
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"When you now inspect the meta-data, what you will notice is that the original data is over-written. Well, not in a true sense but appropriate entries are added to Delta's transaction log so it can provide an \"illusion\" that the original data was deleted. We can verify this by re-inspecting the meta-data. You will see several entries indicating reference removal to the original data."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"spark.Read().Text($\"{deltaTablePath}/_delta_log/\").Collect().ToList().ForEach(x => Console.WriteLine(x.GetAs<string>(\"value\")));"
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Save as catalog tables\n",
+					"\n",
+					"Delta Lake can write to managed or external catalog tables.\n",
+					""
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"// Write data to a new managed catalog table.\n",
+					"data.Write().Format(\"delta\").SaveAsTable(\"ManagedDeltaTable\");"
+				],
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"// Define an external catalog table that points to the existing Delta Lake data in storage.\n",
+					"spark.Sql($\"CREATE TABLE ExternalDeltaTable USING DELTA LOCATION '{deltaTablePath}'\");"
+				],
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"// List the 2 new tables.\n",
+					"spark.Sql(\"SHOW TABLES\").Show();\n",
+					"\n",
+					"// Explore their properties.\n",
+					"spark.Sql(\"DESCRIBE EXTENDED ManagedDeltaTable\").Show(truncate: 0);\n",
+					"spark.Sql(\"DESCRIBE EXTENDED ExternalDeltaTable\").Show(truncate: 0);"
+				],
+				"execution_count": 9
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Conditional update without overwrite\n",
+					"\n",
+					"Delta Lake provides programmatic APIs to conditional update, delete, and merge (upsert) data into tables. For more information on these operations, see [Table Deletes, Updates, and Merges](https://docs.delta.io/latest/delta-update.html)."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"using Microsoft.Spark.Extensions.Delta;\n",
+					"using Microsoft.Spark.Extensions.Delta.Tables;\n",
+					"using Microsoft.Spark.Sql;\n",
+					"using static Microsoft.Spark.Sql.Functions;\n",
+					"\n",
+					"var deltaTable = DeltaTable.ForPath(deltaTablePath);"
+				],
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"// Update every even value by adding 100 to it\n",
+					"deltaTable.Update(\n",
+					"  condition: Expr(\"id % 2 == 0\"),\n",
+					"  set: new Dictionary<string, Column>(){{ \"id\", Expr(\"id + 100\") }});\n",
+					"deltaTable.ToDF().Show();"
+				],
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"// Delete every even value\n",
+					"deltaTable.Delete(condition: Expr(\"id % 2 == 0\"));\n",
+					"deltaTable.ToDF().Show();"
+				],
+				"execution_count": 12
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"// Upsert (merge) new data\n",
+					"var newData = spark.Range(20).As(\"newData\");\n",
+					"\n",
+					"deltaTable\n",
+					"    .As(\"oldData\")\n",
+					"    .Merge(newData, \"oldData.id = newData.id\")\n",
+					"    .WhenMatched()\n",
+					"        .Update(new Dictionary<string, Column>() {{\"id\", Lit(\"-1\")}})\n",
+					"    .WhenNotMatched()\n",
+					"        .Insert(new Dictionary<string, Column>() {{\"id\", Col(\"newData.id\")}})\n",
+					"    .Execute();\n",
+					"\n",
+					"deltaTable.ToDF().Show(100);"
+				],
+				"execution_count": 13
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## History\n",
+					"Delta's most powerful feature is the ability to allow looking into history i.e., the changes that were made to the underlying Delta Table. The cell below shows how simple it is to inspect the history."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"deltaTable.History().Show(20, 1000, false);"
+				],
+				"execution_count": 14
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Read older versions of data using Time Travel\n",
+					"\n",
+					"You can query previous snapshots of your Delta Lake table by using a feature called Time Travel. If you want to access the data that you overwrote, you can query a snapshot of the table before you overwrote the first set of data using the versionAsOf option.\n",
+					"\n",
+					"Once you run the cell below, you should see the first set of data, from before you overwrote it. Time Travel is an extremely powerful feature that takes advantage of the power of the Delta Lake transaction log to access data that is no longer in the table. Removing the version 0 option (or specifying version 1) would let you see the newer data again. For more information, see [Query an older snapshot of a table (time travel)](https://docs.delta.io/latest/delta-batch.html#deltatimetravel)."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"var df = spark.Read().Format(\"delta\").Option(\"versionAsOf\", 0).Load(deltaTablePath);\n",
+					"df.Show();"
+				],
+				"execution_count": 15
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Write a stream of data to a table\n",
+					"\n",
+					"You can also write to a Delta Lake table using Spark's Structured Streaming. The Delta Lake transaction log guarantees exactly-once processing, even when there are other streams or batch queries running concurrently against the table. By default, streams run in append mode, which adds new records to the table.\n",
+					"\n",
+					"For more information about Delta Lake integration with Structured Streaming, see [Table Streaming Reads and Writes](https://docs.delta.io/latest/delta-streaming.html).\n",
+					"\n",
+					"In the cells below, here's what we are doing:\n",
+					"\n",
+					"1. *Cell 28* Setup a simple Spark Structured Streaming job to generate a sequence and make the job write into our Delta Table\n",
+					"2. *Cell 30* Show the newly appended data\n",
+					"3. *Cell 31* Inspect history\n",
+					"4. *Cell 32* Stop the structured streaming job\n",
+					"5. *Cell 33* Inspect history <-- You'll notice appends have stopped"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"var streamingDf = spark.ReadStream().Format(\"rate\").Load();\n",
+					"var stream = streamingDf.SelectExpr(\"value as id\").WriteStream().Format(\"delta\").Option(\"checkpointLocation\", $\"/tmp/checkpoint-{sessionId}\").Start(deltaTablePath);"
+				],
+				"execution_count": 16
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Read a stream of changes from a table\n",
+					"\n",
+					"While the stream is writing to the Delta Lake table, you can also read from that table as streaming source. For example, you can start another streaming query that prints all the changes made to the Delta Lake table."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"deltaTable.ToDF().Sort(Col(\"id\").Desc()).Show(100);"
+				],
+				"execution_count": 17
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"deltaTable.History().Drop(\"userId\", \"userName\", \"job\", \"notebook\", \"clusterId\", \"isolationLevel\", \"isBlindAppend\").Show(20, 1000, false);"
+				],
+				"execution_count": 18
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"stream.Stop();"
+				],
+				"execution_count": 19
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"deltaTable.History().Drop(\"userId\", \"userName\", \"job\", \"notebook\", \"clusterId\", \"isolationLevel\", \"isBlindAppend\").Show(100, 1000, false);"
+				],
+				"execution_count": 20
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Compaction\n",
+					"\n",
+					"If a Delta Table is growing too large, you can compact it by repartitioning into a smaller number of files.\n",
+					"\n",
+					"The option `dataChange = false` is an optimization that tells Delta Lake to do the repartition without marking the underlying data as \"modified\". This ensures that any other concurrent operations (such as streaming reads/writes) aren't negatively impacted.\n",
+					""
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"int partitionCount = 2;\n",
+					"\n",
+					"spark.Read()\n",
+					"    .Format(\"delta\")\n",
+					"    .Load(deltaTablePath)\n",
+					"    .Repartition(partitionCount)\n",
+					"    .Write()\n",
+					"    .Option(\"dataChange\", \"false\")\n",
+					"    .Format(\"delta\")\n",
+					"    .Mode(\"overwrite\")\n",
+					"    .Save(deltaTablePath);"
+				],
+				"execution_count": 21
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## Convert Parquet to Delta\n",
+					"You can do an in-place conversion from the Parquet format to Delta."
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"var parquetPath = $\"/parquet/parquet-table-{sessionId}\";\n",
+					"\n",
+					"var data = spark.Range(0,5);\n",
+					"data.Write().Parquet(parquetPath);\n",
+					"\n",
+					"// Confirm that the data isn't in the Delta format\n",
+					"DeltaTable.IsDeltaTable(parquetPath)"
+				],
+				"execution_count": 22
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"DeltaTable.ConvertToDelta(spark, $\"parquet.`{parquetPath}`\");\n",
+					"\n",
+					"//Confirm that the converted data is now in the Delta format\n",
+					"DeltaTable.IsDeltaTable(parquetPath)"
+				],
+				"execution_count": 23
+			},
+			{
+				"cell_type": "markdown",
+				"source": [
+					"## SQL Support\n",
+					"Delta supports table utility commands through SQL.  You can use SQL to:\n",
+					"* Get a DeltaTable's history\n",
+					"* Vacuum a DeltaTable\n",
+					"* Convert a Parquet file to Delta\n",
+					""
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"spark.Sql($\"DESCRIBE HISTORY delta.`{deltaTablePath}`\").Show();"
+				],
+				"execution_count": 24
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"spark.Sql($\"VACUUM delta.`{deltaTablePath}`\").Show();"
+				],
+				"execution_count": 25
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"var parquetId =  (new Random()).Next(10000000);\n",
+					"var parquetPath = $\"/parquet/parquet-table-{sessionId}-{parquetId}\";\n",
+					"\n",
+					"var data = spark.Range(0,5);\n",
+					"data.Write().Parquet(parquetPath);\n",
+					"\n",
+					"// Confirm that the data isn't in the Delta format\n",
+					"DeltaTable.IsDeltaTable(parquetPath);\n",
+					"\n",
+					"// Use SQL to convert the parquet table to Delta\n",
+					"spark.Sql($\"CONVERT TO DELTA parquet.`{parquetPath}`\");\n",
+					"\n",
+					"DeltaTable.IsDeltaTable(parquetPath);"
+				],
+				"execution_count": 26
+			}
+		]
+	}
+}
