@@ -238,6 +238,7 @@
     <None Include="Scripts\Alter Database Scale.sql" />
     <None Include="Scripts\Handy Selects.sql" />
     <None Include="Scripts\Metadata\ReplaceDataFactorys.sql" />
+    <None Include="Scripts\Generate Mermaid Data Lineage Markdown.sql" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="Scripts\Script.PreDeployment.sql" />
