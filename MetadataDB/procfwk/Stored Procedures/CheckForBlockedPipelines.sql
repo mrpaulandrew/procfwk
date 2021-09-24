@@ -30,7 +30,7 @@ BEGIN
 									        SELECT 
 										        [PipelineId],
 										        [StageId],
-										        [AdfPipelineRunId]
+										        [PipelineRunId]
 									        FROM 
 										        [procfwk].[CurrentExecution] 
 									        WHERE 
