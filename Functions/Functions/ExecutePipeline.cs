@@ -22,15 +22,14 @@ namespace mrpaulandrew.azure.procfwk
             logger.LogInformation("ExecutePipeline Function triggered by HTTP request.");
 
             logger.LogInformation("Parsing body from request.");
-            PipelineRequest request = await new BodyReader(httpRequest).GetRequestBodyAsync();
+            
+            PipelineRequest request = await new BodyReader(httpRequest).GetRunRequestBodyAsync();
             request.Validate(logger);
 
-            using (var service = PipelineService.GetServiceForRequest(request, logger))
-            {
-                PipelineRunStatus result = service.ExecutePipeline(request);
-                logger.LogInformation("ExecutePipeline Function complete.");
-                return new OkObjectResult(JsonConvert.SerializeObject(result));
-            }
+            using var service = PipelineService.GetServiceForRequest(request, logger);
+            PipelineRunStatus result = service.ExecutePipeline(request);
+            logger.LogInformation("ExecutePipeline Function complete.");
+            return new OkObjectResult(JsonConvert.SerializeObject(result));
         }
     }
 }
