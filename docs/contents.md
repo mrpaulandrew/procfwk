@@ -68,6 +68,8 @@ ___
 * [Reporting](/procfwk/reporting)
 * [Testing](/procfwk/testing)
 * [Pipeline Running Check](/procfwk/pipelinealreadyrunning)
+* Monitoring - _Coming Soon_
+* Pipeline Lineage - _Coming Soon_
 
 ___
 

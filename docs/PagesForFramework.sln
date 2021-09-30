@@ -149,6 +149,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Capabilities", "Capabilitie
 		frameworkrestart.md = frameworkrestart.md
 		metadataintegritychecks.md = metadataintegritychecks.md
 		pipelinealreadyrunning.md = pipelinealreadyrunning.md
+		pipelinelineage.md = pipelinelineage.md
 		poshdeployingadfparts.md = poshdeployingadfparts.md
 		prevruncleanup.md = prevruncleanup.md
 		reporting.md = reporting.md
