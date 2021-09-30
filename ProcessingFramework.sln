@@ -99,7 +99,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "trigger", "trigger", "{FC78
 		DataFactory\trigger\FunctionalTestingTrigger.json = DataFactory\trigger\FunctionalTestingTrigger.json
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reporting", "Reporting", "{5A56A63A-351D-467D-A2DA-FDB3C9CBD252}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Monitoring", "Monitoring", "{5A56A63A-351D-467D-A2DA-FDB3C9CBD252}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerBI", "PowerBI", "{EBC230DF-D45D-43E4-A74E-32ADA3DDAE7A}"
 	ProjectSection(SolutionItems) = preProject

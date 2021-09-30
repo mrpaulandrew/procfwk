@@ -214,6 +214,7 @@
     <None Include="procfwk\Views\DataFactorys.sql" />
     <Build Include="procfwk\Stored Procedures\GetWorkerDetailsWrapper.sql" />
     <Build Include="procfwk\Stored Procedures\GetFrameworkOrchestratorDetails.sql" />
+    <Build Include="procfwkHelpers\Stored Procedures\GetMermaidPipelineLineageMarkdown.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
@@ -238,7 +239,7 @@
     <None Include="Scripts\Alter Database Scale.sql" />
     <None Include="Scripts\Handy Selects.sql" />
     <None Include="Scripts\Metadata\ReplaceDataFactorys.sql" />
-    <None Include="Scripts\Generate Mermaid Data Lineage Markdown.sql" />
+    <None Include="Scripts\Activity Metadata Int vs Ext.sql" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="Scripts\Script.PreDeployment.sql" />
