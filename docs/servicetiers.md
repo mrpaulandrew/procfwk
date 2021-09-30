@@ -43,3 +43,51 @@ At the point of testing, no other [orchestrator](/procfwk/orchestrators) instanc
 This gives a theorical maximum degree of parallelism of __285 worker pipelines__.
 
 It is possible to push these service limitations by creating a custom set of Azure Integration Runtimes for the [orchestrator](/procfwk/orchestrators) and tuning specific parts of the framework pipelines to reduce the number of internal activity calls. If you hit activity run failures during a framework execution run and this is isolated within a subscription please email paul@mrpaulandrew.com for support. To that end, stress testing of the framework has been done using 20 concurrent execution batches, each calling 50 worker pipelines to achieve a maximum degree of parallelism of __1000 worker pipelines__. This was done under ideal conditions and using a custom configuration of 4x Azure Integration Runtimes, in different Azure Regions.
+
+## Framework Activities (Internal vs External)
+
+To inform the above activity limitations, it should be noted that for each framework pipeline the following internal and external activities exist, shown in the table below. These count values are static based on an extract of an ARM template from a current framework Data Factory instance. Therefore, in a given pipeline IF or SWITCH conditions may apply at runtime meaning only some external activities are called.
+
+|Pipeline Name | Type | Activity Count |
+|----|:----:|:----:|
+|01-Grandparent	|External|0|
+|01-Grandparent |Internal|1|
+|02-Parent |External|3|
+|02-Parent |Internal|7|
+|03-Child |External|0|
+|03-Child |Internal|2|
+|04-Infant |External|7|
+|04-Infant |Internal|10|
+|Check For Running Pipeline |External|0|
+|Check For Running Pipeline |Internal|11|
+|Email Sender|External|1|
+|Email Sender|Internal|0|
+|Throw Exception|External|0|
+|Throw Exception|Internal|1|
+
+Or, to aggregate this by pipeline using the orchestration activity type names, see below.
+
+|Pipeline Name | Type | ActivityCount |
+|----|:----:|:----:|
+|01-Grandparent|ExecutePipeline|1|
+|02-Parent|ExecutePipeline|1|
+|02-Parent|ForEach|2|
+|02-Parent|Lookup|3|
+|02-Parent|SetVariable|1|
+|02-Parent|SqlServerStoredProcedure|3|
+|03-Child|ForEach|1|
+|03-Child|Lookup|1|
+|04-Infant|AzureFunctionActivity|2|
+|04-Infant|IfCondition|2|
+|04-Infant|Lookup|4|
+|04-Infant|SetVariable|2|
+|04-Infant|SqlServerStoredProcedure|5|
+|04-Infant|Switch|1|
+|04-Infant|Until|1|
+|Check For Running Pipeline|Filter|1|
+|Check For Running Pipeline|IfCondition|2|
+|Check For Running Pipeline|Lookup|	3|
+|Check For Running Pipeline|SetVariable|4|
+|Check For Running Pipeline|Switch|	1|
+|Email Sender|	AzureFunctionActivity|1|
+|Throw Exception|Lookup|1|
