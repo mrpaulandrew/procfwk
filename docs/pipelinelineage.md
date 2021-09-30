@@ -20,7 +20,7 @@ EXEC [procfwkHelpers].[GetMermaidPipelineLineageMarkdown]
 
 Within a markdown rendering service the Mermaid output can then be used to generated a pipeline lineage diagram similar to the below.
 
-```mermaid!
+```mermaid
 graph LR
 subgraph Daily
 style Daily fill:#DEEBF7,stroke:#DEEBF7
