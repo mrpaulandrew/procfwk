@@ -1,0 +1,9 @@
+{
+	"name": "demodatafactgit1",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "4b9b82f8-d558-4a44-b6f3-4c450b1b37e7",
+		"tenantId": "58b72900-95d2-4c65-b186-fe515140c70a"
+	}
+}
