@@ -52,6 +52,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"BatchName": {
 						"type": "string",
@@ -1059,6 +1063,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"BatchName": {
 						"type": "string",
@@ -1190,6 +1198,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"StageId": {
 						"type": "int"
@@ -1477,8 +1489,8 @@
 							}
 						],
 						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
+							"timeout": "0.00:00:30",
+							"retry": 3,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
@@ -1651,7 +1663,7 @@
 									"type": "AzureFunctionActivity",
 									"dependsOn": [],
 									"policy": {
-										"timeout": "0.00:10:00",
+										"timeout": "0.03:59:59",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
@@ -1835,7 +1847,7 @@
 									}
 								}
 							],
-							"timeout": "0.00:10:00"
+							"timeout": "0.04:00:00"
 						}
 					},
 					{
@@ -1866,8 +1878,8 @@
 											"type": "SqlServerStoredProcedure",
 											"dependsOn": [],
 											"policy": {
-												"timeout": "0.00:10:00",
-												"retry": 0,
+												"timeout": "0.00:01:00",
+												"retry": 2,
 												"retryIntervalInSeconds": 30,
 												"secureOutput": false,
 												"secureInput": false
@@ -1915,8 +1927,8 @@
 											"type": "SqlServerStoredProcedure",
 											"dependsOn": [],
 											"policy": {
-												"timeout": "0.00:10:00",
-												"retry": 0,
+												"timeout": "0.00:01:00",
+												"retry": 2,
 												"retryIntervalInSeconds": 30,
 												"secureOutput": false,
 												"secureInput": false
@@ -2000,8 +2012,8 @@
 												}
 											],
 											"policy": {
-												"timeout": "0.00:10:00",
-												"retry": 0,
+												"timeout": "0.00:01:00",
+												"retry": 2,
 												"retryIntervalInSeconds": 30,
 												"secureOutput": false,
 												"secureInput": false
@@ -2042,8 +2054,8 @@
 											"type": "SqlServerStoredProcedure",
 											"dependsOn": [],
 											"policy": {
-												"timeout": "0.00:10:00",
-												"retry": 0,
+												"timeout": "0.00:01:00",
+												"retry": 2,
 												"retryIntervalInSeconds": 30,
 												"secureOutput": false,
 												"secureInput": false
@@ -2090,8 +2102,8 @@
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
-										"timeout": "0.00:10:00",
-										"retry": 0,
+										"timeout": "0.00:01:00",
+										"retry": 2,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
@@ -2486,6 +2498,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"executionId": {
 						"type": "string"
@@ -3103,6 +3119,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"BatchName": {
 						"type": "string",
@@ -3183,6 +3203,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"Recipients": {
 						"type": "string"
@@ -3287,6 +3311,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"RaiseErrors": {
 						"type": "string",
@@ -3316,10 +3344,17 @@
 				"description": "Provide a simple way of throwing an exception within Data Factory using TSQL error handling.",
 				"activities": [
 					{
-						"name": "Raise Error",
+						"name": "Raise Error Backup",
 						"description": "Using a SQL database to raise an error/exception but wrapped up as a data factory pipeline. Error message information exposed as a pipeline parameter.",
 						"type": "Lookup",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Raise Error",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.00:10:00",
 							"retry": 0,
@@ -3345,8 +3380,26 @@
 							},
 							"firstRowOnly": false
 						}
+					},
+					{
+						"name": "Raise Error",
+						"description": "Using newer native activity raise an error/exception but wrapped up as a data factory pipeline. Error message information exposed as a pipeline parameter.",
+						"type": "Fail",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"message": {
+								"value": "@pipeline().parameters.Message",
+								"type": "Expression"
+							},
+							"errorCode": "16"
+						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"Message": {
 						"type": "string"
@@ -3385,6 +3438,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -3421,6 +3478,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -3457,6 +3518,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -3493,6 +3558,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -3529,6 +3598,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -3565,6 +3638,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -3601,6 +3678,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -3637,6 +3718,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -3673,6 +3758,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -3709,6 +3798,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -3767,7 +3860,8 @@
 							"type": "LinkedServiceReference"
 						},
 						"secretName": "FrameworkFunctionsKey"
-					}
+					},
+					"authentication": "Anonymous"
 				}
 			},
 			"dependsOn": [
@@ -3847,6 +3941,26 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/01-Grandparent')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureIR-UKSouth')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "UK South",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 10,
+							"cleanup": false
+						}
+					}
+				}
+			},
+			"dependsOn": []
 		}
 	]
 }

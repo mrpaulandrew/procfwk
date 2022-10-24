@@ -45,6 +45,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -81,6 +85,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -117,6 +125,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -153,6 +165,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -189,6 +205,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -225,6 +245,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -261,6 +285,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -297,6 +325,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -333,6 +365,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -369,6 +405,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"WaitTime": {
 						"type": "int",
@@ -401,6 +441,26 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureIR-UKSouth')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "UK South",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 10,
+							"cleanup": false
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/FrameworkFunctions')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -419,7 +479,8 @@
 							"type": "LinkedServiceReference"
 						},
 						"secretName": "FrameworkFunctionsKey"
-					}
+					},
+					"authentication": "Anonymous"
 				}
 			},
 			"dependsOn": [
@@ -486,6 +547,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"Recipients": {
 						"type": "string"
@@ -590,6 +655,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"RaiseErrors": {
 						"type": "string",
@@ -643,10 +712,17 @@
 				"description": "Provide a simple way of throwing an exception within Data Factory using TSQL error handling.",
 				"activities": [
 					{
-						"name": "Raise Error",
+						"name": "Raise Error Backup",
 						"description": "Using a SQL database to raise an error/exception but wrapped up as a data factory pipeline. Error message information exposed as a pipeline parameter.",
 						"type": "Lookup",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Raise Error",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.00:10:00",
 							"retry": 0,
@@ -672,8 +748,26 @@
 							},
 							"firstRowOnly": false
 						}
+					},
+					{
+						"name": "Raise Error",
+						"description": "Using newer native activity raise an error/exception but wrapped up as a data factory pipeline. Error message information exposed as a pipeline parameter.",
+						"type": "Fail",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"message": {
+								"value": "@pipeline().parameters.Message",
+								"type": "Expression"
+							},
+							"errorCode": "16"
+						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"Message": {
 						"type": "string"
@@ -957,8 +1051,8 @@
 							}
 						],
 						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
+							"timeout": "0.00:00:30",
+							"retry": 3,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
 							"secureInput": false
@@ -1131,7 +1225,7 @@
 									"type": "AzureFunctionActivity",
 									"dependsOn": [],
 									"policy": {
-										"timeout": "0.00:10:00",
+										"timeout": "0.03:59:59",
 										"retry": 0,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
@@ -1315,7 +1409,7 @@
 									}
 								}
 							],
-							"timeout": "0.00:10:00"
+							"timeout": "0.04:00:00"
 						}
 					},
 					{
@@ -1346,8 +1440,8 @@
 											"type": "SqlServerStoredProcedure",
 											"dependsOn": [],
 											"policy": {
-												"timeout": "0.00:10:00",
-												"retry": 0,
+												"timeout": "0.00:01:00",
+												"retry": 2,
 												"retryIntervalInSeconds": 30,
 												"secureOutput": false,
 												"secureInput": false
@@ -1395,8 +1489,8 @@
 											"type": "SqlServerStoredProcedure",
 											"dependsOn": [],
 											"policy": {
-												"timeout": "0.00:10:00",
-												"retry": 0,
+												"timeout": "0.00:01:00",
+												"retry": 2,
 												"retryIntervalInSeconds": 30,
 												"secureOutput": false,
 												"secureInput": false
@@ -1480,8 +1574,8 @@
 												}
 											],
 											"policy": {
-												"timeout": "0.00:10:00",
-												"retry": 0,
+												"timeout": "0.00:01:00",
+												"retry": 2,
 												"retryIntervalInSeconds": 30,
 												"secureOutput": false,
 												"secureInput": false
@@ -1522,8 +1616,8 @@
 											"type": "SqlServerStoredProcedure",
 											"dependsOn": [],
 											"policy": {
-												"timeout": "0.00:10:00",
-												"retry": 0,
+												"timeout": "0.00:01:00",
+												"retry": 2,
 												"retryIntervalInSeconds": 30,
 												"secureOutput": false,
 												"secureInput": false
@@ -1570,8 +1664,8 @@
 									"type": "SqlServerStoredProcedure",
 									"dependsOn": [],
 									"policy": {
-										"timeout": "0.00:10:00",
-										"retry": 0,
+										"timeout": "0.00:01:00",
+										"retry": 2,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
@@ -1966,6 +2060,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"executionId": {
 						"type": "string"
@@ -2583,6 +2681,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"parameters": {
 					"BatchName": {
 						"type": "string",
@@ -2626,131 +2728,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
 				"[concat(variables('factoryId'), '/pipelines/Throw Exception')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/03-Child')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "procfwk child pipeline used to execute Worker pipelines within a given execution stage. This pipeline will be called once for each stage, then execute all Workers in parallel.",
-				"activities": [
-					{
-						"name": "Get Pipelines",
-						"description": "Returns all pipelines from the metadata to be executed within a given processing stage.",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[procfwk].[GetPipelinesInStage]",
-								"storedProcedureParameters": {
-									"ExecutionId": {
-										"type": "Guid",
-										"value": {
-											"value": "@pipeline().parameters.ExecutionId",
-											"type": "Expression"
-										}
-									},
-									"StageId": {
-										"type": "Int32",
-										"value": {
-											"value": "@pipeline().parameters.StageId",
-											"type": "Expression"
-										}
-									}
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "GetSetMetadata",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "Execute Pipelines",
-						"description": "Second level ForEach to run in parallel all pipelines within the stage. Items for iteration passed from the Get Pipelines lookup activity.",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "Get Pipelines",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Get Pipelines').output.value",
-								"type": "Expression"
-							},
-							"isSequential": false,
-							"batchCount": 50,
-							"activities": [
-								{
-									"name": "Worker Pipeline Executor",
-									"description": "Run the required worker pipeline and wait for its completion. Update metadata once done.",
-									"type": "ExecutePipeline",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"pipeline": {
-											"referenceName": "04-Infant",
-											"type": "PipelineReference"
-										},
-										"waitOnCompletion": true,
-										"parameters": {
-											"executionId": {
-												"value": "@pipeline().parameters.ExecutionId",
-												"type": "Expression"
-											},
-											"stageId": {
-												"value": "@pipeline().parameters.StageId",
-												"type": "Expression"
-											},
-											"pipelineId": {
-												"value": "@item().PipelineId",
-												"type": "Expression"
-											}
-										}
-									}
-								}
-							]
-						}
-					}
-				],
-				"parameters": {
-					"StageId": {
-						"type": "int"
-					},
-					"ExecutionId": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "_ProcFwk"
-				},
-				"annotations": [
-					"procfwk",
-					"Child"
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/GetSetMetadata')]",
-				"[concat(variables('factoryId'), '/pipelines/04-Infant')]"
 			]
 		}
 	]
