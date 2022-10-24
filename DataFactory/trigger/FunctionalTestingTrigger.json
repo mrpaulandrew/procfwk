@@ -5,7 +5,7 @@
 		"annotations": [
 			"procfwk"
 		],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipelines": [
 			{
 				"pipelineReference": {
