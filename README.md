@@ -1,18 +1,14 @@
 # Read Me - Orchestrate.[procfwk](http://procfwk.com/)
 
-[ ![](https://mrpaulandrew.github.io/procfwk/overview.png) ](https://mrpaulandrew.github.io/procfwk/overview.png)
-
-## Documentation
-
 For complete documentation on this solution see [procfwk.com](http://procfwk.com/).
 
 ## ProcFwk Has Become CF.Cumulus.Control
 
-See blog: [mrpaulandrew.com](https://mrpaulandrew.com/2024/01/07/procfwk-is-getting-an-upgrade-to-cf-cumulus/){:target="_blank"}
+See blog: [mrpaulandrew.com](https://mrpaulandrew.com/2024/01/07/procfwk-is-getting-an-upgrade-to-cf-cumulus/)
 
-See new product page: [cloudformations.org/cumulus](https://www.cloudformations.org/cumulus?utm_source=pa&utm_medium=github&utm_campaign=cumulus&utm_content=l2){:target="_blank"}
+See new product page: [cloudformations.org/cumulus](https://www.cloudformations.org/cumulus?utm_source=pa&utm_medium=github&utm_campaign=cumulus&utm_content=l2)
 
-[ ![](https://mrpaulandrew.github.io/procfwk/procfwk-to-cumulus.png) ](https://mrpaulandrew.github.io/procfwk/procfwk-to-cumulus.png){:target="_blank"}
+[ ![](https://mrpaulandrew.github.io/procfwk/procfwk-to-cumulus.png) ](https://mrpaulandrew.github.io/procfwk/procfwk-to-cumulus.png)
 
 ProcFwk will receive no further development beyond December 2023.
 
