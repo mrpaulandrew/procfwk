@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30413.136
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pages", "Pages", "{2BB4EF83-F994-4E9E-AD4A-82BD93CCD8B8}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,7 +15,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{0261DDC1-17FF-4054-B280-711E91A30B3E}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		_config.yml = _config.yml
 		All Designs.vsdx = All Designs.vsdx
 		favicon.ico = favicon.ico
 		Gemfile = Gemfile
@@ -25,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{0261DD
 		_includes\google-search.html = _includes\google-search.html
 		googlebed0a327165f6996.html = googlebed0a327165f6996.html
 		Images.pptx = Images.pptx
+		_config.yml = _config.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Orchestrators", "Orchestrators", "{43D8C262-5EA3-48B4-BA51-EE5E13891CB3}"
@@ -118,6 +118,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{60C836
 		parent.png = parent.png
 		pipeline-key.png = pipeline-key.png
 		powerbi.png = powerbi.png
+		procfwk-to-cumulus.png = procfwk-to-cumulus.png
 		sidebar-small.png = sidebar-small.png
 		sidebar.png = sidebar.png
 		single-run-activitynosie.png = single-run-activitynosie.png

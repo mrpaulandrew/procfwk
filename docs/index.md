@@ -4,6 +4,15 @@ This site provides details on the latest version of the processing framework ([p
 
 Please use the [Contents](/procfwk/contents) page, also available in the side bar, to navigate.
 
+## ProcFwk Has Become CF.Cumulus.Control
+
+See blog: [mrpaulandrew.com](https://mrpaulandrew.com/2024/01/07/procfwk-is-getting-an-upgrade-to-cf-cumulus/){:target="_blank"}
+
+See new product page: [cloudformations.org/cumulus](https://www.cloudformations.org/cumulus?utm_source=pa&utm_medium=github&utm_campaign=cumulus&utm_content=l2){:target="_blank"}
+
+[ ![](/procfwk/procfwk-to-cumulus.png) ](/procfwk/procfwk-to-cumulus.png){:target="_blank"}
+
+ProcFwk will receive no further development beyond December 2023.
 ___
 
 ## Code Project Overview
